@@ -13,9 +13,11 @@
 
 ## Requirements
 
-- Thread safe
-- 0 Compiler warnings
-- Consistent newlines [Bilin.cpp]
+| # | Description |
+|---|-------------|
+| REQ.1 | Thread safe
+|       | 0 Compiler warnings
+|       | Consistent line endings (CR/LF) [Bilin.cpp]
 
 ## Root Organization
 
