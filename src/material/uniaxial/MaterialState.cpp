@@ -31,39 +31,36 @@
 
 #include <MaterialState.h>
 
-MaterialState::MaterialState (int tag, int classTag):
-TaggedObject (tag),
-MovableObject (classTag)
+MaterialState::MaterialState(int tag, int classTag):TaggedObject(tag),
+MovableObject(classTag)
 {
 
 }
 
-MaterialState::~MaterialState ()
+MaterialState::~MaterialState()
 {
 
 }
 
 int
-MaterialState::setVariable (const char *argv)
+ MaterialState::setVariable(const char *argv)
 {
     return -1;
 }
 
-int
-MaterialState::getVariable (int variableID, double &info)
+int MaterialState::getVariable(int variableID, double &info)
 {
     return -1;
 }
 
-int
-MaterialState::setParameter (const char **argv, int argc,
-                             Information & eleInformation)
+int MaterialState::setParameter(const char **argv, int argc,
+                                Information & eleInformation)
 {
     return -1;
 }
 
-int
-MaterialState::updateParameter (int responseID, Information & eleInformation)
+int MaterialState::updateParameter(int responseID,
+                                   Information & eleInformation)
 {
     return -1;
 }

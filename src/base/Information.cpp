@@ -33,94 +33,71 @@
 #include <Vector.h>
 #include <Matrix.h>
 
-Information::Information ():theType (UnknownType),
-theID (0), theVector (0), theMatrix (0),
-theString (0)
+Information::Information():theType(UnknownType),
+theID(0), theVector(0), theMatrix(0),
+theString(0)
 {
     // does nothing
 }
 
-Information::Information (int val):
-theType (IntType),
-theInt (val),
-theID (0),
-theVector (0),
-theMatrix (0),
-theString (0)
+Information::Information(int val):theType(IntType),
+theInt(val), theID(0), theVector(0), theMatrix(0), theString(0)
 {
     // does nothing
 }
 
-Information::Information (double val):
-theType (DoubleType),
-theDouble (val),
-theID (0),
-theVector (0),
-theMatrix (0),
-theString (0)
+Information::Information(double val):theType(DoubleType),
+theDouble(val), theID(0), theVector(0), theMatrix(0), theString(0)
 {
     // does nothing
 }
 
-Information::Information (const ID & val):
-theType (IdType),
-theID (0),
-theVector (0),
-theMatrix (0),
-theString (0)
+Information::Information(const ID & val):theType(IdType),
+theID(0), theVector(0), theMatrix(0), theString(0)
 {
     // Make a copy
-    theID = new ID (val);
+    theID = new ID(val);
 
     if (theID == 0)
         opserr << "Information::Information -- failed to allocate\n";
 }
 
-Information::Information (const Vector & val):
-theType (VectorType),
-theID (0),
-theVector (0),
-theMatrix (0),
-theString (0)
+Information::Information(const Vector & val):theType(VectorType),
+theID(0), theVector(0), theMatrix(0), theString(0)
 {
     // Make a copy
-    theVector = new Vector (val);
+    theVector = new Vector(val);
 
     if (theVector == 0)
-        opserr << "Information::Information -- failed to allocate Vector\n";
+        opserr <<
+            "Information::Information -- failed to allocate Vector\n";
 }
 
-Information::Information (const Matrix & val):
-theType (MatrixType),
-theID (0),
-theVector (0),
-theMatrix (0),
-theString (0)
+Information::Information(const Matrix & val):theType(MatrixType),
+theID(0), theVector(0), theMatrix(0), theString(0)
 {
     // Make a copy
-    theMatrix = new Matrix (val);
+    theMatrix = new Matrix(val);
 
     if (theMatrix == 0)
-        opserr << "Information::Information -- failed to allocate Matrix\n";
+        opserr <<
+            "Information::Information -- failed to allocate Matrix\n";
 }
 
-Information::Information (const ID & val1, const Vector & val2):
-theType (IdType),
-theID (0),
-theVector (0),
-theMatrix (0),
-theString (0)
+Information::Information(const ID & val1,
+                         const Vector & val2):theType(IdType), theID(0),
+theVector(0), theMatrix(0), theString(0)
 {
     // Make a copy
-    theID = new ID (val1);
-    theVector = new Vector (val2);
+    theID = new ID(val1);
+    theVector = new Vector(val2);
 
     if (theID == 0)
         opserr << "Information::Information -- failed to allocate\n";
 }
 
 
-Information::~Information ()
+Information::~Information()
 {
     if (theID != 0)
         delete theID;
@@ -134,177 +111,145 @@ Information::~Information ()
 }
 
 int
-Information::setInt (int newInt)
+ Information::setInt(int newInt)
 {
     theInt = newInt;
 
     return 0;
 }
 
-int
-Information::setDouble (double newDouble)
+int Information::setDouble(double newDouble)
 {
     theDouble = newDouble;
 
     return 0;
 }
 
-int
-Information::setID (const ID & newID)
+int Information::setID(const ID & newID)
 {
-    if (theID != 0)
-      {
-          *theID = newID;
-      }
-    else
-      {
-          theID = new ID (newID);
-      }
+    if (theID != 0) {
+        *theID = newID;
+    } else {
+        theID = new ID(newID);
+    }
     return 0;
 }
 
-int
-Information::setVector (const Vector & newVector)
+int Information::setVector(const Vector & newVector)
 {
-    if (theVector != 0)
-      {
-          *theVector = newVector;
-      }
-    else
-      {
-          theVector = new Vector (newVector);
-      }
+    if (theVector != 0) {
+        *theVector = newVector;
+    } else {
+        theVector = new Vector(newVector);
+    }
 
     return 0;
 }
 
-int
-Information::setMatrix (const Matrix & newMatrix)
+int Information::setMatrix(const Matrix & newMatrix)
 {
-    if (theMatrix != 0)
-      {
-          *theMatrix = newMatrix;
-      }
-    else
-      {
-          theMatrix = new Matrix (newMatrix);
-      }
+    if (theMatrix != 0) {
+        *theMatrix = newMatrix;
+    } else {
+        theMatrix = new Matrix(newMatrix);
+    }
 
     return 0;
 }
 
-int
-Information::setString (const char *newString)
+int Information::setString(const char *newString)
 {
-    int newLength = int (strlen (newString));
+    int newLength = int (strlen(newString));
 
-    if (theString != 0)
-      {
-          int oldLength = int (strlen (theString));
-          if (oldLength >= newLength)
-              strcpy (theString, newString);
-          else
-            {
-                delete[]theString;
-                theString = new char[newLength + 1];
-                strcpy (theString, newString);
-            }
-      }
-    else
-      {
-          theString = new char[newLength + 1];
-          strcpy (theString, newString);
-      }
+    if (theString != 0) {
+        int oldLength = int (strlen(theString));
+        if (oldLength >= newLength)
+            strcpy(theString, newString);
+        else {
+            delete[]theString;
+            theString = new char[newLength + 1];
+            strcpy(theString, newString);
+        }
+    } else {
+        theString = new char[newLength + 1];
+        strcpy(theString, newString);
+    }
 
     return 0;
 }
 
-void
-Information::Print (OPS_Stream & s, int flag)
+void Information::Print(OPS_Stream & s, int flag)
 {
     if (theType == IntType)
         s << theInt << " ";
     else if (theType == DoubleType)
         s << theDouble << " ";
     else if (theType == IdType && theID != 0)
-        for (int i = 0; i < theID->Size (); i++)
+        for (int i = 0; i < theID->Size(); i++)
             s << (*theID) (i) << " ";
     else if (theType == VectorType && theVector != 0)
-        for (int i = 0; i < theVector->Size (); i++)
+        for (int i = 0; i < theVector->Size(); i++)
             s << (*theVector) (i) << " ";
-    else if (theType == MatrixType && theMatrix != 0)
-      {
-          for (int i = 0; i < theMatrix->noRows (); i++)
-            {
-                for (int j = 0; j < theMatrix->noCols (); j++)
-                    s << (*theMatrix) (i, j) << " ";
-                s << endln;
-            }
-      }
+    else if (theType == MatrixType && theMatrix != 0) {
+        for (int i = 0; i < theMatrix->noRows(); i++) {
+            for (int j = 0; j < theMatrix->noCols(); j++)
+                s << (*theMatrix) (i, j) << " ";
+            s << endln;
+        }
+    }
 
     return;
 }
 
 
-void
-Information::Print (ofstream & s, int flag)
+void Information::Print(ofstream & s, int flag)
 {
     if (theType == IntType)
         s << theInt << " ";
     else if (theType == DoubleType)
         s << theDouble << " ";
     else if (theType == IdType && theID != 0)
-        for (int i = 0; i < theID->Size (); i++)
+        for (int i = 0; i < theID->Size(); i++)
             s << (*theID) (i) << " ";
     else if (theType == VectorType && theVector != 0)
-        for (int i = 0; i < theVector->Size (); i++)
+        for (int i = 0; i < theVector->Size(); i++)
             s << (*theVector) (i) << " ";
-    else if (theType == MatrixType && theMatrix != 0)
-      {
-          for (int i = 0; i < theMatrix->noRows (); i++)
-            {
-                for (int j = 0; j < theMatrix->noCols (); j++)
-                    s << (*theMatrix) (i, j) << " ";
-                s << endln;
-            }
-      }
+    else if (theType == MatrixType && theMatrix != 0) {
+        for (int i = 0; i < theMatrix->noRows(); i++) {
+            for (int j = 0; j < theMatrix->noCols(); j++)
+                s << (*theMatrix) (i, j) << " ";
+            s << endln;
+        }
+    }
 
     return;
 }
 
-const Vector &
-Information::getData (void)
+const Vector & Information::getData(void)
 {
-    if (theType == IntType)
-      {
-          if (theVector == 0)
-              theVector = new Vector (1);
-          (*theVector) (0) = theInt;
-      }
-    else if (theType == DoubleType)
-      {
-          if (theVector == 0)
-              theVector = new Vector (1);
-          (*theVector) (0) = theDouble;
-      }
-    else if (theType == IdType && theID != 0)
-      {
-          if (theVector == 0)
-              theVector = new Vector (theID->Size ());
-          for (int i = 0; i < theID->Size (); i++)
-              (*theVector) (i) = (*theID) (i);
-      }
-    else if (theType == MatrixType && theMatrix != 0)
-      {
-          int noRows = theMatrix->noRows ();
-          int noCols = theMatrix->noCols ();
-          if (theVector == 0)
-              theVector = new Vector (noRows * noCols);
-          int count = 0;
-          for (int i = 0; i < noRows; i++)
-              for (int j = 0; j < noCols; j++)
-                  (*theVector) (count++) = (*theMatrix) (i, j);
-      }
+    if (theType == IntType) {
+        if (theVector == 0)
+            theVector = new Vector(1);
+        (*theVector) (0) = theInt;
+    } else if (theType == DoubleType) {
+        if (theVector == 0)
+            theVector = new Vector(1);
+        (*theVector) (0) = theDouble;
+    } else if (theType == IdType && theID != 0) {
+        if (theVector == 0)
+            theVector = new Vector(theID->Size());
+        for (int i = 0; i < theID->Size(); i++)
+            (*theVector) (i) = (*theID) (i);
+    } else if (theType == MatrixType && theMatrix != 0) {
+        int noRows = theMatrix->noRows();
+        int noCols = theMatrix->noCols();
+        if (theVector == 0)
+            theVector = new Vector(noRows * noCols);
+        int count = 0;
+        for (int i = 0; i < noRows; i++)
+            for (int j = 0; j < noCols; j++)
+                (*theVector) (count++) = (*theMatrix) (i, j);
+    }
 
     return *theVector;
 }

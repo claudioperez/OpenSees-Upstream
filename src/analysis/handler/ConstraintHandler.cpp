@@ -37,35 +37,31 @@
 #include <FE_EleIter.h>
 #include <FE_Element.h>
 
-ConstraintHandler::ConstraintHandler (int clasTag):
-MovableObject (clasTag),
-theDomainPtr (0),
-theAnalysisModelPtr (0),
-theIntegratorPtr (0)
+ConstraintHandler::ConstraintHandler(int clasTag):MovableObject(clasTag),
+theDomainPtr(0), theAnalysisModelPtr(0), theIntegratorPtr(0)
 {
 }
 
 
-ConstraintHandler::~ConstraintHandler ()
+ConstraintHandler::~ConstraintHandler()
 {
 
 }
 
 int
-ConstraintHandler::doneNumberingDOF (void)
+ ConstraintHandler::doneNumberingDOF(void)
 {
     // iterate through the FE_Element getting them to set their IDs
-    FE_EleIter & theEle = theAnalysisModelPtr->getFEs ();
+    FE_EleIter & theEle = theAnalysisModelPtr->getFEs();
     FE_Element *elePtr;
-    while ((elePtr = theEle ()) != 0)
-        elePtr->setID ();
+    while ((elePtr = theEle()) != 0)
+        elePtr->setID();
     return 0;
 }
 
-void
-ConstraintHandler::setLinks (Domain & theDomain,
-                             AnalysisModel & theModel,
-                             Integrator & theIntegrator)
+void ConstraintHandler::setLinks(Domain & theDomain,
+                                 AnalysisModel & theModel,
+                                 Integrator & theIntegrator)
 {
     theDomainPtr = &theDomain;
     theAnalysisModelPtr = &theModel;
@@ -73,33 +69,28 @@ ConstraintHandler::setLinks (Domain & theDomain,
 }
 
 
-int
-ConstraintHandler::update (void)
+int ConstraintHandler::update(void)
 {
     return 0;
 }
 
-int
-ConstraintHandler::applyLoad (void)
+int ConstraintHandler::applyLoad(void)
 {
     return 0;
 }
 
 
-Domain *
-ConstraintHandler::getDomainPtr (void) const
+Domain *ConstraintHandler::getDomainPtr(void) const
 {
     return theDomainPtr;
 }
 
-AnalysisModel *
-ConstraintHandler::getAnalysisModelPtr (void) const
+AnalysisModel *ConstraintHandler::getAnalysisModelPtr(void) const
 {
     return theAnalysisModelPtr;
 }
 
-Integrator *
-ConstraintHandler::getIntegratorPtr (void) const
+Integrator *ConstraintHandler::getIntegratorPtr(void) const
 {
     return theIntegratorPtr;
 }

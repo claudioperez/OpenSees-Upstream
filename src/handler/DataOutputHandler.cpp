@@ -32,13 +32,12 @@
 
 #include "DataOutputHandler.h"
 
-DataOutputHandler::DataOutputHandler (int classTag):
-MovableObject (classTag)
+DataOutputHandler::DataOutputHandler(int classTag):MovableObject(classTag)
 {
 
 }
 
-DataOutputHandler::~DataOutputHandler ()
+DataOutputHandler::~DataOutputHandler()
 {
     // does nothing
 }

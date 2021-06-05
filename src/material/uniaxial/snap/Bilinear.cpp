@@ -47,12 +47,11 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Bilinear::Bilinear (int tag, Vector inputParam, DamageModel * strength,
-                    DamageModel * stiffness, DamageModel * capping):
-UniaxialMaterial (tag, MAT_TAG_SnapBilinear),
-StrDamage (0),
-StfDamage (0),
-CapDamage (0)
+Bilinear::Bilinear(int tag, Vector inputParam, DamageModel * strength,
+                   DamageModel * stiffness,
+                   DamageModel * capping):UniaxialMaterial(tag,
+                                                           MAT_TAG_SnapBilinear),
+StrDamage(0), StfDamage(0), CapDamage(0)
 {
     int ErrorFlag = 0;
     //*********************************************************************
@@ -82,7 +81,7 @@ CapDamage (0)
     //
     //*********************************************************************
 
-    if ((inputParam.Size ()) < 9)
+    if ((inputParam.Size()) < 9)
         opserr << "Error: Bilinear(): inputParam, size <15\n" << "\a";
 
     elstk = inputParam[0];
@@ -98,143 +97,126 @@ CapDamage (0)
 
     // Error check
 
-    if (fyieldPos <= 0.0 || fyieldNeg >= 0.0)
-      {
-          opserr << "Error: Bilinear::Bilinear  : Incorrect yield stresse \n"
-              << "\a";
-          ErrorFlag = 1;
-      }
+    if (fyieldPos <= 0.0 || fyieldNeg >= 0.0) {
+        opserr << "Error: Bilinear::Bilinear  : Incorrect yield stresse \n"
+            << "\a";
+        ErrorFlag = 1;
+    }
 
-    if (elstk <= 0.0)
-      {
-          opserr <<
-              "Error: Bilinear::Bilinear  : Elastic modulus must be positive\n"
-              << "\a";
-          ErrorFlag = 1;
-      }
+    if (elstk <= 0.0) {
+        opserr <<
+            "Error: Bilinear::Bilinear  : Elastic modulus must be positive\n"
+            << "\a";
+        ErrorFlag = 1;
+    }
 
-    if (alfa < 0.0 || alfa > 0.8)
-      {
-          opserr <<
-              "Error: Bilinear::Bilinear  : alpha is recommended to be in the range of [0.0 , 0.8]\n"
-              << "\a";
-      }
+    if (alfa < 0.0 || alfa > 0.8) {
+        opserr <<
+            "Error: Bilinear::Bilinear  : alpha is recommended to be in the range of [0.0 , 0.8]\n"
+            << "\a";
+    }
 
-    if (alfaCap >= 0.0 || alfaCap == alfa)
-      {
-          opserr <<
-              "Error: Bilinear::Bilinear  : CapSlope must be negative and not equal to alfa\n"
-              << "\a";
-          ErrorFlag = 1;
-      }
+    if (alfaCap >= 0.0 || alfaCap == alfa) {
+        opserr <<
+            "Error: Bilinear::Bilinear  : CapSlope must be negative and not equal to alfa\n"
+            << "\a";
+        ErrorFlag = 1;
+    }
 
-    if (capDispPos < fyieldPos / elstk || capDispNeg > fyieldNeg / elstk)
-      {
-          opserr <<
-              "Error: Bilinear::Bilinear  : Capping branch must be located outside the yield criteria\n"
-              << "\a";
-          ErrorFlag = 1;
-      }
+    if (capDispPos < fyieldPos / elstk || capDispNeg > fyieldNeg / elstk) {
+        opserr <<
+            "Error: Bilinear::Bilinear  : Capping branch must be located outside the yield criteria\n"
+            << "\a";
+        ErrorFlag = 1;
+    }
 
-    if (Resfac < 0.0 || Resfac > 1.0)
-      {
-          opserr <<
-              "Error: Bilinear::Bilinear  : Residual must be positive and less than 1.0\n"
-              << "\a";
-          ErrorFlag = 1;
-      }
+    if (Resfac < 0.0 || Resfac > 1.0) {
+        opserr <<
+            "Error: Bilinear::Bilinear  : Residual must be positive and less than 1.0\n"
+            << "\a";
+        ErrorFlag = 1;
+    }
 
-    if (DEBG == 1)
-      {
-          // Open an output file for debugging
-          char FileName[20];    // debugging
-          sprintf (FileName, "Bilinear%d.out", tag);
-          OutputFile = fopen (FileName, "w");   // debugging
-          fprintf (OutputFile, "Constructor called\n"); // debugging
-          fprintf (OutputFile, "elstk = %f\n", inputParam[0]);
-          fprintf (OutputFile, "fyieldPos = %f\n", inputParam[1]);
-          fprintf (OutputFile, "fyieldNeg = %f\n", inputParam[2]);
-          fprintf (OutputFile, "alfa = %f\n", inputParam[3]);
-          fprintf (OutputFile, "alfaCap = %f\n", inputParam[4]);
-          fprintf (OutputFile, "capDispPos = %f\n", inputParam[5]);
-          fprintf (OutputFile, "capDispNeg = %f\n", inputParam[6]);
-          fprintf (OutputFile, "flagCapenv = %d\n", (int) inputParam[7]);
-          fprintf (OutputFile, "Resfac = %f\n", inputParam[8]);
-      }
+    if (DEBG == 1) {
+        // Open an output file for debugging
+        char FileName[20];      // debugging
+        sprintf(FileName, "Bilinear%d.out", tag);
+        OutputFile = fopen(FileName, "w");      // debugging
+        fprintf(OutputFile, "Constructor called\n");    // debugging
+        fprintf(OutputFile, "elstk = %f\n", inputParam[0]);
+        fprintf(OutputFile, "fyieldPos = %f\n", inputParam[1]);
+        fprintf(OutputFile, "fyieldNeg = %f\n", inputParam[2]);
+        fprintf(OutputFile, "alfa = %f\n", inputParam[3]);
+        fprintf(OutputFile, "alfaCap = %f\n", inputParam[4]);
+        fprintf(OutputFile, "capDispPos = %f\n", inputParam[5]);
+        fprintf(OutputFile, "capDispNeg = %f\n", inputParam[6]);
+        fprintf(OutputFile, "flagCapenv = %d\n", (int) inputParam[7]);
+        fprintf(OutputFile, "Resfac = %f\n", inputParam[8]);
+    }
 
 
-    if (DEBG == 2)
-      {
-          // Open an output file for debugging
-          char FileName[20];    // debugging
-          sprintf (FileName, "Bilinear%d.out", tag);
-          OutputFile = fopen (FileName, "w");   // debugging
-      }
+    if (DEBG == 2) {
+        // Open an output file for debugging
+        char FileName[20];      // debugging
+        sprintf(FileName, "Bilinear%d.out", tag);
+        OutputFile = fopen(FileName, "w");      // debugging
+    }
 
-    if (ErrorFlag == 1)
-      {
-          opserr <<
-              "Error: Bilinear::Bilinear  : Error: check the input values\n"
-              << "\a";
-          exit (-1);
-      }
+    if (ErrorFlag == 1) {
+        opserr <<
+            "Error: Bilinear::Bilinear  : Error: check the input values\n"
+            << "\a";
+        exit(-1);
+    }
 
 
-    if (strength != NULL)
-      {
-          StrDamage = strength->getCopy ();
-          if (StrDamage == NULL)
-            {
-                opserr <<
-                    "Error: Bilinear::Bilinear  : Can not make a copy of strength damage model\n"
-                    << "\a";
-                exit (-1);
-            }
-      }
+    if (strength != NULL) {
+        StrDamage = strength->getCopy();
+        if (StrDamage == NULL) {
+            opserr <<
+                "Error: Bilinear::Bilinear  : Can not make a copy of strength damage model\n"
+                << "\a";
+            exit(-1);
+        }
+    }
 
-    if (stiffness != NULL)
-      {
-          StfDamage = stiffness->getCopy ();
-          if (StfDamage == NULL)
-            {
-                opserr <<
-                    "Error: Bilinear::Bilinear  : Can not make a copy of stiffness damage model\n"
-                    << "\a";
-                exit (-1);
-            }
-      }
+    if (stiffness != NULL) {
+        StfDamage = stiffness->getCopy();
+        if (StfDamage == NULL) {
+            opserr <<
+                "Error: Bilinear::Bilinear  : Can not make a copy of stiffness damage model\n"
+                << "\a";
+            exit(-1);
+        }
+    }
 
-    if (capping != NULL)
-      {
-          CapDamage = capping->getCopy ();
-          if (CapDamage == NULL)
-            {
-                opserr <<
-                    "Error: Bilinear::Bilinear  : Can not make a copy of capping damage model\n"
-                    << "\a";
-                exit (-1);
-            }
-      }
-
+    if (capping != NULL) {
+        CapDamage = capping->getCopy();
+        if (CapDamage == NULL) {
+            opserr <<
+                "Error: Bilinear::Bilinear  : Can not make a copy of capping damage model\n"
+                << "\a";
+            exit(-1);
+        }
+    }
     // Initialice history data
-    this->revertToStart ();
+    this->revertToStart();
 }
 
 
-Bilinear::Bilinear ():UniaxialMaterial (0, MAT_TAG_SnapBilinear)
+Bilinear::Bilinear():UniaxialMaterial(0, MAT_TAG_SnapBilinear)
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Empty constructor called\n");     // debugging
+        fprintf(OutputFile, "Empty constructor called\n");      // debugging
 }
 
 
-Bilinear::~Bilinear ()
+Bilinear::~Bilinear()
 {
-    if (DEBG == 1 || DEBG == 2)
-      {
-          fprintf (OutputFile, "Distructor called\n");  // debugging
-          fclose (OutputFile);  // debugging
-      }
+    if (DEBG == 1 || DEBG == 2) {
+        fprintf(OutputFile, "Distructor called\n");     // debugging
+        fclose(OutputFile);     // debugging
+    }
 
     if (StrDamage != 0)
         delete StrDamage;
@@ -246,10 +228,10 @@ Bilinear::~Bilinear ()
 
 
 int
-Bilinear::revertToStart ()
+ Bilinear::revertToStart()
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Revert to start\n");      // debugging
+        fprintf(OutputFile, "Revert to start\n");       // debugging
 
     hsLastCommit[0] = 0.0;      // dP
     hsLastCommit[1] = 0.0;      // fP
@@ -269,38 +251,35 @@ Bilinear::revertToStart ()
     hsLastCommit[15] = 0.0;     // Enrgc
     hsLastCommit[16] = 0.0;     // reserved
 
-    for (int i = 0; i < 17; i++)
-      {
-          hsCommit[i] = hsLastCommit[i];
-          hsTrial[i] = hsLastCommit[i];
-      }
+    for (int i = 0; i < 17; i++) {
+        hsCommit[i] = hsLastCommit[i];
+        hsTrial[i] = hsLastCommit[i];
+    }
     if (StrDamage != NULL)
-        StrDamage->revertToStart ();
+        StrDamage->revertToStart();
     if (StfDamage != NULL)
-        StfDamage->revertToStart ();
+        StfDamage->revertToStart();
     if (CapDamage != NULL)
-        CapDamage->revertToStart ();
+        CapDamage->revertToStart();
 
-    if (DEBG == 1 || DEBG == 2)
-      {
-          if (StrDamage != NULL)
-              fprintf (OutputFile, "%d", StrDamage->getDamage ());      // debugging
-          if (StfDamage != NULL)
-              fprintf (OutputFile, "\t%d", StfDamage->getDamage ());    // debugging
-          if (CapDamage != NULL)
-              fprintf (OutputFile, "\t%d\n", CapDamage->getDamage ());  // debugging
-      }
+    if (DEBG == 1 || DEBG == 2) {
+        if (StrDamage != NULL)
+            fprintf(OutputFile, "%d", StrDamage->getDamage());  // debugging
+        if (StfDamage != NULL)
+            fprintf(OutputFile, "\t%d", StfDamage->getDamage());        // debugging
+        if (CapDamage != NULL)
+            fprintf(OutputFile, "\t%d\n", CapDamage->getDamage());      // debugging
+    }
 
     return 0;
 }
 
 
-void
-Bilinear::Print (OPS_Stream & s, int flag)
+void Bilinear::Print(OPS_Stream & s, int flag)
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Print\n");        // debugging
-    s << "Bilinear Tag: " << this->getTag () << endln;
+        fprintf(OutputFile, "Print\n"); // debugging
+    s << "Bilinear Tag: " << this->getTag() << endln;
     s << "d : " << hsTrial[0] << endln;
     s << "f : " << hsTrial[1] << endln;
     s << "ek: " << hsTrial[2] << endln;
@@ -308,136 +287,119 @@ Bilinear::Print (OPS_Stream & s, int flag)
 }
 
 
-int
-Bilinear::revertToLastCommit ()
+int Bilinear::revertToLastCommit()
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Revert to last commit\n");        // debugging
+        fprintf(OutputFile, "Revert to last commit\n"); // debugging
 
-    for (int i = 0; i < 17; i++)
-      {
-          hsTrial[i] = hsCommit[i];
-          hsCommit[i] = hsLastCommit[i];
-      }
+    for (int i = 0; i < 17; i++) {
+        hsTrial[i] = hsCommit[i];
+        hsCommit[i] = hsLastCommit[i];
+    }
     if (StrDamage != NULL)
-        StrDamage->revertToLastCommit ();
+        StrDamage->revertToLastCommit();
     if (StfDamage != NULL)
-        StfDamage->revertToLastCommit ();
+        StfDamage->revertToLastCommit();
     if (CapDamage != NULL)
-        CapDamage->revertToLastCommit ();
+        CapDamage->revertToLastCommit();
 
     return 0;
 }
 
 
-int
-Bilinear::commitState ()
+int Bilinear::commitState()
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Commit state\n"); // debugging
+        fprintf(OutputFile, "Commit state\n");  // debugging
 
-    for (int i = 0; i < 17; i++)
-      {
-          hsLastCommit[i] = hsCommit[i];
-          hsCommit[i] = hsTrial[i];
-      }
+    for (int i = 0; i < 17; i++) {
+        hsLastCommit[i] = hsCommit[i];
+        hsCommit[i] = hsTrial[i];
+    }
 
     // Calling the damage object
-    Vector InforForDamage (3);
-    InforForDamage (0) = hsCommit[0];
-    InforForDamage (1) = hsCommit[1];
-    InforForDamage (2) = hsCommit[3];
+    Vector InforForDamage(3);
+    InforForDamage(0) = hsCommit[0];
+    InforForDamage(1) = hsCommit[1];
+    InforForDamage(2) = hsCommit[3];
 
-    if (StrDamage != NULL)
-      {
-          StrDamage->setTrial (InforForDamage);
-          StrDamage->commitState ();
-      }
+    if (StrDamage != NULL) {
+        StrDamage->setTrial(InforForDamage);
+        StrDamage->commitState();
+    }
 
-    if (StfDamage != NULL)
-      {
-          StfDamage->setTrial (InforForDamage);
-          StfDamage->commitState ();
-      }
+    if (StfDamage != NULL) {
+        StfDamage->setTrial(InforForDamage);
+        StfDamage->commitState();
+    }
 
-    if (CapDamage != NULL)
-      {
-          CapDamage->setTrial (InforForDamage);
-          CapDamage->commitState ();
-      }
+    if (CapDamage != NULL) {
+        CapDamage->setTrial(InforForDamage);
+        CapDamage->commitState();
+    }
 
     return 0;
 }
 
 
-double
-Bilinear::getTangent ()
+double Bilinear::getTangent()
 {
-    if (DEBG == 1)
-      {
-          fprintf (OutputFile, "Get tangent\n");
-          fprintf (OutputFile, "tangent = %f\n", hsTrial[2]);
-      }                         // debugging
+    if (DEBG == 1) {
+        fprintf(OutputFile, "Get tangent\n");
+        fprintf(OutputFile, "tangent = %f\n", hsTrial[2]);
+    }                           // debugging
     return hsTrial[2];
 }
 
-double
-Bilinear::getInitialTangent (void)
+double Bilinear::getInitialTangent(void)
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Get initial tangent\n");  // debugging
+        fprintf(OutputFile, "Get initial tangent\n");   // debugging
     return elstk;
 }
 
-double
-Bilinear::getStress ()
+double Bilinear::getStress()
 {
-    if (DEBG == 1)
-      {
-          fprintf (OutputFile, "Get stress\n");
-          fprintf (OutputFile, "Stress = %f\n", hsTrial[1]);
-      }                         // debugging
+    if (DEBG == 1) {
+        fprintf(OutputFile, "Get stress\n");
+        fprintf(OutputFile, "Stress = %f\n", hsTrial[1]);
+    }                           // debugging
     return hsTrial[1];
 }
 
 
-double
-Bilinear::getStrain (void)
+double Bilinear::getStrain(void)
 {
-    if (DEBG == 1)
-      {
-          fprintf (OutputFile, "Get strain\n");
-          fprintf (OutputFile, "Strain = %f\n", hsTrial[0]);
-      }                         // debugging
+    if (DEBG == 1) {
+        fprintf(OutputFile, "Get strain\n");
+        fprintf(OutputFile, "Strain = %f\n", hsTrial[0]);
+    }                           // debugging
     return hsTrial[0];
 }
 
 
-int
-Bilinear::recvSelf (int cTag, Channel & theChannel,
-                    FEM_ObjectBroker & theBroker)
+int Bilinear::recvSelf(int cTag, Channel & theChannel,
+                       FEM_ObjectBroker & theBroker)
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Receive self\n"); // debugging
+        fprintf(OutputFile, "Receive self\n");  // debugging
     return 0;
 }
 
 
-int
-Bilinear::sendSelf (int cTag, Channel & theChannel)
+int Bilinear::sendSelf(int cTag, Channel & theChannel)
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Send self\n");    // debugging
+        fprintf(OutputFile, "Send self\n");     // debugging
     return 0;
 }
 
 
-UniaxialMaterial *
-Bilinear::getCopy (void)
+UniaxialMaterial *Bilinear::getCopy(void)
 {
     if (DEBG == 1)
-        fprintf (OutputFile, "Get copy\n");     // debugging
-    Vector inp (9);
+        fprintf(OutputFile, "Get copy\n");      // debugging
+    Vector inp(9);
 
     inp[0] = elstk;
     inp[1] = fyieldPos;
@@ -451,32 +413,29 @@ Bilinear::getCopy (void)
 
 
     Bilinear *theCopy =
-        new Bilinear (this->getTag (), inp, StrDamage, StfDamage, CapDamage);
+        new Bilinear(this->getTag(), inp, StrDamage, StfDamage, CapDamage);
 
-    for (int i = 0; i < 17; i++)
-      {
-          theCopy->hsTrial[i] = hsTrial[i];
-          theCopy->hsCommit[i] = hsCommit[i];
-          theCopy->hsLastCommit[i] = hsLastCommit[i];
-      }
+    for (int i = 0; i < 17; i++) {
+        theCopy->hsTrial[i] = hsTrial[i];
+        theCopy->hsCommit[i] = hsCommit[i];
+        theCopy->hsLastCommit[i] = hsLastCommit[i];
+    }
 
     return theCopy;
 }
 
 
-int
-Bilinear::setTrialStrain (double d, double strainRate)
+int Bilinear::setTrialStrain(double d, double strainRate)
 {
-    if (DEBG == 1)
-      {
-          fprintf (OutputFile, "Set trial displacement to %f\n", d);
+    if (DEBG == 1) {
+        fprintf(OutputFile, "Set trial displacement to %f\n", d);
 
-      }
+    }
     // debugging
 
     // HYSTERETIC VARIABLES
-    double dP, fP, ekP, ekexcurs, fyPos, fyNeg, ekhard, cpPos, cpNeg, ekcap,
-        dmax, dmin;
+    double dP, fP, ekP, ekexcurs, fyPos, fyNeg, ekhard, cpPos, cpNeg,
+        ekcap, dmax, dmin;
     double fuPos, fuNeg, Enrgtot, Enrgc;
 
     // LOCAL VARIABLES
@@ -510,108 +469,91 @@ Bilinear::setTrialStrain (double d, double strainRate)
         dmin = d;
 
     // Check for a new excursion to degrade the parameters
-    if ((fP + ekexcurs * deltaD) * fP <= 0.0)
-      {
-          // degrade the model paraeters based on the damage
-          // degrade the strength ( yield stress )
-          if (StrDamage != NULL)
-            {
-                double StrengthResidual = (1.0 - StrDamage->getDamage ());
-                if (StrengthResidual < 0.0)
-                    StrengthResidual = 0.0;
+    if ((fP + ekexcurs * deltaD) * fP <= 0.0) {
+        // degrade the model paraeters based on the damage
+        // degrade the strength ( yield stress )
+        if (StrDamage != NULL) {
+            double StrengthResidual = (1.0 - StrDamage->getDamage());
+            if (StrengthResidual < 0.0)
+                StrengthResidual = 0.0;
 
-                fyPos =
-                    StrengthResidual * (fyieldPos - Resfac * fyieldPos) +
-                    Resfac * fyieldPos;
-                fyNeg =
-                    StrengthResidual * (fyieldNeg - Resfac * fyieldNeg) +
-                    Resfac * fyieldNeg;
-            }
+            fyPos =
+                StrengthResidual * (fyieldPos - Resfac * fyieldPos) +
+                Resfac * fyieldPos;
+            fyNeg =
+                StrengthResidual * (fyieldNeg - Resfac * fyieldNeg) +
+                Resfac * fyieldNeg;
+        }
+        // degrade the stiffness
+        if (StfDamage != NULL) {
+            double StiffnessResidual = (1.0 - StfDamage->getDamage());
+            if (StiffnessResidual < 0.0)
+                StiffnessResidual = 0.0;
 
-          // degrade the stiffness
-          if (StfDamage != NULL)
-            {
-                double StiffnessResidual = (1.0 - StfDamage->getDamage ());
-                if (StiffnessResidual < 0.0)
-                    StiffnessResidual = 0.0;
-
-                ekexcurs =
-                    StiffnessResidual * (elstk - alfa * elstk) + alfa * elstk;
-            }
-
-          // degrade the cap
-          if (CapDamage != NULL)
-            {
-                double CapRefPos =
-                    (fyieldPos +
-                     (capDispPos - fyieldPos / elstk) * alfa * elstk -
-                     Resfac * fyieldPos) / (alfaCap * elstk);
-                double CapRefNeg =
-                    (fyieldNeg +
-                     (capDispNeg - fyieldNeg / elstk) * alfa * elstk -
-                     Resfac * fyieldNeg) / (alfaCap * elstk);
+            ekexcurs =
+                StiffnessResidual * (elstk - alfa * elstk) + alfa * elstk;
+        }
+        // degrade the cap
+        if (CapDamage != NULL) {
+            double CapRefPos =
+                (fyieldPos +
+                 (capDispPos - fyieldPos / elstk) * alfa * elstk -
+                 Resfac * fyieldPos) / (alfaCap * elstk);
+            double CapRefNeg =
+                (fyieldNeg +
+                 (capDispNeg - fyieldNeg / elstk) * alfa * elstk -
+                 Resfac * fyieldNeg) / (alfaCap * elstk);
 
 
-                double CapPosResidual = (1.0 - CapDamage->getPosDamage ());
-                if (CapPosResidual < 0.0)
-                    CapPosResidual = 0.0;
-                double CapNegResidual = (1.0 - CapDamage->getNegDamage ());
-                if (CapNegResidual < 0.0)
-                    CapNegResidual = 0.0;
+            double CapPosResidual = (1.0 - CapDamage->getPosDamage());
+            if (CapPosResidual < 0.0)
+                CapPosResidual = 0.0;
+            double CapNegResidual = (1.0 - CapDamage->getNegDamage());
+            if (CapNegResidual < 0.0)
+                CapNegResidual = 0.0;
 
-                cpPos = CapPosResidual * (capDispPos - CapRefPos) + CapRefPos;
-                cpPos = (cpPos > CapRefPos) ? cpPos : CapRefPos;
+            cpPos = CapPosResidual * (capDispPos - CapRefPos) + CapRefPos;
+            cpPos = (cpPos > CapRefPos) ? cpPos : CapRefPos;
 
-                cpNeg = CapNegResidual * (capDispNeg - CapRefNeg) + CapRefNeg;
-                cpNeg = (cpNeg < CapRefNeg) ? cpNeg : CapRefNeg;
-            }
-      }
-
+            cpNeg = CapNegResidual * (capDispNeg - CapRefNeg) + CapRefNeg;
+            cpNeg = (cpNeg < CapRefNeg) ? cpNeg : CapRefNeg;
+        }
+    }
     // predict the f based on excurs stiffness
     f = fP + ekexcurs * deltaD;
     ek = ekenvPos = ekenvNeg = ekexcurs;
 
     // Calculate the envelopes
-    if (f >= 0)
-      {
-          this->envelPosCap (ekexcurs, fyPos, ekhard, cpPos, ekcap,
-                             Resfac * fyieldPos, &fuPos, d, &fenvPos,
-                             &ekenvPos);
-          fenvNeg = 0.0;
-      }
-    else
-      {
-          this->envelNegCap (ekexcurs, fyNeg, ekhard, cpNeg, ekcap,
-                             Resfac * fyieldNeg, &fuNeg, d, &fenvNeg,
-                             &ekenvNeg);
-          fenvPos = 0.0;
-      }
+    if (f >= 0) {
+        this->envelPosCap(ekexcurs, fyPos, ekhard, cpPos, ekcap,
+                          Resfac * fyieldPos, &fuPos, d, &fenvPos,
+                          &ekenvPos);
+        fenvNeg = 0.0;
+    } else {
+        this->envelNegCap(ekexcurs, fyNeg, ekhard, cpNeg, ekcap,
+                          Resfac * fyieldNeg, &fuNeg, d, &fenvNeg,
+                          &ekenvNeg);
+        fenvPos = 0.0;
+    }
 
     if (DEBG == 2)
-        fprintf (OutputFile, "%f  %f  %f\n", d, cpPos, fuPos);  // debugging
+        fprintf(OutputFile, "%f  %f  %f\n", d, cpPos, fuPos);   // debugging
 
     // Compare the predictor force with the envelope and correct the 
-    if (f > fenvPos)
-      {
-          f = fenvPos;
-      }
-    else if (f < fenvNeg)
-      {
-          f = fenvNeg;
-      }
+    if (f > fenvPos) {
+        f = fenvPos;
+    } else if (f < fenvNeg) {
+        f = fenvNeg;
+    }
 
 
-    if (flagCapenv == 1)
-      {
-          if (f > fuPos)
-            {
-                f = fuPos;
-            }
-          else if (f < fuNeg)
-            {
-                f = fuNeg;
-            }
-      }
+    if (flagCapenv == 1) {
+        if (f > fuPos) {
+            f = fuPos;
+        } else if (f < fuNeg) {
+            f = fuNeg;
+        }
+    }
 
     if (deltaD != 0.0)
         ek = (f - fP) / deltaD;
@@ -639,124 +581,113 @@ Bilinear::setTrialStrain (double d, double strainRate)
 }
 
 
-Response *
-Bilinear::setResponse (const char **argv, int argc, OPS_Stream & theOutput)
+Response *Bilinear::setResponse(const char **argv, int argc,
+                                OPS_Stream & theOutput)
 {
     Response *theResponse = 0;
 
-    if (argv == NULL || argc == 0)
-      {
-          opserr << "Error: Bilinear::setResponse  : No argument specified\n"
-              << "\a";
-          return 0;
-      };
+    if (argv == NULL || argc == 0) {
+        opserr << "Error: Bilinear::setResponse  : No argument specified\n"
+            << "\a";
+        return 0;
+    };
 
-    theOutput.tag ("UniaxialMaterialOutput");
-    theOutput.attr ("matType", this->getClassType ());
-    theOutput.attr ("matTag", this->getTag ());
+    theOutput.tag("UniaxialMaterialOutput");
+    theOutput.attr("matType", this->getClassType());
+    theOutput.attr("matTag", this->getTag());
 
-    if (strcmp (argv[0], "force") == 0 || strcmp (argv[0], "stress") == 0)
-      {
-          theOutput.tag ("ResponseType", "sigma11");
-          theResponse = new MaterialResponse (this, 1, 0.0);
-      }
+    if (strcmp(argv[0], "force") == 0 || strcmp(argv[0], "stress") == 0) {
+        theOutput.tag("ResponseType", "sigma11");
+        theResponse = new MaterialResponse(this, 1, 0.0);
+    }
 
-    else if (strcmp (argv[0], "defo") == 0
-             || strcmp (argv[0], "deformation") == 0
-             || strcmp (argv[0], "strain") == 0)
-      {
-          theOutput.tag ("ResponseType", "eps11");
-          theResponse = new MaterialResponse (this, 2, 0.0);
-      }
+    else if (strcmp(argv[0], "defo") == 0
+             || strcmp(argv[0], "deformation") == 0
+             || strcmp(argv[0], "strain") == 0) {
+        theOutput.tag("ResponseType", "eps11");
+        theResponse = new MaterialResponse(this, 2, 0.0);
+    }
 
-    else if (strcmp (argv[0], "plastic") == 0
-             || strcmp (argv[0], "plasticdefo") == 0
-             || strcmp (argv[0], "plasticdeformation") == 0
-             || strcmp (argv[0], "plasticstrain") == 0)
-      {
-          theOutput.tag ("ResponseType", "eps1P");
-          theResponse = new MaterialResponse (this, 3, 0.0);
-      }
+    else if (strcmp(argv[0], "plastic") == 0
+             || strcmp(argv[0], "plasticdefo") == 0
+             || strcmp(argv[0], "plasticdeformation") == 0
+             || strcmp(argv[0], "plasticstrain") == 0) {
+        theOutput.tag("ResponseType", "eps1P");
+        theResponse = new MaterialResponse(this, 3, 0.0);
+    }
 
-    else if ((strcmp (argv[0], "stiff") == 0)
-             || (strcmp (argv[0], "stiffness") == 0))
-      {
-          theOutput.tag ("ResponseType", "C11");
-          theResponse = new MaterialResponse (this, 4, 0.0);
-      }
+    else if ((strcmp(argv[0], "stiff") == 0)
+             || (strcmp(argv[0], "stiffness") == 0)) {
+        theOutput.tag("ResponseType", "C11");
+        theResponse = new MaterialResponse(this, 4, 0.0);
+    }
 
-    else if ((strcmp (argv[0], "unloading") == 0)
-             || (strcmp (argv[0], "unloadingstiffness") == 0)
-             || (strcmp (argv[0], "unloadingstiff") == 0))
-      {
-          theOutput.tag ("ResponseType", "C11_unloading");
-          theResponse = new MaterialResponse (this, 5, 0.0);
-      }
+    else if ((strcmp(argv[0], "unloading") == 0)
+             || (strcmp(argv[0], "unloadingstiffness") == 0)
+             || (strcmp(argv[0], "unloadingstiff") == 0)) {
+        theOutput.tag("ResponseType", "C11_unloading");
+        theResponse = new MaterialResponse(this, 5, 0.0);
+    }
 
-    else if ((strcmp (argv[0], "damage") == 0)
-             || (strcmp (argv[0], "damages") == 0)
-             || (strcmp (argv[0], "Damage") == 0)
-             || (strcmp (argv[0], "Damages") == 0))
-      {
-          theOutput.tag ("ResponseType", "str_damaga");
-          theOutput.tag ("ResponseType", "stf_damaga");
-          theOutput.tag ("ResponseType", "cap_damaga");
-          theResponse = new MaterialResponse (this, 6, Vector (3));
-      }
+    else if ((strcmp(argv[0], "damage") == 0)
+             || (strcmp(argv[0], "damages") == 0)
+             || (strcmp(argv[0], "Damage") == 0)
+             || (strcmp(argv[0], "Damages") == 0)) {
+        theOutput.tag("ResponseType", "str_damaga");
+        theOutput.tag("ResponseType", "stf_damaga");
+        theOutput.tag("ResponseType", "cap_damaga");
+        theResponse = new MaterialResponse(this, 6, Vector(3));
+    }
 
-    theOutput.endTag ();
+    theOutput.endTag();
     return theResponse;
 }
 
-int
-Bilinear::getResponse (int responseID, Information & matInfo)
+int Bilinear::getResponse(int responseID, Information & matInfo)
 {
-    switch (responseID)
-      {
-      case 1:
-          return matInfo.setDouble (hsTrial[1]);
+    switch (responseID) {
+    case 1:
+        return matInfo.setDouble(hsTrial[1]);
 
-      case 2:
-          return matInfo.setDouble (hsTrial[0]);
+    case 2:
+        return matInfo.setDouble(hsTrial[0]);
 
-      case 3:
-          return matInfo.setDouble (hsTrial[0] - hsTrial[1] / hsTrial[3]);
+    case 3:
+        return matInfo.setDouble(hsTrial[0] - hsTrial[1] / hsTrial[3]);
 
-      case 4:
-          return matInfo.setDouble (hsTrial[2]);
+    case 4:
+        return matInfo.setDouble(hsTrial[2]);
 
-      case 5:
-          return matInfo.setDouble (hsTrial[3]);
+    case 5:
+        return matInfo.setDouble(hsTrial[3]);
 
-      case 6:
-          (*(matInfo.theVector)) (0) = 0.0;
-          (*(matInfo.theVector)) (1) = 0.0;
-          (*(matInfo.theVector)) (2) = 0.0;
-          if (StrDamage != NULL)
-              (*(matInfo.theVector)) (0) = StrDamage->getDamage ();
-          if (StfDamage != NULL)
-              (*(matInfo.theVector)) (1) = StfDamage->getDamage ();
-          if (CapDamage != NULL)
-              (*(matInfo.theVector)) (2) = CapDamage->getDamage ();
-          return 0;
+    case 6:
+        (*(matInfo.theVector)) (0) = 0.0;
+        (*(matInfo.theVector)) (1) = 0.0;
+        (*(matInfo.theVector)) (2) = 0.0;
+        if (StrDamage != NULL)
+            (*(matInfo.theVector)) (0) = StrDamage->getDamage();
+        if (StfDamage != NULL)
+            (*(matInfo.theVector)) (1) = StfDamage->getDamage();
+        if (CapDamage != NULL)
+            (*(matInfo.theVector)) (2) = CapDamage->getDamage();
+        return 0;
 
-      default:
-          return 0;
-      }
+    default:
+        return 0;
+    }
 }
 
 
-void
-Bilinear::recordInfo (int cond)
+void Bilinear::recordInfo(int cond)
 {
 
 }
 
 
-void
-Bilinear::envelPosCap (double ekelstk, double fy, double ekhard, double dcap,
-                       double ekcap, double fRes, double *fuPos, double d,
-                       double *f, double *ek)
+void Bilinear::envelPosCap(double ekelstk, double fy, double ekhard,
+                           double dcap, double ekcap, double fRes,
+                           double *fuPos, double d, double *f, double *ek)
 {
     double dy, fucap, dRes, dmin;
 
@@ -767,57 +698,47 @@ Bilinear::envelPosCap (double ekelstk, double fy, double ekhard, double dcap,
     dRes = dcap + (fRes - fucap) / ekcap;
 
 
-    if (DEBG == 1)
-      {
-          fprintf (OutputFile, "Positive envelope called\n");   // debugging
-          fprintf (OutputFile, "dmin = %f\n", dmin);
-          fprintf (OutputFile, "dy = %f\n", dy);
-          fprintf (OutputFile, "fy = %f\n", fy);
-          fprintf (OutputFile, "dcap = %f\n", dcap);
-          fprintf (OutputFile, "fucap = %f\n", fucap);
-          fprintf (OutputFile, "dRes = %f\n", dRes);
-          fprintf (OutputFile, "fRes = %f\n", fRes);
-      }
+    if (DEBG == 1) {
+        fprintf(OutputFile, "Positive envelope called\n");      // debugging
+        fprintf(OutputFile, "dmin = %f\n", dmin);
+        fprintf(OutputFile, "dy = %f\n", dy);
+        fprintf(OutputFile, "fy = %f\n", fy);
+        fprintf(OutputFile, "dcap = %f\n", dcap);
+        fprintf(OutputFile, "fucap = %f\n", fucap);
+        fprintf(OutputFile, "dRes = %f\n", dRes);
+        fprintf(OutputFile, "fRes = %f\n", fRes);
+    }
 
 
-    if (d < dmin)
-      {
-          *f = fRes;
-          *ek = 0.0;
-      }
-    else if (d < dcap)
-      {
-          *f = ekhard * (d - dmin) + fRes;
-          *ek = ekhard;
-      }
-    else if (d < dRes)
-      {
-          *f = fucap + ekcap * (d - dcap);
-          *ek = ekcap;
-          if (*f < *fuPos)
-              *fuPos = *f;
-      }
-    else
-      {
-          *f = fRes;
-          *ek = 0.0;
-          *fuPos = fRes;
-      }
+    if (d < dmin) {
+        *f = fRes;
+        *ek = 0.0;
+    } else if (d < dcap) {
+        *f = ekhard * (d - dmin) + fRes;
+        *ek = ekhard;
+    } else if (d < dRes) {
+        *f = fucap + ekcap * (d - dcap);
+        *ek = ekcap;
+        if (*f < *fuPos)
+            *fuPos = *f;
+    } else {
+        *f = fRes;
+        *ek = 0.0;
+        *fuPos = fRes;
+    }
     return;
 }
 
 
-void
-Bilinear::envelNegCap (double ekelstk, double fy, double ekhard, double dcap,
-                       double ekcap, double fRes, double *fuNeg, double d,
-                       double *f, double *ek)
+void Bilinear::envelNegCap(double ekelstk, double fy, double ekhard,
+                           double dcap, double ekcap, double fRes,
+                           double *fuNeg, double d, double *f, double *ek)
 {
-    if (fy > 0.0 || fRes > 0.0)
-      {
-          opserr <<
-              " Error : Bilinear::envelNegCap wrong parameters in function call";
-          exit (-1);
-      }
+    if (fy > 0.0 || fRes > 0.0) {
+        opserr <<
+            " Error : Bilinear::envelNegCap wrong parameters in function call";
+        exit(-1);
+    }
 
     double dy, fucap, dRes, dmax;
 
@@ -827,132 +748,120 @@ Bilinear::envelNegCap (double ekelstk, double fy, double ekhard, double dcap,
     fucap = fRes + (dcap - dmax) * ekhard;
     dRes = dcap + (fRes - fucap) / ekcap;
 
-    if (DEBG == 1)
-      {
-          fprintf (OutputFile, "Negative envelope called\n");   // debugging
-          fprintf (OutputFile, "dRes = %f\n", dRes);
-          fprintf (OutputFile, "fRes = %f\n", fRes);
-          fprintf (OutputFile, "dcap = %f\n", dcap);
-          fprintf (OutputFile, "fucap = %f\n", fucap);
-          fprintf (OutputFile, "dy = %f\n", dy);
-          fprintf (OutputFile, "fy = %f\n", fy);
-          fprintf (OutputFile, "dmax = %f\n", dmax);
-      }
+    if (DEBG == 1) {
+        fprintf(OutputFile, "Negative envelope called\n");      // debugging
+        fprintf(OutputFile, "dRes = %f\n", dRes);
+        fprintf(OutputFile, "fRes = %f\n", fRes);
+        fprintf(OutputFile, "dcap = %f\n", dcap);
+        fprintf(OutputFile, "fucap = %f\n", fucap);
+        fprintf(OutputFile, "dy = %f\n", dy);
+        fprintf(OutputFile, "fy = %f\n", fy);
+        fprintf(OutputFile, "dmax = %f\n", dmax);
+    }
 
-    if (d > dmax)
-      {
-          *f = fRes;
-          *ek = 0.0;
-      }
-    else if (d > dcap)
-      {
-          *f = ekhard * (d - dmax) + fRes;
-          *ek = ekhard;
-      }
-    else if (d > dRes)
-      {
-          *f = fucap + ekcap * (d - dcap);
-          *ek = ekcap;
-          if (*f > *fuNeg)
-              *fuNeg = *f;
-      }
-    else
-      {
-          *f = fRes;
-          *ek = 0.0;
-          *fuNeg = fRes;
-      }
+    if (d > dmax) {
+        *f = fRes;
+        *ek = 0.0;
+    } else if (d > dcap) {
+        *f = ekhard * (d - dmax) + fRes;
+        *ek = ekhard;
+    } else if (d > dRes) {
+        *f = fucap + ekcap * (d - dcap);
+        *ek = ekcap;
+        if (*f > *fuNeg)
+            *fuNeg = *f;
+    } else {
+        *f = fRes;
+        *ek = 0.0;
+        *fuNeg = fRes;
+    }
     return;
 }
 
 
-int
-Bilinear::setParameter (const char **argv, int argc, Parameter & param)
+int Bilinear::setParameter(const char **argv, int argc, Parameter & param)
 {
     if (argc < 1)
         return 0;
 
-    if (strcmp (argv[0], "elstk") == 0)
-        return param.addObject (1, this);
+    if (strcmp(argv[0], "elstk") == 0)
+        return param.addObject(1, this);
 
-    if (strcmp (argv[0], "fyieldPos") == 0)
-        return param.addObject (2, this);
+    if (strcmp(argv[0], "fyieldPos") == 0)
+        return param.addObject(2, this);
 
-    if (strcmp (argv[0], "fyieldNeg") == 0)
-        return param.addObject (3, this);
+    if (strcmp(argv[0], "fyieldNeg") == 0)
+        return param.addObject(3, this);
 
-    if (strcmp (argv[0], "alfa") == 0)
-        return param.addObject (4, this);
+    if (strcmp(argv[0], "alfa") == 0)
+        return param.addObject(4, this);
 
-    if (strcmp (argv[0], "alfaCap") == 0)
-        return param.addObject (5, this);
+    if (strcmp(argv[0], "alfaCap") == 0)
+        return param.addObject(5, this);
 
-    if (strcmp (argv[0], "capDispPos") == 0)
-        return param.addObject (6, this);
+    if (strcmp(argv[0], "capDispPos") == 0)
+        return param.addObject(6, this);
 
-    if (strcmp (argv[0], "capDispNeg") == 0)
-        return param.addObject (7, this);
+    if (strcmp(argv[0], "capDispNeg") == 0)
+        return param.addObject(7, this);
 
-    if (strcmp (argv[0], "Resfac") == 0)
-        return param.addObject (8, this);
+    if (strcmp(argv[0], "Resfac") == 0)
+        return param.addObject(8, this);
 
-    if (strcmp (argv[0], "flagCapenv") == 0)
-        return param.addObject (9, this);
+    if (strcmp(argv[0], "flagCapenv") == 0)
+        return param.addObject(9, this);
 
     else
-        opserr << "WARNING: Could not set parameter in BoucWenMaterial. " <<
-            endln;
+        opserr << "WARNING: Could not set parameter in BoucWenMaterial. "
+            << endln;
 
     return 0;
 }
 
 
-int
-Bilinear::updateParameter (int parameterID, Information & info)
+int Bilinear::updateParameter(int parameterID, Information & info)
 {
 
-    switch (parameterID)
-      {
-      case -1:
-          return -1;
-      case 1:
-          this->elstk = info.theDouble;
-          break;
-      case 2:
-          this->fyieldPos = info.theDouble;
-          break;
-      case 3:
-          this->fyieldNeg = info.theDouble;
-          break;
-      case 4:
-          this->alfa = info.theDouble;
-          break;
-      case 5:
-          this->alfaCap = info.theDouble;
-          break;
-      case 6:
-          this->capDispPos = info.theDouble;
-          break;
-      case 7:
-          this->capDispNeg = info.theDouble;
-          break;
-      case 8:
-          this->Resfac = info.theDouble;
-          break;
-      case 9:
-          this->flagCapenv = info.theInt;
-          break;
-      default:
-          return -1;
-      }
+    switch (parameterID) {
+    case -1:
+        return -1;
+    case 1:
+        this->elstk = info.theDouble;
+        break;
+    case 2:
+        this->fyieldPos = info.theDouble;
+        break;
+    case 3:
+        this->fyieldNeg = info.theDouble;
+        break;
+    case 4:
+        this->alfa = info.theDouble;
+        break;
+    case 5:
+        this->alfaCap = info.theDouble;
+        break;
+    case 6:
+        this->capDispPos = info.theDouble;
+        break;
+    case 7:
+        this->capDispNeg = info.theDouble;
+        break;
+    case 8:
+        this->Resfac = info.theDouble;
+        break;
+    case 9:
+        this->flagCapenv = info.theInt;
+        break;
+    default:
+        return -1;
+    }
 
     return 0;
 }
 
 
 
-int
-Bilinear::activateParameter (int passedParameterID)
+int Bilinear::activateParameter(int passedParameterID)
 {
     parameterID = passedParameterID;
 

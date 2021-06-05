@@ -34,95 +34,84 @@
 
 #include <mpi.h>
 
-MPI_MachineBroker::MPI_MachineBroker (FEM_ObjectBroker * theBroker, int argc,
-                                      char **argv):
-MachineBroker (theBroker)
+MPI_MachineBroker::MPI_MachineBroker(FEM_ObjectBroker * theBroker,
+                                     int argc,
+                                     char **argv):MachineBroker(theBroker)
 {
-    MPI_Init (&argc, &argv);
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-    MPI_Comm_size (MPI_COMM_WORLD, &size);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     theChannels = new MPI_Channel *[size];
-    for (int i = 0; i < size; i++)
-      {
-          theChannels[i] = new MPI_Channel (i);
-      }
-    usedChannels = new ID (size);
-    usedChannels->Zero ();
+    for (int i = 0; i < size; i++) {
+        theChannels[i] = new MPI_Channel(i);
+    }
+    usedChannels = new ID(size);
+    usedChannels->Zero();
 }
 
 
-MPI_MachineBroker::~MPI_MachineBroker ()
+MPI_MachineBroker::~MPI_MachineBroker()
 {
-    for (int i = 0; i < size; i++)
-      {
-          delete theChannels[i];
-      }
+    for (int i = 0; i < size; i++) {
+        delete theChannels[i];
+    }
 
     delete[]theChannels;
     delete usedChannels;
 
-    MPI_Finalize ();
+    MPI_Finalize();
 }
 
 
 int
-MPI_MachineBroker::getPID (void)
+ MPI_MachineBroker::getPID(void)
 {
     return rank;
 }
 
 
-int
-MPI_MachineBroker::getNP (void)
+int MPI_MachineBroker::getNP(void)
 {
     return size;
 }
 
 
 
-Channel *
-MPI_MachineBroker::getMyChannel (void)
+Channel *MPI_MachineBroker::getMyChannel(void)
 {
     return theChannels[0];
 }
 
 
 
-Channel *
-MPI_MachineBroker::getRemoteProcess (void)
+Channel *MPI_MachineBroker::getRemoteProcess(void)
 {
-    if (rank != 0)
-      {
-          opserr <<
-              "MPI_MachineBroker::getRemoteProcess() - child process cannot not yet allocate processes\n";
-          return 0;
-      }
+    if (rank != 0) {
+        opserr <<
+            "MPI_MachineBroker::getRemoteProcess() - child process cannot not yet allocate processes\n";
+        return 0;
+    }
 
     for (int i = 0; i < size; i++)
         if (i != rank)
-            if ((*usedChannels) (i) == 0)
-              {
-                  (*usedChannels) (i) = 1;
-                  return theChannels[i];
-              }
-
+            if ((*usedChannels) (i) == 0) {
+                (*usedChannels) (i) = 1;
+                return theChannels[i];
+            }
     // no processes available
     return 0;
 }
 
 
-int
-MPI_MachineBroker::freeProcess (Channel * theChannel)
+int MPI_MachineBroker::freeProcess(Channel * theChannel)
 {
     for (int i = 0; i < size; i++)
         if (i != rank)
-            if (theChannels[i] == theChannel)
-              {
-                  (*usedChannels) (i) = 0;
-                  return 0;
-              }
-
+            if (theChannels[i] == theChannel) {
+                (*usedChannels) (i) = 0;
+                return 0;
+            }
     // channel not found!
     return -1;
 }

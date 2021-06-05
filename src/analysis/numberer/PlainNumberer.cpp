@@ -54,18 +54,17 @@
 #include <MP_ConstraintIter.h>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_PlainNumberer ()
+void *OPS_PlainNumberer()
 {
-    return new PlainNumberer ();
+    return new PlainNumberer();
 }
 #endif
 
-PlainNumberer::PlainNumberer ():DOF_Numberer (NUMBERER_TAG_PlainNumberer)
+PlainNumberer::PlainNumberer():DOF_Numberer(NUMBERER_TAG_PlainNumberer)
 {
 }
 
-PlainNumberer::~PlainNumberer ()
+PlainNumberer::~PlainNumberer()
 {
 }
 
@@ -76,229 +75,207 @@ PlainNumberer::~PlainNumberer ()
 //      a number, then all DOFs with a -3 a number.
 
 int
-PlainNumberer::numberDOF (int lastDOF)
+ PlainNumberer::numberDOF(int lastDOF)
 {
     int eqnNumber = 0;          // start equation number = 0
 
     // get a pointer to the model & check its not null
-    AnalysisModel *theModel = this->getAnalysisModelPtr ();
+    AnalysisModel *theModel = this->getAnalysisModelPtr();
     Domain *theDomain = 0;
     if (theModel != 0)
-        theDomain = theModel->getDomainPtr ();
+        theDomain = theModel->getDomainPtr();
 
-    if (theModel == 0 || theDomain == 0)
-      {
-          opserr << "WARNING PlainNumberer::numberDOF(int) -";
-          opserr << " - no AnalysisModel - has setLinks() been invoked?\n";
-          return -1;
-      }
+    if (theModel == 0 || theDomain == 0) {
+        opserr << "WARNING PlainNumberer::numberDOF(int) -";
+        opserr << " - no AnalysisModel - has setLinks() been invoked?\n";
+        return -1;
+    }
 
-    if (lastDOF != -1)
-      {
-          opserr << "WARNING PlainNumberer::numberDOF(int lastDOF):";
-          opserr << " does not use the lastDOF as requested\n";
-      }
-
+    if (lastDOF != -1) {
+        opserr << "WARNING PlainNumberer::numberDOF(int lastDOF):";
+        opserr << " does not use the lastDOF as requested\n";
+    }
     // iterate through  the DOFs first time setting -2 values
-    DOF_GrpIter & theDOFs = theModel->getDOFs ();
+    DOF_GrpIter & theDOFs = theModel->getDOFs();
     DOF_Group *dofPtr;
 
-    while ((dofPtr = theDOFs ()) != 0)
-      {
-          const ID & theID = dofPtr->getID ();
-          for (int i = 0; i < theID.Size (); i++)
-              if (theID (i) == -2)
-                  dofPtr->setID (i, eqnNumber++);
-      }
+    while ((dofPtr = theDOFs()) != 0) {
+        const ID & theID = dofPtr->getID();
+        for (int i = 0; i < theID.Size(); i++)
+            if (theID(i) == -2)
+                dofPtr->setID(i, eqnNumber++);
+    }
 
     // iterate through  the DOFs second time setting -3 values
-    DOF_GrpIter & moreDOFs = theModel->getDOFs ();
+    DOF_GrpIter & moreDOFs = theModel->getDOFs();
 
-    while ((dofPtr = moreDOFs ()) != 0)
-      {
-          const ID & theID = dofPtr->getID ();
-          for (int i = 0; i < theID.Size (); i++)
-              if (theID (i) == -3)
-                  dofPtr->setID (i, eqnNumber++);
-      }
+    while ((dofPtr = moreDOFs()) != 0) {
+        const ID & theID = dofPtr->getID();
+        for (int i = 0; i < theID.Size(); i++)
+            if (theID(i) == -3)
+                dofPtr->setID(i, eqnNumber++);
+    }
 
     // iterate through the DOFs one last time setting any -4 values
-    DOF_GrpIter & tDOFs = theModel->getDOFs ();
-    while ((dofPtr = tDOFs ()) != 0)
-      {
-          const ID & theID = dofPtr->getID ();
-          int have4s = 0;
-          for (int i = 0; i < theID.Size (); i++)
-              if (theID (i) == -4)
-                  have4s = 1;
+    DOF_GrpIter & tDOFs = theModel->getDOFs();
+    while ((dofPtr = tDOFs()) != 0) {
+        const ID & theID = dofPtr->getID();
+        int have4s = 0;
+        for (int i = 0; i < theID.Size(); i++)
+            if (theID(i) == -4)
+                have4s = 1;
 
-          if (have4s == 1)
-            {
-                int nodeID = dofPtr->getNodeTag ();
-                // loop through the MP_Constraints to see if any of the
-                // DOFs are constrained, note constraint matrix must be diagonal
-                // with 1's on the diagonal
-                MP_ConstraintIter & theMPs = theDomain->getMPs ();
-                MP_Constraint *mpPtr;
-                while ((mpPtr = theMPs ()) != 0)
-                  {
-                      // note keep looping over all in case multiple constraints
-                      // are used to constrain a node -- can't assume intelli user
-                      if (mpPtr->getNodeConstrained () == nodeID)
-                        {
-                            int nodeRetained = mpPtr->getNodeRetained ();
-                            Node *nodeRetainedPtr =
-                                theDomain->getNode (nodeRetained);
-                            DOF_Group *retainedDOF =
-                                nodeRetainedPtr->getDOF_GroupPtr ();
-                            const ID & retainedDOFIDs = retainedDOF->getID ();
-                            const ID & constrainedDOFs =
-                                mpPtr->getConstrainedDOFs ();
-                            const ID & retainedDOFs =
-                                mpPtr->getRetainedDOFs ();
-                            for (int i = 0; i < constrainedDOFs.Size (); i++)
-                              {
-                                  int dofC = constrainedDOFs (i);
-                                  int dofR = retainedDOFs (i);
-                                  int dofID = retainedDOFIDs (dofR);
-                                  dofPtr->setID (dofC, dofID);
-                              }
-                        }
-                  }
+        if (have4s == 1) {
+            int nodeID = dofPtr->getNodeTag();
+            // loop through the MP_Constraints to see if any of the
+            // DOFs are constrained, note constraint matrix must be diagonal
+            // with 1's on the diagonal
+            MP_ConstraintIter & theMPs = theDomain->getMPs();
+            MP_Constraint *mpPtr;
+            while ((mpPtr = theMPs()) != 0) {
+                // note keep looping over all in case multiple constraints
+                // are used to constrain a node -- can't assume intelli user
+                if (mpPtr->getNodeConstrained() == nodeID) {
+                    int nodeRetained = mpPtr->getNodeRetained();
+                    Node *nodeRetainedPtr =
+                        theDomain->getNode(nodeRetained);
+                    DOF_Group *retainedDOF =
+                        nodeRetainedPtr->getDOF_GroupPtr();
+                    const ID & retainedDOFIDs = retainedDOF->getID();
+                    const ID & constrainedDOFs =
+                        mpPtr->getConstrainedDOFs();
+                    const ID & retainedDOFs = mpPtr->getRetainedDOFs();
+                    for (int i = 0; i < constrainedDOFs.Size(); i++) {
+                        int dofC = constrainedDOFs(i);
+                        int dofR = retainedDOFs(i);
+                        int dofID = retainedDOFIDs(dofR);
+                        dofPtr->setID(dofC, dofID);
+                    }
+                }
             }
-      }
+        }
+    }
 
     eqnNumber--;
     int numEqn = eqnNumber - START_EQN_NUMBER + 1;
 
     // iterate through the FE_Element getting them to set their IDs
-    FE_EleIter & theEle = theModel->getFEs ();
+    FE_EleIter & theEle = theModel->getFEs();
     FE_Element *elePtr;
-    while ((elePtr = theEle ()) != 0)
-        elePtr->setID ();
+    while ((elePtr = theEle()) != 0)
+        elePtr->setID();
 
     // set the numOfEquation in the Model
-    theModel->setNumEqn (numEqn);
+    theModel->setNumEqn(numEqn);
 
     return numEqn;
 }
 
 
-int
-PlainNumberer::sendSelf (int cTag, Channel & theChannel)
+int PlainNumberer::sendSelf(int cTag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-PlainNumberer::recvSelf (int cTag,
-                         Channel & theChannel, FEM_ObjectBroker & theBroker)
+int PlainNumberer::recvSelf(int cTag,
+                            Channel & theChannel,
+                            FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
 
-int
-PlainNumberer::numberDOF (ID & lastDOFs)
+int PlainNumberer::numberDOF(ID & lastDOFs)
 {
     int eqnNumber = 0;          // start equation number = 0
 
     // get a pointer to the model & check its not null
-    AnalysisModel *theModel = this->getAnalysisModelPtr ();
+    AnalysisModel *theModel = this->getAnalysisModelPtr();
     Domain *theDomain = 0;
     if (theModel != 0)
-        theDomain = theModel->getDomainPtr ();
+        theDomain = theModel->getDomainPtr();
 
-    if (theModel == 0 || theDomain == 0)
-      {
-          opserr << "WARNING PlainNumberer::numberDOF(int) -";
-          opserr << " - no AnalysisModel - has setLinks() been invoked?\n";
-          return -1;
-      }
+    if (theModel == 0 || theDomain == 0) {
+        opserr << "WARNING PlainNumberer::numberDOF(int) -";
+        opserr << " - no AnalysisModel - has setLinks() been invoked?\n";
+        return -1;
+    }
 
     opserr << "WARNING PlainNumberer::numberDOF(ID):";
     opserr << " does not use the lastDOFs as requested\n";
 
     // iterate through  the DOFs first time setting -2 values
-    DOF_GrpIter & theDOFs = theModel->getDOFs ();
+    DOF_GrpIter & theDOFs = theModel->getDOFs();
     DOF_Group *dofPtr;
 
-    while ((dofPtr = theDOFs ()) != 0)
-      {
-          const ID & theID = dofPtr->getID ();
-          for (int i = 0; i < theID.Size (); i++)
-              if (theID (i) == -2)
-                  dofPtr->setID (i, eqnNumber++);
-      }
+    while ((dofPtr = theDOFs()) != 0) {
+        const ID & theID = dofPtr->getID();
+        for (int i = 0; i < theID.Size(); i++)
+            if (theID(i) == -2)
+                dofPtr->setID(i, eqnNumber++);
+    }
 
     // iterate through  the DOFs first time setting -3 values
-    DOF_GrpIter & moreDOFs = theModel->getDOFs ();
+    DOF_GrpIter & moreDOFs = theModel->getDOFs();
 
-    while ((dofPtr = moreDOFs ()) != 0)
-      {
-          const ID & theID = dofPtr->getID ();
-          for (int i = 0; i < theID.Size (); i++)
-              if (theID (i) == -3)
-                  dofPtr->setID (i, eqnNumber++);
-      }
+    while ((dofPtr = moreDOFs()) != 0) {
+        const ID & theID = dofPtr->getID();
+        for (int i = 0; i < theID.Size(); i++)
+            if (theID(i) == -3)
+                dofPtr->setID(i, eqnNumber++);
+    }
     // iterate through the DOFs one last time setting any -4 values
     // iterate through the DOFs one last time setting any -4 values
-    DOF_GrpIter & tDOFs = theModel->getDOFs ();
-    while ((dofPtr = tDOFs ()) != 0)
-      {
-          const ID & theID = dofPtr->getID ();
-          int have4s = 0;
-          for (int i = 0; i < theID.Size (); i++)
-              if (theID (i) == -4)
-                  have4s = 1;
+    DOF_GrpIter & tDOFs = theModel->getDOFs();
+    while ((dofPtr = tDOFs()) != 0) {
+        const ID & theID = dofPtr->getID();
+        int have4s = 0;
+        for (int i = 0; i < theID.Size(); i++)
+            if (theID(i) == -4)
+                have4s = 1;
 
-          if (have4s == 1)
-            {
-                int nodeID = dofPtr->getNodeTag ();
-                // loop through the MP_Constraints to see if any of the
-                // DOFs are constrained, note constraint matrix must be diagonal
-                // with 1's on the diagonal
-                MP_ConstraintIter & theMPs = theDomain->getMPs ();
-                MP_Constraint *mpPtr;
-                while ((mpPtr = theMPs ()) != 0)
-                  {
-                      // note keep looping over all in case multiple constraints
-                      // are used to constrain a node -- can't assume intelli user
-                      if (mpPtr->getNodeConstrained () == nodeID)
-                        {
-                            int nodeRetained = mpPtr->getNodeRetained ();
-                            Node *nodeRetainedPtr =
-                                theDomain->getNode (nodeRetained);
-                            DOF_Group *retainedDOF =
-                                nodeRetainedPtr->getDOF_GroupPtr ();
-                            const ID & retainedDOFIDs = retainedDOF->getID ();
-                            const ID & constrainedDOFs =
-                                mpPtr->getConstrainedDOFs ();
-                            const ID & retainedDOFs =
-                                mpPtr->getRetainedDOFs ();
-                            for (int i = 0; i < constrainedDOFs.Size (); i++)
-                              {
-                                  int dofC = constrainedDOFs (i);
-                                  int dofR = retainedDOFs (i);
-                                  int dofID = retainedDOFIDs (dofR);
-                                  dofPtr->setID (dofC, dofID);
-                              }
-                        }
-                  }
+        if (have4s == 1) {
+            int nodeID = dofPtr->getNodeTag();
+            // loop through the MP_Constraints to see if any of the
+            // DOFs are constrained, note constraint matrix must be diagonal
+            // with 1's on the diagonal
+            MP_ConstraintIter & theMPs = theDomain->getMPs();
+            MP_Constraint *mpPtr;
+            while ((mpPtr = theMPs()) != 0) {
+                // note keep looping over all in case multiple constraints
+                // are used to constrain a node -- can't assume intelli user
+                if (mpPtr->getNodeConstrained() == nodeID) {
+                    int nodeRetained = mpPtr->getNodeRetained();
+                    Node *nodeRetainedPtr =
+                        theDomain->getNode(nodeRetained);
+                    DOF_Group *retainedDOF =
+                        nodeRetainedPtr->getDOF_GroupPtr();
+                    const ID & retainedDOFIDs = retainedDOF->getID();
+                    const ID & constrainedDOFs =
+                        mpPtr->getConstrainedDOFs();
+                    const ID & retainedDOFs = mpPtr->getRetainedDOFs();
+                    for (int i = 0; i < constrainedDOFs.Size(); i++) {
+                        int dofC = constrainedDOFs(i);
+                        int dofR = retainedDOFs(i);
+                        int dofID = retainedDOFIDs(dofR);
+                        dofPtr->setID(dofC, dofID);
+                    }
+                }
             }
-      }
+        }
+    }
 
     eqnNumber--;
     int numEqn = eqnNumber - START_EQN_NUMBER + 1;
 
     // iterate through the FE_Element getting them to set their IDs
-    FE_EleIter & theEle = theModel->getFEs ();
+    FE_EleIter & theEle = theModel->getFEs();
     FE_Element *elePtr;
-    while ((elePtr = theEle ()) != 0)
-        elePtr->setID ();
+    while ((elePtr = theEle()) != 0)
+        elePtr->setID();
 
     // set the numOfEquation in the Model
-    theModel->setNumEqn (numEqn);
+    theModel->setNumEqn(numEqn);
 
     return numEqn;
 }

@@ -39,10 +39,9 @@
 #include <math.h>
 
 SectionStrengthDegradation::SectionStrengthDegradation
-    (int tag, double E1, double v2, double E2, int c):
-StrengthDegradation (tag, DEG_TAG_STRENGTH_Section),
-code (c), V2 (v2), e1 (E1),
-e2 (E2)
+    (int tag, double E1, double v2, double E2,
+     int c):StrengthDegradation(tag, DEG_TAG_STRENGTH_Section), code(c),
+V2(v2), e1(E1), e2(E2)
 {
     if (e2 <= e1)
         opserr <<
@@ -51,15 +50,14 @@ e2 (E2)
 
     slope = (V2 - 1.0) / (e2 - e1);
 
-    this->revertToStart ();
-    this->revertToLastCommit ();
+    this->revertToStart();
+    this->revertToLastCommit();
 }
 
 SectionStrengthDegradation::SectionStrengthDegradation
-    (int tag, double Ey, double u1, double v2, double u2, int c):
-StrengthDegradation (tag, DEG_TAG_STRENGTH_Section),
-code (c), V2 (v2), e1 (u1 * Ey),
-e2 (u2 * Ey)
+    (int tag, double Ey, double u1, double v2, double u2,
+     int c):StrengthDegradation(tag, DEG_TAG_STRENGTH_Section), code(c),
+V2(v2), e1(u1 * Ey), e2(u2 * Ey)
 {
     if (e2 <= e1)
         opserr <<
@@ -68,48 +66,45 @@ e2 (u2 * Ey)
 
     slope = (V2 - 1.0) / (e2 - e1);
 
-    this->revertToStart ();
-    this->revertToLastCommit ();
+    this->revertToStart();
+    this->revertToLastCommit();
 }
 
-SectionStrengthDegradation::SectionStrengthDegradation ():
-StrengthDegradation (0, DEG_TAG_STRENGTH_Section),
-code (0), V2 (0.0), e1 (0.0), e2 (0.0)
+SectionStrengthDegradation::SectionStrengthDegradation():
+StrengthDegradation(0, DEG_TAG_STRENGTH_Section),
+code(0), V2(0.0), e1(0.0), e2(0.0)
 {
 
 }
 
-SectionStrengthDegradation::~SectionStrengthDegradation ()
+SectionStrengthDegradation::~SectionStrengthDegradation()
 {
 
 }
 
-const char *
-SectionStrengthDegradation::getMeasure (void)
+const char *SectionStrengthDegradation::getMeasure(void)
 {
-    switch (code)
-      {
-      case SECTION_RESPONSE_P:
-          return "axialStrain";
-      case SECTION_RESPONSE_MZ:
-          return "curvatureZ";
-      case SECTION_RESPONSE_VY:
-          return "shearStrainY";
-      case SECTION_RESPONSE_MY:
-          return "curvatureY";
-      case SECTION_RESPONSE_VZ:
-          return "shearStrainZ";
-      case SECTION_RESPONSE_T:
-          return "rotationX";
-      default:
-          return "nothing";
-      }
+    switch (code) {
+    case SECTION_RESPONSE_P:
+        return "axialStrain";
+    case SECTION_RESPONSE_MZ:
+        return "curvatureZ";
+    case SECTION_RESPONSE_VY:
+        return "shearStrainY";
+    case SECTION_RESPONSE_MY:
+        return "curvatureY";
+    case SECTION_RESPONSE_VZ:
+        return "shearStrainZ";
+    case SECTION_RESPONSE_T:
+        return "rotationX";
+    default:
+        return "nothing";
+    }
 }
 
-int
-SectionStrengthDegradation::setTrialMeasure (double measure)
+int SectionStrengthDegradation::setTrialMeasure(double measure)
 {
-    Tmeasure = fabs (measure);
+    Tmeasure = fabs(measure);
 
     if (Tmeasure < Cmeasure)
         Tmeasure = Cmeasure;
@@ -117,67 +112,61 @@ SectionStrengthDegradation::setTrialMeasure (double measure)
     return 0;
 }
 
-double
-SectionStrengthDegradation::getValue (void)
+double SectionStrengthDegradation::getValue(void)
 {
     if (Tmeasure < e1)
         return 1.0;
     else if (Tmeasure > e2)
         return V2;
-    else
-      {
-          return 1.0 + slope * (Tmeasure - e1);
-      }
+    else {
+        return 1.0 + slope * (Tmeasure - e1);
+    }
 }
 
-int
-SectionStrengthDegradation::commitState (void)
+int SectionStrengthDegradation::commitState(void)
 {
     Cmeasure = Tmeasure;
 
     return 0;
 }
 
-int
-SectionStrengthDegradation::revertToLastCommit (void)
+int SectionStrengthDegradation::revertToLastCommit(void)
 {
     Tmeasure = Cmeasure;
 
     return 0;
 }
 
-int
-SectionStrengthDegradation::revertToStart (void)
+int SectionStrengthDegradation::revertToStart(void)
 {
     Cmeasure = 0.0;
 
     return 0;
 }
 
-StrengthDegradation *
-SectionStrengthDegradation::getCopy (void)
+StrengthDegradation *SectionStrengthDegradation::getCopy(void)
 {
     SectionStrengthDegradation *theCopy =
-        new SectionStrengthDegradation (this->getTag (), e1, V2, e2, code);
+        new SectionStrengthDegradation(this->getTag(), e1, V2, e2, code);
 
     theCopy->Cmeasure = Cmeasure;
 
     return theCopy;
 }
 
-int
-SectionStrengthDegradation::sendSelf (int commitTag, Channel & theChannel)
+int SectionStrengthDegradation::sendSelf(int commitTag,
+                                         Channel & theChannel)
 {
-    static Vector data (6);
+    static Vector data(6);
 
-    data (0) = this->getTag ();
-    data (1) = e1;
-    data (2) = V2;
-    data (3) = e2;
-    data (4) = code;
-    data (5) = Cmeasure;
+    data(0) = this->getTag();
+    data(1) = e1;
+    data(2) = V2;
+    data(3) = e2;
+    data(4) = code;
+    data(5) = Cmeasure;
 
-    int res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+    int res = theChannel.sendVector(this->getDbTag(), commitTag, data);
 
     if (res < 0)
         opserr <<
@@ -186,37 +175,33 @@ SectionStrengthDegradation::sendSelf (int commitTag, Channel & theChannel)
     return res;
 }
 
-int
-SectionStrengthDegradation::recvSelf (int commitTag, Channel & theChannel,
-                                      FEM_ObjectBroker & theBroker)
+int SectionStrengthDegradation::recvSelf(int commitTag,
+                                         Channel & theChannel,
+                                         FEM_ObjectBroker & theBroker)
 {
-    static Vector data (6);
-    int res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+    static Vector data(6);
+    int res = theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-    if (res < 0)
-      {
-          opserr <<
-              "SectionStrengthDegradation::recvSelf() - failed to receive data\n";
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag (int (data (0)));
-          e1 = data (1);
-          V2 = data (2);
-          e2 = data (3);
-          slope = (V2 - 1.0) / (e2 - e1);
-          code = int (data (4));
-          Cmeasure = data (5);
-      }
+    if (res < 0) {
+        opserr <<
+            "SectionStrengthDegradation::recvSelf() - failed to receive data\n";
+        this->setTag(0);
+    } else {
+        this->setTag(int (data(0)));
+        e1 = data(1);
+        V2 = data(2);
+        e2 = data(3);
+        slope = (V2 - 1.0) / (e2 - e1);
+        code = int (data(4));
+        Cmeasure = data(5);
+    }
 
     return res;
 }
 
-void
-SectionStrengthDegradation::Print (OPS_Stream & s, int flag)
+void SectionStrengthDegradation::Print(OPS_Stream & s, int flag)
 {
-    s << "SectionStrengthDegradation, tag: " << this->getTag () << endln;
+    s << "SectionStrengthDegradation, tag: " << this->getTag() << endln;
     s << "\tcode: " << code << endln;
     s << "\te1: " << e1 << endln;
     s << "\tV2: " << V2 << endln;

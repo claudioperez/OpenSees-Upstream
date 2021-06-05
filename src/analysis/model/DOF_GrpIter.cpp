@@ -37,22 +37,22 @@
 // DOF_GrpIter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-DOF_GrpIter::DOF_GrpIter (TaggedObjectStorage * theStorage):myIter (&
-        (theStorage->
-         getComponents ()))
+DOF_GrpIter::DOF_GrpIter(TaggedObjectStorage * theStorage):myIter(&
+       (theStorage->getComponents
+        ()))
 {
 
 }
 
 
-DOF_GrpIter::~DOF_GrpIter ()
+DOF_GrpIter::~DOF_GrpIter()
 {
 }
 
 void
-DOF_GrpIter::reset (void)
+ DOF_GrpIter::reset(void)
 {
-    myIter->reset ();
+    myIter->reset();
 
 
 
@@ -61,17 +61,14 @@ DOF_GrpIter::reset (void)
 }
 
 
-DOF_Group *
-DOF_GrpIter::operator () (void)
-{
+DOF_Group *DOF_GrpIter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
     TaggedObject * theComponent = (*myIter) ();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          DOF_Group *result = (DOF_Group *) theComponent;
-          return result;
-      }
+    else {
+        DOF_Group *result = (DOF_Group *) theComponent;
+        return result;
+    }
 }

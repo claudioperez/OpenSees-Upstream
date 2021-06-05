@@ -34,18 +34,18 @@
 
 #include "ErrorHandler.h"
 
-ErrorHandler::ErrorHandler ()
+ErrorHandler::ErrorHandler()
 {
 
 }
 
-ErrorHandler::~ErrorHandler ()
+ErrorHandler::~ErrorHandler()
 {
     // does nothing
 }
 
 void
-ErrorHandler::outputMessage (ostream & theStream, const char *msg,
+ ErrorHandler::outputMessage(ostream & theStream, const char *msg,
                              va_list args)
 {
     int dataInt;
@@ -61,44 +61,39 @@ ErrorHandler::outputMessage (ostream & theStream, const char *msg,
     // if we encounter a %d or a %f get the integer or double 
     // from the next arg on the va_list and send it to the stream
 
-    while (done != 1)
-      {
+    while (done != 1) {
 
-          // if reach string end then we are done
-          if (msg[pos] == '\0')
-              break;
+        // if reach string end then we are done
+        if (msg[pos] == '\0')
+            break;
 
-          // otherwise parse string , looking for special %d and %f
-          if (msg[pos] != '%')
-            {
-                dataChar = msg[pos];
-                theStream << dataChar;
+        // otherwise parse string , looking for special %d and %f
+        if (msg[pos] != '%') {
+            dataChar = msg[pos];
+            theStream << dataChar;
+        } else {
+            pos++;
+            switch (msg[pos]) {
+            case 'd':
+                dataInt = va_arg(args, int);
+                theStream << dataInt;
+                break;
+
+            case 'f':
+                dataDouble = va_arg(args, double);
+                theStream << dataDouble;
+                break;
+
+            case 's':
+                dataString = va_arg(args, char *);
+                theStream << dataString;
+                break;
+
+            default:
+                ;
             }
-          else
-            {
-                pos++;
-                switch (msg[pos])
-                  {
-                  case 'd':
-                      dataInt = va_arg (args, int);
-                      theStream << dataInt;
-                      break;
-
-                  case 'f':
-                      dataDouble = va_arg (args, double);
-                      theStream << dataDouble;
-                      break;
-
-                  case 's':
-                      dataString = va_arg (args, char *);
-                      theStream << dataString;
-                      break;
-
-                  default:
-                      ;
-                  }
-            }
-          pos++;
-      }
+        }
+        pos++;
+    }
     theStream << std::endl;
 }

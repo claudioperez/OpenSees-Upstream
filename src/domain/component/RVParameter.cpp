@@ -26,148 +26,127 @@
 #include <RVParameter.h>
 #include <RandomVariable.h>
 
-RVParameter::RVParameter (int passedTag, RandomVariable * theRV,
-                          Parameter * theParam):
-Parameter (passedTag, 1976),
-myRV (theRV),
-myParam (theParam),
-currentValue (0.0)
+RVParameter::RVParameter(int passedTag, RandomVariable * theRV,
+                         Parameter * theParam):Parameter(passedTag, 1976),
+myRV(theRV), myParam(theParam), currentValue(0.0)
 {
     if (myRV != 0)
-        currentValue = myRV->getCurrentValue ();
+        currentValue = myRV->getCurrentValue();
 }
 
 
-RVParameter::~RVParameter ()
+RVParameter::~RVParameter()
 {
     if (myParam != 0)
         delete myParam;
 }
 
 int
-RVParameter::update (int newValue)
+ RVParameter::update(int newValue)
 {
     currentValue = newValue;
 
     return 0;
 }
 
-int
-RVParameter::update (double newValue)
+int RVParameter::update(double newValue)
 {
     currentValue = newValue;
 
-    myRV->setCurrentValue (newValue);
+    myRV->setCurrentValue(newValue);
 
-    if (myParam != 0)
-      {
-          myParam->setValue (newValue);
-          myParam->update (newValue);
-      }
+    if (myParam != 0) {
+        myParam->setValue(newValue);
+        myParam->update(newValue);
+    }
 
     return 0;
 }
 
-int
-RVParameter::activate (bool active)
+int RVParameter::activate(bool active)
 {
     if (myParam != 0)
-        return myParam->activate (active);
+        return myParam->activate(active);
     else
         return 0;
 }
 
-double
-RVParameter::getValue (void)
+double RVParameter::getValue(void)
 {
     //return currentValue;
-    return myRV->getCurrentValue ();
+    return myRV->getCurrentValue();
 }
 
-void
-RVParameter::setValue (double newValue)
+void RVParameter::setValue(double newValue)
 {
     currentValue = newValue;
 
-    myRV->setCurrentValue (newValue);
+    myRV->setCurrentValue(newValue);
 
-    if (myParam != 0)
-      {
-          myParam->setValue (newValue);
-          myParam->update (newValue);
-      }
+    if (myParam != 0) {
+        myParam->setValue(newValue);
+        myParam->update(newValue);
+    }
 }
 
-bool
-RVParameter::isImplicit (void)
+bool RVParameter::isImplicit(void)
 {
     return false;
 }
 
-double
-RVParameter::getSensitivity (int index)
+double RVParameter::getSensitivity(int index)
 {
-    return Parameter::getSensitivity (index);
+    return Parameter::getSensitivity(index);
 }
 
-double
-RVParameter::getPerturbation (void)
+double RVParameter::getPerturbation(void)
 {
-    return 0.001 * myRV->getStdv ();
+    return 0.001 * myRV->getStdv();
 }
 
-int
-RVParameter::getPointerTag (void)
+int RVParameter::getPointerTag(void)
 {
-    return myRV->getTag ();
+    return myRV->getTag();
 }
 
-void
-RVParameter::Print (OPS_Stream & s, int flag)
+void RVParameter::Print(OPS_Stream & s, int flag)
 {
-    s << "RVParameter, tag = " << this->getTag () << endln;
-    myRV->Print (s, flag);
-    if (myParam != 0)
-      {
-          myParam->Print (s, flag);
-      }
+    s << "RVParameter, tag = " << this->getTag() << endln;
+    myRV->Print(s, flag);
+    if (myParam != 0) {
+        myParam->Print(s, flag);
+    }
 }
 
-int
-RVParameter::addComponent (DomainComponent * theObject, const char **argv,
-                           int argc)
+int RVParameter::addComponent(DomainComponent * theObject,
+                              const char **argv, int argc)
 {
-    return myParam->addComponent (theObject, argv, argc);
+    return myParam->addComponent(theObject, argv, argc);
 }
 
-int
-RVParameter::addComponent (int tag, const char **argv, int argc)
+int RVParameter::addComponent(int tag, const char **argv, int argc)
 {
-    return myParam->addComponent (tag, argv, argc);
+    return myParam->addComponent(tag, argv, argc);
 }
 
-int
-RVParameter::addObject (int parameterID, MovableObject * object)
+int RVParameter::addObject(int parameterID, MovableObject * object)
 {
-    return myParam->addObject (parameterID, object);
+    return myParam->addObject(parameterID, object);
 }
 
-void
-RVParameter::setDomain (Domain * theDomain)
+void RVParameter::setDomain(Domain * theDomain)
 {
     if (myParam != 0)
-        myParam->setDomain (theDomain);
+        myParam->setDomain(theDomain);
 }
 
-int
-RVParameter::sendSelf (int commitTag, Channel & theChannel)
+int RVParameter::sendSelf(int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-RVParameter::recvSelf (int commitTag, Channel & theChannel,
-                       FEM_ObjectBroker & theBroker)
+int RVParameter::recvSelf(int commitTag, Channel & theChannel,
+                          FEM_ObjectBroker & theBroker)
 {
     return 0;
 }

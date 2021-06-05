@@ -38,183 +38,166 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_ArctangentBackbone (void)
+void *OPS_ArctangentBackbone(void)
 {
     HystereticBackbone *theBackbone = 0;
 
-    if (OPS_GetNumRemainingInputArgs () < 4)
-      {
-          opserr <<
-              "Invalid number of args, want: hystereticBackbone Arctangent tag? K1? gamma? alpha?"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetNumRemainingInputArgs() < 4) {
+        opserr <<
+            "Invalid number of args, want: hystereticBackbone Arctangent tag? K1? gamma? alpha?"
+            << endln;
+        return 0;
+    }
 
     int iData[1];
     double dData[3];
 
     int numData = 1;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid tag for hystereticBackbone Arctangent" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid tag for hystereticBackbone Arctangent"
+            << endln;
+        return 0;
+    }
 
     numData = 3;
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "WARNING invalid data for hystereticBackbone Arctangent"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "WARNING invalid data for hystereticBackbone Arctangent"
+            << endln;
+        return 0;
+    }
 
     theBackbone =
-        new ArctangentBackbone (iData[0], dData[0], dData[1], dData[2]);
-    if (theBackbone == 0)
-      {
-          opserr << "WARNING could not create ArctangentBackbone\n";
-          return 0;
-      }
+        new ArctangentBackbone(iData[0], dData[0], dData[1], dData[2]);
+    if (theBackbone == 0) {
+        opserr << "WARNING could not create ArctangentBackbone\n";
+        return 0;
+    }
 
     return theBackbone;
 }
 #endif
 
-ArctangentBackbone::ArctangentBackbone (int tag, double k1, double gy,
-                                        double a):
-HystereticBackbone (tag, BACKBONE_TAG_Arctangent),
-K1 (k1),
-K2 (0.0),
-gammaY (gy),
-alpha (a)
+ArctangentBackbone::ArctangentBackbone(int tag, double k1, double gy,
+                                       double a):HystereticBackbone(tag,
+                                                                    BACKBONE_TAG_Arctangent),
+K1(k1), K2(0.0), gammaY(gy), alpha(a)
 {
     if (gammaY == 0.0)
-        opserr << "ArctangentBackbone::ArctangentBackbone -- gammaY is zero"
-            << endln;
+        opserr <<
+            "ArctangentBackbone::ArctangentBackbone -- gammaY is zero" <<
+            endln;
 
-    gammaY = fabs (gammaY);
-    alpha = fabs (alpha);
+    gammaY = fabs(gammaY);
+    alpha = fabs(alpha);
 
-    K2 = tan (alpha) / gammaY;
+    K2 = tan(alpha) / gammaY;
 }
 
-ArctangentBackbone::ArctangentBackbone ():
-HystereticBackbone (0, BACKBONE_TAG_Arctangent),
-K1 (0.0), K2 (0.0), gammaY (0.0), alpha (0.0)
+ArctangentBackbone::ArctangentBackbone():
+HystereticBackbone(0, BACKBONE_TAG_Arctangent),
+K1(0.0), K2(0.0), gammaY(0.0), alpha(0.0)
 {
 
 }
 
-ArctangentBackbone::~ArctangentBackbone ()
+ArctangentBackbone::~ArctangentBackbone()
 {
 
 }
 
 double
-ArctangentBackbone::getTangent (double strain)
+ ArctangentBackbone::getTangent(double strain)
 {
-    return K1 / (1 + pow (K2 * strain, 2)) * K2;
+    return K1 / (1 + pow(K2 * strain, 2)) * K2;
 }
 
-double
-ArctangentBackbone::getStress (double strain)
+double ArctangentBackbone::getStress(double strain)
 {
-    return K1 * atan (K2 * strain);
+    return K1 * atan(K2 * strain);
 }
 
-double
-ArctangentBackbone::getEnergy (double strain)
+double ArctangentBackbone::getEnergy(double strain)
 {
     double u = K2 * strain;
 
-    return K1 / K2 * (u * atan (u) - 0.5 * log (1 + u * u));
+    return K1 / K2 * (u * atan(u) - 0.5 * log(1 + u * u));
 }
 
-double
-ArctangentBackbone::getYieldStrain (void)
+double ArctangentBackbone::getYieldStrain(void)
 {
     return gammaY;
 }
 
-HystereticBackbone *
-ArctangentBackbone::getCopy (void)
+HystereticBackbone *ArctangentBackbone::getCopy(void)
 {
     ArctangentBackbone *theCopy =
-        new ArctangentBackbone (this->getTag (), K1, gammaY, alpha);
+        new ArctangentBackbone(this->getTag(), K1, gammaY, alpha);
 
     return theCopy;
 }
 
-void
-ArctangentBackbone::Print (OPS_Stream & s, int flag)
+void ArctangentBackbone::Print(OPS_Stream & s, int flag)
 {
-    s << "ArctangentBackbone, tag: " << this->getTag () << endln;
+    s << "ArctangentBackbone, tag: " << this->getTag() << endln;
     s << "\tK1: " << K1 << endln;
     s << "\tgammaY: " << gammaY << endln;
     s << "\talpha: " << alpha << endln;
 }
 
-int
-ArctangentBackbone::setVariable (char *argv)
+int ArctangentBackbone::setVariable(char *argv)
 {
     return -1;
 }
 
-int
-ArctangentBackbone::getVariable (int varID, double &theValue)
+int ArctangentBackbone::getVariable(int varID, double &theValue)
 {
     return -1;
 }
 
-int
-ArctangentBackbone::sendSelf (int commitTag, Channel & theChannel)
+int ArctangentBackbone::sendSelf(int commitTag, Channel & theChannel)
 {
     int res = 0;
 
-    static Vector data (5);
+    static Vector data(5);
 
-    data (0) = this->getTag ();
-    data (1) = K1;
-    data (2) = gammaY;
-    data (3) = alpha;
-    data (4) = K2;
+    data(0) = this->getTag();
+    data(1) = K1;
+    data(2) = gammaY;
+    data(3) = alpha;
+    data(4) = K2;
 
-    res += theChannel.sendVector (this->getDbTag (), commitTag, data);
-    if (res < 0)
-      {
-          opserr << "ArctangentBackbone::sendSelf -- could not send Vector" <<
-              endln;
+    res += theChannel.sendVector(this->getDbTag(), commitTag, data);
+    if (res < 0) {
+        opserr << "ArctangentBackbone::sendSelf -- could not send Vector"
+            << endln;
 
-          return res;
-      }
+        return res;
+    }
 
     return res;
 }
 
-int
-ArctangentBackbone::recvSelf (int commitTag, Channel & theChannel,
-                              FEM_ObjectBroker & theBroker)
+int ArctangentBackbone::recvSelf(int commitTag, Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static Vector data (5);
+    static Vector data(5);
 
-    res += theChannel.recvVector (this->getDbTag (), commitTag, data);
-    if (res < 0)
-      {
-          opserr << "ArctangentBackbone::recvSelf -- could not receive Vector"
-              << endln;
+    res += theChannel.recvVector(this->getDbTag(), commitTag, data);
+    if (res < 0) {
+        opserr <<
+            "ArctangentBackbone::recvSelf -- could not receive Vector" <<
+            endln;
 
-          return res;
-      }
+        return res;
+    }
 
-    this->setTag (int (data (0)));
-    K1 = data (1);
-    gammaY = data (2);
-    alpha = data (3);
-    K2 = data (4);
+    this->setTag(int (data(0)));
+    K1 = data(1);
+    gammaY = data(2);
+    alpha = data(3);
+    K2 = data(4);
 
     return res;
 }

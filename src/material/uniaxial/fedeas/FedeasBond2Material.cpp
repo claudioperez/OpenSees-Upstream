@@ -32,14 +32,16 @@
 #include <stdlib.h>
 #include <FedeasBond2Material.h>
 
-FedeasBond2Material::FedeasBond2Material (int tag,
-                                          double u1p, double q1p, double u2p,
-                                          double u3p, double q3p, double u1n,
-                                          double q1n, double u2n, double u3n,
-                                          double q3n, double s0, double bb,
-                                          double alp, double aln):
+FedeasBond2Material::FedeasBond2Material(int tag,
+                                         double u1p, double q1p,
+                                         double u2p, double u3p,
+                                         double q3p, double u1n,
+                                         double q1n, double u2n,
+                                         double u3n, double q3n, double s0,
+                                         double bb, double alp,
+                                         double aln):
 // 27 history variables and 15 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasBond2, 27, 15)
+FedeasMaterial(tag, MAT_TAG_FedeasBond2, 27, 15)
 {
     data[0] = u1p;
     data[1] = q1p;
@@ -71,42 +73,41 @@ FedeasMaterial (tag, MAT_TAG_FedeasBond2, 27, 15)
     tangentP = tangent;
 }
 
-FedeasBond2Material::FedeasBond2Material (int tag, const Vector & d):
+FedeasBond2Material::FedeasBond2Material(int tag, const Vector & d):
 // 27 history variables and 15 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasBond2, 27, 15)
+FedeasMaterial(tag, MAT_TAG_FedeasBond2, 27, 15)
 {
-    if (d.Size () != numData)
-      {
-          opserr <<
-              "FedeasBond2Material::FedeasBond2Material -- not enough input arguments\n";
-          exit (-1);
-      }
+    if (d.Size() != numData) {
+        opserr <<
+            "FedeasBond2Material::FedeasBond2Material -- not enough input arguments\n";
+        exit(-1);
+    }
 
     for (int i = 0; i < numData; i++)
-        data[i] = d (i);
+        data[i] = d(i);
 
     tangent = data[1] / data[0];
     tangentP = tangent;
 }
 
-FedeasBond2Material::FedeasBond2Material (void):
-FedeasMaterial (0, MAT_TAG_FedeasBond2, 27, 15)
+FedeasBond2Material::FedeasBond2Material(void):FedeasMaterial(0,
+                                                              MAT_TAG_FedeasBond2,
+                                                              27, 15)
 {
     // Does nothing
 }
 
-FedeasBond2Material::~FedeasBond2Material (void)
+FedeasBond2Material::~FedeasBond2Material(void)
 {
     // Does nothing
 }
 
-UniaxialMaterial *
-FedeasBond2Material::getCopy (void)
+UniaxialMaterial *FedeasBond2Material::getCopy(void)
 {
-    Vector d (data, numData);
+    Vector d(data, numData);
 
     FedeasBond2Material *theCopy =
-        new FedeasBond2Material (this->getTag (), d);
+        new FedeasBond2Material(this->getTag(), d);
 
     // Copy history variables
     for (int i = 0; i < 2 * numHstv; i++)
@@ -123,8 +124,7 @@ FedeasBond2Material::getCopy (void)
     return theCopy;
 }
 
-double
-FedeasBond2Material::getInitialTangent (void)
+double FedeasBond2Material::getInitialTangent(void)
 {
     //return q1p/u1p;
     return data[1] / data[0];

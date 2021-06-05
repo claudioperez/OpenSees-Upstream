@@ -36,31 +36,29 @@
 
 #include <LoadBalancer.h>
 
-LoadBalancer::LoadBalancer ():theDomainPartitioner (0)
+LoadBalancer::LoadBalancer():theDomainPartitioner(0)
 {
 
 }
 
-LoadBalancer::~LoadBalancer ()
+LoadBalancer::~LoadBalancer()
 {
 
 }
 
 void
-LoadBalancer::setLinks (DomainPartitioner & thePartitioner)
+ LoadBalancer::setLinks(DomainPartitioner & thePartitioner)
 {
     theDomainPartitioner = &thePartitioner;
 }
 
-DomainPartitioner *
-LoadBalancer::getDomainPartitioner (void)
+DomainPartitioner *LoadBalancer::getDomainPartitioner(void)
 {
-    if (theDomainPartitioner == 0)
-      {
-          opserr << "WARNING LoadBalancer::getDomainPartitioner() ";
-          opserr <<
-              " no DomainPartitioner is set - has setLinks() been called?\n";
-      }
+    if (theDomainPartitioner == 0) {
+        opserr << "WARNING LoadBalancer::getDomainPartitioner() ";
+        opserr <<
+            " no DomainPartitioner is set - has setLinks() been called?\n";
+    }
 
     return theDomainPartitioner;
 }

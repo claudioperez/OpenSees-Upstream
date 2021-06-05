@@ -43,35 +43,31 @@
 // SingleDomSP_Iter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-SingleDomSP_Iter::SingleDomSP_Iter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+SingleDomSP_Iter::SingleDomSP_Iter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
-SingleDomSP_Iter::~SingleDomSP_Iter ()
+SingleDomSP_Iter::~SingleDomSP_Iter()
 {
 }
 
 
 void
-SingleDomSP_Iter::reset (void)
+ SingleDomSP_Iter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-SP_Constraint *
-SingleDomSP_Iter::operator () (void)
-{
+SP_Constraint *SingleDomSP_Iter::operator () (void) {
     // check if we still have SP_Constraints in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          SP_Constraint *result = (SP_Constraint *) theComponent;
-          return result;
-      }
+    else {
+        SP_Constraint *result = (SP_Constraint *) theComponent;
+        return result;
+    }
 }

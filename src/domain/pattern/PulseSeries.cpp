@@ -127,130 +127,117 @@ void *OPS_PulseSeries(void)
 #endif
 */
 
-PulseSeries::PulseSeries (int tag,
-                          double startTime,
-                          double finishTime,
-                          double T,
-                          double pulseWidth,
-                          double phaseshift,
-                          double theFactor, double zeroshift):
-TimeSeries (tag, TSERIES_TAG_PulseSeries),
-tStart (startTime),
-tFinish (finishTime),
-period (T),
-pWidth (pulseWidth),
-phaseShift (phaseshift),
-cFactor (theFactor),
-zeroShift (zeroshift)
+PulseSeries::PulseSeries(int tag,
+                         double startTime,
+                         double finishTime,
+                         double T,
+                         double pulseWidth,
+                         double phaseshift,
+                         double theFactor,
+                         double zeroshift):TimeSeries(tag,
+                                                      TSERIES_TAG_PulseSeries),
+tStart(startTime), tFinish(finishTime), period(T), pWidth(pulseWidth),
+phaseShift(phaseshift), cFactor(theFactor), zeroShift(zeroshift)
 {
-    if (period == 0.0)
-      {
-          opserr <<
-              "PulseSeries::PulseSeries -- input period is zero, setting period to 1\n";
-          period = 1;
-      }
+    if (period == 0.0) {
+        opserr <<
+            "PulseSeries::PulseSeries -- input period is zero, setting period to 1\n";
+        period = 1;
+    }
 }
 
 
-PulseSeries::PulseSeries ():TimeSeries (TSERIES_TAG_PulseSeries),
-tStart (0.0), tFinish (0.0),
-period (1.0), pWidth (0.5), phaseShift (0.0), cFactor (1.0), zeroShift (0.0)
+PulseSeries::PulseSeries():TimeSeries(TSERIES_TAG_PulseSeries),
+tStart(0.0), tFinish(0.0),
+period(1.0), pWidth(0.5), phaseShift(0.0), cFactor(1.0), zeroShift(0.0)
 {
     // does nothing
 }
 
 
-PulseSeries::~PulseSeries ()
+PulseSeries::~PulseSeries()
 {
     // does nothing
 }
 
 
-TimeSeries *
-PulseSeries::getCopy ()
+TimeSeries *PulseSeries::getCopy()
 {
-    return new PulseSeries (this->getTag (), tStart, tFinish, period,
-                            pWidth, phaseShift, cFactor, zeroShift);
+    return new PulseSeries(this->getTag(), tStart, tFinish, period,
+                           pWidth, phaseShift, cFactor, zeroShift);
 }
 
 
-double
-PulseSeries::getFactor (double pseudoTime)
+double PulseSeries::getFactor(double pseudoTime)
 {
-    if (tStart <= pseudoTime && pseudoTime <= tFinish)
-      {
-          double k =
-              (pseudoTime + phaseShift - tStart) / period -
-              floor ((pseudoTime + phaseShift - tStart) / period);
-          if (k < pWidth)
-              return cFactor + zeroShift;
-          else if (k < 1.00)
-              return zeroShift;
-          else
-              return 0.0;
-      }
-    else
+    if (tStart <= pseudoTime && pseudoTime <= tFinish) {
+        double k =
+            (pseudoTime + phaseShift - tStart) / period -
+            floor((pseudoTime + phaseShift - tStart) / period);
+        if (k < pWidth)
+            return cFactor + zeroShift;
+        else if (k < 1.00)
+            return zeroShift;
+        else
+            return 0.0;
+    } else
         return 0.0;
 }
 
 
-int
-PulseSeries::sendSelf (int commitTag, Channel & theChannel)
+int PulseSeries::sendSelf(int commitTag, Channel & theChannel)
 {
-    int dbTag = this->getDbTag ();
-    Vector data (7);
-    data (0) = cFactor;
-    data (1) = tStart;
-    data (2) = tFinish;
-    data (3) = period;
-    data (4) = pWidth;
-    data (5) = phaseShift;
-    data (6) = zeroShift;
+    int dbTag = this->getDbTag();
+    Vector data(7);
+    data(0) = cFactor;
+    data(1) = tStart;
+    data(2) = tFinish;
+    data(3) = period;
+    data(4) = pWidth;
+    data(5) = phaseShift;
+    data(6) = zeroShift;
 
-    int result = theChannel.sendVector (dbTag, commitTag, data);
-    if (result < 0)
-      {
-          opserr << "PulseSeries::sendSelf() - channel failed to send data\n";
-          return result;
-      }
+    int result = theChannel.sendVector(dbTag, commitTag, data);
+    if (result < 0) {
+        opserr <<
+            "PulseSeries::sendSelf() - channel failed to send data\n";
+        return result;
+    }
     return 0;
 }
 
 
-int
-PulseSeries::recvSelf (int commitTag, Channel & theChannel,
-                       FEM_ObjectBroker & theBroker)
+int PulseSeries::recvSelf(int commitTag, Channel & theChannel,
+                          FEM_ObjectBroker & theBroker)
 {
-    int dbTag = this->getDbTag ();
-    Vector data (7);
-    int result = theChannel.recvVector (dbTag, commitTag, data);
-    if (result < 0)
-      {
-          opserr <<
-              "PulseSeries::sendSelf() - channel failed to receive data\n";
-          cFactor = 1.0;
-          tStart = 0.0;
-          tFinish = 0.0;
-          period = 1.0;
-          pWidth = 0.5;
-          phaseShift = 0.0;
-          zeroShift = 0.0;
-          return result;
-      }
-    cFactor = data (0);
-    tStart = data (1);
-    tFinish = data (2);
-    period = data (3);
-    pWidth = data (4);
-    phaseShift = data (5);
-    zeroShift = data (6);
+    int dbTag = this->getDbTag();
+    Vector data(7);
+    int result = theChannel.recvVector(dbTag, commitTag, data);
+    if (result < 0) {
+        opserr <<
+            "PulseSeries::sendSelf() - channel failed to receive data\n";
+        cFactor = 1.0;
+        tStart = 0.0;
+        tFinish = 0.0;
+        period = 1.0;
+        pWidth = 0.5;
+        phaseShift = 0.0;
+        zeroShift = 0.0;
+        return result;
+    }
+    cFactor = data(0);
+    tStart = data(1);
+    tFinish = data(2);
+    period = data(3);
+    pWidth = data(4);
+    phaseShift = data(5);
+    zeroShift = data(6);
 
     return 0;
 }
 
 
-void
-PulseSeries::Print (OPS_Stream & s, int flag)
+void PulseSeries::Print(OPS_Stream & s, int flag)
 {
     s << "Pulse Series" << endln;
     s << "\tFactor: " << cFactor << endln;

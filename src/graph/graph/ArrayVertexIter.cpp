@@ -41,26 +41,24 @@
 // ArrayVertexIter(ArrayGraph &theGraph):
 //      constructor that takes the graph, just the basic iter
 
-ArrayVertexIter::ArrayVertexIter (ArrayGraph & theGraph):myGraph (theGraph), currIndex (0),
-numDone (0)
+ArrayVertexIter::ArrayVertexIter(ArrayGraph & theGraph):myGraph(theGraph), currIndex(0),
+numDone(0)
 {
 }
 
 
-ArrayVertexIter::~ArrayVertexIter ()
+ArrayVertexIter::~ArrayVertexIter()
 {
 }
 
 void
-ArrayVertexIter::reset (void)
+ ArrayVertexIter::reset(void)
 {
     currIndex = 0;
     numDone = 0;
 }
 
-Vertex *
-ArrayVertexIter::operator () (void)
-{
+Vertex *ArrayVertexIter::operator () (void) {
     // check if we still have vertices in the Graph
     // if not return 0, indicating we are done
     if (numDone >= myGraph.numVertex)
@@ -72,12 +70,11 @@ ArrayVertexIter::operator () (void)
         currIndex++;
 
     // if not at the end of the list return the element
-    if (currIndex < myGraph.sizeVertices)
-      {
-          Vertex *result = myGraph.theVertices[currIndex];
-          numDone++;
-          currIndex++;
-          return (result);
-      }
+    if (currIndex < myGraph.sizeVertices) {
+        Vertex *result = myGraph.theVertices[currIndex];
+        numDone++;
+        currIndex++;
+        return (result);
+    }
     return (0);
 }

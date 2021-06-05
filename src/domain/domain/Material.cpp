@@ -33,36 +33,33 @@
 
 #include <Material.h>
 
-Material::Material (int tag, int clasTag):
-TaggedObject (tag),
-MovableObject (clasTag)
+Material::Material(int tag, int clasTag):TaggedObject(tag),
+MovableObject(clasTag)
 {
 
 }
 
 
-Material::~Material ()
+Material::~Material()
 {
     // does nothing
 
 
 }
 
-Response *
-Material::setResponse (const char **argv, int argc, OPS_Stream & s)
+Response *Material::setResponse(const char **argv, int argc,
+                                OPS_Stream & s)
 {
     return 0;
 }
 
-int
-Material::getResponse (int responseID, Information & info)
+int Material::getResponse(int responseID, Information & info)
 {
     return -1;
 }
 
-int
-Material::getResponseSensitivity (int responseID, int gradIndex,
-                                  Information & info)
+int Material::getResponseSensitivity(int responseID, int gradIndex,
+                                     Information & info)
 {
     return -1;
 }

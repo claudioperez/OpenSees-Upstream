@@ -16,15 +16,13 @@ static int numSLModel = 0;
 #ifdef OPS_API_COMMANDLINE
 void *
 #ifdef OPS_API_COMMANDLINE
-OPS_SLModel ()
+OPS_SLModel()
 {
     // print out some KUDO's
-    if (numSLModel == 0)
-      {
-          numSLModel++;
-          opserr << "SLModel version 2019.2\n";
-      }
-
+    if (numSLModel == 0) {
+        numSLModel++;
+        opserr << "SLModel version 2019.2\n";
+    }
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
 
@@ -32,30 +30,25 @@ OPS_SLModel ()
     double dData[3];
     int numData = 1;
 
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid uniaxialMaterial  SLModel tag" << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid uniaxialMaterial  SLModel tag" << endln;
+        return 0;
+    }
 
     numData = 3;
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr <<
-              "Invalid Args want: uniaxialMaterial SLModel tag? Dt?, sgm_ini?, OP_Material?";
-          return 0;
-      }
-
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr <<
+            "Invalid Args want: uniaxialMaterial SLModel tag? Dt?, sgm_ini?, OP_Material?";
+        return 0;
+    }
     // create a new material
-    theMaterial = new SLModel (iData[0], dData[0], dData[1], dData[2]);
+    theMaterial = new SLModel(iData[0], dData[0], dData[1], dData[2]);
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type SLModel\n";
-          return 0;
-      }
-
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type SLModel\n";
+        return 0;
+    }
     // return the material
     return theMaterial;
 }
@@ -64,23 +57,21 @@ OPS_SLModel ()
 
 
 //MAT_TAG_SLModel or 0
-SLModel::SLModel (int tag, double Dt_temp, double sgm_ini_temp,
-                  double OP_Material_temp):
-UniaxialMaterial (tag, MAT_TAG_SLModel),
-Dt (Dt_temp),
-sgm_ini (sgm_ini_temp),
-OP_Material (OP_Material_temp)
+SLModel::SLModel(int tag, double Dt_temp, double sgm_ini_temp,
+                 double OP_Material_temp):UniaxialMaterial(tag,
+                                                           MAT_TAG_SLModel),
+Dt(Dt_temp), sgm_ini(sgm_ini_temp), OP_Material(OP_Material_temp)
 {
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-SLModel::SLModel ():UniaxialMaterial (0, MAT_TAG_SLModel), Dt (0.0), sgm_ini (0.0),
-OP_Material (0.0)
+SLModel::SLModel():UniaxialMaterial(0, MAT_TAG_SLModel), Dt(0.0), sgm_ini(0.0),
+OP_Material(0.0)
 {
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-SLModel::~SLModel ()
+SLModel::~SLModel()
 {
     // does nothing
 }
@@ -92,11 +83,11 @@ SLModel::~SLModel ()
 
 
 int
-SLModel::setTrialStrain (double strain, double strainRate)      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////TODO
+ SLModel::setTrialStrain(double strain, double strainRate)      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////TODO
 {
 
     //all variables to the last commit
-    this->revertToLastCommit ();        // a = C_a 
+    this->revertToLastCommit(); // a = C_a 
 
     // local variables
     double True_tEpsp2, TrueEpsPrev, p_teps_d, Deltap_teps;
@@ -104,402 +95,314 @@ SLModel::setTrialStrain (double strain, double strainRate)      ////////////////
 
     // set trial strain
     neps = strain;              //set trial displacement
-    teps = log (1.0 + neps);
+    teps = log(1.0 + neps);
 
     // ignore very small strain increment 
     double deltaD;
     deltaD = strain - C_neps;
-    if (fabs (deltaD) < 1.0e-18 && strain != 0.0)
-      {
-          return 0;
-      }
-
+    if (fabs(deltaD) < 1.0e-18 && strain != 0.0) {
+        return 0;
+    }
 
     ///////////////////////////////////////////////////////// not used
-    if (iInitial <= 0)
-      {
-          iInitial++;
-      }
+    if (iInitial <= 0) {
+        iInitial++;
+    }
     /////////////////////////////////////////////////////////
 
 
     // pre-buckling process
-    if (status == 1)
-      {
-          if (teps <= teps_prev)
-            {
-                if (teps >= yteps_n)
-                  {
-                      status = 1;
-                      StrainHardeningFunc ();
-
-                      //*** check capping stress ********************************************************************************************
-                      if (nsgm < cSgmc)
-                        {
-                            //deterioration slope modification
-                            cEpsc =
-                                neps_prev + (neps - neps_prev) / (nsgm -
-                                                                  nsgm_prev) *
-                                (cSgmc - nsgm_prev);
-                            cEpsd1 = cEpsc - (cSgmc - cSgmd1) / cEd1;
-                            cSgmd2 = cSgmd1 - cEd2 * cEpsd1;
-                            cEpsd2 = -cSgmd2 / cEd2;
-
-                            //peak point for tensile excursion
-                            tEpsp = cEpsc;
-                            tSgmp = sgm_ini;
-
-                            //reference point for back bone curve offset
-                            refEps = cEpsc - cIniEpsc;
-                            cEpsy = refEps - sgm_ini / E;
-
-                            //status
-                            status = 4;
-                        }
-                      //**********************************************************************************************************************
-                  }
-                else if (teps < yteps_n)
-                  {
-                      status = 3;
-                      StrainHardeningFunc ();
-                      YieldPointFunc ();
-
-                      //*** check capping stress ********************************************************************************************
-                      if (nsgm < cSgmc)
-                        {
-                            //deterioration slope modification
-                            cEpsc =
-                                neps_prev + (neps - neps_prev) / (nsgm -
-                                                                  nsgm_prev) *
-                                (cSgmc - nsgm_prev);
-                            cEpsd1 = cEpsc - (cSgmc - cSgmd1) / cEd1;
-                            cSgmd2 = cSgmd1 - cEd2 * cEpsd1;
-                            cEpsd2 = -cSgmd2 / cEd2;
-
-                            //peak point for tensile excursion
-                            tEpsp = cEpsc;
-                            tSgmp = sgm_ini;
-
-                            //reference point for back bone curve offset
-                            refEps = cEpsc - cIniEpsc;
-                            cEpsy = refEps - sgm_ini / E;
-
-                            //status
-                            status = 4;
-                        }
-                      //**********************************************************************************************************************
-                  }
-            }
-          else
-            {
-                if (teps <= yteps_p)
-                  {
-                      status = 1;
-                      StrainHardeningFunc ();
-                  }
-                else if (teps > yteps_p)
-                  {
-                      status = 2;
-                      StrainHardeningFunc ();
-                      YieldPointFunc ();
-                  }
-            }
-      }
-    else if (status == 2)
-      {
-          if (teps >= teps_prev)
-            {
-                status = 2;
-                StrainHardeningFunc ();
-                YieldPointFunc ();
-            }
-          else if (teps < teps_prev && teps >= yteps_n)
-            {
+    if (status == 1) {
+        if (teps <= teps_prev) {
+            if (teps >= yteps_n) {
                 status = 1;
-                StrainHardeningFunc ();
-            }
-          else if (teps < teps_prev && teps < yteps_n)
-            {
-                status = 3;
-                StrainHardeningFunc ();
-                YieldPointFunc ();
-            }
-      }
-    else if (status == 3)
-      {
-          if (teps <= teps_prev)
-            {
-                status = 3;
-                StrainHardeningFunc ();
-                YieldPointFunc ();
+                StrainHardeningFunc();
+
                 //*** check capping stress ********************************************************************************************
-                if (nsgm < cSgmc)
-                  {
-                      //deterioration slope modification
-                      cEpsc =
-                          neps_prev + (neps - neps_prev) / (nsgm -
-                                                            nsgm_prev) *
-                          (cSgmc - nsgm_prev);
-                      cEpsd1 = cEpsc - (cSgmc - cSgmd1) / cEd1;
-                      cSgmd2 = cSgmd1 - cEd2 * cEpsd1;
-                      cEpsd2 = -cSgmd2 / cEd2;
+                if (nsgm < cSgmc) {
+                    //deterioration slope modification
+                    cEpsc =
+                        neps_prev + (neps - neps_prev) / (nsgm -
+                                                          nsgm_prev) *
+                        (cSgmc - nsgm_prev);
+                    cEpsd1 = cEpsc - (cSgmc - cSgmd1) / cEd1;
+                    cSgmd2 = cSgmd1 - cEd2 * cEpsd1;
+                    cEpsd2 = -cSgmd2 / cEd2;
 
-                      //peak point for tensile excursion
-                      tEpsp = cEpsc;
-                      tSgmp = sgm_ini;
+                    //peak point for tensile excursion
+                    tEpsp = cEpsc;
+                    tSgmp = sgm_ini;
 
-                      //reference point for back bone curve offset
-                      refEps = cEpsc - cIniEpsc;
-                      cEpsy = refEps - sgm_ini / E;
+                    //reference point for back bone curve offset
+                    refEps = cEpsc - cIniEpsc;
+                    cEpsy = refEps - sgm_ini / E;
 
-                      //status
-                      status = 4;
-                  }
+                    //status
+                    status = 4;
+                }
+                //**********************************************************************************************************************
+            } else if (teps < yteps_n) {
+                status = 3;
+                StrainHardeningFunc();
+                YieldPointFunc();
+
+                //*** check capping stress ********************************************************************************************
+                if (nsgm < cSgmc) {
+                    //deterioration slope modification
+                    cEpsc =
+                        neps_prev + (neps - neps_prev) / (nsgm -
+                                                          nsgm_prev) *
+                        (cSgmc - nsgm_prev);
+                    cEpsd1 = cEpsc - (cSgmc - cSgmd1) / cEd1;
+                    cSgmd2 = cSgmd1 - cEd2 * cEpsd1;
+                    cEpsd2 = -cSgmd2 / cEd2;
+
+                    //peak point for tensile excursion
+                    tEpsp = cEpsc;
+                    tSgmp = sgm_ini;
+
+                    //reference point for back bone curve offset
+                    refEps = cEpsc - cIniEpsc;
+                    cEpsy = refEps - sgm_ini / E;
+
+                    //status
+                    status = 4;
+                }
                 //**********************************************************************************************************************
             }
-          else if (teps > teps_prev && teps <= yteps_p)
-            {
+        } else {
+            if (teps <= yteps_p) {
                 status = 1;
-                StrainHardeningFunc ();
-            }
-          else if (teps > teps_prev && teps > yteps_p)
-            {
+                StrainHardeningFunc();
+            } else if (teps > yteps_p) {
                 status = 2;
-                StrainHardeningFunc ();
-                YieldPointFunc ();
+                StrainHardeningFunc();
+                YieldPointFunc();
             }
-      }
+        }
+    } else if (status == 2) {
+        if (teps >= teps_prev) {
+            status = 2;
+            StrainHardeningFunc();
+            YieldPointFunc();
+        } else if (teps < teps_prev && teps >= yteps_n) {
+            status = 1;
+            StrainHardeningFunc();
+        } else if (teps < teps_prev && teps < yteps_n) {
+            status = 3;
+            StrainHardeningFunc();
+            YieldPointFunc();
+        }
+    } else if (status == 3) {
+        if (teps <= teps_prev) {
+            status = 3;
+            StrainHardeningFunc();
+            YieldPointFunc();
+            //*** check capping stress ********************************************************************************************
+            if (nsgm < cSgmc) {
+                //deterioration slope modification
+                cEpsc =
+                    neps_prev + (neps - neps_prev) / (nsgm -
+                                                      nsgm_prev) *
+                    (cSgmc - nsgm_prev);
+                cEpsd1 = cEpsc - (cSgmc - cSgmd1) / cEd1;
+                cSgmd2 = cSgmd1 - cEd2 * cEpsd1;
+                cEpsd2 = -cSgmd2 / cEd2;
 
+                //peak point for tensile excursion
+                tEpsp = cEpsc;
+                tSgmp = sgm_ini;
+
+                //reference point for back bone curve offset
+                refEps = cEpsc - cIniEpsc;
+                cEpsy = refEps - sgm_ini / E;
+
+                //status
+                status = 4;
+            }
+            //**********************************************************************************************************************
+        } else if (teps > teps_prev && teps <= yteps_p) {
+            status = 1;
+            StrainHardeningFunc();
+        } else if (teps > teps_prev && teps > yteps_p) {
+            status = 2;
+            StrainHardeningFunc();
+            YieldPointFunc();
+        }
+    }
     // post-buckling process
-    if (status >= 4 && status <= 999)
-      {
+    if (status >= 4 && status <= 999) {
 
-          if (neps < neps_prev)
-            {
-                if (cEpsy < neps)
-                  {
-                      //unloading
-                      status = 9;
-                      nsgm = cSgmy - cEu * (cEpsy - neps);
-                      //Tangent = cEu;
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-                  }
-                else if (cEpsc < neps && neps <= cEpsy)
-                  {
-                      //post-yield
-                      status = 10;
-                      nsgm = cSgmy + cEsth * (neps - cEpsy);
-                      //Tangent = cEsth;
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-                  }
-                else if (cEpsd1 < neps && neps <= cEpsc)
-                  {
-                      //1st deterioration slope
-                      status = 4;
-                      nsgm = cSgmc + cEd1 * (neps - cEpsc);
-                      //Tangent = cEd1;
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-                  }
-                else if (cEpsd2 < neps && neps <= cEpsd1)
-                  {
-                      //2nd deterioration slope
-                      status = 5;
-                      nsgm = cEd2 * neps + cSgmd2;
-                      //Tangent = cEd2;
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-                  }
-                else if (neps <= cEpsd2)
-                  {
-                      //zero stress    
-                      status = 1000;
-                      nsgm = -0.0001;
-                      Tangent = 1.0e-10;
-                      //std::cout << "*********************** 1111 **************************\n";
-                  }
+        if (neps < neps_prev) {
+            if (cEpsy < neps) {
+                //unloading
+                status = 9;
+                nsgm = cSgmy - cEu * (cEpsy - neps);
+                //Tangent = cEu;
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+            } else if (cEpsc < neps && neps <= cEpsy) {
+                //post-yield
+                status = 10;
+                nsgm = cSgmy + cEsth * (neps - cEpsy);
+                //Tangent = cEsth;
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+            } else if (cEpsd1 < neps && neps <= cEpsc) {
+                //1st deterioration slope
+                status = 4;
+                nsgm = cSgmc + cEd1 * (neps - cEpsc);
+                //Tangent = cEd1;
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+            } else if (cEpsd2 < neps && neps <= cEpsd1) {
+                //2nd deterioration slope
+                status = 5;
+                nsgm = cEd2 * neps + cSgmd2;
+                //Tangent = cEd2;
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+            } else if (neps <= cEpsd2) {
+                //zero stress    
+                status = 1000;
+                nsgm = -0.0001;
+                Tangent = 1.0e-10;
+                //std::cout << "*********************** 1111 **************************\n";
+            }
+            //plastic stain
+            p_neps = neps - nsgm / tEu;
 
-                //plastic stain
-                p_neps = neps - nsgm / tEu;
+        } else if (neps > neps_prev) {
+            if (neps < tEpsy) {
+                //unloading
+                status = 6;
+                nsgm = tSgmy - tEu * (tEpsy - neps);
+                //Tangent = tEu;
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+            } else if (tEpsy <= neps && neps < tEpsp2) {
+                //reloading
+                status = 7;
+                nsgm = tSgmy + tEr2 * (neps - tEpsy);
+                //Tangent = tEr2;
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+            } else if (tEpsp2 <= neps) {
+                //strain hardening
+                status = 8;
+
+                //true stress/strain at pinching point
+                True_tEpsp2 = log(1.0 + tEpsp2);
+
+                //true stress/strain @ previous step
+                TrueEpsPrev = log(1.0 + neps_prev);
+
+                //true strain @ current step
+                teps = log(1.0 + neps);
+
+                //cumulative plastic strain
+                if (TrueEpsPrev < True_tEpsp2) {
+                    p_teps_d = teps - True_tEpsp2;
+                    tsgm = nsgm_prev * (1.0 + tEpsp2);
+                } else {
+                    p_teps_d = teps - TrueEpsPrev;
+                    tsgm = nsgm_prev * (1.0 + neps_prev);
+                }
+
+                //increment of plastic strain 
+                Deltap_teps = p_teps_d / 5.0;
+
+                for (int i = 1; i <= 5; i++) {
+                    //kinematic hardening
+                    alf_d =
+                        c / sgm_0 * (tsgm - alf) * (Deltap_teps) -
+                        gamma * alf * (Deltap_teps);
+                    alf = alf + alf_d;  //plus
+
+                    //isotropic hardening
+                    cum_p_teps = cum_p_teps + fabs(Deltap_teps);
+                    sgm_0 =
+                        sgm_ini + q * (1 - exp(-1 * beta * cum_p_teps));
+
+                    //true stress
+                    tsgm = alf + sgm_0; //plus
+                }
+
+                //engineering stress
+                nsgm = tsgm / exp(teps);
+
+                //Tangent
+                Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
 
             }
-          else if (neps > neps_prev)
-            {
-                if (neps < tEpsy)
-                  {
-                      //unloading
-                      status = 6;
-                      nsgm = tSgmy - tEu * (tEpsy - neps);
-                      //Tangent = tEu;
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-                  }
-                else if (tEpsy <= neps && neps < tEpsp2)
-                  {
-                      //reloading
-                      status = 7;
-                      nsgm = tSgmy + tEr2 * (neps - tEpsy);
-                      //Tangent = tEr2;
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-                  }
-                else if (tEpsp2 <= neps)
-                  {
-                      //strain hardening
-                      status = 8;
+            // plastic stain
+            p_neps = neps - nsgm / cEu;
+        }
 
-                      //true stress/strain at pinching point
-                      True_tEpsp2 = log (1.0 + tEpsp2);
-
-                      //true stress/strain @ previous step
-                      TrueEpsPrev = log (1.0 + neps_prev);
-
-                      //true strain @ current step
-                      teps = log (1.0 + neps);
-
-                      //cumulative plastic strain
-                      if (TrueEpsPrev < True_tEpsp2)
-                        {
-                            p_teps_d = teps - True_tEpsp2;
-                            tsgm = nsgm_prev * (1.0 + tEpsp2);
-                        }
-                      else
-                        {
-                            p_teps_d = teps - TrueEpsPrev;
-                            tsgm = nsgm_prev * (1.0 + neps_prev);
-                        }
-
-                      //increment of plastic strain 
-                      Deltap_teps = p_teps_d / 5.0;
-
-                      for (int i = 1; i <= 5; i++)
-                        {
-                            //kinematic hardening
-                            alf_d =
-                                c / sgm_0 * (tsgm - alf) * (Deltap_teps) -
-                                gamma * alf * (Deltap_teps);
-                            alf = alf + alf_d;  //plus
-
-                            //isotropic hardening
-                            cum_p_teps = cum_p_teps + fabs (Deltap_teps);
-                            sgm_0 =
-                                sgm_ini + q * (1 -
-                                               exp (-1 * beta * cum_p_teps));
-
-                            //true stress
-                            tsgm = alf + sgm_0; //plus
-                        }
-
-                      //engineering stress
-                      nsgm = tsgm / exp (teps);
-
-                      //Tangent
-                      Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
-
-                  }
-
-                // plastic stain
-                p_neps = neps - nsgm / cEu;
-            }
-
-      }
-    else if (status == 1000)
-      {
-          status = 1000;
-          nsgm = -0.00001;
-          Tangent = 1.0e-10;
-          //std::cout << "*********************** 2222 **************************\n";
-      }
-
+    } else if (status == 1000) {
+        status = 1000;
+        nsgm = -0.00001;
+        Tangent = 1.0e-10;
+        //std::cout << "*********************** 2222 **************************\n";
+    }
 
     //Cumulative plastic strain, Energy Dissipation
-    if (status == 1 || status == 2 || status == 3)
-      {
-          DeltaE = 0.0;
-      }
-    else if (status == 1000)
-      {
-          DeltaE = 0.0;
-      }
-    else
-      {
-          DeltaE =
-              fabs (p_neps - p_neps_prev) * fabs (nsgm + nsgm_prev) / 2.0;
-      }
+    if (status == 1 || status == 2 || status == 3) {
+        DeltaE = 0.0;
+    } else if (status == 1000) {
+        DeltaE = 0.0;
+    } else {
+        DeltaE = fabs(p_neps - p_neps_prev) * fabs(nsgm + nsgm_prev) / 2.0;
+    }
 
 
-    if (Et1 - TotalE < 0.0)
-      {
-          Beta1 = 0.0;
-          Alpha1 = Alpha1 * (1 - Beta1);
-      }
-    else if (DeltaE > Et1 - TotalE)
-      {
-          Beta1 = 0.0;
-          Alpha1 = Alpha1 * (1 - Beta1);
-      }
-    else
-      {
-          Beta1 = pow (DeltaE / (Et1 - TotalE), c1);
-          Alpha1 = Alpha1 * (1 - Beta1);
-      }
+    if (Et1 - TotalE < 0.0) {
+        Beta1 = 0.0;
+        Alpha1 = Alpha1 * (1 - Beta1);
+    } else if (DeltaE > Et1 - TotalE) {
+        Beta1 = 0.0;
+        Alpha1 = Alpha1 * (1 - Beta1);
+    } else {
+        Beta1 = pow(DeltaE / (Et1 - TotalE), c1);
+        Alpha1 = Alpha1 * (1 - Beta1);
+    }
 
 
-    if (Et2 - TotalE < 0.0)
-      {
-          Beta2 = 0.0;
-          Alpha2 = Alpha2 * (1 - Beta2);
-      }
-    else if (DeltaE > Et2 - TotalE)
-      {
-          Beta2 = 0.0;
-          Alpha2 = Alpha2 * (1 - Beta2);
-      }
-    else
-      {
-          Beta2 = pow (DeltaE / (Et2 - TotalE), c2);
-          Alpha2 = Alpha2 * (1 - Beta2);
-      }
+    if (Et2 - TotalE < 0.0) {
+        Beta2 = 0.0;
+        Alpha2 = Alpha2 * (1 - Beta2);
+    } else if (DeltaE > Et2 - TotalE) {
+        Beta2 = 0.0;
+        Alpha2 = Alpha2 * (1 - Beta2);
+    } else {
+        Beta2 = pow(DeltaE / (Et2 - TotalE), c2);
+        Alpha2 = Alpha2 * (1 - Beta2);
+    }
 
-    if (Et3 - TotalE < 0.0)
-      {
-          Beta3 = 0.0;
-          Alpha3 = Alpha3 * (1 - Beta3);
-      }
-    else if (DeltaE > Et3 - TotalE)
-      {
-          Beta3 = 0.0;
-          Alpha3 = Alpha3 * (1 - Beta3);
-      }
-    else
-      {
-          Beta3 = pow (DeltaE / (Et3 - TotalE), c3);
-          Alpha3 = Alpha3 * (1 - Beta3);
-      }
+    if (Et3 - TotalE < 0.0) {
+        Beta3 = 0.0;
+        Alpha3 = Alpha3 * (1 - Beta3);
+    } else if (DeltaE > Et3 - TotalE) {
+        Beta3 = 0.0;
+        Alpha3 = Alpha3 * (1 - Beta3);
+    } else {
+        Beta3 = pow(DeltaE / (Et3 - TotalE), c3);
+        Alpha3 = Alpha3 * (1 - Beta3);
+    }
 
     TotalE = TotalE + DeltaE;
 
 
 
     //Update back bone curve
-    if (status == 4 || status == 5 || status == 10)
-      {
-          BackBoneTenFunc ();
+    if (status == 4 || status == 5 || status == 10) {
+        BackBoneTenFunc();
 
-          //true stress @ pinching point
-          TrueSgmPinch = tSgmp * (1.0 + tEpsp2);
-          //update kinematic hardening
-          alf = TrueSgmPinch - sgm_0;
-      }
-    else if (status == 7 || status == 8)
-      {
-          BackBoneCompFunc ();
-      }
-    else if (status == 9)
-      {
-          BackBoneTen2Func ();
-      }
-    else if (status == 6)
-      {
-          BackBoneComp2Func ();
-      }
-
+        //true stress @ pinching point
+        TrueSgmPinch = tSgmp * (1.0 + tEpsp2);
+        //update kinematic hardening
+        alf = TrueSgmPinch - sgm_0;
+    } else if (status == 7 || status == 8) {
+        BackBoneCompFunc();
+    } else if (status == 9) {
+        BackBoneTen2Func();
+    } else if (status == 6) {
+        BackBoneComp2Func();
+    }
     //store stress and strain
     teps_prev = teps;
     neps_prev = neps;
@@ -523,27 +426,23 @@ SLModel::setTrialStrain (double strain, double strainRate)      ////////////////
 
 
 
-double
-SLModel::getStrain (void)
+double SLModel::getStrain(void)
 {
     return neps;
 }
 
-double
-SLModel::getStress (void)
+double SLModel::getStress(void)
 {
     return nsgm;
 }
 
-double
-SLModel::getTangent (void)
+double SLModel::getTangent(void)
 {
     //std::cout << "*********" << Tangent << "****************************\n";
     return Tangent;
 }
 
-int
-SLModel::commitState (void)
+int SLModel::commitState(void)
 {
 
     C_status = status;
@@ -661,8 +560,7 @@ SLModel::commitState (void)
 }
 
 
-int
-SLModel::revertToLastCommit (void)
+int SLModel::revertToLastCommit(void)
 {
     //the opposite of commit trial history variables
     status = C_status;
@@ -780,111 +678,102 @@ SLModel::revertToLastCommit (void)
 }
 
 
-int
-SLModel::revertToStart (void)
+int SLModel::revertToStart(void)
 {
     // Initialize state variables
     status = C_status = 1;
 
     E = C_E = 200000.0;
 
-    Dteq = C_Dteq = (Dt) * sqrt (sgm_ini / E);
+    Dteq = C_Dteq = (Dt) * sqrt(sgm_ini / E);
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if (OP_Material == 10)
-      {
-          //*** BCP ***
-          q = C_q = 68.0956;
-          beta = C_beta = 14.072;
-          c = C_c = 4200.0;
-          gamma = C_gamma = 19.0;
+    if (OP_Material == 10) {
+        //*** BCP ***
+        q = C_q = 68.0956;
+        beta = C_beta = 14.072;
+        c = C_c = 4200.0;
+        gamma = C_gamma = 19.0;
 
-          CapYieldStressM = C_CapYieldStressM = 1.2345 * pow (Dteq, -0.564);
-          CapYieldStrainM = C_CapYieldStrainM = 8.3096 * pow (Dteq, -3.156);
-          Ed1EM = C_Ed1EM = -0.0267 * pow (Dteq, 1.5213) * 0.8; //**********************************************************************************************************************************************************
-          Ed2EM = C_Ed2EM = -0.0034 * pow (Dteq, 0.8134) * 0.8; //**********************************************************************************************************************************************************
-          DetCapStressM = C_DetCapStressM = 0.6225 * pow (Dteq, 0.0888);
+        CapYieldStressM = C_CapYieldStressM = 1.2345 * pow(Dteq, -0.564);
+        CapYieldStrainM = C_CapYieldStrainM = 8.3096 * pow(Dteq, -3.156);
+        Ed1EM = C_Ed1EM = -0.0267 * pow(Dteq, 1.5213) * 0.8;    //**********************************************************************************************************************************************************
+        Ed2EM = C_Ed2EM = -0.0034 * pow(Dteq, 0.8134) * 0.8;    //**********************************************************************************************************************************************************
+        DetCapStressM = C_DetCapStressM = 0.6225 * pow(Dteq, 0.0888);
 
-          ay = C_ay = 1.6465 * pow (Dteq / sqrt (sgm_ini / E), -1.136);
-          au = C_au = 5.5813 * pow (Dteq / sqrt (sgm_ini / E), -1.732);
+        ay = C_ay = 1.6465 * pow(Dteq / sqrt(sgm_ini / E), -1.136);
+        au = C_au = 5.5813 * pow(Dteq / sqrt(sgm_ini / E), -1.732);
 
-          Lambda1 = C_Lambda1 = 31.237 * pow (Dt, -1.127);
-          c1 = C_c1 = 1.0;
+        Lambda1 = C_Lambda1 = 31.237 * pow(Dt, -1.127);
+        c1 = C_c1 = 1.0;
 
-          Lambda2 = C_Lambda2 = Lambda1 * 3.0;  //**********************************************************************************************************************************************************
-          c2 = C_c2 = 1.0;
+        Lambda2 = C_Lambda2 = Lambda1 * 3.0;    //**********************************************************************************************************************************************************
+        c2 = C_c2 = 1.0;
 
-          Lambda3 = C_Lambda3 = Lambda1 * 3.0;  //**********************************************************************************************************************************************************
-          //Lambda3 = C_Lambda3 = Lambda1*1000.0; //**********************************************************************************************************************************************************
-          c3 = C_c3 = 1.0;
+        Lambda3 = C_Lambda3 = Lambda1 * 3.0;    //**********************************************************************************************************************************************************
+        //Lambda3 = C_Lambda3 = Lambda1*1000.0; //**********************************************************************************************************************************************************
+        c3 = C_c3 = 1.0;
 
-      }
-    else if (OP_Material == 11)
-      {
-          //*** HYP ***
-          q = C_q = 68.1;
-          beta = C_beta = 14.1;
-          c = C_c = 2100.0;
-          gamma = C_gamma = 11.0;
+    } else if (OP_Material == 11) {
+        //*** HYP ***
+        q = C_q = 68.1;
+        beta = C_beta = 14.1;
+        c = C_c = 2100.0;
+        gamma = C_gamma = 11.0;
 
-          CapYieldStressM = C_CapYieldStressM = 1.157 * pow (Dteq, -0.36);
-          CapYieldStrainM = C_CapYieldStrainM = 8.3096 * pow (Dteq, -3.156);
-          Ed1EM = C_Ed1EM = -0.027 * pow (Dteq, 2.0) * 0.8;     //**********************************************************************************************************************************************************
-          Ed2EM = C_Ed2EM = -0.0034 * pow (Dteq, 0.8134) * 0.8; //**********************************************************************************************************************************************************
-          DetCapStressM = C_DetCapStressM = 0.575 * pow (Dteq, -0.03);
+        CapYieldStressM = C_CapYieldStressM = 1.157 * pow(Dteq, -0.36);
+        CapYieldStrainM = C_CapYieldStrainM = 8.3096 * pow(Dteq, -3.156);
+        Ed1EM = C_Ed1EM = -0.027 * pow(Dteq, 2.0) * 0.8;        //**********************************************************************************************************************************************************
+        Ed2EM = C_Ed2EM = -0.0034 * pow(Dteq, 0.8134) * 0.8;    //**********************************************************************************************************************************************************
+        DetCapStressM = C_DetCapStressM = 0.575 * pow(Dteq, -0.03);
 
-          ay = C_ay = 2.355 * pow (Dteq / sqrt (sgm_ini / E), -1.204) * 1.0;
-          au = C_au = 5.2672 * pow (Dteq / sqrt (sgm_ini / E), -1.683);
+        ay = C_ay = 2.355 * pow(Dteq / sqrt(sgm_ini / E), -1.204) * 1.0;
+        au = C_au = 5.2672 * pow(Dteq / sqrt(sgm_ini / E), -1.683);
 
-          Lambda1 = C_Lambda1 = 31.237 * pow (Dt, -1.127);
-          c1 = C_c1 = 1.0;
+        Lambda1 = C_Lambda1 = 31.237 * pow(Dt, -1.127);
+        c1 = C_c1 = 1.0;
 
-          Lambda2 = C_Lambda2 = Lambda1 * 3.0;  //**********************************************************************************************************************************************************
-          c2 = C_c2 = 1.0;
+        Lambda2 = C_Lambda2 = Lambda1 * 3.0;    //**********************************************************************************************************************************************************
+        c2 = C_c2 = 1.0;
 
-          Lambda3 = C_Lambda3 = Lambda1 * 3.0;  //**********************************************************************************************************************************************************
-          //Lambda3 = C_Lambda3 = Lambda1*1000.0; //**********************************************************************************************************************************************************
-          c3 = C_c3 = 1.0;
+        Lambda3 = C_Lambda3 = Lambda1 * 3.0;    //**********************************************************************************************************************************************************
+        //Lambda3 = C_Lambda3 = Lambda1*1000.0; //**********************************************************************************************************************************************************
+        c3 = C_c3 = 1.0;
 
 
-      }
-    else if (OP_Material == 12)
-      {
-          //*** BCR ***
-          q = C_q = 22.4;
-          beta = C_beta = 7.2;
-          c = C_c = 2500.0;
-          gamma = C_gamma = 19.0;
+    } else if (OP_Material == 12) {
+        //*** BCR ***
+        q = C_q = 22.4;
+        beta = C_beta = 7.2;
+        c = C_c = 2500.0;
+        gamma = C_gamma = 19.0;
 
-          //CapYieldStressM = C_CapYieldStressM = 1.114*pow(Dteq,-0.314);//**********************************************************************************************************************************************************
-          CapYieldStressM = C_CapYieldStressM = 1.125 * pow (Dteq, -0.27);      //**********************************************************************************************************************************************************
-          CapYieldStrainM = C_CapYieldStrainM = 6.720 * pow (Dteq, -3.09);
-          //Ed1EM = C_Ed1EM = -0.015*pow(Dteq,1.5);//**********************************************************************************************************************************************************
-          Ed1EM = C_Ed1EM = -0.0133 * pow (Dteq, 2.0) * 1.0;    //**********************************************************************************************************************************************************
-          Ed2EM = C_Ed2EM = -0.003 * pow (Dteq, 1.221) * 0.8;   //**********************************************************************************************************************************************************
-          DetCapStressM = C_DetCapStressM = 0.614 * pow (Dteq, -0.041);
+        //CapYieldStressM = C_CapYieldStressM = 1.114*pow(Dteq,-0.314);//**********************************************************************************************************************************************************
+        CapYieldStressM = C_CapYieldStressM = 1.125 * pow(Dteq, -0.27); //**********************************************************************************************************************************************************
+        CapYieldStrainM = C_CapYieldStrainM = 6.720 * pow(Dteq, -3.09);
+        //Ed1EM = C_Ed1EM = -0.015*pow(Dteq,1.5);//**********************************************************************************************************************************************************
+        Ed1EM = C_Ed1EM = -0.0133 * pow(Dteq, 2.0) * 1.0;       //**********************************************************************************************************************************************************
+        Ed2EM = C_Ed2EM = -0.003 * pow(Dteq, 1.221) * 0.8;      //**********************************************************************************************************************************************************
+        DetCapStressM = C_DetCapStressM = 0.614 * pow(Dteq, -0.041);
 
-          ay = C_ay = 24.0 * pow (Dteq / sqrt (sgm_ini / E), -1.8);
-          au = C_au = 5.4522 * pow (Dteq / sqrt (sgm_ini / E), -1.653) * 1.0;
+        ay = C_ay = 24.0 * pow(Dteq / sqrt(sgm_ini / E), -1.8);
+        au = C_au = 5.4522 * pow(Dteq / sqrt(sgm_ini / E), -1.653) * 1.0;
 
-          Lambda1 = C_Lambda1 = 17.72 * pow (Dt, -0.989) * 1.0;
-          c1 = C_c1 = 1.0;
+        Lambda1 = C_Lambda1 = 17.72 * pow(Dt, -0.989) * 1.0;
+        c1 = C_c1 = 1.0;
 
-          Lambda2 = C_Lambda2 = Lambda1 * 3.0;  //**********************************************************************************************************************************************************
-          c2 = C_c2 = 1.0;
+        Lambda2 = C_Lambda2 = Lambda1 * 3.0;    //**********************************************************************************************************************************************************
+        c2 = C_c2 = 1.0;
 
-          Lambda3 = C_Lambda3 = Lambda1 * 3.0;  //**********************************************************************************************************************************************************
-          //Lambda3 = C_Lambda3 = Lambda1*1000.0; //**********************************************************************************************************************************************************
-          c3 = C_c3 = 1.0;
+        Lambda3 = C_Lambda3 = Lambda1 * 3.0;    //**********************************************************************************************************************************************************
+        //Lambda3 = C_Lambda3 = Lambda1*1000.0; //**********************************************************************************************************************************************************
+        c3 = C_c3 = 1.0;
 
-      }
-    else
-      {
-          std::
-              cout << "*********************** Material ID " << OP_Material <<
-              " is not prepared. **************************\n";
-      }
+    } else {
+        std::cout << "*********************** Material ID " << OP_Material
+            << " is not prepared. **************************\n";
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     p_teps = C_p_teps = 0.0;
@@ -991,11 +880,10 @@ SLModel::revertToStart (void)
 }
 
 
-UniaxialMaterial *
-SLModel::getCopy (void)
+UniaxialMaterial *SLModel::getCopy(void)
 {
     SLModel *theCopy =
-        new SLModel (this->getTag (), Dt, sgm_ini, OP_Material);
+        new SLModel(this->getTag(), Dt, sgm_ini, OP_Material);
 
     //Fixed Model parameters: need to change according to material properties
     theCopy->status = status;
@@ -1182,429 +1070,425 @@ SLModel::getCopy (void)
 }
 
 
-int
-SLModel::sendSelf (int cTag, Channel & theChannel)
+int SLModel::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (182);
-    data (0) = this->getTag ();
+    static Vector data(182);
+    data(0) = this->getTag();
 
     // constaint variables
-    data (1) = Dt;
-    data (2) = sgm_ini;
-    data (3) = OP_Material;
+    data(1) = Dt;
+    data(2) = sgm_ini;
+    data(3) = OP_Material;
 
     // constaint variables
-    data (4) = E;
-    data (5) = Dteq;
-    data (6) = q;
-    data (7) = beta;
-    data (8) = c;
-    data (9) = gamma;
-    data (10) = CapYieldStressM;
-    data (11) = CapYieldStrainM;
-    data (12) = Ed1EM;
-    data (13) = Ed2EM;
-    data (14) = DetCapStressM;
-    data (15) = ay;
-    data (16) = au;
-    data (17) = Lambda1;
-    data (18) = c1;
-    data (19) = Lambda2;
-    data (20) = c2;
-    data (21) = Lambda3;
-    data (22) = c3;
-    data (23) = Et1;
-    data (24) = Et2;
-    data (25) = Et3;
+    data(4) = E;
+    data(5) = Dteq;
+    data(6) = q;
+    data(7) = beta;
+    data(8) = c;
+    data(9) = gamma;
+    data(10) = CapYieldStressM;
+    data(11) = CapYieldStrainM;
+    data(12) = Ed1EM;
+    data(13) = Ed2EM;
+    data(14) = DetCapStressM;
+    data(15) = ay;
+    data(16) = au;
+    data(17) = Lambda1;
+    data(18) = c1;
+    data(19) = Lambda2;
+    data(20) = c2;
+    data(21) = Lambda3;
+    data(22) = c3;
+    data(23) = Et1;
+    data(24) = Et2;
+    data(25) = Et3;
 
     // State variables from last converged state
-    data (26) = status;
-    data (27) = p_teps;
-    data (28) = p_neps;
-    data (29) = p_neps_prev;
-    data (30) = p_teps_prev;
-    data (31) = cum_p_teps;
-    data (31) = sgm_0;
-    data (33) = alf_d;
-    data (34) = alf;
-    data (35) = ytsgm_p;
-    data (36) = ytsgm_n;
-    data (37) = yteps_p;
-    data (38) = yteps_n;
-    data (39) = teps;
-    data (40) = neps;
-    data (41) = tsgm;
-    data (42) = nsgm;
-    data (43) = teps_prev;
-    data (44) = neps_prev;
-    data (45) = tsgm_prev;
-    data (46) = nsgm_prev;
-    data (47) = cEu;
-    data (48) = cSgmy;
-    data (49) = cEpsy;
-    data (50) = cSgmc;
-    data (51) = cEpsc;
-    data (52) = cSgmd1;
-    data (53) = cEpsd1;
-    data (54) = cSgmd2;
-    data (55) = cEpsd2;
-    data (56) = cSgmb;
-    data (57) = cSgmd;
-    data (58) = cEsth;
-    data (59) = cEd1;
-    data (60) = cEd2;
-    data (61) = cIniSgmy;
-    data (62) = cIniEpsy;
-    data (63) = cIniSgmc;
-    data (64) = cIniEpsc;
-    data (65) = cIniEsth;
-    data (66) = cIniEd1;
-    data (67) = cIniEd2;
-    data (68) = cIniSgmd1;
-    data (69) = cIniEpsd1;
-    data (70) = cIniSgmb;
-    data (71) = cIniSgmd;
-    data (72) = cIniSgmd2;
-    data (73) = cIniEpsd2;
-    data (74) = tEu;
-    data (75) = tSgmy;
-    data (76) = tEpsy;
-    data (77) = tSgmp;
-    data (78) = tEpsp;
-    data (79) = tEpsp2;
-    data (80) = tEr;
-    data (81) = tEr2;
-    data (82) = refEps;
-    data (83) = Beta1;
-    data (84) = Beta2;
-    data (85) = Beta3;
-    data (86) = Alpha1;
-    data (87) = Alpha2;
-    data (88) = Alpha3;
-    data (89) = TotalE;
-    data (90) = DeltaE;
-    data (91) = Tangent;
+    data(26) = status;
+    data(27) = p_teps;
+    data(28) = p_neps;
+    data(29) = p_neps_prev;
+    data(30) = p_teps_prev;
+    data(31) = cum_p_teps;
+    data(31) = sgm_0;
+    data(33) = alf_d;
+    data(34) = alf;
+    data(35) = ytsgm_p;
+    data(36) = ytsgm_n;
+    data(37) = yteps_p;
+    data(38) = yteps_n;
+    data(39) = teps;
+    data(40) = neps;
+    data(41) = tsgm;
+    data(42) = nsgm;
+    data(43) = teps_prev;
+    data(44) = neps_prev;
+    data(45) = tsgm_prev;
+    data(46) = nsgm_prev;
+    data(47) = cEu;
+    data(48) = cSgmy;
+    data(49) = cEpsy;
+    data(50) = cSgmc;
+    data(51) = cEpsc;
+    data(52) = cSgmd1;
+    data(53) = cEpsd1;
+    data(54) = cSgmd2;
+    data(55) = cEpsd2;
+    data(56) = cSgmb;
+    data(57) = cSgmd;
+    data(58) = cEsth;
+    data(59) = cEd1;
+    data(60) = cEd2;
+    data(61) = cIniSgmy;
+    data(62) = cIniEpsy;
+    data(63) = cIniSgmc;
+    data(64) = cIniEpsc;
+    data(65) = cIniEsth;
+    data(66) = cIniEd1;
+    data(67) = cIniEd2;
+    data(68) = cIniSgmd1;
+    data(69) = cIniEpsd1;
+    data(70) = cIniSgmb;
+    data(71) = cIniSgmd;
+    data(72) = cIniSgmd2;
+    data(73) = cIniEpsd2;
+    data(74) = tEu;
+    data(75) = tSgmy;
+    data(76) = tEpsy;
+    data(77) = tSgmp;
+    data(78) = tEpsp;
+    data(79) = tEpsp2;
+    data(80) = tEr;
+    data(81) = tEr2;
+    data(82) = refEps;
+    data(83) = Beta1;
+    data(84) = Beta2;
+    data(85) = Beta3;
+    data(86) = Alpha1;
+    data(87) = Alpha2;
+    data(88) = Alpha3;
+    data(89) = TotalE;
+    data(90) = DeltaE;
+    data(91) = Tangent;
 
     // constaint variables
-    data (92) = C_E;
-    data (93) = C_Dteq;
-    data (94) = C_q;
-    data (95) = C_beta;
-    data (96) = C_c;
-    data (97) = C_gamma;
-    data (98) = C_CapYieldStressM;
-    data (99) = C_CapYieldStrainM;
-    data (100) = C_Ed1EM;
-    data (101) = C_Ed2EM;
-    data (102) = C_DetCapStressM;
-    data (103) = C_ay;
-    data (104) = C_au;
-    data (105) = C_Lambda1;
-    data (106) = C_c1;
-    data (107) = C_Lambda2;
-    data (108) = C_c2;
-    data (109) = C_Lambda3;
-    data (110) = C_c3;
-    data (111) = C_Et1;
-    data (112) = C_Et2;
-    data (113) = C_Et3;
+    data(92) = C_E;
+    data(93) = C_Dteq;
+    data(94) = C_q;
+    data(95) = C_beta;
+    data(96) = C_c;
+    data(97) = C_gamma;
+    data(98) = C_CapYieldStressM;
+    data(99) = C_CapYieldStrainM;
+    data(100) = C_Ed1EM;
+    data(101) = C_Ed2EM;
+    data(102) = C_DetCapStressM;
+    data(103) = C_ay;
+    data(104) = C_au;
+    data(105) = C_Lambda1;
+    data(106) = C_c1;
+    data(107) = C_Lambda2;
+    data(108) = C_c2;
+    data(109) = C_Lambda3;
+    data(110) = C_c3;
+    data(111) = C_Et1;
+    data(112) = C_Et2;
+    data(113) = C_Et3;
 
     // State variables from last converged state
-    data (114) = C_status;
-    data (115) = C_p_teps;
-    data (116) = C_p_neps;
-    data (117) = C_p_neps_prev;
-    data (118) = C_p_teps_prev;
-    data (119) = C_cum_p_teps;
-    data (120) = C_sgm_0;
-    data (121) = C_alf_d;
-    data (122) = C_alf;
-    data (123) = C_ytsgm_p;
-    data (124) = C_ytsgm_n;
-    data (125) = C_yteps_p;
-    data (126) = C_yteps_n;
-    data (127) = C_teps;
-    data (128) = C_neps;
-    data (129) = C_tsgm;
-    data (130) = C_nsgm;
-    data (131) = C_teps_prev;
-    data (132) = C_neps_prev;
-    data (133) = C_tsgm_prev;
-    data (134) = C_nsgm_prev;
-    data (135) = C_cEu;
-    data (136) = C_cSgmy;
-    data (137) = C_cEpsy;
-    data (138) = C_cSgmc;
-    data (139) = C_cEpsc;
-    data (140) = C_cSgmd1;
-    data (141) = C_cEpsd1;
-    data (142) = C_cSgmd2;
-    data (143) = C_cEpsd2;
-    data (144) = C_cSgmb;
-    data (145) = C_cSgmd;
-    data (146) = C_cEsth;
-    data (147) = C_cEd1;
-    data (148) = C_cEd2;
-    data (149) = C_cIniSgmy;
-    data (150) = C_cIniEpsy;
-    data (151) = C_cIniSgmc;
-    data (152) = C_cIniEpsc;
-    data (153) = C_cIniEsth;
-    data (154) = C_cIniEd1;
-    data (155) = C_cIniEd2;
-    data (156) = C_cIniSgmd1;
-    data (157) = C_cIniEpsd1;
-    data (158) = C_cIniSgmb;
-    data (159) = C_cIniSgmd;
-    data (160) = C_cIniSgmd2;
-    data (161) = C_cIniEpsd2;
-    data (162) = C_tEu;
-    data (163) = C_tSgmy;
-    data (164) = C_tEpsy;
-    data (165) = C_tSgmp;
-    data (166) = C_tEpsp;
-    data (167) = C_tEpsp2;
-    data (168) = C_tEr;
-    data (169) = C_tEr2;
-    data (170) = C_refEps;
-    data (171) = C_Beta1;
-    data (172) = C_Beta2;
-    data (173) = C_Beta3;
-    data (174) = C_Alpha1;
-    data (175) = C_Alpha2;
-    data (176) = C_Alpha3;
-    data (177) = C_TotalE;
-    data (178) = C_DeltaE;
-    data (179) = C_Tangent;
+    data(114) = C_status;
+    data(115) = C_p_teps;
+    data(116) = C_p_neps;
+    data(117) = C_p_neps_prev;
+    data(118) = C_p_teps_prev;
+    data(119) = C_cum_p_teps;
+    data(120) = C_sgm_0;
+    data(121) = C_alf_d;
+    data(122) = C_alf;
+    data(123) = C_ytsgm_p;
+    data(124) = C_ytsgm_n;
+    data(125) = C_yteps_p;
+    data(126) = C_yteps_n;
+    data(127) = C_teps;
+    data(128) = C_neps;
+    data(129) = C_tsgm;
+    data(130) = C_nsgm;
+    data(131) = C_teps_prev;
+    data(132) = C_neps_prev;
+    data(133) = C_tsgm_prev;
+    data(134) = C_nsgm_prev;
+    data(135) = C_cEu;
+    data(136) = C_cSgmy;
+    data(137) = C_cEpsy;
+    data(138) = C_cSgmc;
+    data(139) = C_cEpsc;
+    data(140) = C_cSgmd1;
+    data(141) = C_cEpsd1;
+    data(142) = C_cSgmd2;
+    data(143) = C_cEpsd2;
+    data(144) = C_cSgmb;
+    data(145) = C_cSgmd;
+    data(146) = C_cEsth;
+    data(147) = C_cEd1;
+    data(148) = C_cEd2;
+    data(149) = C_cIniSgmy;
+    data(150) = C_cIniEpsy;
+    data(151) = C_cIniSgmc;
+    data(152) = C_cIniEpsc;
+    data(153) = C_cIniEsth;
+    data(154) = C_cIniEd1;
+    data(155) = C_cIniEd2;
+    data(156) = C_cIniSgmd1;
+    data(157) = C_cIniEpsd1;
+    data(158) = C_cIniSgmb;
+    data(159) = C_cIniSgmd;
+    data(160) = C_cIniSgmd2;
+    data(161) = C_cIniEpsd2;
+    data(162) = C_tEu;
+    data(163) = C_tSgmy;
+    data(164) = C_tEpsy;
+    data(165) = C_tSgmp;
+    data(166) = C_tEpsp;
+    data(167) = C_tEpsp2;
+    data(168) = C_tEr;
+    data(169) = C_tEr2;
+    data(170) = C_refEps;
+    data(171) = C_Beta1;
+    data(172) = C_Beta2;
+    data(173) = C_Beta3;
+    data(174) = C_Alpha1;
+    data(175) = C_Alpha2;
+    data(176) = C_Alpha3;
+    data(177) = C_TotalE;
+    data(178) = C_DeltaE;
+    data(179) = C_Tangent;
 
-    data (180) = iInitial;
-    data (181) = C_iInitial;
+    data(180) = iInitial;
+    data(181) = C_iInitial;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "SLModel::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-SLModel::recvSelf (int cTag, Channel & theChannel,
-                   FEM_ObjectBroker & theBroker)
+int SLModel::recvSelf(int cTag, Channel & theChannel,
+                      FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (182);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(182);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "SLModel::recvSelf() - failed to recv data\n";
-    else
-      {
+    else {
 
-          this->setTag (data (0));
+        this->setTag(data(0));
 
-          // constaint variables
-          Dt = data (1);;
-          sgm_ini = data (2);;
-          OP_Material = data (3);
+        // constaint variables
+        Dt = data(1);;
+        sgm_ini = data(2);;
+        OP_Material = data(3);
 
-          // constaint variables
-          E = data (4);
-          Dteq = data (5);
-          q = data (6);
-          beta = data (7);
-          c = data (8);
-          gamma = data (9);
-          CapYieldStressM = data (10);
-          CapYieldStrainM = data (11);
-          Ed1EM = data (12);
-          Ed2EM = data (13);
-          DetCapStressM = data (14);
-          ay = data (15);
-          au = data (16);
-          Lambda1 = data (17);
-          c1 = data (18);
-          Lambda2 = data (19);
-          c2 = data (20);
-          Lambda3 = data (21);
-          c3 = data (22);
-          Et1 = data (23);
-          Et2 = data (24);
-          Et3 = data (25);
+        // constaint variables
+        E = data(4);
+        Dteq = data(5);
+        q = data(6);
+        beta = data(7);
+        c = data(8);
+        gamma = data(9);
+        CapYieldStressM = data(10);
+        CapYieldStrainM = data(11);
+        Ed1EM = data(12);
+        Ed2EM = data(13);
+        DetCapStressM = data(14);
+        ay = data(15);
+        au = data(16);
+        Lambda1 = data(17);
+        c1 = data(18);
+        Lambda2 = data(19);
+        c2 = data(20);
+        Lambda3 = data(21);
+        c3 = data(22);
+        Et1 = data(23);
+        Et2 = data(24);
+        Et3 = data(25);
 
-          // State variables from last converged state
-          status = data (26);
-          p_teps = data (27);
-          p_neps = data (28);
-          p_neps_prev = data (29);
-          p_teps_prev = data (30);
-          cum_p_teps = data (31);
-          sgm_0 = data (31);
-          alf_d = data (33);
-          alf = data (34);
-          ytsgm_p = data (35);
-          ytsgm_n = data (36);
-          yteps_p = data (37);
-          yteps_n = data (38);
-          teps = data (39);
-          neps = data (40);
-          tsgm = data (41);
-          nsgm = data (42);
-          teps_prev = data (43);
-          neps_prev = data (44);
-          tsgm_prev = data (45);
-          nsgm_prev = data (46);
-          cEu = data (47);
-          cSgmy = data (48);
-          cEpsy = data (49);
-          cSgmc = data (50);
-          cEpsc = data (51);
-          cSgmd1 = data (52);
-          cEpsd1 = data (53);
-          cSgmd2 = data (54);
-          cEpsd2 = data (55);
-          cSgmb = data (56);
-          cSgmd = data (57);
-          cEsth = data (58);
-          cEd1 = data (59);
-          cEd2 = data (60);
-          cIniSgmy = data (61);
-          cIniEpsy = data (62);
-          cIniSgmc = data (63);
-          cIniEpsc = data (64);
-          cIniEsth = data (65);
-          cIniEd1 = data (66);
-          cIniEd2 = data (67);
-          cIniSgmd1 = data (68);
-          cIniEpsd1 = data (69);
-          cIniSgmb = data (70);
-          cIniSgmd = data (71);
-          cIniSgmd2 = data (72);
-          cIniEpsd2 = data (73);
-          tEu = data (74);
-          tSgmy = data (75);
-          tEpsy = data (76);
-          tSgmp = data (77);
-          tEpsp = data (78);
-          tEpsp2 = data (79);
-          tEr = data (80);
-          tEr2 = data (81);
-          refEps = data (82);
-          Beta1 = data (83);
-          Beta2 = data (84);
-          Beta3 = data (85);
-          Alpha1 = data (86);
-          Alpha2 = data (87);
-          Alpha3 = data (88);
-          TotalE = data (89);
-          DeltaE = data (90);
-          Tangent = data (91);
+        // State variables from last converged state
+        status = data(26);
+        p_teps = data(27);
+        p_neps = data(28);
+        p_neps_prev = data(29);
+        p_teps_prev = data(30);
+        cum_p_teps = data(31);
+        sgm_0 = data(31);
+        alf_d = data(33);
+        alf = data(34);
+        ytsgm_p = data(35);
+        ytsgm_n = data(36);
+        yteps_p = data(37);
+        yteps_n = data(38);
+        teps = data(39);
+        neps = data(40);
+        tsgm = data(41);
+        nsgm = data(42);
+        teps_prev = data(43);
+        neps_prev = data(44);
+        tsgm_prev = data(45);
+        nsgm_prev = data(46);
+        cEu = data(47);
+        cSgmy = data(48);
+        cEpsy = data(49);
+        cSgmc = data(50);
+        cEpsc = data(51);
+        cSgmd1 = data(52);
+        cEpsd1 = data(53);
+        cSgmd2 = data(54);
+        cEpsd2 = data(55);
+        cSgmb = data(56);
+        cSgmd = data(57);
+        cEsth = data(58);
+        cEd1 = data(59);
+        cEd2 = data(60);
+        cIniSgmy = data(61);
+        cIniEpsy = data(62);
+        cIniSgmc = data(63);
+        cIniEpsc = data(64);
+        cIniEsth = data(65);
+        cIniEd1 = data(66);
+        cIniEd2 = data(67);
+        cIniSgmd1 = data(68);
+        cIniEpsd1 = data(69);
+        cIniSgmb = data(70);
+        cIniSgmd = data(71);
+        cIniSgmd2 = data(72);
+        cIniEpsd2 = data(73);
+        tEu = data(74);
+        tSgmy = data(75);
+        tEpsy = data(76);
+        tSgmp = data(77);
+        tEpsp = data(78);
+        tEpsp2 = data(79);
+        tEr = data(80);
+        tEr2 = data(81);
+        refEps = data(82);
+        Beta1 = data(83);
+        Beta2 = data(84);
+        Beta3 = data(85);
+        Alpha1 = data(86);
+        Alpha2 = data(87);
+        Alpha3 = data(88);
+        TotalE = data(89);
+        DeltaE = data(90);
+        Tangent = data(91);
 
-          // constaint variables
-          C_E = data (92);
-          C_Dteq = data (93);
-          C_q = data (94);
-          C_beta = data (95);
-          C_c = data (96);
-          C_gamma = data (97);
-          C_CapYieldStressM = data (98);
-          C_CapYieldStrainM = data (99);
-          C_Ed1EM = data (100);
-          C_Ed2EM = data (101);
-          C_DetCapStressM = data (102);
-          C_ay = data (103);
-          C_au = data (104);
-          C_Lambda1 = data (105);
-          C_c1 = data (106);
-          C_Lambda2 = data (107);
-          C_c2 = data (108);
-          C_Lambda3 = data (109);
-          C_c3 = data (110);
-          C_Et1 = data (111);
-          C_Et2 = data (112);
-          C_Et3 = data (113);
+        // constaint variables
+        C_E = data(92);
+        C_Dteq = data(93);
+        C_q = data(94);
+        C_beta = data(95);
+        C_c = data(96);
+        C_gamma = data(97);
+        C_CapYieldStressM = data(98);
+        C_CapYieldStrainM = data(99);
+        C_Ed1EM = data(100);
+        C_Ed2EM = data(101);
+        C_DetCapStressM = data(102);
+        C_ay = data(103);
+        C_au = data(104);
+        C_Lambda1 = data(105);
+        C_c1 = data(106);
+        C_Lambda2 = data(107);
+        C_c2 = data(108);
+        C_Lambda3 = data(109);
+        C_c3 = data(110);
+        C_Et1 = data(111);
+        C_Et2 = data(112);
+        C_Et3 = data(113);
 
-          // State variables from last converged state
-          C_status = data (114);
-          C_p_teps = data (115);
-          C_p_neps = data (116);
-          C_p_neps_prev = data (117);
-          C_p_teps_prev = data (118);
-          C_cum_p_teps = data (119);
-          C_sgm_0 = data (120);
-          C_alf_d = data (121);
-          C_alf = data (122);
-          C_ytsgm_p = data (123);
-          C_ytsgm_n = data (124);
-          C_yteps_p = data (125);
-          C_yteps_n = data (126);
-          C_teps = data (127);
-          C_neps = data (128);
-          C_tsgm = data (129);
-          C_nsgm = data (130);
-          C_teps_prev = data (131);
-          C_neps_prev = data (132);
-          C_tsgm_prev = data (133);
-          C_nsgm_prev = data (134);
-          C_cEu = data (135);
-          C_cSgmy = data (136);
-          C_cEpsy = data (137);
-          C_cSgmc = data (138);
-          C_cEpsc = data (139);
-          C_cSgmd1 = data (140);
-          C_cEpsd1 = data (141);
-          C_cSgmd2 = data (142);
-          C_cEpsd2 = data (143);
-          C_cSgmb = data (144);
-          C_cSgmd = data (145);
-          C_cEsth = data (146);
-          C_cEd1 = data (147);
-          C_cEd2 = data (148);
-          C_cIniSgmy = data (149);
-          C_cIniEpsy = data (150);
-          C_cIniSgmc = data (151);
-          C_cIniEpsc = data (152);
-          C_cIniEsth = data (153);
-          C_cIniEd1 = data (154);
-          C_cIniEd2 = data (155);
-          C_cIniSgmd1 = data (156);
-          C_cIniEpsd1 = data (157);
-          C_cIniSgmb = data (158);
-          C_cIniSgmd = data (159);
-          C_cIniSgmd2 = data (160);
-          C_cIniEpsd2 = data (161);
-          C_tEu = data (162);
-          C_tSgmy = data (163);
-          C_tEpsy = data (164);
-          C_tSgmp = data (165);
-          C_tEpsp = data (166);
-          C_tEpsp2 = data (167);
-          C_tEr = data (168);
-          C_tEr2 = data (169);
-          C_refEps = data (170);
-          C_Beta1 = data (171);
-          C_Beta2 = data (172);
-          C_Beta3 = data (173);
-          C_Alpha1 = data (174);
-          C_Alpha2 = data (175);
-          C_Alpha3 = data (176);
-          C_TotalE = data (177);
-          C_DeltaE = data (178);
-          C_Tangent = data (179);
+        // State variables from last converged state
+        C_status = data(114);
+        C_p_teps = data(115);
+        C_p_neps = data(116);
+        C_p_neps_prev = data(117);
+        C_p_teps_prev = data(118);
+        C_cum_p_teps = data(119);
+        C_sgm_0 = data(120);
+        C_alf_d = data(121);
+        C_alf = data(122);
+        C_ytsgm_p = data(123);
+        C_ytsgm_n = data(124);
+        C_yteps_p = data(125);
+        C_yteps_n = data(126);
+        C_teps = data(127);
+        C_neps = data(128);
+        C_tsgm = data(129);
+        C_nsgm = data(130);
+        C_teps_prev = data(131);
+        C_neps_prev = data(132);
+        C_tsgm_prev = data(133);
+        C_nsgm_prev = data(134);
+        C_cEu = data(135);
+        C_cSgmy = data(136);
+        C_cEpsy = data(137);
+        C_cSgmc = data(138);
+        C_cEpsc = data(139);
+        C_cSgmd1 = data(140);
+        C_cEpsd1 = data(141);
+        C_cSgmd2 = data(142);
+        C_cEpsd2 = data(143);
+        C_cSgmb = data(144);
+        C_cSgmd = data(145);
+        C_cEsth = data(146);
+        C_cEd1 = data(147);
+        C_cEd2 = data(148);
+        C_cIniSgmy = data(149);
+        C_cIniEpsy = data(150);
+        C_cIniSgmc = data(151);
+        C_cIniEpsc = data(152);
+        C_cIniEsth = data(153);
+        C_cIniEd1 = data(154);
+        C_cIniEd2 = data(155);
+        C_cIniSgmd1 = data(156);
+        C_cIniEpsd1 = data(157);
+        C_cIniSgmb = data(158);
+        C_cIniSgmd = data(159);
+        C_cIniSgmd2 = data(160);
+        C_cIniEpsd2 = data(161);
+        C_tEu = data(162);
+        C_tSgmy = data(163);
+        C_tEpsy = data(164);
+        C_tSgmp = data(165);
+        C_tEpsp = data(166);
+        C_tEpsp2 = data(167);
+        C_tEr = data(168);
+        C_tEr2 = data(169);
+        C_refEps = data(170);
+        C_Beta1 = data(171);
+        C_Beta2 = data(172);
+        C_Beta3 = data(173);
+        C_Alpha1 = data(174);
+        C_Alpha2 = data(175);
+        C_Alpha3 = data(176);
+        C_TotalE = data(177);
+        C_DeltaE = data(178);
+        C_Tangent = data(179);
 
 
-          iInitial = data (180);
-          C_iInitial = data (181);
+        iInitial = data(180);
+        C_iInitial = data(181);
 
-      }
+    }
 
     return res;
 }
 
 
-void
-SLModel::Print (OPS_Stream & s, int flag)
+void SLModel::Print(OPS_Stream & s, int flag)
 {
-    s << "SLModel tag: " << this->getTag () << endln;
+    s << "SLModel tag: " << this->getTag() << endln;
     s << "  Dt: " << Dt << endln;
     s << "  sgm_ini: " << sgm_ini << endln;
     s << "  OP_Material: " << OP_Material << endln;
@@ -1621,108 +1505,100 @@ SLModel::Print (OPS_Stream & s, int flag)
 /********************************************************************************************
  *** StrainHardeningFunc
  ********************************************************************************************/
-void
-SLModel::StrainHardeningFunc (void)
+void SLModel::StrainHardeningFunc(void)
 {
     //define local variables
     double Deltap_teps;
 
-    if (status == 1)
-      {
+    if (status == 1) {
 
-          //plastic strain
-          p_teps = p_teps_prev;
-          cum_p_teps = cum_p_teps;
+        //plastic strain
+        p_teps = p_teps_prev;
+        cum_p_teps = cum_p_teps;
 
-          //true stress
-          tsgm = (teps - p_teps) * E;
-          sgm_0 = sgm_0;
-          alf_d = 0.0;
-          alf = alf + alf_d;
+        //true stress
+        tsgm = (teps - p_teps) * E;
+        sgm_0 = sgm_0;
+        alf_d = 0.0;
+        alf = alf + alf_d;
 
-          //nominal stress
-          nsgm = tsgm / exp (teps);
+        //nominal stress
+        nsgm = tsgm / exp(teps);
 
-          //nominal plastic strain
-          p_neps = p_neps_prev;
+        //nominal plastic strain
+        p_neps = p_neps_prev;
 
-          //Tangent
-          Tangent = E;
-          //Tangent = (nsgm-nsgm_prev)/(neps-neps_prev);
+        //Tangent
+        Tangent = E;
+        //Tangent = (nsgm-nsgm_prev)/(neps-neps_prev);
 
-      }
-    else if (status == 2)
-      {
+    } else if (status == 2) {
 
-          //true plastic strain
-          p_teps = teps - tsgm / E;
+        //true plastic strain
+        p_teps = teps - tsgm / E;
 
-          //increment of plastic strain 
-          Deltap_teps = (p_teps - p_teps_prev) / 5.0;
+        //increment of plastic strain 
+        Deltap_teps = (p_teps - p_teps_prev) / 5.0;
 
-          for (int jj = 1; jj <= 5; jj++)
-            {
+        for (int jj = 1; jj <= 5; jj++) {
 
-                //kinematic hardening component 
-                alf_d =
-                    c / sgm_0 * (tsgm - alf) * (Deltap_teps) -
-                    gamma * alf * (Deltap_teps);
-                alf = alf + alf_d;      //plus
+            //kinematic hardening component 
+            alf_d =
+                c / sgm_0 * (tsgm - alf) * (Deltap_teps) -
+                gamma * alf * (Deltap_teps);
+            alf = alf + alf_d;  //plus
 
-                //isotropic hardening component 
-                cum_p_teps = cum_p_teps + fabs (Deltap_teps);
-                sgm_0 = sgm_ini + q * (1 - exp (-1 * beta * cum_p_teps));
+            //isotropic hardening component 
+            cum_p_teps = cum_p_teps + fabs(Deltap_teps);
+            sgm_0 = sgm_ini + q * (1 - exp(-1 * beta * cum_p_teps));
 
-                //total true stress
-                tsgm = alf + sgm_0;     //plus
+            //total true stress
+            tsgm = alf + sgm_0; //plus
 
-            }
+        }
 
-          //nominal stress
-          nsgm = tsgm / exp (teps);
+        //nominal stress
+        nsgm = tsgm / exp(teps);
 
-          //nominal plastic strain
-          p_neps = neps - nsgm / E;
+        //nominal plastic strain
+        p_neps = neps - nsgm / E;
 
-          //Tangent
-          Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+        //Tangent
+        Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
 
-      }
-    else if (status == 3)
-      {
+    } else if (status == 3) {
 
-          //true plastic strain
-          p_teps = teps - tsgm / E;
+        //true plastic strain
+        p_teps = teps - tsgm / E;
 
-          //increment of plastic strain 
-          Deltap_teps = (p_teps - p_teps_prev) / 5.0;
+        //increment of plastic strain 
+        Deltap_teps = (p_teps - p_teps_prev) / 5.0;
 
-          for (int jj = 1; jj <= 5; jj++)
-            {
-                //kinematic hardening component 
-                alf_d =
-                    c / sgm_0 * (tsgm - alf) * (Deltap_teps) -
-                    gamma * alf * (Deltap_teps);
-                alf = alf - alf_d;      //minus
+        for (int jj = 1; jj <= 5; jj++) {
+            //kinematic hardening component 
+            alf_d =
+                c / sgm_0 * (tsgm - alf) * (Deltap_teps) -
+                gamma * alf * (Deltap_teps);
+            alf = alf - alf_d;  //minus
 
-                //isotropic hardening component 
-                cum_p_teps = cum_p_teps + fabs (Deltap_teps);
-                sgm_0 = sgm_ini + q * (1 - exp (-1 * beta * cum_p_teps));
+            //isotropic hardening component 
+            cum_p_teps = cum_p_teps + fabs(Deltap_teps);
+            sgm_0 = sgm_ini + q * (1 - exp(-1 * beta * cum_p_teps));
 
-                //total true stress
-                tsgm = alf - sgm_0;     //minus
-            }
+            //total true stress
+            tsgm = alf - sgm_0; //minus
+        }
 
-          //nominal stress
-          nsgm = tsgm / exp (teps);
+        //nominal stress
+        nsgm = tsgm / exp(teps);
 
-          //nominal plastic strain
-          p_neps = neps - nsgm / E;
+        //nominal plastic strain
+        p_neps = neps - nsgm / E;
 
-          //Tangent
-          Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
+        //Tangent
+        Tangent = (nsgm - nsgm_prev) / (neps - neps_prev);
 
-      }
+    }
 }
 
 
@@ -1730,31 +1606,26 @@ SLModel::StrainHardeningFunc (void)
 /********************************************************************************************
  *** YieldPointFunc
  ********************************************************************************************/
-void
-SLModel::YieldPointFunc (void)
+void SLModel::YieldPointFunc(void)
 {
-    if (status == 2)
-      {
-          ytsgm_p = tsgm;
-          yteps_p = teps;
-          ytsgm_n = tsgm - 2 * sgm_0;   //negative
-          yteps_n = teps - 2 * sgm_0 / E;       //negative
-      }
-    else if (status == 3)
-      {
-          ytsgm_p = tsgm + 2 * sgm_0;   //positive
-          yteps_p = teps + 2 * sgm_0 / E;       //positive
-          ytsgm_n = tsgm;
-          yteps_n = teps;
-      }
+    if (status == 2) {
+        ytsgm_p = tsgm;
+        yteps_p = teps;
+        ytsgm_n = tsgm - 2 * sgm_0;     //negative
+        yteps_n = teps - 2 * sgm_0 / E; //negative
+    } else if (status == 3) {
+        ytsgm_p = tsgm + 2 * sgm_0;     //positive
+        yteps_p = teps + 2 * sgm_0 / E; //positive
+        ytsgm_n = tsgm;
+        yteps_n = teps;
+    }
 }
 
 
 /********************************************************************************************
  *** post-buckling excursion in compression
  ********************************************************************************************/
-void
-SLModel::BackBoneCompFunc (void)
+void SLModel::BackBoneCompFunc(void)
 {
 
     // local variables
@@ -1765,18 +1636,14 @@ SLModel::BackBoneCompFunc (void)
 
 
     // unloading slope
-    if (neps < tEpsp)
-      {
-          cEu = E * (au / (au + tEpsp - neps));
-          if (cEu > E)
-            {
-                cEu = E;
-            }
-      }
-    else
-      {
-          cEu = E;
-      }
+    if (neps < tEpsp) {
+        cEu = E * (au / (au + tEpsp - neps));
+        if (cEu > E) {
+            cEu = E;
+        }
+    } else {
+        cEu = E;
+    }
 
 
 
@@ -1815,15 +1682,12 @@ SLModel::BackBoneCompFunc (void)
 
 
     // offset the back bone curve
-    if (refEps >= neps - nsgm / cEu)
-      {
-          cEpsOffset = refEps;
-      }
-    else
-      {
-          cEpsOffset = neps - nsgm / cEu;
-          refEps = cEpsOffset;
-      }
+    if (refEps >= neps - nsgm / cEu) {
+        cEpsOffset = refEps;
+    } else {
+        cEpsOffset = neps - nsgm / cEu;
+        refEps = cEpsOffset;
+    }
 
     cEpsy = cEpsy + cEpsOffset;
     cEpsc = cEpsc + cEpsOffset;
@@ -1840,18 +1704,16 @@ SLModel::BackBoneCompFunc (void)
 
     itemp = 0;
 
-    if (cEpsc < cEpsd1)
-      {
-          cEpsy = -(E * cEpsOffset - cSgmd2) / (E - cEd2);
-          cSgmy = E * (cEpsy - cEpsOffset);
-          cEpsc = cEpsy;
-          cSgmc = cSgmy;
-          cEpsd1 = cEpsy;
-          cSgmd1 = cSgmy;
+    if (cEpsc < cEpsd1) {
+        cEpsy = -(E * cEpsOffset - cSgmd2) / (E - cEd2);
+        cSgmy = E * (cEpsy - cEpsOffset);
+        cEpsc = cEpsy;
+        cSgmc = cSgmy;
+        cEpsd1 = cEpsy;
+        cSgmd1 = cSgmy;
 
-          itemp = 1;
-      }
-
+        itemp = 1;
+    }
     //
     TempEps1 = neps - (nsgm - cSgmc) / cEu;
     TempEps2 = neps - (nsgm - cSgmd1) / cEu;
@@ -1860,82 +1722,70 @@ SLModel::BackBoneCompFunc (void)
     double ReductionFactor;
     ReductionFactor = 0.0;      ///////////////////////////////**************************************************************************************************************************
 
-    if (cEpsc <= TempEps1)
-      {
-          if (itemp == 0)
-            {
-                cEpsy = -(cSgme - cSgmb) / (cEu - cEsth);
-                cSgmy = cEu * cEpsy + cSgme;
-            }
-          else if (itemp == 1)
-            {
-                cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
-                cSgmy = cEu * cEpsy + cSgme;
+    if (cEpsc <= TempEps1) {
+        if (itemp == 0) {
+            cEpsy = -(cSgme - cSgmb) / (cEu - cEsth);
+            cSgmy = cEu * cEpsy + cSgme;
+        } else if (itemp == 1) {
+            cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
+            cSgmy = cEu * cEpsy + cSgme;
 
-                cEpsc = cEpsy;
-                cSgmc = cSgmy;
-                cEpsd1 = cEpsy;
-                cSgmd1 = cSgmy;
+            cEpsc = cEpsy;
+            cSgmc = cSgmy;
+            cEpsd1 = cEpsy;
+            cSgmd1 = cSgmy;
 
 
-                cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
-                cSgmy = cEu * cEpsy + cSgme;
+            cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
+            cSgmy = cEu * cEpsy + cSgme;
 
-                cSgmb = cSgmy - cEsth * cEpsy;
+            cSgmb = cSgmy - cEsth * cEpsy;
 
-                cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
-                cSgmc = cEsth * cEpsc + cSgmb;
+            cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
+            cSgmc = cEsth * cEpsc + cSgmb;
 
-                cEpsd1 = cEpsc;
-            }
-      }
-    else if (TempEps1 < cEpsc && cEpsd1 <= TempEps2)
-      {
+            cEpsd1 = cEpsc;
+        }
+    } else if (TempEps1 < cEpsc && cEpsd1 <= TempEps2) {
 
-          cEpsy = -(cSgme - cSgmd) / (cEu - cEd1);
-          cSgmy = cEu * cEpsy + cSgme;
-          cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
-          cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = -(cSgme - cSgmd) / (cEu - cEd1);
+        cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
+        cSgmy = cEu * cEpsy + cSgme;
 
-          cSgmb = cSgmy - cEsth * cEpsy;
+        cSgmb = cSgmy - cEsth * cEpsy;
 
-          double TempcEpsc1, TempcEpsc2;
-          TempcEpsc1 = -(cSgmb - cSgmd) / (cEsth - cEd1);
-          TempcEpsc2 = -(cSgmb - cSgmd2) / (cEsth - cEd2);
+        double TempcEpsc1, TempcEpsc2;
+        TempcEpsc1 = -(cSgmb - cSgmd) / (cEsth - cEd1);
+        TempcEpsc2 = -(cSgmb - cSgmd2) / (cEsth - cEd2);
 
-          if (TempcEpsc1 < TempcEpsc2)
-            {
-                cEpsc = TempcEpsc1;
-            }
-          else
-            {
-                cEpsc = TempcEpsc2;
-            }
-          cSgmc = cEsth * cEpsc + cSgmb;
+        if (TempcEpsc1 < TempcEpsc2) {
+            cEpsc = TempcEpsc1;
+        } else {
+            cEpsc = TempcEpsc2;
+        }
+        cSgmc = cEsth * cEpsc + cSgmb;
 
-      }
-    else if (TempEps2 < cEpsd1 && cEpsd2 <= TempEps3)
-      {
+    } else if (TempEps2 < cEpsd1 && cEpsd2 <= TempEps3) {
 
-          cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
-          cSgmy = cEu * cEpsy + cSgme;
-          cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
-          cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
+        cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
+        cSgmy = cEu * cEpsy + cSgme;
 
-          cSgmb = cSgmy - cEsth * cEpsy;
+        cSgmb = cSgmy - cEsth * cEpsy;
 
-          cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
-          cSgmc = cEsth * cEpsc + cSgmb;
+        cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
+        cSgmc = cEsth * cEpsc + cSgmb;
 
-          cEpsd1 = cEpsc;
-      }
+        cEpsd1 = cEpsc;
+    }
 
 
-    if (nsgm > tSgmp)
-      {
-          tEpsp = neps;
-          tSgmp = nsgm;
-      }
+    if (nsgm > tSgmp) {
+        tEpsp = neps;
+        tSgmp = nsgm;
+    }
 
 
 }
@@ -1944,72 +1794,57 @@ SLModel::BackBoneCompFunc (void)
 /********************************************************************************************
  *** post-buckling excursion in tension
  ********************************************************************************************/
-void
-SLModel::BackBoneTenFunc (void)
+void SLModel::BackBoneTenFunc(void)
 {
     // local variables
     double TempSgm, TempEps, TempSgm2, TempEps2, Err;
 
     //unloading slope
-    if (neps < tEpsp)
-      {
-          tEu = E * (au / (au + tEpsp - neps));
-          if (tEu > E)
-            {
-                tEu = E;
-            }
-      }
-    else
-      {
-          tEu = E;
-      }
+    if (neps < tEpsp) {
+        tEu = E * (au / (au + tEpsp - neps));
+        if (tEu > E) {
+            tEu = E;
+        }
+    } else {
+        tEu = E;
+    }
 
     //yield stress
 
-    if (neps < tEpsp)
-      {
-          TempSgm = sgm_ini * (ay / (ay + tEpsp - neps));
-          if (TempSgm > sgm_ini * 0.999999)
-            {
-                TempSgm = sgm_ini * 0.999999;
-            }
-      }
-    else
-      {
-          TempSgm = sgm_ini * 0.999999;
-      }
+    if (neps < tEpsp) {
+        TempSgm = sgm_ini * (ay / (ay + tEpsp - neps));
+        if (TempSgm > sgm_ini * 0.999999) {
+            TempSgm = sgm_ini * 0.999999;
+        }
+    } else {
+        TempSgm = sgm_ini * 0.999999;
+    }
 
     TempEps = neps + (TempSgm - nsgm) / tEu;
 
-    for (int i = 1; i <= 20; i++)
-      {
-          TempSgm2 = TempSgm;
-          TempEps2 = TempEps;
+    for (int i = 1; i <= 20; i++) {
+        TempSgm2 = TempSgm;
+        TempEps2 = TempEps;
 
-          if (TempEps2 < tEpsp)
-            {
-                TempSgm = sgm_ini * (ay / (ay + tEpsp - neps));
-                if (TempSgm > sgm_ini * 0.999999)
-                  {
-                      TempSgm = sgm_ini * 0.999999;
-                  }
-            }
-          else
-            {
+        if (TempEps2 < tEpsp) {
+            TempSgm = sgm_ini * (ay / (ay + tEpsp - neps));
+            if (TempSgm > sgm_ini * 0.999999) {
                 TempSgm = sgm_ini * 0.999999;
             }
+        } else {
+            TempSgm = sgm_ini * 0.999999;
+        }
 
-          TempEps = TempEps2 + (TempSgm - TempSgm2) / tEu;
+        TempEps = TempEps2 + (TempSgm - TempSgm2) / tEu;
 
-          tSgmy = TempSgm;
-          tEpsy = TempEps;
+        tSgmy = TempSgm;
+        tEpsy = TempEps;
 
-          Err = fabs (TempSgm - TempSgm2);
-          if (Err < 1.0e-5)
-            {
-                break;
-            }
-      };
+        Err = fabs(TempSgm - TempSgm2);
+        if (Err < 1.0e-5) {
+            break;
+        }
+    };
 
 
     //reloading slope
@@ -2023,8 +1858,7 @@ SLModel::BackBoneTenFunc (void)
 /********************************************************************************************
  *** Unloading in compression
  ********************************************************************************************/
-void
-SLModel::BackBoneComp2Func (void)
+void SLModel::BackBoneComp2Func(void)
 {
 
     // local variables
@@ -2043,17 +1877,16 @@ SLModel::BackBoneComp2Func (void)
     itemp = 0;
     cEpsOffset = refEps;
 
-    if (cEpsc < cEpsd1)
-      {
-          cEpsy = -(E * cEpsOffset - cSgmd2) / (E - cEd2);
-          cSgmy = E * (cEpsy - cEpsOffset);
-          cEpsc = cEpsy;
-          cSgmc = cSgmy;
-          cEpsd1 = cEpsy;
-          cSgmd1 = cSgmy;
+    if (cEpsc < cEpsd1) {
+        cEpsy = -(E * cEpsOffset - cSgmd2) / (E - cEd2);
+        cSgmy = E * (cEpsy - cEpsOffset);
+        cEpsc = cEpsy;
+        cSgmc = cSgmy;
+        cEpsd1 = cEpsy;
+        cSgmd1 = cSgmy;
 
-          itemp = 1;
-      }
+        itemp = 1;
+    }
 
     cSgme = nsgm - cEu * neps;
 
@@ -2065,83 +1898,71 @@ SLModel::BackBoneComp2Func (void)
     double ReductionFactor;
     ReductionFactor = 0.0;      ///////////////////////////////**************************************************************************************************************************
 
-    if (cEpsc <= TempEps1)
-      {
-          if (itemp == 0)
-            {
-                cEpsy = -(cSgme - cSgmb) / (cEu - cEsth);
-                cSgmy = cEu * cEpsy + cSgme;
-            }
-          else if (itemp == 1)
-            {
-                cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
-                cSgmy = cEu * cEpsy + cSgme;
+    if (cEpsc <= TempEps1) {
+        if (itemp == 0) {
+            cEpsy = -(cSgme - cSgmb) / (cEu - cEsth);
+            cSgmy = cEu * cEpsy + cSgme;
+        } else if (itemp == 1) {
+            cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
+            cSgmy = cEu * cEpsy + cSgme;
 
-                cEpsc = cEpsy;
-                cSgmc = cSgmy;
-                cEpsd1 = cEpsy;
-                cSgmd1 = cSgmy;
+            cEpsc = cEpsy;
+            cSgmc = cSgmy;
+            cEpsd1 = cEpsy;
+            cSgmd1 = cSgmy;
 
 
-                cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
-                cSgmy = cEu * cEpsy + cSgme;
+            cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
+            cSgmy = cEu * cEpsy + cSgme;
 
-                cSgmb = cSgmy - cEsth * cEpsy;
+            cSgmb = cSgmy - cEsth * cEpsy;
 
-                cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
-                cSgmc = cEsth * cEpsc + cSgmb;
+            cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
+            cSgmc = cEsth * cEpsc + cSgmb;
 
-                cEpsd1 = cEpsc;
-            }
-      }
-    else if (TempEps1 < cEpsc && cEpsd1 <= TempEps2)
-      {
+            cEpsd1 = cEpsc;
+        }
+    } else if (TempEps1 < cEpsc && cEpsd1 <= TempEps2) {
 
-          cEpsy = -(cSgme - cSgmd) / (cEu - cEd1);
-          cSgmy = cEu * cEpsy + cSgme;
-          cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
-          cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = -(cSgme - cSgmd) / (cEu - cEd1);
+        cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
+        cSgmy = cEu * cEpsy + cSgme;
 
-          cSgmb = cSgmy - cEsth * cEpsy;
+        cSgmb = cSgmy - cEsth * cEpsy;
 
-          double TempcEpsc1, TempcEpsc2;
-          TempcEpsc1 = -(cSgmb - cSgmd) / (cEsth - cEd1);
-          TempcEpsc2 = -(cSgmb - cSgmd2) / (cEsth - cEd2);
+        double TempcEpsc1, TempcEpsc2;
+        TempcEpsc1 = -(cSgmb - cSgmd) / (cEsth - cEd1);
+        TempcEpsc2 = -(cSgmb - cSgmd2) / (cEsth - cEd2);
 
-          if (TempcEpsc1 < TempcEpsc2)
-            {
-                cEpsc = TempcEpsc1;
-            }
-          else
-            {
-                cEpsc = TempcEpsc2;
-            }
-          cSgmc = cEsth * cEpsc + cSgmb;
+        if (TempcEpsc1 < TempcEpsc2) {
+            cEpsc = TempcEpsc1;
+        } else {
+            cEpsc = TempcEpsc2;
+        }
+        cSgmc = cEsth * cEpsc + cSgmb;
 
 
-      }
-    else if (TempEps2 < cEpsd1 && cEpsd2 <= TempEps3)
-      {
+    } else if (TempEps2 < cEpsd1 && cEpsd2 <= TempEps3) {
 
-          cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
-          cSgmy = cEu * cEpsy + cSgme;
-          cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
-          cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = -(cSgme - cSgmd2) / (cEu - cEd2);
+        cSgmy = cEu * cEpsy + cSgme;
+        cEpsy = cEpsy - cSgmy / cEu * ReductionFactor;
+        cSgmy = cEu * cEpsy + cSgme;
 
-          cSgmb = cSgmy - cEsth * cEpsy;
+        cSgmb = cSgmy - cEsth * cEpsy;
 
-          cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
-          cSgmc = cEsth * cEpsc + cSgmb;
+        cEpsc = -(cSgmb - cSgmd2) / (cEsth - cEd2);
+        cSgmc = cEsth * cEpsc + cSgmb;
 
-          cEpsd1 = cEpsc;
-      }
+        cEpsd1 = cEpsc;
+    }
 
 
-    if (nsgm > tSgmp)
-      {
-          tEpsp = neps;
-          tSgmp = nsgm;
-      }
+    if (nsgm > tSgmp) {
+        tEpsp = neps;
+        tSgmp = nsgm;
+    }
 
 
 }
@@ -2151,8 +1972,7 @@ SLModel::BackBoneComp2Func (void)
 /********************************************************************************************
  *** Unloading in tension
  ********************************************************************************************/
-void
-SLModel::BackBoneTen2Func (void)
+void SLModel::BackBoneTen2Func(void)
 {
     // local variables
     double tSgme, TemptSgmp;

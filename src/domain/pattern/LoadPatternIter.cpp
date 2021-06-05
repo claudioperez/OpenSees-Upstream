@@ -43,35 +43,31 @@
 // LoadPatternIter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-LoadPatternIter::LoadPatternIter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+LoadPatternIter::LoadPatternIter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
 
-LoadPatternIter::~LoadPatternIter ()
+LoadPatternIter::~LoadPatternIter()
 {
 }
 
 void
-LoadPatternIter::reset (void)
+ LoadPatternIter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-LoadPattern *
-LoadPatternIter::operator () (void)
-{
+LoadPattern *LoadPatternIter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          LoadPattern *result = (LoadPattern *) theComponent;
-          return result;
-      }
+    else {
+        LoadPattern *result = (LoadPattern *) theComponent;
+        return result;
+    }
 }

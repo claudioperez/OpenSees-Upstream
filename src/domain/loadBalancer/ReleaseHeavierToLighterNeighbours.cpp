@@ -39,59 +39,55 @@
 #include <VertexIter.h>
 #include <Vertex.h>
 
-ReleaseHeavierToLighterNeighbours::ReleaseHeavierToLighterNeighbours ():numReleases (1), factorGreater (1.0),
-disallowDisconnectedGraphs
-(true)
+ReleaseHeavierToLighterNeighbours::ReleaseHeavierToLighterNeighbours():numReleases(1), factorGreater(1.0),
+    disallowDisconnectedGraphs
+    (true)
 {
 
 
 }
 
-ReleaseHeavierToLighterNeighbours::ReleaseHeavierToLighterNeighbours (double
-                                                                      factGreater,
-                                                                      int
-                                                                      releases,
-                                                                      bool
-                                                                      disallowDisconnected):
-numReleases (releases),
-factorGreater (factGreater),
-disallowDisconnectedGraphs (disallowDisconnected)
+ReleaseHeavierToLighterNeighbours::ReleaseHeavierToLighterNeighbours(double
+                                                                     factGreater,
+                                                                     int
+                                                                     releases,
+                                                                     bool
+                                                                     disallowDisconnected):numReleases
+    (releases), factorGreater(factGreater),
+disallowDisconnectedGraphs(disallowDisconnected)
 {
     if (releases < 0)
         numReleases = 0;
 }
 
-ReleaseHeavierToLighterNeighbours::~ReleaseHeavierToLighterNeighbours ()
+ReleaseHeavierToLighterNeighbours::~ReleaseHeavierToLighterNeighbours()
 {
 
 }
 
 int
-ReleaseHeavierToLighterNeighbours::balance (Graph & theWeightedGraph)
+ ReleaseHeavierToLighterNeighbours::balance(Graph & theWeightedGraph)
 {
     // check to see a domain partitioner has been set
-    DomainPartitioner *thePartitioner = this->getDomainPartitioner ();
-    if (thePartitioner == 0)
-      {
-          opserr << "ReleaseHeavierToLighterNeighbours::balance ";
-          opserr << "- No DomainPartitioner has been set\n";
-          return -1;
-      }
+    DomainPartitioner *thePartitioner = this->getDomainPartitioner();
+    if (thePartitioner == 0) {
+        opserr << "ReleaseHeavierToLighterNeighbours::balance ";
+        opserr << "- No DomainPartitioner has been set\n";
+        return -1;
+    }
 
     int res = 0;
-    int numPartitions = theWeightedGraph.getNumVertex ();
-    for (int i = 1; i <= numPartitions; i++)
-      {
-          res = thePartitioner->releaseBoundary (i, theWeightedGraph,
-                                                 true, factorGreater);
-          if (res < 0)
-            {
-                opserr << "WARNING ReleaseHeavierToLighterNeighbours";
-                opserr << "::balance - DomainPartitioner returned ";
-                opserr << res << endln;
-                return res;
-            }
-      }
+    int numPartitions = theWeightedGraph.getNumVertex();
+    for (int i = 1; i <= numPartitions; i++) {
+        res = thePartitioner->releaseBoundary(i, theWeightedGraph,
+                                              true, factorGreater);
+        if (res < 0) {
+            opserr << "WARNING ReleaseHeavierToLighterNeighbours";
+            opserr << "::balance - DomainPartitioner returned ";
+            opserr << res << endln;
+            return res;
+        }
+    }
 
     return res;
 }

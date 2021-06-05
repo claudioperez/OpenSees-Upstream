@@ -43,35 +43,31 @@
 // SingleDomPC_Iter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-SingleDomPC_Iter::SingleDomPC_Iter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+SingleDomPC_Iter::SingleDomPC_Iter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
-SingleDomPC_Iter::~SingleDomPC_Iter ()
+SingleDomPC_Iter::~SingleDomPC_Iter()
 {
 }
 
 
 void
-SingleDomPC_Iter::reset (void)
+ SingleDomPC_Iter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-Pressure_Constraint *
-SingleDomPC_Iter::operator () (void)
-{
+Pressure_Constraint *SingleDomPC_Iter::operator () (void) {
     // check if we still have Pressure_Constraints in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          Pressure_Constraint *result = (Pressure_Constraint *) theComponent;
-          return result;
-      }
+    else {
+        Pressure_Constraint *result = (Pressure_Constraint *) theComponent;
+        return result;
+    }
 }

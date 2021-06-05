@@ -42,29 +42,20 @@
 #include <remote.h>
 #include <Channel.h>
 
-AlphaMachineBroker::AlphaMachineBroker (FEM_ObjectBroker * theBroker):MachineBroker (theBroker), currentMachine (0),
-maxNumMachines
-(8)
+AlphaMachineBroker::AlphaMachineBroker(FEM_ObjectBroker * theBroker):MachineBroker(theBroker), currentMachine(0),
+    maxNumMachines
+    (8)
 {
-    char *
-        alpha1 = "alpha-1";
-    char *
-        alpha2 = "alpha-2";
-    char *
-        alpha3 = "alpha-3";
-    char *
-        alpha4 = "alpha-4";
-    char *
-        alpha5 = "alpha-5";
-    char *
-        alpha6 = "alpha-6";
-    char *
-        alpha7 = "alpha-7";
-    char *
-        alpha8 = "alpha-8";
+    char *alpha1 = "alpha-1";
+    char *alpha2 = "alpha-2";
+    char *alpha3 = "alpha-3";
+    char *alpha4 = "alpha-4";
+    char *alpha5 = "alpha-5";
+    char *alpha6 = "alpha-6";
+    char *alpha7 = "alpha-7";
+    char *alpha8 = "alpha-8";
 
-    char **
-        theMachines = (char **) malloc (8 * sizeof (char *));
+    char **theMachines = (char **) malloc(8 * sizeof(char *));
     theMachines[0] = alpha5;
     theMachines[1] = alpha2;
     theMachines[2] = alpha8;
@@ -77,13 +68,13 @@ maxNumMachines
     machines = theMachines;
 }
 
-AlphaMachineBroker::~AlphaMachineBroker ()
+AlphaMachineBroker::~AlphaMachineBroker()
 {
 }
 
 
 int
-AlphaMachineBroker::startActor (char *actorProgram,
+ AlphaMachineBroker::startActor(char *actorProgram,
                                 Channel & theChannel, int compDemand)
 {
     char remotecmd[400];
@@ -92,23 +83,22 @@ AlphaMachineBroker::startActor (char *actorProgram,
     char *machine;
     if (currentMachine < maxNumMachines)
         machine = machines[currentMachine];
-    else
-      {
-          currentMachine = 0;
-          machine = machines[currentMachine];
-      }
+    else {
+        currentMachine = 0;
+        machine = machines[currentMachine];
+    }
     currentMachine++;
     //opserr << "CurrentMachine : " << machine <<  endln;
-    strcpy (remotecmd, REMOTE);
-    strcat (remotecmd, " ");
-    strcat (remotecmd, machine);
-    strcat (remotecmd, " ");
-    strcat (remotecmd, actorProgram);
-    strcat (remotecmd, " ");
-    strcat (remotecmd, theChannel.addToProgram ());
-    strcat (remotecmd, "\n");
+    strcpy(remotecmd, REMOTE);
+    strcat(remotecmd, " ");
+    strcat(remotecmd, machine);
+    strcat(remotecmd, " ");
+    strcat(remotecmd, actorProgram);
+    strcat(remotecmd, " ");
+    strcat(remotecmd, theChannel.addToProgram());
+    strcat(remotecmd, "\n");
 
-    system (remotecmd);
+    system(remotecmd);
 
     return 0;
 }

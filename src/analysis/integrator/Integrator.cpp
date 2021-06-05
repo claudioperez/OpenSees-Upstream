@@ -36,10 +36,8 @@
 #include <Integrator.h>
 #include <Vector.h>
 
-Integrator::Integrator (int clasTag):
-MovableObject (clasTag),
-analysisTypeTag (0),
-SensitivityKey (false)
+Integrator::Integrator(int clasTag):MovableObject(clasTag),
+analysisTypeTag(0), SensitivityKey(false)
 {
 }
 
@@ -50,52 +48,48 @@ SensitivityKey (false)
 
 
 
-Integrator::~Integrator ()
+Integrator::~Integrator()
 {
 
 }
 
 int
-Integrator::domainChanged ()
-{
-    return 0;
-}
-
-
-int
-Integrator::formSensitivityRHS (int gradNum)
+ Integrator::domainChanged()
 {
     return 0;
 }
 
-int
-Integrator::formIndependentSensitivityRHS ()
+
+int Integrator::formSensitivityRHS(int gradNum)
 {
     return 0;
 }
 
-int
-Integrator::saveSensitivity (const Vector & v, int gradNum, int numGrads)
+int Integrator::formIndependentSensitivityRHS()
 {
     return 0;
 }
 
-int
-Integrator::commitSensitivity (int gradNum, int numGrads)
+int Integrator::saveSensitivity(const Vector & v, int gradNum,
+                                int numGrads)
+{
+    return 0;
+}
+
+int Integrator::commitSensitivity(int gradNum, int numGrads)
 {
     return 0;
 }
 
 ///////////////////////Abbas///////////////////////////////////////////
 
-int
-Integrator::formEleTangentSensitivity (FE_Element * theEle, int gradNumber)
+int Integrator::formEleTangentSensitivity(FE_Element * theEle,
+                                          int gradNumber)
 {
     return 0;
 }
 
-double
-Integrator::getLambdaSensitivity (int gradNumber)
+double Integrator::getLambdaSensitivity(int gradNumber)
 {
     return 0.0;
 
@@ -103,8 +97,7 @@ Integrator::getLambdaSensitivity (int gradNumber)
 }
 
 
-int
-Integrator::computeSensitivities ()
+int Integrator::computeSensitivities()
 {
 
 //should not be called
@@ -112,27 +105,23 @@ Integrator::computeSensitivities ()
 
 }
 
-int
-Integrator::sensitivityDomainChanged ()
+int Integrator::sensitivityDomainChanged()
 {
 // I do not think I need it
     return 0;
 }
 
-bool
-Integrator::computeSensitivityAtEachIteration ()
+bool Integrator::computeSensitivityAtEachIteration()
 {
     return false;
 }
 
-bool
-Integrator::shouldComputeAtEachStep (void)
+bool Integrator::shouldComputeAtEachStep(void)
 {
     return (analysisTypeTag == 1);
 }
 
-void
-Integrator::setComputeType (int flag)
+void Integrator::setComputeType(int flag)
 {
     analysisTypeTag = flag;
 }

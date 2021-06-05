@@ -32,18 +32,15 @@
 #include <Element.h>
 #include <Domain.h>
 
-ElementalLoad::ElementalLoad (int tag, int cTag, int theEleTag):
-Load (tag, cTag),
-eleTag (theEleTag),
-theElement (0)
+ElementalLoad::ElementalLoad(int tag, int cTag, int theEleTag):Load(tag,
+                                                                    cTag),
+eleTag(theEleTag), theElement(0)
 {
 
 }
 
-ElementalLoad::ElementalLoad (int tag, int cTag):
-Load (tag, cTag),
-eleTag (0),
-theElement (0)
+ElementalLoad::ElementalLoad(int tag, int cTag):Load(tag, cTag),
+eleTag(0), theElement(0)
 {
 
 }
@@ -51,64 +48,56 @@ theElement (0)
 
 // provided for the FEM_Object broker; the tag and elementTag need
 // to be supplied in recvSelf();
-ElementalLoad::ElementalLoad (int cTag):
-Load (0, cTag),
-eleTag (0),
-theElement (0)
+ElementalLoad::ElementalLoad(int cTag):Load(0, cTag),
+eleTag(0), theElement(0)
 {
 
 }
 
 
-ElementalLoad::~ElementalLoad ()
+ElementalLoad::~ElementalLoad()
 {
 
 }
 
 
 void
-ElementalLoad::setDomain (Domain * theDomain)
+ ElementalLoad::setDomain(Domain * theDomain)
 {
-    this->DomainComponent::setDomain (theDomain);
+    this->DomainComponent::setDomain(theDomain);
 
-    if (theDomain == 0)
-      {
-          theElement = 0;
-          return;
-      }
+    if (theDomain == 0) {
+        theElement = 0;
+        return;
+    }
 
-    theElement = theDomain->getElement (eleTag);
-    if (theElement == 0)
-      {
-          opserr << "WARNING - ElementalLoad::setDomain - no ele with tag ";
-          opserr << eleTag << " exists in the domain\n";
-      }
+    theElement = theDomain->getElement(eleTag);
+    if (theElement == 0) {
+        opserr << "WARNING - ElementalLoad::setDomain - no ele with tag ";
+        opserr << eleTag << " exists in the domain\n";
+    }
 }
 
-void
-ElementalLoad::applyLoad (double loadFactor)
+void ElementalLoad::applyLoad(double loadFactor)
 {
     if (theElement != 0)
-        theElement->addLoad (this, loadFactor);
+        theElement->addLoad(this, loadFactor);
 }
 
-void
-ElementalLoad::applyLoad (const Vector & loadFactors)
+void ElementalLoad::applyLoad(const Vector & loadFactors)
 {
     if (theElement != 0)
-        theElement->addLoad (this, loadFactors);
+        theElement->addLoad(this, loadFactors);
 }
 
-const Vector &
-ElementalLoad::getSensitivityData (int gradIndex)
+const Vector & ElementalLoad::getSensitivityData(int gradIndex)
 {
-    static Vector trash (10);
+    static Vector trash(10);
 
     return trash;
 }
 
-int
-ElementalLoad::getElementTag (void)
+int ElementalLoad::getElementTag(void)
 {
     return eleTag;
 }

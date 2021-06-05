@@ -56,179 +56,144 @@
 #include <string>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_LimiStateMaterial ()
+void *OPS_LimiStateMaterial()
 {
     UniaxialMaterial *mat = 0;
 
-    int argc = OPS_GetNumRemainingInputArgs () + 2;
+    int argc = OPS_GetNumRemainingInputArgs() + 2;
     if (argc != 20 && argc != 19 && argc != 16 && argc != 15 && argc != 22
-        && argc != 23)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr <<
-              "Want: uniaxialMaterial LimitState tag? mom1p? rot1p? mom2p? rot2p? mom3p? rot3p? "
-              <<
-              "\nmom1n? rot1n? mom2n? rot2n? mom3n? rot3n? pinchX? pinchY? damfc1? damfc2? beta? "
-              << "\n<curveTag? curveType?>";
-          return 0;
-      }
+        && argc != 23) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr <<
+            "Want: uniaxialMaterial LimitState tag? mom1p? rot1p? mom2p? rot2p? mom3p? rot3p? "
+            <<
+            "\nmom1n? rot1n? mom2n? rot2n? mom3n? rot3n? pinchX? pinchY? damfc1? damfc2? beta? "
+            << "\n<curveTag? curveType?>";
+        return 0;
+    }
 
     int tag;
     int numdata = 1;
-    if (OPS_GetIntInput (&numdata, &tag) < 0)
-      {
-          opserr << "WARNING invalid tag\n";
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, &tag) < 0) {
+        opserr << "WARNING invalid tag\n";
+        return 0;
+    }
 
     double sp12[4];
     numdata = 4;
-    if (OPS_GetDoubleInput (&numdata, sp12) < 0)
-      {
-          opserr << "WARNING invalid double inputs\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, sp12) < 0) {
+        opserr << "WARNING invalid double inputs\n";
+        return 0;
+    }
 
     double sp3[2];
-    if (argc > 16)
-      {
-          numdata = 2;
-          if (OPS_GetDoubleInput (&numdata, sp3) < 0)
-            {
-                opserr << "WARNING invalid double inputs\n";
-                return 0;
-            }
-      }
+    if (argc > 16) {
+        numdata = 2;
+        if (OPS_GetDoubleInput(&numdata, sp3) < 0) {
+            opserr << "WARNING invalid double inputs\n";
+            return 0;
+        }
+    }
 
     double sn12[4];
     numdata = 4;
-    if (OPS_GetDoubleInput (&numdata, sn12) < 0)
-      {
-          opserr << "WARNING invalid double inputs\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, sn12) < 0) {
+        opserr << "WARNING invalid double inputs\n";
+        return 0;
+    }
 
     double sn3[2];
-    if (argc > 16)
-      {
-          numdata = 2;
-          if (OPS_GetDoubleInput (&numdata, sn3) < 0)
-            {
-                opserr << "WARNING invalid double inputs\n";
-                return 0;
-            }
-      }
+    if (argc > 16) {
+        numdata = 2;
+        if (OPS_GetDoubleInput(&numdata, sn3) < 0) {
+            opserr << "WARNING invalid double inputs\n";
+            return 0;
+        }
+    }
 
     double data[4];
     numdata = 4;
-    if (OPS_GetDoubleInput (&numdata, data) < 0)
-      {
-          opserr << "WARNING invalid double inputs\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data) < 0) {
+        opserr << "WARNING invalid double inputs\n";
+        return 0;
+    }
 
     double beta = 0.0;
     numdata = 1;
-    if (argc == 20 || argc == 16 || argc >= 22)
-      {
-          if (OPS_GetDoubleInput (&numdata, &beta) < 0)
-            {
-                opserr << "WARNING invalid beta\n";
-                return 0;
-            }
-      }
+    if (argc == 20 || argc == 16 || argc >= 22) {
+        if (OPS_GetDoubleInput(&numdata, &beta) < 0) {
+            opserr << "WARNING invalid beta\n";
+            return 0;
+        }
+    }
 
     int degrade = 0;
-    if (argc == 22 || argc == 23)
-      {
+    if (argc == 22 || argc == 23) {
 
-          double curveData[2];
-          numdata = 2;
-          if (OPS_GetDoubleInput (&numdata, curveData) < 0)
-            {
-                opserr << "WARNING invalid int inputs\n";
+        double curveData[2];
+        numdata = 2;
+        if (OPS_GetDoubleInput(&numdata, curveData) < 0) {
+            opserr << "WARNING invalid int inputs\n";
+            return 0;
+        }
+        //LimitCurve *theCurve = GetLimitCurve(curveTag); //MRL Commented
+        LimitCurve *theCurve = 0;       //MRL Added
+        theCurve = OPS_getLimitCurve(curveData[0]);     //MRL Added
+
+        if (theCurve == 0) {
+            opserr << "WARNING limit curve does not exist\n";
+            opserr << "limit curve: " << curveData[0];
+            opserr << "\nLimitStateMaterial: " << tag << "\n";
+            return 0;
+        }
+
+        if (argc == 23) {
+            numdata = 1;
+            if (OPS_GetIntInput(&numdata, &degrade) < 0) {
+                opserr << "WARNING invalid degrade\n";
                 return 0;
             }
-
-          //LimitCurve *theCurve = GetLimitCurve(curveTag); //MRL Commented
-          LimitCurve *theCurve = 0;     //MRL Added
-          theCurve = OPS_getLimitCurve (curveData[0]);  //MRL Added
-
-          if (theCurve == 0)
-            {
-                opserr << "WARNING limit curve does not exist\n";
-                opserr << "limit curve: " << curveData[0];
-                opserr << "\nLimitStateMaterial: " << tag << "\n";
-                return 0;
-            }
-
-          if (argc == 23)
-            {
-                numdata = 1;
-                if (OPS_GetIntInput (&numdata, &degrade) < 0)
-                  {
-                      opserr << "WARNING invalid degrade\n";
-                      return 0;
-                  }
-            }
-          mat = new LimitStateMaterial (tag,
-                                        sp12[0], sp12[1], sp12[2], sp12[3],
-                                        sp3[0], sp3[1], sn12[0], sn12[1],
-                                        sn12[2], sn12[3], sn3[0], sn3[1],
-                                        data[0], data[1], data[2], data[3],
-                                        beta, *theCurve, curveData[1],
-                                        degrade);
-      }
-
+        }
+        mat = new LimitStateMaterial(tag,
+                                     sp12[0], sp12[1], sp12[2], sp12[3],
+                                     sp3[0], sp3[1], sn12[0], sn12[1],
+                                     sn12[2], sn12[3], sn3[0], sn3[1],
+                                     data[0], data[1], data[2], data[3],
+                                     beta, *theCurve, curveData[1],
+                                     degrade);
+    }
     // Parsing was successful, allocate the material
-    if (argc == 20 || argc == 19)
-      {
-          mat = new LimitStateMaterial (tag,
-                                        sp12[0], sp12[1], sp12[2], sp12[3],
-                                        sp3[0], sp3[1], sn12[0], sn12[1],
-                                        sn12[2], sn12[3], sn3[0], sn3[1],
-                                        data[0], data[1], data[2], data[3],
-                                        beta);
+    if (argc == 20 || argc == 19) {
+        mat = new LimitStateMaterial(tag,
+                                     sp12[0], sp12[1], sp12[2], sp12[3],
+                                     sp3[0], sp3[1], sn12[0], sn12[1],
+                                     sn12[2], sn12[3], sn3[0], sn3[1],
+                                     data[0], data[1], data[2], data[3],
+                                     beta);
 
-      }
-    else if (argc == 16 || argc == 15)
-      {
-          mat = new LimitStateMaterial (tag,
-                                        sp12[0], sp12[1], sp12[2], sp12[3],
-                                        sn12[0], sn12[1], sn12[2], sn12[3],
-                                        data[0], data[1], data[2], data[3],
-                                        beta);
-      }
+    } else if (argc == 16 || argc == 15) {
+        mat = new LimitStateMaterial(tag,
+                                     sp12[0], sp12[1], sp12[2], sp12[3],
+                                     sn12[0], sn12[1], sn12[2], sn12[3],
+                                     data[0], data[1], data[2], data[3],
+                                     beta);
+    }
     return mat;
 }
 #endif
 
-LimitStateMaterial::LimitStateMaterial (int tag,
-                                        double m1p, double r1p, double m2p,
-                                        double r2p, double m3p, double r3p,
-                                        double m1n, double r1n, double m2n,
-                                        double r2n, double m3n, double r3n,
-                                        double px, double py, double d1,
-                                        double d2, double b):
-UniaxialMaterial (tag, MAT_TAG_LimitState),
-pinchX (px),
-pinchY (py),
-damfc1 (d1),
-damfc2 (d2),
-beta (b),
-mom1p (m1p),
-rot1p (r1p),
-mom2p (m2p),
-rot2p (r2p),
-mom3p (m3p),
-rot3p (r3p),
-mom1n (m1n),
-rot1n (r1n),
-mom2n (m2n),
-rot2n (r2n),
-mom3n (m3n),
-rot3n (r3n)
+LimitStateMaterial::LimitStateMaterial(int tag,
+                                       double m1p, double r1p, double m2p,
+                                       double r2p, double m3p, double r3p,
+                                       double m1n, double r1n, double m2n,
+                                       double r2n, double m3n, double r3n,
+                                       double px, double py, double d1,
+                                       double d2,
+                                       double b):UniaxialMaterial(tag,
+                                                                  MAT_TAG_LimitState),
+pinchX(px), pinchY(py), damfc1(d1), damfc2(d2), beta(b), mom1p(m1p),
+rot1p(r1p), mom2p(m2p), rot2p(r2p), mom3p(m3p), rot3p(r3p), mom1n(m1n),
+rot1n(r1n), mom2n(m2n), rot2n(r2n), mom3n(m3n), rot3n(r3n)
 {
     constructorType = 1;
 
@@ -254,14 +219,12 @@ rot3n (r3n)
     if (rot3n >= rot2n)
         error = true;
 
-    if (error)
-      {
+    if (error) {
 //              this->Print(cout);  // Commented out by Terje
 
 //              g3ErrorHandler->fatal("%s -- input backbone is not unique (one-to-one) 3-point backbone",
 //              "LimitStateMaterial::LimitStateMaterial");
-      }
-
+    }
     // Store original input parameters
     pinchX_orig = px;
     pinchY_orig = py;
@@ -284,15 +247,15 @@ rot3n (r3n)
     energyA =
         0.5 * (rot1p * mom1p + (rot2p - rot1p) * (mom2p + mom1p) +
                (rot3p - rot2p) * (mom3p + mom2p) + rot1n * mom1n + (rot2n -
-                                                                    rot1n) *
-               (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
+                                                                    rot1n)
+               * (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
 
     // Set envelope slopes
-    this->setEnvelope ();
+    this->setEnvelope();
 
     // Initialize history variables
-    this->revertToStart ();
-    this->revertToLastCommit ();
+    this->revertToStart();
+    this->revertToLastCommit();
 
     /////////////////
     // not using limit curve option
@@ -301,26 +264,16 @@ rot3n (r3n)
     /////////////////
 }
 
-LimitStateMaterial::LimitStateMaterial (int tag,
-                                        double m1p, double r1p, double m2p,
-                                        double r2p, double m1n, double r1n,
-                                        double m2n, double r2n, double px,
-                                        double py, double d1, double d2,
-                                        double b):
-UniaxialMaterial (tag, MAT_TAG_LimitState),
-pinchX (px),
-pinchY (py),
-damfc1 (d1),
-damfc2 (d2),
-beta (b),
-mom1p (m1p),
-rot1p (r1p),
-mom3p (m2p),
-rot3p (r2p),
-mom1n (m1n),
-rot1n (r1n),
-mom3n (m2n),
-rot3n (r2n)
+LimitStateMaterial::LimitStateMaterial(int tag,
+                                       double m1p, double r1p, double m2p,
+                                       double r2p, double m1n, double r1n,
+                                       double m2n, double r2n, double px,
+                                       double py, double d1, double d2,
+                                       double b):UniaxialMaterial(tag,
+                                                                  MAT_TAG_LimitState),
+pinchX(px), pinchY(py), damfc1(d1), damfc2(d2), beta(b), mom1p(m1p),
+rot1p(r1p), mom3p(m2p), rot3p(r2p), mom1n(m1n), rot1n(r1n), mom3n(m2n),
+rot3n(r2n)
 {
     constructorType = 2;
     bool error = false;
@@ -339,12 +292,10 @@ rot3n (r2n)
     if (rot3n >= rot1n)
         error = true;
 
-    if (error)
-      {
+    if (error) {
 //              g3ErrorHandler->fatal("%s -- input backbone is not unique (one-to-one) 2-point backbone",
 //              "LimitStateMaterial::LimitStateMaterial");
-      }
-
+    }
     // Store original input parameters
     pinchX_orig = px;
     pinchY_orig = py;
@@ -374,11 +325,11 @@ rot3n (r2n)
     rot2n = 0.5 * (rot1n + rot3n);
 
     // Set envelope slopes
-    this->setEnvelope ();
+    this->setEnvelope();
 
     // Initialize history variables
-    this->revertToStart ();
-    this->revertToLastCommit ();
+    this->revertToStart();
+    this->revertToLastCommit();
 
     //this->Print(cout);
 
@@ -389,39 +340,23 @@ rot3n (r2n)
     /////////////////
 }
 
-LimitStateMaterial::LimitStateMaterial (int tag,
-                                        double m1p, double r1p, double m2p,
-                                        double r2p, double m3p, double r3p,
-                                        double m1n, double r1n, double m2n,
-                                        double r2n, double m3n, double r3n,
-                                        double px, double py, double d1,
-                                        double d2, double b,
-                                        LimitCurve & curve, int cType,
-                                        int deg):
-UniaxialMaterial (tag, MAT_TAG_LimitState),
-mom1p (m1p),
-rot1p (r1p),
-mom2p (m2p),
-rot2p (r2p),
-mom3p (m3p),
-rot3p (r3p),
-mom1n (m1n),
-rot1n (r1n),
-mom2n (m2n),
-rot2n (r2n),
-mom3n (m3n),
-rot3n (r3n),
-pinchX (px),
-pinchY (py),
-damfc1 (d1),
-damfc2 (d2),
-beta (b),
-theCurve (0),
-curveType (cType),
-degrade (deg)
+LimitStateMaterial::LimitStateMaterial(int tag,
+                                       double m1p, double r1p, double m2p,
+                                       double r2p, double m3p, double r3p,
+                                       double m1n, double r1n, double m2n,
+                                       double r2n, double m3n, double r3n,
+                                       double px, double py, double d1,
+                                       double d2, double b,
+                                       LimitCurve & curve, int cType,
+                                       int deg):UniaxialMaterial(tag,
+                                                                 MAT_TAG_LimitState),
+mom1p(m1p), rot1p(r1p), mom2p(m2p), rot2p(r2p), mom3p(m3p), rot3p(r3p),
+mom1n(m1n), rot1n(r1n), mom2n(m2n), rot2n(r2n), mom3n(m3n), rot3n(r3n),
+pinchX(px), pinchY(py), damfc1(d1), damfc2(d2), beta(b), theCurve(0),
+curveType(cType), degrade(deg)
 {
     constructorType = 3;
-    theCurve = curve.getCopy ();
+    theCurve = curve.getCopy();
 
     bool error = false;
 
@@ -445,14 +380,12 @@ degrade (deg)
     if (rot3n >= rot2n)
         error = true;
 
-    if (error)
-      {
+    if (error) {
 //              this->Print(cout); Commented out by Terje
 
 //              g3ErrorHandler->fatal("%s -- input backbone is not unique (one-to-one) limit curve option",
 //              "LimitStateMaterial::LimitStateMaterial");
-      }
-
+    }
     // Store original input parameters
     pinchX_orig = px;
     pinchY_orig = py;
@@ -476,22 +409,20 @@ degrade (deg)
     energyA =
         0.5 * (rot1p * mom1p + (rot2p - rot1p) * (mom2p + mom1p) +
                (rot3p - rot2p) * (mom3p + mom2p) + rot1n * mom1n + (rot2n -
-                                                                    rot1n) *
-               (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
+                                                                    rot1n)
+               * (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
 
 
     ////////////////////
     // get copy of the limit state curve 
     //theCurve = curve.getCopy(); Terje Xmas
 
-    if (theCurve == 0)
-      {
+    if (theCurve == 0) {
 //              g3ErrorHandler->fatal("WARNING LimitStateMaterial - could not get copy of limitCurve");
-          ////////////////////
-      }
-
+        ////////////////////
+    }
     // Set envelope slopes
-    this->setEnvelope ();
+    this->setEnvelope();
 
     /////////////////
     // get elastic slope
@@ -500,17 +431,17 @@ degrade (deg)
     //////////////////
 
     // Initialize history variables
-    this->revertToStart ();
-    this->revertToLastCommit ();
+    this->revertToStart();
+    this->revertToLastCommit();
 
 //      this->Print(cout); // commented out by Terje
 }
 
-LimitStateMaterial::LimitStateMaterial ():
-UniaxialMaterial (0, MAT_TAG_LimitState),
-pinchX (0.0), pinchY (0.0), damfc1 (0.0), damfc2 (0.0), beta (0.0),
-mom1p (0.0), rot1p (0.0), mom2p (0.0), rot2p (0.0), mom3p (0.0), rot3p (0.0),
-mom1n (0.0), rot1n (0.0), mom2n (0.0), rot2n (0.0), mom3n (0.0), rot3n (0.0)
+LimitStateMaterial::LimitStateMaterial():
+UniaxialMaterial(0, MAT_TAG_LimitState),
+pinchX(0.0), pinchY(0.0), damfc1(0.0), damfc2(0.0), beta(0.0),
+mom1p(0.0), rot1p(0.0), mom2p(0.0), rot2p(0.0), mom3p(0.0), rot3p(0.0),
+mom1n(0.0), rot1n(0.0), mom2n(0.0), rot2n(0.0), mom3n(0.0), rot3n(0.0)
 {
     constructorType = 4;
 
@@ -536,7 +467,7 @@ mom1n (0.0), rot1n (0.0), mom2n (0.0), rot2n (0.0), mom3n (0.0), rot3n (0.0)
     curveType = 0;
 }
 
-LimitStateMaterial::~LimitStateMaterial ()
+LimitStateMaterial::~LimitStateMaterial()
 {
     ////////////////////
     if (curveType != 0)
@@ -545,7 +476,7 @@ LimitStateMaterial::~LimitStateMaterial ()
 }
 
 int
-LimitStateMaterial::setTrialStrain (double strain, double strainRate)
+ LimitStateMaterial::setTrialStrain(double strain, double strainRate)
 {
     TrotMax = CrotMax;
     TrotMin = CrotMin;
@@ -561,25 +492,20 @@ LimitStateMaterial::setTrialStrain (double strain, double strainRate)
     if (TloadIndicator == 0)
         TloadIndicator = (dStrain < 0.0) ? 2 : 1;
 
-    if (Tstrain >= CrotMax)
-      {
-          TrotMax = Tstrain;
-          Ttangent = posEnvlpTangent (Tstrain);
-          Tstress = posEnvlpStress (Tstrain);
-      }
-    else if (Tstrain <= CrotMin)
-      {
-          TrotMin = Tstrain;
-          Ttangent = negEnvlpTangent (Tstrain);
-          Tstress = negEnvlpStress (Tstrain);
-      }
-    else
-      {
-          if (dStrain < 0.0)
-              negativeIncrement (dStrain);
-          else if (dStrain > 0.0)
-              positiveIncrement (dStrain);
-      }
+    if (Tstrain >= CrotMax) {
+        TrotMax = Tstrain;
+        Ttangent = posEnvlpTangent(Tstrain);
+        Tstress = posEnvlpStress(Tstrain);
+    } else if (Tstrain <= CrotMin) {
+        TrotMin = Tstrain;
+        Ttangent = negEnvlpTangent(Tstrain);
+        Tstress = negEnvlpStress(Tstrain);
+    } else {
+        if (dStrain < 0.0)
+            negativeIncrement(dStrain);
+        else if (dStrain > 0.0)
+            positiveIncrement(dStrain);
+    }
 
     TenergyD = CenergyD + 0.5 * (Cstress + Tstress) * dStrain;
 
@@ -587,8 +513,7 @@ LimitStateMaterial::setTrialStrain (double strain, double strainRate)
 }
 
 
-double
-LimitStateMaterial::getStrain (void)
+double LimitStateMaterial::getStrain(void)
 {
     /////////////////
     // Return trail strain plus strain due to loss of axial load.
@@ -600,7 +525,7 @@ LimitStateMaterial::getStrain (void)
     double E3;
 
     if (curveType != 0)
-        E3 = theCurve->getDegSlope ();
+        E3 = theCurve->getDegSlope();
     else
         E3 = 1.0;
 
@@ -613,8 +538,7 @@ LimitStateMaterial::getStrain (void)
     //////////////////
 }
 
-double
-LimitStateMaterial::getStress (void)
+double LimitStateMaterial::getStress(void)
 {
     /////////////////
     // Return trail stress minus the loss of axial load.
@@ -629,78 +553,61 @@ LimitStateMaterial::getStress (void)
     /////////////////
 }
 
-double
-LimitStateMaterial::getTangent (void)
+double LimitStateMaterial::getTangent(void)
 {
     //////////////////
     // If on the limit state surface use degrading slope, 
     // but if beyond third corner point use approx zero slope 
     // (axial curve only)
-    if (curveType == 1)
-      {
-          double E3 = theCurve->getDegSlope ();
+    if (curveType == 1) {
+        double E3 = theCurve->getDegSlope();
 
-          if (CstateFlag == 1 || CstateFlag == 2)
-            {
-                if (Tstrain > 0.0)
-                  {
-                      if (Tstrain > rot3p)
-                        {
-                            Ttangent = E1p * 1.0e-9;
-                        }
-                      else
-                        {
-                            Ttangent = E3p;
-                        }
-                  }
-                else
-                  {
-                      if (Tstrain < rot3n)
-                        {
-                            Ttangent = E1p * 1.0e-9;
-                        }
-                      else
-                        {
-                            Ttangent = E3n;
-                        }
-                  }
+        if (CstateFlag == 1 || CstateFlag == 2) {
+            if (Tstrain > 0.0) {
+                if (Tstrain > rot3p) {
+                    Ttangent = E1p * 1.0e-9;
+                } else {
+                    Ttangent = E3p;
+                }
+            } else {
+                if (Tstrain < rot3n) {
+                    Ttangent = E1p * 1.0e-9;
+                } else {
+                    Ttangent = E3n;
+                }
             }
-      }
+        }
+    }
     ///////////////////
 
     return Ttangent;
 }
 
-void
-LimitStateMaterial::positiveIncrement (double dStrain)
+void LimitStateMaterial::positiveIncrement(double dStrain)
 {
-    double kn = pow (CrotMin / rot1n, beta);
+    double kn = pow(CrotMin / rot1n, beta);
     kn = (kn < 1.0) ? 1.0 : 1.0 / kn;
-    double kp = pow (CrotMax / rot1p, beta);
+    double kp = pow(CrotMax / rot1p, beta);
     kp = (kp < 1.0) ? 1.0 : 1.0 / kp;
 
-    if (TloadIndicator == 2)
-      {
-          TloadIndicator = 1;
-          if (Cstress <= 0.0)
-            {
-                TrotNu = Cstrain - Cstress / (E1n * kn);
-                double energy =
-                    CenergyD - 0.5 * Cstress / (E1n * kn) * Cstress;
-                double damfc = 1.0;
-                if (CrotMin < rot1n)
-                  {
-                      damfc += damfc2 * energy / energyA;
+    if (TloadIndicator == 2) {
+        TloadIndicator = 1;
+        if (Cstress <= 0.0) {
+            TrotNu = Cstrain - Cstress / (E1n * kn);
+            double energy =
+                CenergyD - 0.5 * Cstress / (E1n * kn) * Cstress;
+            double damfc = 1.0;
+            if (CrotMin < rot1n) {
+                damfc += damfc2 * energy / energyA;
 
-                      if (Cstrain == CrotMin)
-                        {
-                            damfc += damfc1 * (CrotMax / rot1p - 1.0);
-                        }
-                  }
-
-                TrotMax = CrotMax * damfc;
+                if (Cstrain == CrotMin) {
+                    damfc += damfc1 * (CrotMax / rot1p - 1.0);
+                }
             }
-      }
+
+            TrotMax = CrotMax * damfc;
+        }
+    }
 
     TloadIndicator = 1;
 
@@ -708,19 +615,18 @@ LimitStateMaterial::positiveIncrement (double dStrain)
 
 //////////////////////////
 
-    if (degrade == 1)
-      {
-          // limit TrotMax to maximum strain from opposite direction
-          if (TrotMax < fabs (CrotMin))
-              TrotMax = fabs (CrotMin);
-      }
+    if (degrade == 1) {
+        // limit TrotMax to maximum strain from opposite direction
+        if (TrotMax < fabs(CrotMin))
+            TrotMax = fabs(CrotMin);
+    }
 //////////////////////////
 
-    double maxmom = posEnvlpStress (TrotMax);
-    double rotlim = negEnvlpRotlim (CrotMin);
+    double maxmom = posEnvlpStress(TrotMax);
+    double rotlim = negEnvlpRotlim(CrotMin);
     double rotrel = (rotlim > TrotNu) ? rotlim : TrotNu;
     rotrel = TrotNu;
-    if (negEnvlpStress (CrotMin) >= 0.0)
+    if (negEnvlpStress(CrotMin) >= 0.0)
         rotrel = rotlim;
 
     double rotmp1 = rotrel + pinchY * (TrotMax - rotrel);
@@ -730,103 +636,86 @@ LimitStateMaterial::positiveIncrement (double dStrain)
     double tmpmo1;
     double tmpmo2;
 
-    if (Tstrain < TrotNu)
-      {
-          Ttangent = E1n * kn;
-          Tstress = Cstress + Ttangent * dStrain;
-          if (Tstress >= 0.0)
-            {
-                Tstress = 0.0;
-                Ttangent = E1n * 1.0e-9;
-            }
-      }
+    if (Tstrain < TrotNu) {
+        Ttangent = E1n * kn;
+        Tstress = Cstress + Ttangent * dStrain;
+        if (Tstress >= 0.0) {
+            Tstress = 0.0;
+            Ttangent = E1n * 1.0e-9;
+        }
+    }
 
-    else if (Tstrain >= TrotNu && Tstrain < rotch)
-      {
-          if (Tstrain <= rotrel)
-            {
-                Tstress = 0.0;
-                Ttangent = E1p * 1.0e-9;
-            }
-          else
-            {
-                Ttangent = maxmom * pinchY / (rotch - rotrel);
-                tmpmo1 = Cstress + E1p * kp * dStrain;
-                tmpmo2 = (Tstrain - rotrel) * Ttangent;
-                if (tmpmo1 < tmpmo2)
-                  {
-                      Tstress = tmpmo1;
-                      Ttangent = E1p * kp;
-                  }
-                else
-                    Tstress = tmpmo2;
-            }
-      }
-
-    else
-      {
-          Ttangent = (1.0 - pinchY) * maxmom / (TrotMax - rotch);
-          tmpmo1 = Cstress + E1p * kp * dStrain;
-          tmpmo2 = pinchY * maxmom + (Tstrain - rotch) * Ttangent;
-          if (tmpmo1 < tmpmo2)
-            {
+    else if (Tstrain >= TrotNu && Tstrain < rotch) {
+        if (Tstrain <= rotrel) {
+            Tstress = 0.0;
+            Ttangent = E1p * 1.0e-9;
+        } else {
+            Ttangent = maxmom * pinchY / (rotch - rotrel);
+            tmpmo1 = Cstress + E1p * kp * dStrain;
+            tmpmo2 = (Tstrain - rotrel) * Ttangent;
+            if (tmpmo1 < tmpmo2) {
                 Tstress = tmpmo1;
                 Ttangent = E1p * kp;
-            }
-          else
-              Tstress = tmpmo2;
-      }
+            } else
+                Tstress = tmpmo2;
+        }
+    }
+
+    else {
+        Ttangent = (1.0 - pinchY) * maxmom / (TrotMax - rotch);
+        tmpmo1 = Cstress + E1p * kp * dStrain;
+        tmpmo2 = pinchY * maxmom + (Tstrain - rotch) * Ttangent;
+        if (tmpmo1 < tmpmo2) {
+            Tstress = tmpmo1;
+            Ttangent = E1p * kp;
+        } else
+            Tstress = tmpmo2;
+    }
 }
 
-void
-LimitStateMaterial::negativeIncrement (double dStrain)
+void LimitStateMaterial::negativeIncrement(double dStrain)
 {
-    double kn = pow (CrotMin / rot1n, beta);
+    double kn = pow(CrotMin / rot1n, beta);
     kn = (kn < 1.0) ? 1.0 : 1.0 / kn;
-    double kp = pow (CrotMax / rot1p, beta);
+    double kp = pow(CrotMax / rot1p, beta);
     kp = (kp < 1.0) ? 1.0 : 1.0 / kp;
 
-    if (TloadIndicator == 1)
-      {
-          TloadIndicator = 2;
-          if (Cstress >= 0.0)
-            {
-                TrotPu = Cstrain - Cstress / (E1p * kp);
-                double energy =
-                    CenergyD - 0.5 * Cstress / (E1p * kp) * Cstress;
-                double damfc = 1.0;
-                if (CrotMax > rot1p)
-                  {
-                      damfc += damfc2 * energy / energyA;
+    if (TloadIndicator == 1) {
+        TloadIndicator = 2;
+        if (Cstress >= 0.0) {
+            TrotPu = Cstrain - Cstress / (E1p * kp);
+            double energy =
+                CenergyD - 0.5 * Cstress / (E1p * kp) * Cstress;
+            double damfc = 1.0;
+            if (CrotMax > rot1p) {
+                damfc += damfc2 * energy / energyA;
 
-                      if (Cstrain == CrotMax)
-                        {
-                            damfc += damfc1 * (CrotMin / rot1n - 1.0);
-                        }
-                  }
-
-                TrotMin = CrotMin * damfc;
+                if (Cstrain == CrotMax) {
+                    damfc += damfc1 * (CrotMin / rot1n - 1.0);
+                }
             }
-      }
+
+            TrotMin = CrotMin * damfc;
+        }
+    }
 
     TloadIndicator = 2;
 
     TrotMin = (TrotMin < rot1n) ? TrotMin : rot1n;
 
 //////////////////////////
-    if (degrade == 1)
-      {
-          // limit TrotMax to maximum strain from opposite direction
-          if (TrotMin > -1.0 * (CrotMax))
-              TrotMin = -1.0 * (CrotMax);
-      }
+    if (degrade == 1) {
+        // limit TrotMax to maximum strain from opposite direction
+        if (TrotMin > -1.0 * (CrotMax))
+            TrotMin = -1.0 * (CrotMax);
+    }
 //////////////////////////
 
-    double minmom = negEnvlpStress (TrotMin);
-    double rotlim = posEnvlpRotlim (CrotMax);
+    double minmom = negEnvlpStress(TrotMin);
+    double rotlim = posEnvlpRotlim(CrotMax);
     double rotrel = (rotlim < TrotPu) ? rotlim : TrotPu;
     rotrel = TrotPu;
-    if (posEnvlpStress (CrotMax) <= 0.0)
+    if (posEnvlpStress(CrotMax) <= 0.0)
         rotrel = rotlim;
 
     double rotmp1 = rotrel + pinchY * (TrotMin - rotrel);
@@ -837,57 +726,45 @@ LimitStateMaterial::negativeIncrement (double dStrain)
     double tmpmo2;
 
 
-    if (Tstrain > TrotPu)
-      {
-          Ttangent = E1p * kp;
-          Tstress = Cstress + Ttangent * dStrain;
-          if (Tstress <= 0.0)
-            {
-                Tstress = 0.0;
-                Ttangent = E1p * 1.0e-9;
-            }
-      }
+    if (Tstrain > TrotPu) {
+        Ttangent = E1p * kp;
+        Tstress = Cstress + Ttangent * dStrain;
+        if (Tstress <= 0.0) {
+            Tstress = 0.0;
+            Ttangent = E1p * 1.0e-9;
+        }
+    }
 
-    else if (Tstrain <= TrotPu && Tstrain > rotch)
-      {
+    else if (Tstrain <= TrotPu && Tstrain > rotch) {
 
-          if (Tstrain >= rotrel)
-            {
-                Tstress = 0.0;
-                Ttangent = E1n * 1.0e-9;
-            }
-          else
-            {
-                Ttangent = minmom * pinchY / (rotch - rotrel);
-                tmpmo1 = Cstress + E1n * kn * dStrain;
-                tmpmo2 = (Tstrain - rotrel) * Ttangent;
-                if (tmpmo1 > tmpmo2)
-                  {
-                      Tstress = tmpmo1;
-                      Ttangent = E1n * kn;
-                  }
-                else
-                    Tstress = tmpmo2;
-            }
-      }
-
-    else
-      {
-          Ttangent = (1.0 - pinchY) * minmom / (TrotMin - rotch);
-          tmpmo1 = Cstress + E1n * kn * dStrain;
-          tmpmo2 = pinchY * minmom + (Tstrain - rotch) * Ttangent;
-          if (tmpmo1 > tmpmo2)
-            {
+        if (Tstrain >= rotrel) {
+            Tstress = 0.0;
+            Ttangent = E1n * 1.0e-9;
+        } else {
+            Ttangent = minmom * pinchY / (rotch - rotrel);
+            tmpmo1 = Cstress + E1n * kn * dStrain;
+            tmpmo2 = (Tstrain - rotrel) * Ttangent;
+            if (tmpmo1 > tmpmo2) {
                 Tstress = tmpmo1;
                 Ttangent = E1n * kn;
-            }
-          else
-              Tstress = tmpmo2;
-      }
+            } else
+                Tstress = tmpmo2;
+        }
+    }
+
+    else {
+        Ttangent = (1.0 - pinchY) * minmom / (TrotMin - rotch);
+        tmpmo1 = Cstress + E1n * kn * dStrain;
+        tmpmo2 = pinchY * minmom + (Tstrain - rotch) * Ttangent;
+        if (tmpmo1 > tmpmo2) {
+            Tstress = tmpmo1;
+            Ttangent = E1n * kn;
+        } else
+            Tstress = tmpmo2;
+    }
 }
 
-int
-LimitStateMaterial::commitState (void)
+int LimitStateMaterial::commitState(void)
 {
     CrotMax = TrotMax;
     CrotMin = TrotMin;
@@ -904,88 +781,72 @@ LimitStateMaterial::commitState (void)
     ////////////////////
     // check element state if using limit curve option
     // and not beyond residual capacity (CstateFlag == 4)
-    if (curveType != 0 && CstateFlag != 4)
-      {
-          ////////////////////
-          // Check state of element relative to the limit state surface.
-          // Note that steps should be kept small to minimize error
-          // caused by committed state being far beyond limit state surface
-          int stateFlag = theCurve->checkElementState (Cstress);
+    if (curveType != 0 && CstateFlag != 4) {
+        ////////////////////
+        // Check state of element relative to the limit state surface.
+        // Note that steps should be kept small to minimize error
+        // caused by committed state being far beyond limit state surface
+        int stateFlag = theCurve->checkElementState(Cstress);
 
-          // If beyond limit state surface for first time,
-          // get the new final slope and residual capacity 
-          // for this LimitState material
-          if (stateFlag == 1)
-            {
+        // If beyond limit state surface for first time,
+        // get the new final slope and residual capacity 
+        // for this LimitState material
+        if (stateFlag == 1) {
 //                      g3ErrorHandler->warning("LimitStateMaterial tag %d - failure detected", this->getTag());
 
-                // display warning if Cstrain = max strain experienced.
-                if (Cstrain != CrotMax && Cstrain != CrotMin)
-                  {
+            // display warning if Cstrain = max strain experienced.
+            if (Cstrain != CrotMax && Cstrain != CrotMin) {
 //                              g3ErrorHandler->warning("WARNING LimitStateMaterial - failure occurred while not at peak in displacement",
 //                                              "History variables may not be correct. Need to reset history variables in commitState");
-                  }
+            }
 
-                result += getNewBackbone (stateFlag);   // get backbone in current direction
+            result += getNewBackbone(stateFlag);        // get backbone in current direction
 
-                // if not an axial curve, cause failure in both directions 
-                if (curveType != 1)
-                    result += mirrorBackbone ();
+            // if not an axial curve, cause failure in both directions 
+            if (curveType != 1)
+                result += mirrorBackbone();
 
 //                      this->Print(cout); // Commented out by Terje
+        }
+        // special functions for axial curve
+        if (curveType == 1) {
+
+            // If on surface, get axial load lost  
+            if (stateFlag == 1 || stateFlag == 2 || stateFlag == 4) {
+                Ploss += theCurve->getUnbalanceForce();
+                opserr << "Axial load loss: " << Ploss << endln;
             }
-
-          // special functions for axial curve
-          if (curveType == 1)
-            {
-
-                // If on surface, get axial load lost  
-                if (stateFlag == 1 || stateFlag == 2 || stateFlag == 4)
-                  {
-                      Ploss += theCurve->getUnbalanceForce ();
-                      opserr << "Axial load loss: " << Ploss << endln;
-                  }
-
-                // if moving off surface then get new backbone with elastic 3rd slope
-                if (CstateFlag == 2 || CstateFlag == 1)
-                  {
-                      if (stateFlag == 3)
-                        {
-                            result += getNewBackbone (stateFlag);
+            // if moving off surface then get new backbone with elastic 3rd slope
+            if (CstateFlag == 2 || CstateFlag == 1) {
+                if (stateFlag == 3) {
+                    result += getNewBackbone(stateFlag);
 //                                      this->Print(cout); // Commented out by Terje
-                        }
+                }
 
-                  }
-
-                // if moving onto surface then get new backbone with degrading slope
-                if (CstateFlag == 3)
-                  {
-                      if (stateFlag == 2)
-                        {
-                            result += getNewBackbone (stateFlag);
-//                                      this->Print(cout); Commented out by Terje
-                        }
-                  }
-
-                // if forceSurface governed by residual capacity set new flat backbone
-                // do not allow backbone to be changed again.
-                if (stateFlag == 4)
-                  {
-                      result += getNewBackbone (stateFlag);
-//                              this->Print(cout); commented out by Terje
-                  }
             }
+            // if moving onto surface then get new backbone with degrading slope
+            if (CstateFlag == 3) {
+                if (stateFlag == 2) {
+                    result += getNewBackbone(stateFlag);
+//                                      this->Print(cout); Commented out by Terje
+                }
+            }
+            // if forceSurface governed by residual capacity set new flat backbone
+            // do not allow backbone to be changed again.
+            if (stateFlag == 4) {
+                result += getNewBackbone(stateFlag);
+//                              this->Print(cout); commented out by Terje
+            }
+        }
+        // commit the current state if needed outside commitState 
+        CstateFlag = stateFlag;
 
-          // commit the current state if needed outside commitState 
-          CstateFlag = stateFlag;
-
-      }                         //////////////////
+    }                           //////////////////
 
     return 0;
 }
 
-int
-LimitStateMaterial::revertToLastCommit (void)
+int LimitStateMaterial::revertToLastCommit(void)
 {
     TrotMax = CrotMax;
     TrotMin = CrotMin;
@@ -1000,8 +861,7 @@ LimitStateMaterial::revertToLastCommit (void)
     return 0;
 }
 
-int
-LimitStateMaterial::revertToStart (void)
+int LimitStateMaterial::revertToStart(void)
 {
     CrotMax = 0.0;
     CrotMin = 0.0;
@@ -1025,7 +885,7 @@ LimitStateMaterial::revertToStart (void)
     /////////////////
 
     // Do the same thin inthe limit curve (done by Terje)
-    theCurve->revertToStart ();
+    theCurve->revertToStart();
 
 
     // Store original input parameters
@@ -1050,22 +910,20 @@ LimitStateMaterial::revertToStart (void)
     energyA =
         0.5 * (rot1p * mom1p + (rot2p - rot1p) * (mom2p + mom1p) +
                (rot3p - rot2p) * (mom3p + mom2p) + rot1n * mom1n + (rot2n -
-                                                                    rot1n) *
-               (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
+                                                                    rot1n)
+               * (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
 
 
-    if (constructorType == 2)
-      {
-          mom2p = 0.5 * (mom1p + mom3p);
-          mom2n = 0.5 * (mom1n + mom3n);
+    if (constructorType == 2) {
+        mom2p = 0.5 * (mom1p + mom3p);
+        mom2n = 0.5 * (mom1n + mom3n);
 
-          rot2p = 0.5 * (rot1p + rot3p);
-          rot2n = 0.5 * (rot1n + rot3n);
-      }
-
+        rot2p = 0.5 * (rot1p + rot3p);
+        rot2n = 0.5 * (rot1n + rot3n);
+    }
 
     // Set envelope slopes
-    this->setEnvelope ();
+    this->setEnvelope();
 
 
     Eelasticp = E1p;
@@ -1073,102 +931,97 @@ LimitStateMaterial::revertToStart (void)
 
 
     // Initialize history variables
-    this->revertToLastCommit ();
+    this->revertToLastCommit();
 
 
     return 0;
 }
 
-UniaxialMaterial *
-LimitStateMaterial::getCopy (void)
+UniaxialMaterial *LimitStateMaterial::getCopy(void)
 {
     //////////////////
-    if (curveType == 0)
-      {
-          LimitStateMaterial *theCopy =
-              new LimitStateMaterial (this->getTag (),
-                                      mom1p, rot1p, mom2p, rot2p, mom3p,
-                                      rot3p,
-                                      mom1n, rot1n, mom2n, rot2n, mom3n,
-                                      rot3n,
-                                      pinchX, pinchY, damfc1, damfc2, beta);
+    if (curveType == 0) {
+        LimitStateMaterial *theCopy =
+            new LimitStateMaterial(this->getTag(),
+                                   mom1p, rot1p, mom2p, rot2p, mom3p,
+                                   rot3p,
+                                   mom1n, rot1n, mom2n, rot2n, mom3n,
+                                   rot3n,
+                                   pinchX, pinchY, damfc1, damfc2, beta);
 
-          theCopy->CrotMax = CrotMax;
-          theCopy->CrotMin = CrotMin;
-          theCopy->CrotPu = CrotPu;
-          theCopy->CrotNu = CrotNu;
-          theCopy->CenergyD = CenergyD;
-          theCopy->CloadIndicator = CloadIndicator;
-          theCopy->Cstress = Cstress;
-          theCopy->Cstrain = Cstrain;
-          theCopy->Ttangent = Ttangent;
-          theCopy->CstateFlag = CstateFlag;
+        theCopy->CrotMax = CrotMax;
+        theCopy->CrotMin = CrotMin;
+        theCopy->CrotPu = CrotPu;
+        theCopy->CrotNu = CrotNu;
+        theCopy->CenergyD = CenergyD;
+        theCopy->CloadIndicator = CloadIndicator;
+        theCopy->Cstress = Cstress;
+        theCopy->Cstrain = Cstrain;
+        theCopy->Ttangent = Ttangent;
+        theCopy->CstateFlag = CstateFlag;
 
-          return theCopy;
-      }
-    else
-      {
-          LimitStateMaterial *theCopy =
-              new LimitStateMaterial (this->getTag (),
-                                      mom1p, rot1p, mom2p, rot2p, mom3p,
-                                      rot3p,
-                                      mom1n, rot1n, mom2n, rot2n, mom3n,
-                                      rot3n,
-                                      pinchX, pinchY, damfc1, damfc2, beta,
-                                      *theCurve, curveType, degrade);
+        return theCopy;
+    } else {
+        LimitStateMaterial *theCopy =
+            new LimitStateMaterial(this->getTag(),
+                                   mom1p, rot1p, mom2p, rot2p, mom3p,
+                                   rot3p,
+                                   mom1n, rot1n, mom2n, rot2n, mom3n,
+                                   rot3n,
+                                   pinchX, pinchY, damfc1, damfc2, beta,
+                                   *theCurve, curveType, degrade);
 
-          theCopy->CrotMax = CrotMax;
-          theCopy->CrotMin = CrotMin;
-          theCopy->CrotPu = CrotPu;
-          theCopy->CrotNu = CrotNu;
-          theCopy->CenergyD = CenergyD;
-          theCopy->CloadIndicator = CloadIndicator;
-          theCopy->Cstress = Cstress;
-          theCopy->Cstrain = Cstrain;
-          theCopy->Ttangent = Ttangent;
-          theCopy->CstateFlag = CstateFlag;
+        theCopy->CrotMax = CrotMax;
+        theCopy->CrotMin = CrotMin;
+        theCopy->CrotPu = CrotPu;
+        theCopy->CrotNu = CrotNu;
+        theCopy->CenergyD = CenergyD;
+        theCopy->CloadIndicator = CloadIndicator;
+        theCopy->Cstress = Cstress;
+        theCopy->Cstrain = Cstrain;
+        theCopy->Ttangent = Ttangent;
+        theCopy->CstateFlag = CstateFlag;
 
-          return theCopy;
-      }
+        return theCopy;
+    }
     ///////////////////
 }
 
-int
-LimitStateMaterial::sendSelf (int commitTag, Channel & theChannel)
+int LimitStateMaterial::sendSelf(int commitTag, Channel & theChannel)
 {
     int res = 0;
 
-    static Vector data (27);
+    static Vector data(27);
 
-    data (0) = this->getTag ();
-    data (1) = mom1p;
-    data (2) = rot1p;
-    data (3) = mom2p;
-    data (4) = rot2p;
-    data (5) = mom3p;
-    data (6) = rot3p;
-    data (7) = mom1n;
-    data (8) = rot1n;
-    data (9) = mom2n;
-    data (10) = rot2n;
-    data (11) = mom3n;
-    data (12) = rot3n;
-    data (13) = pinchX;
-    data (14) = pinchY;
-    data (15) = damfc1;
-    data (16) = damfc2;
-    data (17) = beta;
-    data (18) = CrotMax;
-    data (19) = CrotMin;
-    data (20) = CrotPu;
-    data (21) = CrotNu;
-    data (22) = CenergyD;
-    data (23) = CloadIndicator;
-    data (24) = Cstress;
-    data (25) = Cstrain;
-    data (26) = Ttangent;
+    data(0) = this->getTag();
+    data(1) = mom1p;
+    data(2) = rot1p;
+    data(3) = mom2p;
+    data(4) = rot2p;
+    data(5) = mom3p;
+    data(6) = rot3p;
+    data(7) = mom1n;
+    data(8) = rot1n;
+    data(9) = mom2n;
+    data(10) = rot2n;
+    data(11) = mom3n;
+    data(12) = rot3n;
+    data(13) = pinchX;
+    data(14) = pinchY;
+    data(15) = damfc1;
+    data(16) = damfc2;
+    data(17) = beta;
+    data(18) = CrotMax;
+    data(19) = CrotMin;
+    data(20) = CrotPu;
+    data(21) = CrotNu;
+    data(22) = CenergyD;
+    data(23) = CloadIndicator;
+    data(24) = Cstress;
+    data(25) = Cstrain;
+    data(26) = Ttangent;
 
-    res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+    res = theChannel.sendVector(this->getDbTag(), commitTag, data);
     if (res < 0)
         opserr << "LimitStateMaterial::sendSelf() - failed to send data\n";
 
@@ -1176,70 +1029,65 @@ LimitStateMaterial::sendSelf (int commitTag, Channel & theChannel)
     return res;
 }
 
-int
-LimitStateMaterial::recvSelf (int commitTag, Channel & theChannel,
-                              FEM_ObjectBroker & theBroker)
+int LimitStateMaterial::recvSelf(int commitTag, Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static Vector data (27);
-    res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+    static Vector data(27);
+    res = theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-    if (res < 0)
-      {
-          opserr <<
-              "LimitStateMaterial::recvSelf() - failed to receive data\n";
-          return res;
-      }
-    else
-      {
-          this->setTag ((int) data (0));
-          mom1p = data (1);
-          rot1p = data (2);
-          mom2p = data (3);
-          rot2p = data (4);
-          mom3p = data (5);
-          rot3p = data (6);
-          mom1n = data (7);
-          rot1n = data (8);
-          mom2n = data (9);
-          rot2n = data (10);
-          mom3n = data (11);
-          rot3n = data (12);
-          pinchX = data (13);
-          pinchY = data (14);
-          damfc1 = data (15);
-          damfc2 = data (16);
-          beta = data (17);
-          CrotMax = data (18);
-          CrotMin = data (19);
-          CrotPu = data (20);
-          CrotNu = data (21);
-          CenergyD = data (22);
-          CloadIndicator = int (data (23));
-          Cstress = data (24);
-          Cstrain = data (25);
-          Ttangent = data (26);
+    if (res < 0) {
+        opserr <<
+            "LimitStateMaterial::recvSelf() - failed to receive data\n";
+        return res;
+    } else {
+        this->setTag((int) data(0));
+        mom1p = data(1);
+        rot1p = data(2);
+        mom2p = data(3);
+        rot2p = data(4);
+        mom3p = data(5);
+        rot3p = data(6);
+        mom1n = data(7);
+        rot1n = data(8);
+        mom2n = data(9);
+        rot2n = data(10);
+        mom3n = data(11);
+        rot3n = data(12);
+        pinchX = data(13);
+        pinchY = data(14);
+        damfc1 = data(15);
+        damfc2 = data(16);
+        beta = data(17);
+        CrotMax = data(18);
+        CrotMin = data(19);
+        CrotPu = data(20);
+        CrotNu = data(21);
+        CenergyD = data(22);
+        CloadIndicator = int (data(23));
+        Cstress = data(24);
+        Cstrain = data(25);
+        Ttangent = data(26);
 
-          // set the trial values
-          TrotMax = CrotMax;
-          TrotMin = CrotMin;
-          TrotPu = CrotPu;
-          TrotNu = CrotNu;
-          TenergyD = CenergyD;
-          TloadIndicator = CloadIndicator;
-          Tstress = Cstress;
-          Tstrain = Cstrain;
+        // set the trial values
+        TrotMax = CrotMax;
+        TrotMin = CrotMin;
+        TrotPu = CrotPu;
+        TrotNu = CrotNu;
+        TenergyD = CenergyD;
+        TloadIndicator = CloadIndicator;
+        Tstress = Cstress;
+        Tstrain = Cstrain;
 
-      }
+    }
 
     return 0;
 }
 
-void
-LimitStateMaterial::Print (OPS_Stream & s, int flag)
+void LimitStateMaterial::Print(OPS_Stream & s, int flag)
 {
-    s << "LimitState Material, tag: " << this->getTag () << endln;
+    s << "LimitState Material, tag: " << this->getTag() << endln;
     s << "mom1p: " << mom1p << endln;
     s << "rot1p: " << rot1p << endln;
     s << "E1p: " << E1p << endln;
@@ -1273,8 +1121,7 @@ LimitStateMaterial::Print (OPS_Stream & s, int flag)
 ///////////////////
 }
 
-void
-LimitStateMaterial::setEnvelope (void)
+void LimitStateMaterial::setEnvelope(void)
 {
     E1p = mom1p / rot1p;
     E2p = (mom2p - mom1p) / (rot2p - rot1p);
@@ -1285,8 +1132,7 @@ LimitStateMaterial::setEnvelope (void)
     E3n = (mom3n - mom2n) / (rot3n - rot2n);
 }
 
-double
-LimitStateMaterial::posEnvlpStress (double strain)
+double LimitStateMaterial::posEnvlpStress(double strain)
 {
     if (strain <= 0.0)
         return 0.0;
@@ -1300,8 +1146,7 @@ LimitStateMaterial::posEnvlpStress (double strain)
         return mom3p;
 }
 
-double
-LimitStateMaterial::negEnvlpStress (double strain)
+double LimitStateMaterial::negEnvlpStress(double strain)
 {
     if (strain >= 0.0)
         return 0.0;
@@ -1315,8 +1160,7 @@ LimitStateMaterial::negEnvlpStress (double strain)
         return mom3n;
 }
 
-double
-LimitStateMaterial::posEnvlpTangent (double strain)
+double LimitStateMaterial::posEnvlpTangent(double strain)
 {
     if (strain < 0.0)
         return E1p * 1.0e-9;
@@ -1330,8 +1174,7 @@ LimitStateMaterial::posEnvlpTangent (double strain)
         return E1p * 1.0e-9;
 }
 
-double
-LimitStateMaterial::negEnvlpTangent (double strain)
+double LimitStateMaterial::negEnvlpTangent(double strain)
 {
     if (strain > 0.0)
         return E1n * 1.0e-9;
@@ -1345,8 +1188,7 @@ LimitStateMaterial::negEnvlpTangent (double strain)
         return E1n * 1.0e-9;
 }
 
-double
-LimitStateMaterial::posEnvlpRotlim (double strain)
+double LimitStateMaterial::posEnvlpRotlim(double strain)
 {
     double strainLimit = POS_INF_STRAIN;
 
@@ -1359,14 +1201,13 @@ LimitStateMaterial::posEnvlpRotlim (double strain)
 
     if (strainLimit == POS_INF_STRAIN)
         return POS_INF_STRAIN;
-    else if (posEnvlpStress (strainLimit) > 0)
+    else if (posEnvlpStress(strainLimit) > 0)
         return POS_INF_STRAIN;
     else
         return strainLimit;
 }
 
-double
-LimitStateMaterial::negEnvlpRotlim (double strain)
+double LimitStateMaterial::negEnvlpRotlim(double strain)
 {
     double strainLimit = NEG_INF_STRAIN;
 
@@ -1379,99 +1220,75 @@ LimitStateMaterial::negEnvlpRotlim (double strain)
 
     if (strainLimit == NEG_INF_STRAIN)
         return NEG_INF_STRAIN;
-    else if (negEnvlpStress (strainLimit) < 0)
+    else if (negEnvlpStress(strainLimit) < 0)
         return NEG_INF_STRAIN;
     else
         return strainLimit;
 }
 
 ///////////////////
-int
-LimitStateMaterial::getNewBackbone (int flag)
+int LimitStateMaterial::getNewBackbone(int flag)
 {
-    double k3 = theCurve->getDegSlope ();
-    double Fr = theCurve->getResForce ();
+    double k3 = theCurve->getDegSlope();
+    double Fr = theCurve->getResForce();
 
     // set backbone with flat slope if at residual capacity
-    if (flag == 4)
-      {
-          if (Cstress > 0.0)
-            {
-                mom3p = Cstress;
-                rot3p = Cstrain;
-                rot2p = (rot3p + rot1p) / 2;
-                mom2p = mom3p - (rot3p - rot2p) * (E1p * 1.0e-9);
+    if (flag == 4) {
+        if (Cstress > 0.0) {
+            mom3p = Cstress;
+            rot3p = Cstrain;
+            rot2p = (rot3p + rot1p) / 2;
+            mom2p = mom3p - (rot3p - rot2p) * (E1p * 1.0e-9);
+        } else {
+            mom3n = Cstress;
+            rot3n = Cstrain;
+            rot2n = (rot3n + rot1n) / 2;
+            mom2n = mom3n - (rot3n - rot2n) * (E1n * 1.0e-9);
+        }
+    } else {
+        // determine new corner points for post-failure envelope.
+        //
+        // set point of failure as second corner point
+        if (Cstress > 0.0) {
+            mom2p = Cstress;
+            rot2p = Cstrain;
+        } else {
+            mom2n = Cstress;
+            rot2n = Cstrain;
+        }
+        // if not yet beyond first corner point,
+        // set new first corner point on elastic slope,
+        // otherwise leave first corner point as is.
+        if (Cstrain <= rot1p && Cstrain >= rot1n) {
+            if (Cstress > 0.0) {
+                mom1p = mom2p / 2.0;
+                rot1p = mom1p / Eelasticp;
+            } else {
+                mom1n = mom2n / 2.0;
+                rot1n = mom1n / Eelasticn;
             }
-          else
-            {
-                mom3n = Cstress;
-                rot3n = Cstrain;
-                rot2n = (rot3n + rot1n) / 2;
-                mom2n = mom3n - (rot3n - rot2n) * (E1n * 1.0e-9);
+        }
+        // set new third corner point
+        if (flag == 3 && curveType == 1) {      //if coming off surface
+            if (Cstress > 0.0) {
+                mom3p = 10 * mom2p;
+                //rot3p = rot2p + (mom3p-mom2p)/Eelasticp;
+                rot3p = rot2p + (mom3p - mom2p) / (Eelasticp * 0.01);
+            } else {
+                mom3n = 10 * mom2n;
+                //rot3n = rot2n + (mom3n-mom2n)/Eelasticn;
+                rot3n = rot2n + (mom3n - mom2n) / (Eelasticn * 0.01);
             }
-      }
-    else
-      {
-          // determine new corner points for post-failure envelope.
-          //
-          // set point of failure as second corner point
-          if (Cstress > 0.0)
-            {
-                mom2p = Cstress;
-                rot2p = Cstrain;
+        } else {                //if hitting surface
+            if (Cstress > 0.0) {
+                mom3p = Fr;
+                rot3p = rot2p + (mom3p - mom2p) / k3;
+            } else {
+                mom3n = -1 * Fr;
+                rot3n = rot2n + (mom3n - mom2n) / k3;
             }
-          else
-            {
-                mom2n = Cstress;
-                rot2n = Cstrain;
-            }
-          // if not yet beyond first corner point,
-          // set new first corner point on elastic slope,
-          // otherwise leave first corner point as is.
-          if (Cstrain <= rot1p && Cstrain >= rot1n)
-            {
-                if (Cstress > 0.0)
-                  {
-                      mom1p = mom2p / 2.0;
-                      rot1p = mom1p / Eelasticp;
-                  }
-                else
-                  {
-                      mom1n = mom2n / 2.0;
-                      rot1n = mom1n / Eelasticn;
-                  }
-            }
-
-          // set new third corner point
-          if (flag == 3 && curveType == 1)
-            {                   //if coming off surface
-                if (Cstress > 0.0)
-                  {
-                      mom3p = 10 * mom2p;
-                      //rot3p = rot2p + (mom3p-mom2p)/Eelasticp;
-                      rot3p = rot2p + (mom3p - mom2p) / (Eelasticp * 0.01);
-                  }
-                else
-                  {
-                      mom3n = 10 * mom2n;
-                      //rot3n = rot2n + (mom3n-mom2n)/Eelasticn;
-                      rot3n = rot2n + (mom3n - mom2n) / (Eelasticn * 0.01);
-                  }
-            }
-          else
-            {                   //if hitting surface
-                if (Cstress > 0.0)
-                  {
-                      mom3p = Fr;
-                      rot3p = rot2p + (mom3p - mom2p) / k3;
-                  }
-                else
-                  {
-                      mom3n = -1 * Fr;
-                      rot3n = rot2n + (mom3n - mom2n) / k3;
-                  }
-            }
-      }
+        }
+    }
 
     // Check backbone
     bool error = false;
@@ -1491,32 +1308,27 @@ LimitStateMaterial::getNewBackbone (int flag)
     if (rot3n >= rot2n)
         error = true;
 
-    if (error)
-      {
+    if (error) {
 //              this->Print(cout); // Commented out by Terje
 //              g3ErrorHandler->fatal("%s -- post-failure backbone is not unique (one-to-one)",
 //                      "LimitStateMaterial::getNewBackbone");
-      }
-
+    }
     // recalculate energy for damfc2 parameter
     energyA =
         0.5 * (rot1p * mom1p + (rot2p - rot1p) * (mom2p + mom1p) +
                (rot3p - rot2p) * (mom3p + mom2p) + rot1n * mom1n + (rot2n -
-                                                                    rot1n) *
-               (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
+                                                                    rot1n)
+               * (mom2n + mom1n) * (rot3n - rot2n) * (mom3n + mom2n));
 
-    if (Cstress > 0.0)
-      {
-          E1p = mom1p / rot1p;
-          E2p = (mom2p - mom1p) / (rot2p - rot1p);
-          E3p = (mom3p - mom2p) / (rot3p - rot2p);
-      }
-    else
-      {
-          E1n = mom1n / rot1n;
-          E2n = (mom2n - mom1n) / (rot2n - rot1n);
-          E3n = (mom3n - mom2n) / (rot3n - rot2n);
-      }
+    if (Cstress > 0.0) {
+        E1p = mom1p / rot1p;
+        E2p = (mom2p - mom1p) / (rot2p - rot1p);
+        E3p = (mom3p - mom2p) / (rot3p - rot2p);
+    } else {
+        E1n = mom1n / rot1n;
+        E2n = (mom2n - mom1n) / (rot2n - rot1n);
+        E3n = (mom3n - mom2n) / (rot3n - rot2n);
+    }
 
     if (Cstress > 0.0)
         return 1;
@@ -1525,33 +1337,29 @@ LimitStateMaterial::getNewBackbone (int flag)
 
 }
 
-int
-LimitStateMaterial::mirrorBackbone (void)
+int LimitStateMaterial::mirrorBackbone(void)
 {
-    if (Cstress > 0.0)
-      {
-          E1n = E1p;
-          E2n = E2p;
-          E3n = E3p;
-          mom1n = -mom1p;
-          mom2n = -mom2p;
-          mom3n = -mom3p;
-          rot1n = -rot1p;
-          rot2n = -rot2p;
-          rot3n = -rot3p;
-      }
-    else
-      {
-          E1p = E1n;
-          E2p = E2n;
-          E3p = E3n;
-          mom1p = -mom1n;
-          mom2p = -mom2n;
-          mom3p = -mom3n;
-          rot1p = -rot1n;
-          rot2p = -rot2n;
-          rot3p = -rot3n;
-      }
+    if (Cstress > 0.0) {
+        E1n = E1p;
+        E2n = E2p;
+        E3n = E3p;
+        mom1n = -mom1p;
+        mom2n = -mom2p;
+        mom3n = -mom3p;
+        rot1n = -rot1p;
+        rot2n = -rot2p;
+        rot3n = -rot3p;
+    } else {
+        E1p = E1n;
+        E2p = E2n;
+        E3p = E3n;
+        mom1p = -mom1n;
+        mom2p = -mom2n;
+        mom3p = -mom3n;
+        rot1p = -rot1n;
+        rot2p = -rot2n;
+        rot3p = -rot3n;
+    }
     return 0;
 }
 
@@ -1560,48 +1368,42 @@ LimitStateMaterial::mirrorBackbone (void)
 
 
 
-int
-LimitStateMaterial::setParameter (const char **argv, int argc,
-                                  Parameter & param)
+int LimitStateMaterial::setParameter(const char **argv, int argc,
+                                     Parameter & param)
 {
-    return theCurve->setParameter (argv, argc, param);
+    return theCurve->setParameter(argv, argc, param);
 }
 
 
-Response *
-LimitStateMaterial::setResponse (const char **argv, int argc,
-                                 OPS_Stream & theOutput)
+Response *LimitStateMaterial::setResponse(const char **argv, int argc,
+                                          OPS_Stream & theOutput)
 {
     Response *theResponse =
-        this->UniaxialMaterial::setResponse (argv, argc, theOutput);
+        this->UniaxialMaterial::setResponse(argv, argc, theOutput);
 
     if (theResponse != 0)
         return theResponse;
 
     // stress
-    if (strcmp (argv[0], "stateFlag") == 0)
-      {
-          theOutput.tag ("UniaxialMaterialOutput");
-          theOutput.attr ("matType", this->getClassType ());
-          theOutput.attr ("matTag", this->getTag ());
+    if (strcmp(argv[0], "stateFlag") == 0) {
+        theOutput.tag("UniaxialMaterialOutput");
+        theOutput.attr("matType", this->getClassType());
+        theOutput.attr("matTag", this->getTag());
 
-          theOutput.tag ("ResponseType", "stateFlag");
-          theResponse = new MaterialResponse (this, 101, CstateFlag * 1.0);
-          theOutput.endTag ();
-      }
+        theOutput.tag("ResponseType", "stateFlag");
+        theResponse = new MaterialResponse(this, 101, CstateFlag * 1.0);
+        theOutput.endTag();
+    }
 
     return theResponse;
 }
 
 
-int
-LimitStateMaterial::getResponse (int responseID, Information & matInfo)
+int LimitStateMaterial::getResponse(int responseID, Information & matInfo)
 {
-    if (responseID == 101)
-      {
-          matInfo.setDouble (CstateFlag);
-          return 0;
-      }
-    else
-        return this->UniaxialMaterial::getResponse (responseID, matInfo);
+    if (responseID == 101) {
+        matInfo.setDouble(CstateFlag);
+        return 0;
+    } else
+        return this->UniaxialMaterial::getResponse(responseID, matInfo);
 }

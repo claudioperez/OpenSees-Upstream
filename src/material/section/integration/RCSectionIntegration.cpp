@@ -35,26 +35,23 @@
 #include <UniaxialMaterial.h>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_RCSection2d ()
+void *OPS_RCSection2d()
 {
-    if (OPS_GetNumRemainingInputArgs () < 13)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr <<
-              "Want: section RCSection2d tag? coreTag? coverTag? steelTag? d? b? cover? Atop? Abottom? Aside? nfcore? nfcover? nfs?"
-              << endln;
-          return 0;
-      }
-
+    if (OPS_GetNumRemainingInputArgs() < 13) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr <<
+            "Want: section RCSection2d tag? coreTag? coverTag? steelTag? d? b? cover? Atop? Abottom? Aside? nfcore? nfcover? nfs?"
+            << endln;
+        return 0;
+    }
     // int
     int numdata = 4;
     int idata[4];
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr << "WARNING invalid section RCSection2d int inputs" << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr << "WARNING invalid section RCSection2d int inputs" <<
+            endln;
+        return 0;
+    }
 
     int tag = idata[0];
     int coreTag = idata[1];
@@ -64,13 +61,12 @@ OPS_RCSection2d ()
     // double
     numdata = 6;
     double data[6];
-    if (OPS_GetDoubleInput (&numdata, data) < 0)
-      {
-          opserr << "WARNING invalid section RCSection2d double inputs" <<
-              endln;
-          opserr << "RCSection2d section: " << tag << endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data) < 0) {
+        opserr << "WARNING invalid section RCSection2d double inputs" <<
+            endln;
+        opserr << "RCSection2d section: " << tag << endln;
+        return 0;
+    }
 
     double d = data[0];
     double b = data[1];
@@ -81,82 +77,73 @@ OPS_RCSection2d ()
 
     // int
     numdata = 3;
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr << "WARNING invalid section RCSection2d int inputs" << endln;
-          opserr << "RCSection2d section: " << tag << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr << "WARNING invalid section RCSection2d int inputs" <<
+            endln;
+        opserr << "RCSection2d section: " << tag << endln;
+        return 0;
+    }
     int nfcore = idata[0];
     int nfcover = idata[1];
     int nfs = idata[2];
 
-    UniaxialMaterial *theCore = OPS_getUniaxialMaterial (coreTag);
+    UniaxialMaterial *theCore = OPS_getUniaxialMaterial(coreTag);
 
-    if (theCore == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << coreTag;
-          opserr << "\nRCSection2d section: " << tag << endln;
-          return 0;
-      }
+    if (theCore == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << coreTag;
+        opserr << "\nRCSection2d section: " << tag << endln;
+        return 0;
+    }
 
-    UniaxialMaterial *theCover = OPS_getUniaxialMaterial (coverTag);
+    UniaxialMaterial *theCover = OPS_getUniaxialMaterial(coverTag);
 
-    if (theCover == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\4n";
-          opserr << "material: " << coverTag;
-          opserr << "\nRCSection2d section: " << tag << endln;
-          return 0;
-      }
+    if (theCover == 0) {
+        opserr << "WARNING uniaxial material does not exist\4n";
+        opserr << "material: " << coverTag;
+        opserr << "\nRCSection2d section: " << tag << endln;
+        return 0;
+    }
 
-    UniaxialMaterial *theSteel = OPS_getUniaxialMaterial (steelTag);
+    UniaxialMaterial *theSteel = OPS_getUniaxialMaterial(steelTag);
 
-    if (theSteel == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << steelTag;
-          opserr << "\nRCSection2d section: " << tag << endln;
-          return 0;
-      }
+    if (theSteel == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << steelTag;
+        opserr << "\nRCSection2d section: " << tag << endln;
+        return 0;
+    }
 
-    RCSectionIntegration rcsect (d, b, Atop, Abottom, Aside, cover, nfcore,
-                                 nfcover, nfs);
+    RCSectionIntegration rcsect(d, b, Atop, Abottom, Aside, cover, nfcore,
+                                nfcover, nfs);
 
-    int numFibers = rcsect.getNumFibers ();
+    int numFibers = rcsect.getNumFibers();
 
     UniaxialMaterial **theMats = new UniaxialMaterial *[numFibers];
 
-    rcsect.arrangeFibers (theMats, theCore, theCover, theSteel);
+    rcsect.arrangeFibers(theMats, theCore, theCover, theSteel);
 
     // Parsing was successful, allocate the section
     SectionForceDeformation *theSection =
-        new FiberSection2d (tag, numFibers, theMats, rcsect);
+        new FiberSection2d(tag, numFibers, theMats, rcsect);
 
     delete[]theMats;
     return theSection;
 }
 #endif
 
-RCSectionIntegration::RCSectionIntegration (double D,
-                                            double B,
-                                            double AT,
-                                            double AB,
-                                            double AS,
-                                            double COV,
-                                            int NFCORE, int NFCOVER, int NFS):
-SectionIntegration (SECTION_INTEGRATION_TAG_RC),
-d (D),
-b (B),
-Atop (AT),
-Abottom (AB),
-Aside (AS),
-cover (COV),
-Nfcore (NFCORE),
-Nfcover (NFCOVER),
-Nfs (NFS),
-parameterID (0)
+RCSectionIntegration::RCSectionIntegration(double D,
+                                           double B,
+                                           double AT,
+                                           double AB,
+                                           double AS,
+                                           double COV,
+                                           int NFCORE, int NFCOVER,
+                                           int
+                                           NFS):SectionIntegration
+    (SECTION_INTEGRATION_TAG_RC), d(D), b(B), Atop(AT), Abottom(AB),
+Aside(AS), cover(COV), Nfcore(NFCORE), Nfcover(NFCOVER), Nfs(NFS),
+parameterID(0)
 {
     if (Nfcore < 1)
         Nfcore = 1;
@@ -168,21 +155,21 @@ parameterID (0)
         Nfs = 2;
 }
 
-RCSectionIntegration::RCSectionIntegration ():
-SectionIntegration (SECTION_INTEGRATION_TAG_RC),
-d (0.0), b (0.0), Atop (0.0), Abottom (0.0), Aside (0.0), cover (0.0),
-Nfcore (1), Nfcover (1), Nfs (2), parameterID (0)
+RCSectionIntegration::RCSectionIntegration():
+SectionIntegration(SECTION_INTEGRATION_TAG_RC),
+d(0.0), b(0.0), Atop(0.0), Abottom(0.0), Aside(0.0), cover(0.0),
+Nfcore(1), Nfcover(1), Nfs(2), parameterID(0)
 {
 
 }
 
-RCSectionIntegration::~RCSectionIntegration ()
+RCSectionIntegration::~RCSectionIntegration()
 {
 
 }
 
 int
-RCSectionIntegration::getNumFibers (FiberType type)
+ RCSectionIntegration::getNumFibers(FiberType type)
 {
     if (type == steel)
         return Nfs;
@@ -194,13 +181,12 @@ RCSectionIntegration::getNumFibers (FiberType type)
     return 0;
 }
 
-int
-RCSectionIntegration::arrangeFibers (UniaxialMaterial ** theMaterials,
-                                     UniaxialMaterial * theCore,
-                                     UniaxialMaterial * theCover,
-                                     UniaxialMaterial * theSteel)
+int RCSectionIntegration::arrangeFibers(UniaxialMaterial ** theMaterials,
+                                        UniaxialMaterial * theCore,
+                                        UniaxialMaterial * theCover,
+                                        UniaxialMaterial * theSteel)
 {
-    int numFibers = this->getNumFibers ();
+    int numFibers = this->getNumFibers();
 
     int i;
     for (i = 0; i < Nfcore; i++)
@@ -213,8 +199,8 @@ RCSectionIntegration::arrangeFibers (UniaxialMaterial ** theMaterials,
     return 0;
 }
 
-void
-RCSectionIntegration::getFiberLocations (int nFibers, double *yi, double *zi)
+void RCSectionIntegration::getFiberLocations(int nFibers, double *yi,
+                                             double *zi)
 {
     int loc;
     int i;
@@ -222,46 +208,41 @@ RCSectionIntegration::getFiberLocations (int nFibers, double *yi, double *zi)
     double yIncr = (d - 2 * cover) / Nfcore;
     double yStart = 0.5 * ((d - 2 * cover) - yIncr);
 
-    for (loc = 0; loc < Nfcore; loc++)
-      {
-          yi[loc] = yStart - yIncr * loc;
-          yi[loc + Nfcore] = yi[loc];
-      }
+    for (loc = 0; loc < Nfcore; loc++) {
+        yi[loc] = yStart - yIncr * loc;
+        yi[loc + Nfcore] = yi[loc];
+    }
 
     loc += Nfcore;
 
     yIncr = cover / Nfcover;
     yStart = 0.5 * (d - yIncr);
 
-    for (i = 0; i < Nfcover; i++, loc++)
-      {
-          yi[loc] = yStart - yIncr * i;
-          yi[loc + Nfcover] = -yi[loc];
-      }
+    for (i = 0; i < Nfcover; i++, loc++) {
+        yi[loc] = yStart - yIncr * i;
+        yi[loc + Nfcover] = -yi[loc];
+    }
 
     loc += Nfcover;
 
     yi[loc++] = 0.5 * d - cover;
     yi[loc++] = -0.5 * d + cover;
 
-    if (Nfs > 2)
-      {
-          double spacing = (d - 2 * cover) / (Nfs - 1);
-          for (int i = 1; i <= Nfs - 2; i++)
-              yi[loc++] = (-0.5 * d + cover) + spacing * i;
-      }
+    if (Nfs > 2) {
+        double spacing = (d - 2 * cover) / (Nfs - 1);
+        for (int i = 1; i <= Nfs - 2; i++)
+            yi[loc++] = (-0.5 * d + cover) + spacing * i;
+    }
 
-    if (zi != 0)
-      {
-          for (int i = 0; i < nFibers; i++)
-              zi[i] = 0.0;
-      }
+    if (zi != 0) {
+        for (int i = 0; i < nFibers; i++)
+            zi[i] = 0.0;
+    }
 
     return;
 }
 
-void
-RCSectionIntegration::getFiberWeights (int nFibers, double *wt)
+void RCSectionIntegration::getFiberWeights(int nFibers, double *wt)
 {
     int loc;
     int i;
@@ -289,101 +270,89 @@ RCSectionIntegration::getFiberWeights (int nFibers, double *wt)
     return;
 }
 
-SectionIntegration *
-RCSectionIntegration::getCopy (void)
+SectionIntegration *RCSectionIntegration::getCopy(void)
 {
-    return new RCSectionIntegration (d, b, Atop, Abottom, Aside, cover,
-                                     Nfcore, Nfcover, Nfs);
+    return new RCSectionIntegration(d, b, Atop, Abottom, Aside, cover,
+                                    Nfcore, Nfcover, Nfs);
 }
 
-int
-RCSectionIntegration::setParameter (const char **argv, int argc,
-                                    Parameter & param)
+int RCSectionIntegration::setParameter(const char **argv, int argc,
+                                       Parameter & param)
 {
     if (argc < 1)
         return -1;
 
-    if (strcmp (argv[0], "d") == 0)
-      {
-          param.setValue (d);
-          return param.addObject (1, this);
-      }
-    if (strcmp (argv[0], "b") == 0)
-      {
-          return param.addObject (2, this);
-          param.setValue (b);
-      }
-    if (strcmp (argv[0], "Atop") == 0)
-      {
-          param.setValue (Atop);
-          return param.addObject (3, this);
-      }
-    if (strcmp (argv[0], "Abottom") == 0)
-      {
-          param.setValue (Abottom);
-          return param.addObject (7, this);
-      }
-    if (strcmp (argv[0], "Aside") == 0)
-      {
-          param.setValue (Aside);
-          return param.addObject (4, this);
-      }
-    if (strcmp (argv[0], "As") == 0)
-      {
-          param.setValue (Atop);
-          return param.addObject (5, this);
-      }
-    if (strcmp (argv[0], "cover") == 0)
-      {
-          param.setValue (cover);
-          return param.addObject (6, this);
-      }
+    if (strcmp(argv[0], "d") == 0) {
+        param.setValue(d);
+        return param.addObject(1, this);
+    }
+    if (strcmp(argv[0], "b") == 0) {
+        return param.addObject(2, this);
+        param.setValue(b);
+    }
+    if (strcmp(argv[0], "Atop") == 0) {
+        param.setValue(Atop);
+        return param.addObject(3, this);
+    }
+    if (strcmp(argv[0], "Abottom") == 0) {
+        param.setValue(Abottom);
+        return param.addObject(7, this);
+    }
+    if (strcmp(argv[0], "Aside") == 0) {
+        param.setValue(Aside);
+        return param.addObject(4, this);
+    }
+    if (strcmp(argv[0], "As") == 0) {
+        param.setValue(Atop);
+        return param.addObject(5, this);
+    }
+    if (strcmp(argv[0], "cover") == 0) {
+        param.setValue(cover);
+        return param.addObject(6, this);
+    }
 
     return -1;
 }
 
-int
-RCSectionIntegration::updateParameter (int parameterID, Information & info)
+int RCSectionIntegration::updateParameter(int parameterID,
+                                          Information & info)
 {
-    switch (parameterID)
-      {
-      case 1:
-          d = info.theDouble;
-          return 0;
-      case 2:
-          b = info.theDouble;
-          return 0;
-      case 3:
-          Atop = info.theDouble;
-          return 0;
-      case 7:
-          Abottom = info.theDouble;
-          return 0;
-      case 4:
-          Aside = info.theDouble;
-          return 0;
-      case 5:
-          Atop = Abottom = Aside = info.theDouble;
-          return 0;
-      case 6:
-          cover = info.theDouble;
-          return 0;
-      default:
-          return -1;
-      }
+    switch (parameterID) {
+    case 1:
+        d = info.theDouble;
+        return 0;
+    case 2:
+        b = info.theDouble;
+        return 0;
+    case 3:
+        Atop = info.theDouble;
+        return 0;
+    case 7:
+        Abottom = info.theDouble;
+        return 0;
+    case 4:
+        Aside = info.theDouble;
+        return 0;
+    case 5:
+        Atop = Abottom = Aside = info.theDouble;
+        return 0;
+    case 6:
+        cover = info.theDouble;
+        return 0;
+    default:
+        return -1;
+    }
 }
 
-int
-RCSectionIntegration::activateParameter (int paramID)
+int RCSectionIntegration::activateParameter(int paramID)
 {
     parameterID = paramID;
 
     return 0;
 }
 
-void
-RCSectionIntegration::getLocationsDeriv (int nFibers, double *dyidh,
-                                         double *dzidh)
+void RCSectionIntegration::getLocationsDeriv(int nFibers, double *dyidh,
+                                             double *dzidh)
 {
     double dddh = 0.0;
     double dcoverdh = 0.0;
@@ -392,62 +361,55 @@ RCSectionIntegration::getLocationsDeriv (int nFibers, double *dyidh,
         dddh = 1.0;
     else if (parameterID == 6)  // cover
         dcoverdh = 1.0;
-    else
-      {
-          for (int i = 0; i < nFibers; i++)
-              dyidh[i] = 0.0;
-      }
+    else {
+        for (int i = 0; i < nFibers; i++)
+            dyidh[i] = 0.0;
+    }
 
-    if (parameterID == 1 || parameterID == 6)
-      {
+    if (parameterID == 1 || parameterID == 6) {
 
-          int loc;
-          int i;
+        int loc;
+        int i;
 
-          double dyIncrdh = (dddh - 2 * dcoverdh) / Nfcore;
-          double dyStartdh = 0.5 * ((dddh - 2 * dcoverdh) - dyIncrdh);
+        double dyIncrdh = (dddh - 2 * dcoverdh) / Nfcore;
+        double dyStartdh = 0.5 * ((dddh - 2 * dcoverdh) - dyIncrdh);
 
-          for (loc = 0; loc < Nfcore; loc++)
-            {
-                dyidh[loc] = dyStartdh - dyIncrdh * loc;
-                dyidh[loc + Nfcore] = dyidh[loc];
-            }
+        for (loc = 0; loc < Nfcore; loc++) {
+            dyidh[loc] = dyStartdh - dyIncrdh * loc;
+            dyidh[loc + Nfcore] = dyidh[loc];
+        }
 
-          loc += Nfcore;
+        loc += Nfcore;
 
-          dyIncrdh = dcoverdh / Nfcover;
-          dyStartdh = 0.5 * (dddh - dyIncrdh);
+        dyIncrdh = dcoverdh / Nfcover;
+        dyStartdh = 0.5 * (dddh - dyIncrdh);
 
-          for (i = 0; i < Nfcover; i++, loc++)
-            {
-                dyidh[loc] = dyStartdh - dyIncrdh * i;
-                dyidh[loc + Nfcover] = -dyidh[loc];
-            }
+        for (i = 0; i < Nfcover; i++, loc++) {
+            dyidh[loc] = dyStartdh - dyIncrdh * i;
+            dyidh[loc + Nfcover] = -dyidh[loc];
+        }
 
-          loc += Nfcover;
+        loc += Nfcover;
 
-          dyidh[loc++] = 0.5 * dddh - dcoverdh;
-          dyidh[loc++] = -0.5 * dddh + dcoverdh;
+        dyidh[loc++] = 0.5 * dddh - dcoverdh;
+        dyidh[loc++] = -0.5 * dddh + dcoverdh;
 
-          if (Nfs > 2)
-            {
-                double dspacingdh = (dddh - 2 * dcoverdh) / (Nfs - 1);
-                for (int i = 1; i <= Nfs - 2; i++)
-                    dyidh[loc++] = (-0.5 * dddh + dcoverdh) + dspacingdh * i;
-            }
-      }
+        if (Nfs > 2) {
+            double dspacingdh = (dddh - 2 * dcoverdh) / (Nfs - 1);
+            for (int i = 1; i <= Nfs - 2; i++)
+                dyidh[loc++] = (-0.5 * dddh + dcoverdh) + dspacingdh * i;
+        }
+    }
 
-    if (dzidh != 0)
-      {
-          for (int i = 0; i < nFibers; i++)
-              dzidh[i] = 0.0;
-      }
+    if (dzidh != 0) {
+        for (int i = 0; i < nFibers; i++)
+            dzidh[i] = 0.0;
+    }
 
     return;
 }
 
-void
-RCSectionIntegration::getWeightsDeriv (int nFibers, double *dwtsdh)
+void RCSectionIntegration::getWeightsDeriv(int nFibers, double *dwtsdh)
 {
     double dddh = 0.0;
     double dbdh = 0.0;
@@ -459,15 +421,11 @@ RCSectionIntegration::getWeightsDeriv (int nFibers, double *dwtsdh)
     int loc;
     int i;
 
-    if (parameterID == 1)
-      {                         // d --> 
-          dddh = 1.0;
-      }
-    else if (parameterID == 2)
-      {                         // b -->
-          dbdh = 1.0;
-      }
-    else if (parameterID == 3)  // Atop
+    if (parameterID == 1) {     // d --> 
+        dddh = 1.0;
+    } else if (parameterID == 2) {      // b -->
+        dbdh = 1.0;
+    } else if (parameterID == 3)        // Atop
         dAtopdh = 1.0;
     else if (parameterID == 7)  // Abottom
         dAbottomdh = 1.0;
@@ -477,40 +435,37 @@ RCSectionIntegration::getWeightsDeriv (int nFibers, double *dwtsdh)
         dAtopdh = dAbottomdh = dAsidedh = 1.0;
     else if (parameterID == 6)  // cover
         dcoverdh = 1.0;
-    else
-      {
-          for (i = 0; i < nFibers; i++)
-              dwtsdh[i] = 0.0;
-      }
+    else {
+        for (i = 0; i < nFibers; i++)
+            dwtsdh[i] = 0.0;
+    }
 
-    if (parameterID >= 1 && parameterID <= 7)
-      {
+    if (parameterID >= 1 && parameterID <= 7) {
 
-          double dAcoredh = ((b - 2 * cover) * (dddh - 2 * dcoverdh) +
-                             (dbdh - 2 * dcoverdh) * (d -
-                                                      2 * cover)) / Nfcore;
-          double dAcoverdh =
-              ((2 * cover) * (dddh - 2 * dcoverdh) +
-               (2 * dcoverdh) * (d - 2 * cover)) / Nfcore;
+        double dAcoredh = ((b - 2 * cover) * (dddh - 2 * dcoverdh) +
+                           (dbdh - 2 * dcoverdh) * (d -
+                                                    2 * cover)) / Nfcore;
+        double dAcoverdh =
+            ((2 * cover) * (dddh - 2 * dcoverdh) +
+             (2 * dcoverdh) * (d - 2 * cover)) / Nfcore;
 
-          for (loc = 0; loc < Nfcore; loc++)
-              dwtsdh[loc] = dAcoredh;
+        for (loc = 0; loc < Nfcore; loc++)
+            dwtsdh[loc] = dAcoredh;
 
-          for (i = 0; i < Nfcore; i++, loc++)
-              dwtsdh[loc] = dAcoverdh;
+        for (i = 0; i < Nfcore; i++, loc++)
+            dwtsdh[loc] = dAcoverdh;
 
-          dAcoverdh = (cover * dbdh + dcoverdh * b) / Nfcover;
+        dAcoverdh = (cover * dbdh + dcoverdh * b) / Nfcover;
 
-          for (i = 0; i < 2 * Nfcover; i++, loc++)
-              dwtsdh[loc] = dAcoverdh;
+        for (i = 0; i < 2 * Nfcover; i++, loc++)
+            dwtsdh[loc] = dAcoverdh;
 
-          dwtsdh[loc++] = Nfs * dAtopdh;
-          dwtsdh[loc++] = Nfs * dAbottomdh;
+        dwtsdh[loc++] = Nfs * dAtopdh;
+        dwtsdh[loc++] = Nfs * dAbottomdh;
 
-          for (; loc < nFibers; loc++)
-              dwtsdh[loc] = 2 * dAsidedh;
-      }
-
+        for (; loc < nFibers; loc++)
+            dwtsdh[loc] = 2 * dAsidedh;
+    }
     //for (int i = 0; i < nFibers; i++)
     //  opserr << dwtsdh[i] << ' ';
     //opserr << endln;
@@ -518,8 +473,7 @@ RCSectionIntegration::getWeightsDeriv (int nFibers, double *dwtsdh)
     return;
 }
 
-void
-RCSectionIntegration::Print (OPS_Stream & s, int flag)
+void RCSectionIntegration::Print(OPS_Stream & s, int flag)
 {
     s << "RC" << endln;
     s << " d = " << d;
@@ -535,57 +489,53 @@ RCSectionIntegration::Print (OPS_Stream & s, int flag)
     return;
 }
 
-int
-RCSectionIntegration::sendSelf (int cTag, Channel & theChannel)
+int RCSectionIntegration::sendSelf(int cTag, Channel & theChannel)
 {
-    static Vector data (9);
+    static Vector data(9);
 
-    data (0) = d;
-    data (1) = b;
-    data (2) = Atop;
-    data (8) = Abottom;
-    data (3) = Aside;
-    data (4) = cover;
-    data (5) = Nfcore;
-    data (6) = Nfcover;
-    data (7) = Nfs;
+    data(0) = d;
+    data(1) = b;
+    data(2) = Atop;
+    data(8) = Abottom;
+    data(3) = Aside;
+    data(4) = cover;
+    data(5) = Nfcore;
+    data(6) = Nfcover;
+    data(7) = Nfs;
 
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    if (theChannel.sendVector (dbTag, cTag, data) < 0)
-      {
-          opserr <<
-              "RCSectionIntegration::sendSelf() - failed to send Vector data\n";
-          return -1;
-      }
+    if (theChannel.sendVector(dbTag, cTag, data) < 0) {
+        opserr <<
+            "RCSectionIntegration::sendSelf() - failed to send Vector data\n";
+        return -1;
+    }
 
     return 0;
 }
 
-int
-RCSectionIntegration::recvSelf (int cTag, Channel & theChannel,
-                                FEM_ObjectBroker & theBroker)
+int RCSectionIntegration::recvSelf(int cTag, Channel & theChannel,
+                                   FEM_ObjectBroker & theBroker)
 {
-    static Vector data (9);
+    static Vector data(9);
 
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    if (theChannel.recvVector (dbTag, cTag, data) < 0)
-      {
-          opserr <<
-              "RCSectionIntegration::recvSelf() - failed to receive Vector data\n";
-          return -1;
-      }
+    if (theChannel.recvVector(dbTag, cTag, data) < 0) {
+        opserr <<
+            "RCSectionIntegration::recvSelf() - failed to receive Vector data\n";
+        return -1;
+    }
 
-    d = data (0);
-    b = data (1);
-    Atop = data (2);
-    Abottom = data (8);
-    Aside = data (3);
-    cover = data (4);
-    Nfcore = (int) data (5);
-    Nfcover = (int) data (6);
-    Nfs = (int) data (7);
+    d = data(0);
+    b = data(1);
+    Atop = data(2);
+    Abottom = data(8);
+    Aside = data(3);
+    cover = data(4);
+    Nfcore = (int) data(5);
+    Nfcover = (int) data(6);
+    Nfs = (int) data(7);
 
     return 0;
 }

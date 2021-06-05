@@ -54,51 +54,44 @@
 #include <LoadPattern.h>
 #include <LoadPatternIter.h>
 
-StaticIntegrator::StaticIntegrator (int clasTag):
-IncrementalIntegrator (clasTag)
+StaticIntegrator::
+StaticIntegrator(int clasTag):IncrementalIntegrator(clasTag)
 {
 
     // for subclasses
 }
 
-StaticIntegrator::~StaticIntegrator ()
+StaticIntegrator::~StaticIntegrator()
 {
 }
 
 int
-StaticIntegrator::formEleTangent (FE_Element * theEle)
+ StaticIntegrator::formEleTangent(FE_Element * theEle)
 {
-    if (statusFlag == CURRENT_TANGENT)
-      {
-          theEle->zeroTangent ();
-          theEle->addKtToTang ();
-      }
-    else if (statusFlag == INITIAL_TANGENT)
-      {
-          theEle->zeroTangent ();
-          theEle->addKiToTang ();
-      }
-    else if (statusFlag == HALL_TANGENT)
-      {
-          theEle->zeroTangent ();
-          theEle->addKtToTang (cFactor);
-          theEle->addKiToTang (iFactor);
-      }
+    if (statusFlag == CURRENT_TANGENT) {
+        theEle->zeroTangent();
+        theEle->addKtToTang();
+    } else if (statusFlag == INITIAL_TANGENT) {
+        theEle->zeroTangent();
+        theEle->addKiToTang();
+    } else if (statusFlag == HALL_TANGENT) {
+        theEle->zeroTangent();
+        theEle->addKtToTang(cFactor);
+        theEle->addKiToTang(iFactor);
+    }
 
     return 0;
 }
 
-int
-StaticIntegrator::formEleResidual (FE_Element * theEle)
+int StaticIntegrator::formEleResidual(FE_Element * theEle)
 {
     // only elements residual needed
-    theEle->zeroResidual ();
-    theEle->addRtoResidual ();
+    theEle->zeroResidual();
+    theEle->addRtoResidual();
     return 0;
 }
 
-int
-StaticIntegrator::formNodTangent (DOF_Group * theDof)
+int StaticIntegrator::formNodTangent(DOF_Group * theDof)
 {
     // should never be called
     opserr << "StaticIntegrator::formNodTangent() -";
@@ -106,30 +99,25 @@ StaticIntegrator::formNodTangent (DOF_Group * theDof)
     return -1;
 }
 
-int
-StaticIntegrator::formNodUnbalance (DOF_Group * theDof)
+int StaticIntegrator::formNodUnbalance(DOF_Group * theDof)
 {
     // only nodes unbalance need be added
-    theDof->zeroUnbalance ();
-    theDof->addPtoUnbalance ();
+    theDof->zeroUnbalance();
+    theDof->addPtoUnbalance();
     return 0;
 }
 
 
-int
-StaticIntegrator::formEleTangentSensitivity (FE_Element * theEle,
-                                             int gradNumber)
+int StaticIntegrator::formEleTangentSensitivity(FE_Element * theEle,
+                                                int gradNumber)
 {
 
-    if (statusFlag == CURRENT_TANGENT)
-      {
-          theEle->zeroTangent ();
-      }
-    else if (statusFlag == INITIAL_TANGENT)
-      {
-          theEle->zeroTangent ();
-          theEle->addKiToTang ();
-      }
+    if (statusFlag == CURRENT_TANGENT) {
+        theEle->zeroTangent();
+    } else if (statusFlag == INITIAL_TANGENT) {
+        theEle->zeroTangent();
+        theEle->addKiToTang();
+    }
 
     return 0;
 }

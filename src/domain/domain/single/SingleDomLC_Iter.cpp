@@ -42,34 +42,30 @@
 // SingleDomLC_Iter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-SingleDomLC_Iter::SingleDomLC_Iter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+SingleDomLC_Iter::SingleDomLC_Iter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
-SingleDomLC_Iter::~SingleDomLC_Iter ()
+SingleDomLC_Iter::~SingleDomLC_Iter()
 {
 }
 
 void
-SingleDomLC_Iter::reset (void)
+ SingleDomLC_Iter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-LoadCase *
-SingleDomLC_Iter::operator () (void)
-{
+LoadCase *SingleDomLC_Iter::operator () (void) {
     // check if we still have LoadCases in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          LoadCase *result = (LoadCase *) theComponent;
-          return result;
-      }
+    else {
+        LoadCase *result = (LoadCase *) theComponent;
+        return result;
+    }
 }

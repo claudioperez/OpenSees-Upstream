@@ -32,13 +32,12 @@
 
 #include <LineSearch.h>
 
-LineSearch::LineSearch (int clasTag):
-MovableObject (clasTag)
+LineSearch::LineSearch(int clasTag):MovableObject(clasTag)
 {
 
 }
 
-LineSearch::~LineSearch ()
+LineSearch::~LineSearch()
 {
 
 }

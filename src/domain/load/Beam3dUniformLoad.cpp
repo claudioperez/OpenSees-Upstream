@@ -32,91 +32,84 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 
-Vector
-Beam3dUniformLoad::data (3);
+Vector Beam3dUniformLoad::data(3);
 
-Beam3dUniformLoad::Beam3dUniformLoad (int tag, double wY, double wZ,
-                                      double wX, int theElementTag):
-ElementalLoad (tag, LOAD_TAG_Beam3dUniformLoad, theElementTag),
-wy (wY),
-wz (wZ),
-wx (wX)
+Beam3dUniformLoad::Beam3dUniformLoad(int tag, double wY, double wZ,
+                                     double wX,
+                                     int theElementTag):ElementalLoad(tag,
+                                                                      LOAD_TAG_Beam3dUniformLoad,
+                                                                      theElementTag),
+wy(wY), wz(wZ), wx(wX)
 {
 
 }
 
-Beam3dUniformLoad::Beam3dUniformLoad ():ElementalLoad (LOAD_TAG_Beam3dUniformLoad),
-wy (0.0), wz (0.0), wx (0.0)
+Beam3dUniformLoad::Beam3dUniformLoad():ElementalLoad(LOAD_TAG_Beam3dUniformLoad),
+wy(0.0), wz(0.0), wx(0.0)
 {
 
 }
 
-Beam3dUniformLoad::~Beam3dUniformLoad ()
+Beam3dUniformLoad::~Beam3dUniformLoad()
 {
 
 }
 
-const Vector &
-Beam3dUniformLoad::getData (int &type, double loadFactor)
+const Vector & Beam3dUniformLoad::getData(int &type, double loadFactor)
 {
     type = LOAD_TAG_Beam3dUniformLoad;
-    data (0) = wy;
-    data (1) = wz;
-    data (2) = wx;
+    data(0) = wy;
+    data(1) = wz;
+    data(2) = wx;
     return data;
 }
 
 
-int
-Beam3dUniformLoad::sendSelf (int commitTag, Channel & theChannel)
+int Beam3dUniformLoad::sendSelf(int commitTag, Channel & theChannel)
 {
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    static Vector vectData (5);
-    vectData (4) = this->getTag ();
-    vectData (0) = wx;
-    vectData (1) = wy;
-    vectData (2) = wz;
-    vectData (3) = eleTag;
+    static Vector vectData(5);
+    vectData(4) = this->getTag();
+    vectData(0) = wx;
+    vectData(1) = wy;
+    vectData(2) = wz;
+    vectData(3) = eleTag;
 
-    int result = theChannel.sendVector (dbTag, commitTag, vectData);
-    if (result < 0)
-      {
-          opserr << "Beam3dUniformLoad::sendSelf - failed to send data\n";
-          return result;
-      }
+    int result = theChannel.sendVector(dbTag, commitTag, vectData);
+    if (result < 0) {
+        opserr << "Beam3dUniformLoad::sendSelf - failed to send data\n";
+        return result;
+    }
 
     return 0;
 }
 
-int
-Beam3dUniformLoad::recvSelf (int commitTag, Channel & theChannel,
-                             FEM_ObjectBroker & theBroker)
+int Beam3dUniformLoad::recvSelf(int commitTag, Channel & theChannel,
+                                FEM_ObjectBroker & theBroker)
 {
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    static Vector vectData (5);
+    static Vector vectData(5);
 
-    int result = theChannel.recvVector (dbTag, commitTag, vectData);
-    if (result < 0)
-      {
-          opserr << "Beam3dUniformLoad::recvSelf - failed to recv data\n";
-          return result;
-      }
+    int result = theChannel.recvVector(dbTag, commitTag, vectData);
+    if (result < 0) {
+        opserr << "Beam3dUniformLoad::recvSelf - failed to recv data\n";
+        return result;
+    }
 
-    wx = vectData (0);;
-    wy = vectData (1);;
-    wz = vectData (2);;
-    eleTag = (int) vectData (3);
-    this->setTag (vectData (4));
+    wx = vectData(0);;
+    wy = vectData(1);;
+    wz = vectData(2);;
+    eleTag = (int) vectData(3);
+    this->setTag(vectData(4));
 
     return 0;
 }
 
-void
-Beam3dUniformLoad::Print (OPS_Stream & s, int flag)
+void Beam3dUniformLoad::Print(OPS_Stream & s, int flag)
 {
-    s << "Beam3dUniformLoad - Reference load: " << this->getTag () << endln;
+    s << "Beam3dUniformLoad - Reference load: " << this->getTag() << endln;
     s << "  Transverse (y): " << wy << endln;
     s << "  Transverse (z): " << wz << endln;
     s << "  Axial (x):      " << wx << endln;

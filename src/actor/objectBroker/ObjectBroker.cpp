@@ -36,10 +36,10 @@
 
 #include <ObjectBroker.h>
 
-ObjectBroker::ObjectBroker ()
+ObjectBroker::ObjectBroker()
 {
 }
 
-ObjectBroker::~ObjectBroker ()
+ObjectBroker::~ObjectBroker()
 {
 }

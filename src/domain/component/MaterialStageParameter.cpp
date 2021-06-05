@@ -31,51 +31,51 @@
 #include <ElementIter.h>
 #include <Channel.h>
 
-MaterialStageParameter::MaterialStageParameter (int theTag, int materialTag):
-Parameter (theTag, PARAMETER_TAG_MaterialStageParameter),
-theMaterialTag (materialTag)
+MaterialStageParameter::MaterialStageParameter(int theTag,
+                                               int
+                                               materialTag):Parameter
+    (theTag, PARAMETER_TAG_MaterialStageParameter),
+theMaterialTag(materialTag)
 {
 
 }
 
-MaterialStageParameter::MaterialStageParameter ():Parameter (),
-theMaterialTag (0)
+MaterialStageParameter::MaterialStageParameter():Parameter(),
+theMaterialTag(0)
 {
 
 }
 
-MaterialStageParameter::~MaterialStageParameter ()
+MaterialStageParameter::~MaterialStageParameter()
 {
 
 }
 
 void
-MaterialStageParameter::Print (OPS_Stream & s, int flag)
+ MaterialStageParameter::Print(OPS_Stream & s, int flag)
 {
-    s << "MaterialStageParameter, tag = " << this->getTag () << endln;
+    s << "MaterialStageParameter, tag = " << this->getTag() << endln;
 }
 
-void
-MaterialStageParameter::setDomain (Domain * theDomain)
+void MaterialStageParameter::setDomain(Domain * theDomain)
 {
     Element *theEle;
-    ElementIter & theEles = theDomain->getElements ();
+    ElementIter & theEles = theDomain->getElements();
 
     int theResult = -1;
 
     const char *theString[2];   // = new const char*[2];
     char parameterName[21];
     char materialIdTag[10];
-    sprintf (parameterName, "updateMaterialStage");
-    sprintf (materialIdTag, "%d", theMaterialTag);
+    sprintf(parameterName, "updateMaterialStage");
+    sprintf(materialIdTag, "%d", theMaterialTag);
     theString[0] = parameterName;
     theString[1] = materialIdTag;
 
     // note because of the way this parameter is updated only need to find one in the domain
-    while (((theEle = theEles ()) != 0) && (theResult == -1))
-      {
-          theResult = theEle->setParameter (theString, 2, *this);
-      }
+    while (((theEle = theEles()) != 0) && (theResult == -1)) {
+        theResult = theEle->setParameter(theString, 2, *this);
+    }
 
     if (theResult == -1)
         opserr <<
@@ -87,25 +87,23 @@ MaterialStageParameter::setDomain (Domain * theDomain)
     return;
 }
 
-int
-MaterialStageParameter::sendSelf (int commitTag, Channel & theChannel)
+int MaterialStageParameter::sendSelf(int commitTag, Channel & theChannel)
 {
 
-    static ID theData (2);
-    theData[0] = this->getTag ();
+    static ID theData(2);
+    theData[0] = this->getTag();
     theData[1] = theMaterialTag;
-    theChannel.sendID (commitTag, 0, theData);
+    theChannel.sendID(commitTag, 0, theData);
 
     return 0;
 }
 
-int
-MaterialStageParameter::recvSelf (int commitTag, Channel & theChannel,
-                                  FEM_ObjectBroker & theBroker)
+int MaterialStageParameter::recvSelf(int commitTag, Channel & theChannel,
+                                     FEM_ObjectBroker & theBroker)
 {
-    static ID theData (2);
-    theChannel.recvID (commitTag, 0, theData);
-    this->setTag (theData[0]);
+    static ID theData(2);
+    theChannel.recvID(commitTag, 0, theData);
+    this->setTag(theData[0]);
     theMaterialTag = theData[1];
     return 0;
 }

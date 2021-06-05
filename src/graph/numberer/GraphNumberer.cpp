@@ -33,13 +33,12 @@
 
 
 #include <GraphNumberer.h>
-GraphNumberer::GraphNumberer (int cTag):
-MovableObject (cTag)
+GraphNumberer::GraphNumberer(int cTag):MovableObject(cTag)
 {
     // does nothing
 }
 
-GraphNumberer::~GraphNumberer ()
+GraphNumberer::~GraphNumberer()
 {
     // does nothing
 }

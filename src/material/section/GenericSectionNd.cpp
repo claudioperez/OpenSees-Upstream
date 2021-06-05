@@ -48,48 +48,43 @@
 
 #include <string.h>
 
-GenericSectionNd::GenericSectionNd (int tag, NDMaterial & m,
-                                    const ID & mCode):
-SectionForceDeformation (tag, SEC_TAG_GenericNd),
-otherDbTag (0),
-theModel (0),
-code (0)
+GenericSectionNd::GenericSectionNd(int tag, NDMaterial & m,
+                                   const ID &
+                                   mCode):SectionForceDeformation(tag,
+                                                                  SEC_TAG_GenericNd),
+otherDbTag(0), theModel(0), code(0)
 {
-    theModel = m.getCopy ();
+    theModel = m.getCopy();
 
-    if (theModel == 0)
-      {
-          g3ErrorHandler->fatal ("%s -- failed to get copy of material model",
-                                 "GenericSectionNd::GenericSectionNd");
-      }
+    if (theModel == 0) {
+        g3ErrorHandler->fatal("%s -- failed to get copy of material model",
+                              "GenericSectionNd::GenericSectionNd");
+    }
 
-    order = theModel->getOrder ();
+    order = theModel->getOrder();
 
-    code = new ID (mCode);
+    code = new ID(mCode);
 
-    if (code == 0)
-      {
-          g3ErrorHandler->fatal ("%s -- failed to allocate section ID",
-                                 "GenericSectionNd::GenericSectionNd");
-      }
+    if (code == 0) {
+        g3ErrorHandler->fatal("%s -- failed to allocate section ID",
+                              "GenericSectionNd::GenericSectionNd");
+    }
 
-    if (order != code->Size ())
-      {
-          g3ErrorHandler->
-              warning
-              ("%s -- code size does not match order of material model",
-               "GenericSectionNd::GenericSectionNd");
-      }
+    if (order != code->Size()) {
+        g3ErrorHandler->warning
+            ("%s -- code size does not match order of material model",
+             "GenericSectionNd::GenericSectionNd");
+    }
 }
 
-GenericSectionNd::GenericSectionNd ():SectionForceDeformation (0, SEC_TAG_GenericNd),
-otherDbTag (0), theModel (0), code (0),
-order (0)
+GenericSectionNd::GenericSectionNd():SectionForceDeformation(0, SEC_TAG_GenericNd),
+otherDbTag(0), theModel(0), code(0),
+order(0)
 {
 
 }
 
-GenericSectionNd::~GenericSectionNd ()
+GenericSectionNd::~GenericSectionNd()
 {
     if (theModel)
         delete theModel;
@@ -99,210 +94,182 @@ GenericSectionNd::~GenericSectionNd ()
 }
 
 int
-GenericSectionNd::setTrialSectionDeformation (const Vector & def)
+ GenericSectionNd::setTrialSectionDeformation(const Vector & def)
 {
-    return theModel->setTrialStrain (def);
+    return theModel->setTrialStrain(def);
 }
 
-const Vector &
-GenericSectionNd::getSectionDeformation ()
+const Vector & GenericSectionNd::getSectionDeformation()
 {
-    return theModel->getStrain ();
+    return theModel->getStrain();
 }
 
-const Vector &
-GenericSectionNd::getStressResultant ()
+const Vector & GenericSectionNd::getStressResultant()
 {
-    return theModel->getStress ();
+    return theModel->getStress();
 }
 
-const Matrix &
-GenericSectionNd::getSectionTangent ()
+const Matrix & GenericSectionNd::getSectionTangent()
 {
-    return theModel->getTangent ();
+    return theModel->getTangent();
 }
 
-int
-GenericSectionNd::commitState ()
+int GenericSectionNd::commitState()
 {
-    return theModel->commitState ();
+    return theModel->commitState();
 }
 
-int
-GenericSectionNd::revertToLastCommit ()
+int GenericSectionNd::revertToLastCommit()
 {
-    return theModel->revertToLastCommit ();
+    return theModel->revertToLastCommit();
 }
 
-int
-GenericSectionNd::revertToStart ()
+int GenericSectionNd::revertToStart()
 {
-    return theModel->revertToStart ();
+    return theModel->revertToStart();
 }
 
-const ID &
-GenericSectionNd::getType ()
+const ID & GenericSectionNd::getType()
 {
     return *code;
 }
 
-int
-GenericSectionNd::getOrder () const
+int GenericSectionNd::getOrder() const
 {
     return order;
 }
 
-SectionForceDeformation *
-GenericSectionNd::getCopy ()
+SectionForceDeformation *GenericSectionNd::getCopy()
 {
-    GenericSectionNd *theCopy = new GenericSectionNd (this->getTag (),
-                                                      *theModel, *code);
+    GenericSectionNd *theCopy = new GenericSectionNd(this->getTag(),
+                                                     *theModel, *code);
 
     theCopy->otherDbTag = otherDbTag;
 
     return theCopy;
 }
 
-int
-GenericSectionNd::sendSelf (int cTag, Channel & theChannel)
+int GenericSectionNd::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
 
     // Need otherDbTag since code ID and data ID may be the same size
     if (otherDbTag == 0)
-        otherDbTag = theChannel.getDbTag ();
+        otherDbTag = theChannel.getDbTag();
 
-    static ID data (5);
+    static ID data(5);
 
-    data (0) = this->getTag ();
-    data (1) = order;
-    data (2) = otherDbTag;
-    data (3) = theModel->getClassTag ();
+    data(0) = this->getTag();
+    data(1) = order;
+    data(2) = otherDbTag;
+    data(3) = theModel->getClassTag();
 
-    int dbTag = theModel->getDbTag ();
+    int dbTag = theModel->getDbTag();
 
-    if (dbTag == 0)
-      {
-          dbTag = theChannel.getDbTag ();
-          if (dbTag != 0)
-              theModel->setDbTag (dbTag);
-      }
+    if (dbTag == 0) {
+        dbTag = theChannel.getDbTag();
+        if (dbTag != 0)
+            theModel->setDbTag(dbTag);
+    }
 
-    data (4) = dbTag;
+    data(4) = dbTag;
 
     // Send the ID vector
-    res += theChannel.sendID (this->getDbTag (), cTag, data);
-    if (res < 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not send data ID",
-                                   "GenericSectionNd::sendSelf");
-          return res;
-      }
-
+    res += theChannel.sendID(this->getDbTag(), cTag, data);
+    if (res < 0) {
+        g3ErrorHandler->warning("%s -- could not send data ID",
+                                "GenericSectionNd::sendSelf");
+        return res;
+    }
     // Send the section code
-    res += theChannel.sendID (otherDbTag, cTag, *code);
-    if (res < 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not send code ID",
-                                   "GenericSectionNd::sendSelf");
-          return res;
-      }
-
+    res += theChannel.sendID(otherDbTag, cTag, *code);
+    if (res < 0) {
+        g3ErrorHandler->warning("%s -- could not send code ID",
+                                "GenericSectionNd::sendSelf");
+        return res;
+    }
     // Ask the NDMaterial to send itself
-    res += theModel->sendSelf (cTag, theChannel);
-    if (res < 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not send NDMaterial",
-                                   "GenericSectionNd::sendSelf");
-          return res;
-      }
+    res += theModel->sendSelf(cTag, theChannel);
+    if (res < 0) {
+        g3ErrorHandler->warning("%s -- could not send NDMaterial",
+                                "GenericSectionNd::sendSelf");
+        return res;
+    }
 
     return res;
 }
 
-int
-GenericSectionNd::recvSelf (int cTag, Channel & theChannel,
-                            FEM_ObjectBroker & theBroker)
+int GenericSectionNd::recvSelf(int cTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static ID data (5);
+    static ID data(5);
 
     // Receive the data ID
-    res += theChannel.recvID (this->getDbTag (), cTag, data);
-    if (res < 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not receive data ID",
-                                   "GenericSectionNd::recvSelf");
-          return res;
-      }
+    res += theChannel.recvID(this->getDbTag(), cTag, data);
+    if (res < 0) {
+        g3ErrorHandler->warning("%s -- could not receive data ID",
+                                "GenericSectionNd::recvSelf");
+        return res;
+    }
 
-    this->setTag (data (0));
-    order = data (1);
-    otherDbTag = data (2);
+    this->setTag(data(0));
+    order = data(1);
+    otherDbTag = data(2);
 
     // Check if section ID code is null or wrong size, reallocate if so
     if (code == 0)
-        code = new ID (order);
-    else if (code->Size () != order)
-      {
-          delete code;
-          code = new ID (order);
-      }
-    if (code == 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not allocate new code ID",
-                                   "GenericSectionNd::recvSelf");
-          return -1;
-      }
-
+        code = new ID(order);
+    else if (code->Size() != order) {
+        delete code;
+        code = new ID(order);
+    }
+    if (code == 0) {
+        g3ErrorHandler->warning("%s -- could not allocate new code ID",
+                                "GenericSectionNd::recvSelf");
+        return -1;
+    }
     // Receive the code ID
-    res += theChannel.recvID (otherDbTag, cTag, *code);
-    if (res < 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not receive code ID",
-                                   "GenericSectionNd::recvSelf");
-          return res;
-      }
+    res += theChannel.recvID(otherDbTag, cTag, *code);
+    if (res < 0) {
+        g3ErrorHandler->warning("%s -- could not receive code ID",
+                                "GenericSectionNd::recvSelf");
+        return res;
+    }
 
-    int classTag = data (3);
+    int classTag = data(3);
 
     // Check if the material is null; if so, get a new one
     if (theModel == 0)
-        theModel = theBroker.getNewNDMaterial (classTag);
+        theModel = theBroker.getNewNDMaterial(classTag);
 
     // Check that the material is of the right type; if not, delete
     // the current one and get a new one of the right type
-    else if (theModel->getClassTag () != classTag)
-      {
-          delete theModel;
-          theModel = theBroker.getNewNDMaterial (classTag);
-      }
-
+    else if (theModel->getClassTag() != classTag) {
+        delete theModel;
+        theModel = theBroker.getNewNDMaterial(classTag);
+    }
     // Check if either allocation failed
-    if (theModel == 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not get an NDMaterial",
-                                   "GenericSectionNd::recvSelf");
-          return -1;
-      }
-
+    if (theModel == 0) {
+        g3ErrorHandler->warning("%s -- could not get an NDMaterial",
+                                "GenericSectionNd::recvSelf");
+        return -1;
+    }
     // Now, receive the material
-    theModel->setDbTag (data (4));
-    res += theModel->recvSelf (cTag, theChannel, theBroker);
-    if (res < 0)
-      {
-          g3ErrorHandler->warning ("%s -- could not receive NDMaterial",
-                                   "GenericSectionNd::recvSelf");
-          return res;
-      }
+    theModel->setDbTag(data(4));
+    res += theModel->recvSelf(cTag, theChannel, theBroker);
+    if (res < 0) {
+        g3ErrorHandler->warning("%s -- could not receive NDMaterial",
+                                "GenericSectionNd::recvSelf");
+        return res;
+    }
 
     return res;
 }
 
-void
-GenericSectionNd::Print (OPS_Stream & s, int flag)
+void GenericSectionNd::Print(OPS_Stream & s, int flag)
 {
-    s << "Generic Section Nd, tag: " << this->getTag () << endln;
+    s << "Generic Section Nd, tag: " << this->getTag() << endln;
     s << "\tsection code: " << code << endln;
 }

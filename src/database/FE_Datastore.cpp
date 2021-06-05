@@ -41,27 +41,27 @@
 #include <ID.h>
 
 int
-FE_Datastore::lastDbTag (0);
+ FE_Datastore::lastDbTag(0);
 
 // FE_Datastore(int tag, int noExtNodes);
 //      constructor that takes the FE_Datastore's unique tag and the number
 //      of external nodes for the FE_Datastore.
 
-FE_Datastore::FE_Datastore (Domain & thDomain, FEM_ObjectBroker & theBroker):theObjectBroker (&theBroker),
-theDomain
-(&thDomain)
+FE_Datastore::FE_Datastore(Domain & thDomain, FEM_ObjectBroker & theBroker):theObjectBroker(&theBroker),
+    theDomain
+    (&thDomain)
 {
 
 }
 
 
-FE_Datastore::~FE_Datastore ()
+FE_Datastore::~FE_Datastore()
 {
     // does nothing
 }
 
 int
-FE_Datastore::isDatastore (void)
+ FE_Datastore::isDatastore(void)
 {
     return 1;
 }
@@ -70,102 +70,89 @@ FE_Datastore::isDatastore (void)
  *                   CHANNEL METHODS  THAT DO NOTHING               *
  ********************************************************************/
 
-char *
-FE_Datastore::addToProgram (void)
+char *FE_Datastore::addToProgram(void)
 {
     return 0;
 }
 
-int
-FE_Datastore::setUpConnection (void)
+int FE_Datastore::setUpConnection(void)
 {
     return 0;
 }
 
-int
-FE_Datastore::setNextAddress (const ChannelAddress & otherChannelAddress)
-{
-    return 0;
-}
-
-
-ChannelAddress *
-FE_Datastore::getLastSendersAddress (void)
+int FE_Datastore::
+setNextAddress(const ChannelAddress & otherChannelAddress)
 {
     return 0;
 }
 
 
-int
-FE_Datastore::sendObj (int commitTag,
-                       MovableObject & theObject, ChannelAddress * theAddress)
+ChannelAddress *FE_Datastore::getLastSendersAddress(void)
 {
-    return theObject.sendSelf (commitTag, *this);
-}
-
-int
-FE_Datastore::recvObj (int commitTag,
-                       MovableObject & theObject,
-                       FEM_ObjectBroker & theNewBroker,
-                       ChannelAddress * theAddress)
-{
-    return theObject.recvSelf (commitTag, *this, theNewBroker);
+    return 0;
 }
 
 
+int FE_Datastore::sendObj(int commitTag,
+                          MovableObject & theObject,
+                          ChannelAddress * theAddress)
+{
+    return theObject.sendSelf(commitTag, *this);
+}
+
+int FE_Datastore::recvObj(int commitTag,
+                          MovableObject & theObject,
+                          FEM_ObjectBroker & theNewBroker,
+                          ChannelAddress * theAddress)
+{
+    return theObject.recvSelf(commitTag, *this, theNewBroker);
+}
 
 
-int
-FE_Datastore::commitState (int commitTag)
+
+
+int FE_Datastore::commitState(int commitTag)
 {
     // invoke sendSelf on the domain object with this as an arg
     int res = 0;
-    if (theDomain != 0)
-      {
-          res = theDomain->sendSelf (commitTag, *this);
-          if (res < 0)
-            {
-                opserr <<
-                    "FE_Datastore::commitState - domain failed to sendSelf\n";
-                return res;
-            }
-          ID maxlastDbTag (1);
-          maxlastDbTag (0) = lastDbTag;
-          if (this->sendID (0, 0, maxlastDbTag) < 0)
-            {
-                opserr <<
-                    "FE_Datastore::commitState - failed to get max lastDbTag data from database - problems may ariise\n";
-            }
-      }
+    if (theDomain != 0) {
+        res = theDomain->sendSelf(commitTag, *this);
+        if (res < 0) {
+            opserr <<
+                "FE_Datastore::commitState - domain failed to sendSelf\n";
+            return res;
+        }
+        ID maxlastDbTag(1);
+        maxlastDbTag(0) = lastDbTag;
+        if (this->sendID(0, 0, maxlastDbTag) < 0) {
+            opserr <<
+                "FE_Datastore::commitState - failed to get max lastDbTag data from database - problems may ariise\n";
+        }
+    }
 
     return res;
 }
 
 
 
-int
-FE_Datastore::restoreState (int commitTag)
+int FE_Datastore::restoreState(int commitTag)
 {
     // invoke sendSelf on the domain object with this as an arg
     int res = 0;
-    if (theDomain != 0)
-      {
-          res = theDomain->recvSelf (commitTag, *this, *theObjectBroker);
-          if (res < 0)
-            {
-                opserr <<
-                    "FE_Datastore::restoreState - domain failed to recvSelf\n";
-            }
-          ID maxlastDbTag (1);
-          if (this->recvID (0, 0, maxlastDbTag) < 0)
-            {
-                opserr <<
-                    "FE_Datastore::restoreState - failed to get max lastDbTag data from database - problems may ariise\n";
-            }
-          else
-              lastDbTag = maxlastDbTag (0);
+    if (theDomain != 0) {
+        res = theDomain->recvSelf(commitTag, *this, *theObjectBroker);
+        if (res < 0) {
+            opserr <<
+                "FE_Datastore::restoreState - domain failed to recvSelf\n";
+        }
+        ID maxlastDbTag(1);
+        if (this->recvID(0, 0, maxlastDbTag) < 0) {
+            opserr <<
+                "FE_Datastore::restoreState - failed to get max lastDbTag data from database - problems may ariise\n";
+        } else
+            lastDbTag = maxlastDbTag(0);
 
-      }
+    }
 
     return res;
 }
@@ -173,33 +160,30 @@ FE_Datastore::restoreState (int commitTag)
 
 
 
-int
-FE_Datastore::createTable (const char *table, int numColumns, char *columns[])
+int FE_Datastore::createTable(const char *table, int numColumns,
+                              char *columns[])
 {
     opserr << "FE_Datastore::createTable - not yet implemented\n";
     return -1;
 }
 
 
-int
-FE_Datastore::insertData (const char *tableName, char *columns[],
-                          int commitTag, const Vector & data)
+int FE_Datastore::insertData(const char *tableName, char *columns[],
+                             int commitTag, const Vector & data)
 {
     opserr << "FE_Datastore::insertData - not yet implemented\n";
     return -1;
 }
 
 
-int
-FE_Datastore::getData (const char *table, char *column[], int commitTag,
-                       Vector & data)
+int FE_Datastore::getData(const char *table, char *column[], int commitTag,
+                          Vector & data)
 {
     opserr << "FE_Datastore::getData - not yet implemented\n";
     return -1;
 }
 
-int
-FE_Datastore::getDbTag (void)
+int FE_Datastore::getDbTag(void)
 {
     lastDbTag++;
     return lastDbTag;

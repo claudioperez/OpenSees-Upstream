@@ -54,8 +54,7 @@
 //using namespace std;
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_DoddRestr (void)
+void *OPS_DoddRestr(void)
 {
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
@@ -64,52 +63,47 @@ OPS_DoddRestr (void)
     double dData[12];
     int numData = 1;
 
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid uniaxialMaterial DoddRestr tag" << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid uniaxialMaterial DoddRestr tag" <<
+            endln;
+        return 0;
+    }
 
-    numData = OPS_GetNumRemainingInputArgs ();
+    numData = OPS_GetNumRemainingInputArgs();
 
-    if (numData != 9 && numData != 12)
-      {
-          opserr << "Invalid #args, want: uniaxialMaterial DoddRestr " <<
-              iData[0] <<
-              " Eo? fy? esh? esh1? fsh1? esu? fsu? Pmajor? Pminor? <slcf? tlcf? Dcrit?>>"
-              << endln;
-          return 0;
-      }
+    if (numData != 9 && numData != 12) {
+        opserr << "Invalid #args, want: uniaxialMaterial DoddRestr " <<
+            iData[0] <<
+            " Eo? fy? esh? esh1? fsh1? esu? fsu? Pmajor? Pminor? <slcf? tlcf? Dcrit?>>"
+            << endln;
+        return 0;
+    }
 
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "Invalid #args, want: uniaxialMaterial DoddRestr " <<
-              iData[0] <<
-              " Eo? fy? esh? esh1? fsh1? esu? fsu? Pmajor? Pminor? <slcf? tlcf? Dcrit?>>"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "Invalid #args, want: uniaxialMaterial DoddRestr " <<
+            iData[0] <<
+            " Eo? fy? esh? esh1? fsh1? esu? fsu? Pmajor? Pminor? <slcf? tlcf? Dcrit?>>"
+            << endln;
+        return 0;
+    }
 
-    if (numData == 9)
-      {
-          dData[9] = 0.;
-          dData[10] = 0.;
-          dData[11] = 0.;
-      }
-
+    if (numData == 9) {
+        dData[9] = 0.;
+        dData[10] = 0.;
+        dData[11] = 0.;
+    }
     // Parsing was successful, allocate the material
-    theMaterial = new DoddRestr (iData[0], dData[0], dData[1], dData[2],
-                                 dData[3], dData[4], dData[5], dData[6],
-                                 dData[7], dData[8], dData[9], dData[10],
-                                 dData[11]);
+    theMaterial = new DoddRestr(iData[0], dData[0], dData[1], dData[2],
+                                dData[3], dData[4], dData[5], dData[6],
+                                dData[7], dData[8], dData[9], dData[10],
+                                dData[11]);
 
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type DoddRestr Material\n";
-          return 0;
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type DoddRestr Material\n";
+        return 0;
+    }
 
     return theMaterial;
 }
@@ -120,11 +114,10 @@ OPS_DoddRestr (void)
 DoddRestr::DoddRestr
     (int tag, double Eo1, double fy1, double esh1b,
      double esh11, double fsh11, double esu1, double fsu1, double Pmajor1,
-     double Pminor1, double slcf1, double tlcf1, double Dcrit1):
-UniaxialMaterial (tag, MAT_TAG_DoddRestr),
-Eo (Eo1), fy (fy1), esh (esh1b), esh1 (esh11), fsh1 (fsh11), esu (esu1),
-fsu (fsu1), Pmajor (Pmajor1), Pminor (Pminor1), slcf (slcf1), tlcf (tlcf1),
-Dcrit (Dcrit1)
+     double Pminor1, double slcf1, double tlcf1,
+     double Dcrit1):UniaxialMaterial(tag, MAT_TAG_DoddRestr), Eo(Eo1),
+fy(fy1), esh(esh1b), esh1(esh11), fsh1(fsh11), esu(esu1), fsu(fsu1),
+Pmajor(Pmajor1), Pminor(Pminor1), slcf(slcf1), tlcf(tlcf1), Dcrit(Dcrit1)
 {
     // Sets all history and state variables to initial values
     // History variables
@@ -205,16 +198,16 @@ Dcrit (Dcrit1)
 
 }
 
-DoddRestr::DoddRestr ():UniaxialMaterial (0, MAT_TAG_DoddRestr),
-Eo (0.0), fy (0.0), esh (0.0), esh1 (0.0), fsh1 (0.0), esu (0.0), fsu (0.0),
-Pmajor (0.0), Pminor (0.0), slcf (0.0), tlcf (0.0), Dcrit (0.0)
+DoddRestr::DoddRestr():UniaxialMaterial(0, MAT_TAG_DoddRestr),
+Eo(0.0), fy(0.0), esh(0.0), esh1(0.0), fsh1(0.0), esu(0.0), fsu(0.0),
+Pmajor(0.0), Pminor(0.0), slcf(0.0), tlcf(0.0), Dcrit(0.0)
 {
 
 
 
 }
 
-DoddRestr::~DoddRestr ()
+DoddRestr::~DoddRestr()
 {
 
 }
@@ -224,23 +217,22 @@ DoddRestr::~DoddRestr ()
 
 #define steeldr_ STEELDR
 
-extern "C" int steeldr_ (double *strn1, double *strs1, double *Etangm,
-                         double *dmatr, double *hrv1);
+extern "C" int steeldr_(double *strn1, double *strs1, double *Etangm,
+                        double *dmatr, double *hrv1);
 
 // Add more declarations as needed
 
 
 #else
 
-extern "C" int steeldr_ (double *strn1, double *strs1, double *Etangm,
-                         double *dmatr, double *hrv1);
+extern "C" int steeldr_(double *strn1, double *strs1, double *Etangm,
+                        double *dmatr, double *hrv1);
 
 
 #endif
 
 
-int
-DoddRestr::setTrialStrain (double strain, double strainRate)
+int DoddRestr::setTrialStrain(double strain, double strainRate)
 {
     // Reset history variables to last converged state
     Te_so = Ce_so;
@@ -286,16 +278,15 @@ DoddRestr::setTrialStrain (double strain, double strainRate)
     Tstrain = strain;
 
     // Calculate the trial state given the trial strain
-    determineTrialState (dStrain);
+    determineTrialState(dStrain);
 
 //   }
 
     return 0;
 }
 
-int
-DoddRestr::setTrial (double strain, double &stress, double &tangent,
-                     double strainRate)
+int DoddRestr::setTrial(double strain, double &stress, double &tangent,
+                        double strainRate)
 {
 
     // Reset history variables to last converged state
@@ -342,7 +333,7 @@ DoddRestr::setTrial (double strain, double &stress, double &tangent,
     Tstrain = strain;
 
     // Calculate the trial state given the trial strain
-    determineTrialState (dStrain);
+    determineTrialState(dStrain);
 
 //   }
 
@@ -353,8 +344,7 @@ DoddRestr::setTrial (double strain, double &stress, double &tangent,
     return 0;
 }
 
-void
-DoddRestr::determineTrialState (double dStrain)
+void DoddRestr::determineTrialState(double dStrain)
 {
 
 
@@ -419,7 +409,7 @@ DoddRestr::determineTrialState (double dStrain)
 
     // Call the external (fortran) procedure to conduct the stress update:
 
-    steeldr_ (&strn1, &strs1, &Etangm, dmatr, hrv1);
+    steeldr_(&strn1, &strs1, &Etangm, dmatr, hrv1);
 
 
     Tstress = strs1;
@@ -469,26 +459,22 @@ DoddRestr::determineTrialState (double dStrain)
 
 
 
-double
-DoddRestr::getStrain ()
+double DoddRestr::getStrain()
 {
     return Tstrain;
 }
 
-double
-DoddRestr::getStress ()
+double DoddRestr::getStress()
 {
     return Tstress;
 }
 
-double
-DoddRestr::getTangent ()
+double DoddRestr::getTangent()
 {
     return Ttangent;
 }
 
-int
-DoddRestr::commitState ()
+int DoddRestr::commitState()
 {
     // History variables
     Ce_so = Te_so;
@@ -531,8 +517,7 @@ DoddRestr::commitState ()
     return 0;
 }
 
-int
-DoddRestr::revertToLastCommit ()
+int DoddRestr::revertToLastCommit()
 {
     // Reset trial history variables to last committed state
     Te_so = Ce_so;
@@ -575,8 +560,7 @@ DoddRestr::revertToLastCommit ()
     return 0;
 }
 
-int
-DoddRestr::revertToStart ()
+int DoddRestr::revertToStart()
 {
     // History variables
     Ce_so = 0;
@@ -658,12 +642,12 @@ DoddRestr::revertToStart ()
 
 
 
-UniaxialMaterial *
-DoddRestr::getCopy ()
+UniaxialMaterial *DoddRestr::getCopy()
 {
-    DoddRestr *theCopy = new DoddRestr (this->getTag (), Eo, fy, esh, esh1,
-                                        fsh1, esu, fsu, Pmajor, Pminor, slcf,
-                                        tlcf, Dcrit);
+    DoddRestr *theCopy = new DoddRestr(this->getTag(), Eo, fy, esh, esh1,
+                                       fsh1, esu, fsu, Pmajor, Pminor,
+                                       slcf,
+                                       tlcf, Dcrit);
 
     // Converged history variables
     theCopy->Ce_so = Ce_so;
@@ -742,193 +726,187 @@ DoddRestr::getCopy ()
     return theCopy;
 }
 
-int
-DoddRestr::sendSelf (int commitTag, Channel & theChannel)
+int DoddRestr::sendSelf(int commitTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (46);
-    data (0) = this->getTag ();
+    static Vector data(46);
+    data(0) = this->getTag();
 
     // Material properties
-    data (1) = Eo;
-    data (2) = fy;
-    data (3) = esh;
-    data (4) = esh1;
-    data (5) = fsh1;
-    data (6) = esu;
-    data (7) = fsu;
-    data (8) = Pmajor;
-    data (9) = Pminor;
-    data (10) = slcf;
-    data (11) = tlcf;
-    data (12) = Dcrit;
+    data(1) = Eo;
+    data(2) = fy;
+    data(3) = esh;
+    data(4) = esh1;
+    data(5) = fsh1;
+    data(6) = esu;
+    data(7) = fsu;
+    data(8) = Pmajor;
+    data(9) = Pminor;
+    data(10) = slcf;
+    data(11) = tlcf;
+    data(12) = Dcrit;
 
 
     // History variables from last converged state
 
-    data (13) = Ce_so;
-    data (14) = Cf_so;
-    data (15) = Cyield1;
-    data (16) = Cregion;
-    data (17) = Cpoint11;
-    data (18) = Cpoint12;
-    data (19) = Cpoint13;
-    data (20) = Cpoint21;
-    data (21) = Cpoint22;
-    data (22) = Cpoint23;
-    data (23) = Cpoint31;
-    data (24) = Cpoint32;
-    data (25) = Cpoint33;
-    data (26) = Cpoint41;
-    data (27) = Cpoint42;
-    data (28) = Cpoint43;
-    data (29) = Cpoint51;
-    data (30) = Cpoint52;
-    data (31) = Cpoint53;
-    data (32) = Cep_o1;
-    data (33) = Cep_o2;
-    data (34) = Cep_M;
-    data (35) = Cfps_so;
-    data (36) = Chist11;
-    data (37) = Chist12;
-    data (38) = Cpoint61;
-    data (39) = Cpoint62;
-    data (40) = Cpoint63;
-    data (41) = Csim1;
-    data (42) = CDam;
+    data(13) = Ce_so;
+    data(14) = Cf_so;
+    data(15) = Cyield1;
+    data(16) = Cregion;
+    data(17) = Cpoint11;
+    data(18) = Cpoint12;
+    data(19) = Cpoint13;
+    data(20) = Cpoint21;
+    data(21) = Cpoint22;
+    data(22) = Cpoint23;
+    data(23) = Cpoint31;
+    data(24) = Cpoint32;
+    data(25) = Cpoint33;
+    data(26) = Cpoint41;
+    data(27) = Cpoint42;
+    data(28) = Cpoint43;
+    data(29) = Cpoint51;
+    data(30) = Cpoint52;
+    data(31) = Cpoint53;
+    data(32) = Cep_o1;
+    data(33) = Cep_o2;
+    data(34) = Cep_M;
+    data(35) = Cfps_so;
+    data(36) = Chist11;
+    data(37) = Chist12;
+    data(38) = Cpoint61;
+    data(39) = Cpoint62;
+    data(40) = Cpoint63;
+    data(41) = Csim1;
+    data(42) = CDam;
 
     // State variables from last converged state
-    data (43) = Cstrain;
-    data (44) = Cstress;
-    data (45) = Ctangent;
+    data(43) = Cstrain;
+    data(44) = Cstress;
+    data(45) = Ctangent;
 
     // Data is only sent after convergence, so no trial variables
     // need to be sent through data vector
 
-    res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+    res = theChannel.sendVector(this->getDbTag(), commitTag, data);
     if (res < 0)
         opserr << "DoddRestr::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-DoddRestr::recvSelf (int commitTag, Channel & theChannel,
-                     FEM_ObjectBroker & theBroker)
+int DoddRestr::recvSelf(int commitTag, Channel & theChannel,
+                        FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (46);
-    res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+    static Vector data(46);
+    res = theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-    if (res < 0)
-      {
-          opserr << "DoddRestr::recvSelf() - failed to receive data\n";
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag (int (data (0)));
+    if (res < 0) {
+        opserr << "DoddRestr::recvSelf() - failed to receive data\n";
+        this->setTag(0);
+    } else {
+        this->setTag(int (data(0)));
 
-          // Material properties
-          Eo = data (1);
-          fy = data (2);
-          esh = data (3);
-          esh1 = data (4);
-          fsh1 = data (5);
-          esu = data (6);
-          fsu = data (7);
-          Pmajor = data (8);
-          Pminor = data (9);
-          slcf = data (10);
-          tlcf = data (11);
-          Dcrit = data (12);
+        // Material properties
+        Eo = data(1);
+        fy = data(2);
+        esh = data(3);
+        esh1 = data(4);
+        fsh1 = data(5);
+        esu = data(6);
+        fsu = data(7);
+        Pmajor = data(8);
+        Pminor = data(9);
+        slcf = data(10);
+        tlcf = data(11);
+        Dcrit = data(12);
 
 
-          // History variables from last converged state
-          Ce_so = data (13);
-          Cf_so = data (14);
-          Cyield1 = data (15);
-          Cregion = data (16);
-          Cpoint11 = data (17);
-          Cpoint12 = data (18);
-          Cpoint13 = data (19);
-          Cpoint21 = data (20);
-          Cpoint22 = data (21);
-          Cpoint23 = data (22);
-          Cpoint31 = data (23);
-          Cpoint32 = data (24);
-          Cpoint33 = data (25);
-          Cpoint41 = data (26);
-          Cpoint42 = data (27);
-          Cpoint43 = data (28);
-          Cpoint51 = data (29);
-          Cpoint52 = data (30);
-          Cpoint53 = data (31);
-          Cep_o1 = data (32);
-          Cep_o2 = data (33);
-          Cep_M = data (34);
-          Cfps_so = data (35);
-          Chist11 = data (36);
-          Chist12 = data (37);
-          Cpoint61 = data (38);
-          Cpoint62 = data (39);
-          Cpoint63 = data (40);
-          Csim1 = data (41);
-          CDam = data (42);
+        // History variables from last converged state
+        Ce_so = data(13);
+        Cf_so = data(14);
+        Cyield1 = data(15);
+        Cregion = data(16);
+        Cpoint11 = data(17);
+        Cpoint12 = data(18);
+        Cpoint13 = data(19);
+        Cpoint21 = data(20);
+        Cpoint22 = data(21);
+        Cpoint23 = data(22);
+        Cpoint31 = data(23);
+        Cpoint32 = data(24);
+        Cpoint33 = data(25);
+        Cpoint41 = data(26);
+        Cpoint42 = data(27);
+        Cpoint43 = data(28);
+        Cpoint51 = data(29);
+        Cpoint52 = data(30);
+        Cpoint53 = data(31);
+        Cep_o1 = data(32);
+        Cep_o2 = data(33);
+        Cep_M = data(34);
+        Cfps_so = data(35);
+        Chist11 = data(36);
+        Chist12 = data(37);
+        Cpoint61 = data(38);
+        Cpoint62 = data(39);
+        Cpoint63 = data(40);
+        Csim1 = data(41);
+        CDam = data(42);
 
 
-          // Copy converged history values into trial values since data is only
-          // sent (received) after convergence
-          Te_so = Ce_so;
-          Tf_so = Cf_so;
-          Tyield1 = Cyield1;
-          Tregion = Cregion;
-          Tpoint11 = Cpoint11;
-          Tpoint12 = Cpoint12;
-          Tpoint13 = Cpoint13;
-          Tpoint21 = Cpoint21;
-          Tpoint22 = Cpoint22;
-          Tpoint23 = Cpoint23;
-          Tpoint31 = Cpoint31;
-          Tpoint32 = Cpoint32;
-          Tpoint33 = Cpoint33;
-          Tpoint41 = Cpoint41;
-          Tpoint42 = Cpoint42;
-          Tpoint43 = Cpoint43;
-          Tpoint51 = Cpoint51;
-          Tpoint52 = Cpoint52;
-          Tpoint53 = Cpoint53;
-          Tep_o1 = Cep_o1;
-          Tep_o2 = Cep_o2;
-          Tep_M = Cep_M;
-          Tfps_so = Cfps_so;
-          Thist11 = Chist11;
-          Thist12 = Chist12;
-          Tpoint61 = Cpoint61;
-          Tpoint62 = Cpoint62;
-          Tpoint63 = Cpoint63;
-          Tsim1 = Csim1;
-          TDam = CDam;
+        // Copy converged history values into trial values since data is only
+        // sent (received) after convergence
+        Te_so = Ce_so;
+        Tf_so = Cf_so;
+        Tyield1 = Cyield1;
+        Tregion = Cregion;
+        Tpoint11 = Cpoint11;
+        Tpoint12 = Cpoint12;
+        Tpoint13 = Cpoint13;
+        Tpoint21 = Cpoint21;
+        Tpoint22 = Cpoint22;
+        Tpoint23 = Cpoint23;
+        Tpoint31 = Cpoint31;
+        Tpoint32 = Cpoint32;
+        Tpoint33 = Cpoint33;
+        Tpoint41 = Cpoint41;
+        Tpoint42 = Cpoint42;
+        Tpoint43 = Cpoint43;
+        Tpoint51 = Cpoint51;
+        Tpoint52 = Cpoint52;
+        Tpoint53 = Cpoint53;
+        Tep_o1 = Cep_o1;
+        Tep_o2 = Cep_o2;
+        Tep_M = Cep_M;
+        Tfps_so = Cfps_so;
+        Thist11 = Chist11;
+        Thist12 = Chist12;
+        Tpoint61 = Cpoint61;
+        Tpoint62 = Cpoint62;
+        Tpoint63 = Cpoint63;
+        Tsim1 = Csim1;
+        TDam = CDam;
 
 
-          // State variables from last converged state
-          Cstrain = data (43);
-          Cstress = data (44);
-          Ctangent = data (45);
+        // State variables from last converged state
+        Cstrain = data(43);
+        Cstress = data(44);
+        Ctangent = data(45);
 
-          // Copy converged state values into trial values
-          Tstrain = Cstrain;
-          Tstress = Cstress;
-          Ttangent = Ctangent;
-      }
+        // Copy converged state values into trial values
+        Tstrain = Cstrain;
+        Tstress = Cstress;
+        Ttangent = Ctangent;
+    }
 
     return res;
 }
 
-void
-DoddRestr::Print (OPS_Stream & s, int flag)
+void DoddRestr::Print(OPS_Stream & s, int flag)
 {
-    s << "Concshcr tag: " << this->getTag () << endln;
+    s << "Concshcr tag: " << this->getTag() << endln;
     s << "  Eo: " << Eo << " ";
     s << "  fy: " << fy << " ";
     s << "  esh:  " << esh << " ";

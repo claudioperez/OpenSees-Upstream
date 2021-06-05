@@ -40,63 +40,55 @@
 
 static MapOfTaggedObjects theTimeSeriesObjects;
 
-bool
-OPS_addTimeSeries (TimeSeries * newComponent)
+bool OPS_addTimeSeries(TimeSeries * newComponent)
 {
-    return theTimeSeriesObjects.addComponent (newComponent);
+    return theTimeSeriesObjects.addComponent(newComponent);
 }
 
-bool
-OPS_removeTimeSeries (int tag)
+bool OPS_removeTimeSeries(int tag)
 {
-    TaggedObject *obj = theTimeSeriesObjects.removeComponent (tag);
-    if (obj != 0)
-      {
-          delete obj;
-          return true;
-      }
+    TaggedObject *obj = theTimeSeriesObjects.removeComponent(tag);
+    if (obj != 0) {
+        delete obj;
+        return true;
+    }
     return false;
 }
 
-TimeSeries *
-OPS_getTimeSeries (int tag)
+TimeSeries *OPS_getTimeSeries(int tag)
 {
 
-    TaggedObject *theResult = theTimeSeriesObjects.getComponentPtr (tag);
-    if (theResult == 0)
-      {
-          opserr <<
-              "TimeSeries *getTimeSeries(int tag) - none found with tag: " <<
-              tag << endln;
-          return 0;
-      }
+    TaggedObject *theResult = theTimeSeriesObjects.getComponentPtr(tag);
+    if (theResult == 0) {
+        opserr <<
+            "TimeSeries *getTimeSeries(int tag) - none found with tag: " <<
+            tag << endln;
+        return 0;
+    }
     TimeSeries *theSeries = (TimeSeries *) theResult;
 
-    return theSeries->getCopy ();
+    return theSeries->getCopy();
 }
 
-void
-OPS_clearAllTimeSeries (void)
+void OPS_clearAllTimeSeries(void)
 {
-    theTimeSeriesObjects.clearAll ();
+    theTimeSeriesObjects.clearAll();
 }
 
 
-TimeSeries::TimeSeries (int tag, int classTag):
-TaggedObject (tag),
-MovableObject (classTag)
+TimeSeries::TimeSeries(int tag, int classTag):TaggedObject(tag),
+MovableObject(classTag)
 {
 
 }
 
-TimeSeries::TimeSeries (int classTag):
-TaggedObject (0),
-MovableObject (classTag)
+TimeSeries::TimeSeries(int classTag):TaggedObject(0),
+MovableObject(classTag)
 {
 
 }
 
-TimeSeries::~TimeSeries ()
+TimeSeries::~TimeSeries()
 {
 
 }

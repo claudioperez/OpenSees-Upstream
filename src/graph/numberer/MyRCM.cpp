@@ -45,31 +45,28 @@
 #include <FEM_ObjectBroker.h>
 
 // Constructor
-MyRCM::MyRCM (int startVertex, bool minDegreeFlag):
-GraphNumberer (GraphNUMBERER_TAG_MyRCM),
-numVertex (-1),
-theRefResult (0),
-startVertexTag (startVertex),
-minDegree (minDegreeFlag)
+MyRCM::MyRCM(int startVertex,
+             bool minDegreeFlag):GraphNumberer(GraphNUMBERER_TAG_MyRCM),
+numVertex(-1), theRefResult(0), startVertexTag(startVertex),
+minDegree(minDegreeFlag)
 {
 
 }
 
 // Destructor
-MyRCM::~MyRCM ()
+MyRCM::~MyRCM()
 {
     if (theRefResult != 0)
         delete theRefResult;
 }
 
 void
-MyRCM::setStartVertex (int startVertex)
+ MyRCM::setStartVertex(int startVertex)
 {
     startVertexTag = startVertex;
 }
 
-void
-MyRCM::setMinDegreeFlag (bool flag)
+void MyRCM::setMinDegreeFlag(bool flag)
 {
     minDegree = flag;
 }
@@ -87,30 +84,26 @@ MyRCM::setMinDegreeFlag (bool flag)
 //
 // side effects: this routine changes the color of the vertices.
 
-const ID &
-MyRCM::number (Graph & theGraph, int startVertex)
+const ID & MyRCM::number(Graph & theGraph, int startVertex)
 {
     // first check our size, if not same make new
 
-    if (numVertex != theGraph.getNumVertex ())
-      {
+    if (numVertex != theGraph.getNumVertex()) {
 
-          // delete the old
-          if (theRefResult != 0)
-              delete theRefResult;
+        // delete the old
+        if (theRefResult != 0)
+            delete theRefResult;
 
-          numVertex = theGraph.getNumVertex ();
-          theRefResult = new ID (numVertex);
+        numVertex = theGraph.getNumVertex();
+        theRefResult = new ID(numVertex);
 
-          if (theRefResult == 0)
-            {
-                opserr << "ERROR:  MyRCM::number - Out of Memory\n";
-                theRefResult = new ID (0);
-                numVertex = 0;
-                return *theRefResult;
-            }
-      }
-
+        if (theRefResult == 0) {
+            opserr << "ERROR:  MyRCM::number - Out of Memory\n";
+            theRefResult = new ID(0);
+            numVertex = 0;
+            return *theRefResult;
+        }
+    }
     // see if we can do quick return
 
     if (numVertex == 0)
@@ -121,114 +114,104 @@ MyRCM::number (Graph & theGraph, int startVertex)
     // they have not yet been added.
 
     Vertex *vertexPtr;
-    VertexIter & vertexIter = theGraph.getVertices ();
+    VertexIter & vertexIter = theGraph.getVertices();
 
-    while ((vertexPtr = vertexIter ()) != 0)
-        vertexPtr->setTmp (-1);
+    while ((vertexPtr = vertexIter()) != 0)
+        vertexPtr->setTmp(-1);
 
     // we now set up; setting our markers and getting first vertex
     if (startVertex != -1)
         startVertexTag = startVertex;
 
-    if (startVertexTag != -1)
-      {
-          vertexPtr = theGraph.getVertexPtr (startVertexTag);
-          if (vertexPtr == 0)
-            {
-                opserr << "WARNING:  MyRCM::number - No vertex with tag ";
-                opserr << startVertexTag <<
-                    "Exists - using first come from iter\n";
-                startVertexTag = -1;
-            }
-      }
-
+    if (startVertexTag != -1) {
+        vertexPtr = theGraph.getVertexPtr(startVertexTag);
+        if (vertexPtr == 0) {
+            opserr << "WARNING:  MyRCM::number - No vertex with tag ";
+            opserr << startVertexTag <<
+                "Exists - using first come from iter\n";
+            startVertexTag = -1;
+        }
+    }
     // if no starting vertex use the first one we get from the VertexIter
 
-    VertexIter & vertexIter2 = theGraph.getVertices ();
+    VertexIter & vertexIter2 = theGraph.getVertices();
     if (startVertexTag == -1)
-        vertexPtr = vertexIter2 ();
+        vertexPtr = vertexIter2();
 
     int currentMark = numVertex - 1;    // marks current vertex visiting.
     int nextMark = currentMark - 1;     // indiactes where to put next Tag in ID.
-    (*theRefResult) (currentMark) = vertexPtr->getTag ();
-    vertexPtr->setTmp (currentMark);
+    (*theRefResult) (currentMark) = vertexPtr->getTag();
+    vertexPtr->setTmp(currentMark);
 
     // we continue till the ID is full
 
-    while (nextMark >= 0)
-      {
+    while (nextMark >= 0) {
 
-          // get the current vertex and its adjacency
+        // get the current vertex and its adjacency
 
-          vertexPtr = theGraph.getVertexPtr ((*theRefResult) (currentMark));
-          const ID & adjacency = vertexPtr->getAdjacency ();
+        vertexPtr = theGraph.getVertexPtr((*theRefResult) (currentMark));
+        const ID & adjacency = vertexPtr->getAdjacency();
 
-          // go through the vertices adjacency and add vertices which
-          // have not yet been Tmp'ed to the (*theRefResult)
+        // go through the vertices adjacency and add vertices which
+        // have not yet been Tmp'ed to the (*theRefResult)
 
-          int size = adjacency.Size ();
-          for (int i = 0; i < size; i++)
-            {
+        int size = adjacency.Size();
+        for (int i = 0; i < size; i++) {
 
-                int vertexTag = adjacency (i);
-                vertexPtr = theGraph.getVertexPtr (vertexTag);
-                if ((vertexPtr->getTmp ()) == -1)
-                  {
-                      vertexPtr->setTmp (nextMark);
-                      (*theRefResult) (nextMark--) = vertexTag;
-                  }
+            int vertexTag = adjacency(i);
+            vertexPtr = theGraph.getVertexPtr(vertexTag);
+            if ((vertexPtr->getTmp()) == -1) {
+                vertexPtr->setTmp(nextMark);
+                (*theRefResult) (nextMark--) = vertexTag;
             }
+        }
 
-          // go to the next vertex
-          //  we decrement because we are doing reverse Cuthill-McKee
+        // go to the next vertex
+        //  we decrement because we are doing reverse Cuthill-McKee
 
-          currentMark--;
+        currentMark--;
 
-          // check to see if graph is disconneted
+        // check to see if graph is disconneted
 
-          if ((currentMark == nextMark) && (currentMark >= 0))
-            {
-                opserr << "WARNING:  MyRCM::number - Disconnected graph\n";
+        if ((currentMark == nextMark) && (currentMark >= 0)) {
+            opserr << "WARNING:  MyRCM::number - Disconnected graph\n";
 
-                // loop over iter till we get a vertex not yet Tmped
+            // loop over iter till we get a vertex not yet Tmped
 
-                while (((vertexPtr = vertexIter2 ()) != 0) &&
-                       (vertexPtr->getTmp () != -1))
-                    ;
+            while (((vertexPtr = vertexIter2()) != 0) &&
+                   (vertexPtr->getTmp() != -1));
 
-                nextMark--;
-                vertexPtr->setTmp (currentMark);
-                (*theRefResult) (currentMark) = vertexPtr->getTag ();
-            }
+            nextMark--;
+            vertexPtr->setTmp(currentMark);
+            (*theRefResult) (currentMark) = vertexPtr->getTag();
+        }
 
-      }
+    }
 
     // now set the vertex references instead of the vertex tags
     // in the result, we change the Tmp to indicate number and return
 
-    for (int i = 0; i < numVertex; i++)
-      {
-          int vertexTag = (*theRefResult) (i);
-          vertexPtr = theGraph.getVertexPtr (vertexTag);
-          vertexPtr->setTmp (i + 1);    // 1 through numVertex
-          (*theRefResult) (i) = vertexPtr->getTag ();
-      }
+    for (int i = 0; i < numVertex; i++) {
+        int vertexTag = (*theRefResult) (i);
+        vertexPtr = theGraph.getVertexPtr(vertexTag);
+        vertexPtr->setTmp(i + 1);       // 1 through numVertex
+        (*theRefResult) (i) = vertexPtr->getTag();
+    }
 
-    theGraph.Print (opserr, 3);
+    theGraph.Print(opserr, 3);
     opserr << *theRefResult;
     return *theRefResult;
 }
 
 
 
-int
-MyRCM::sendSelf (int tag, Channel & theChannel)
+int MyRCM::sendSelf(int tag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-MyRCM::recvSelf (int tag, Channel & theChannel, FEM_ObjectBroker & theBroker)
+int MyRCM::recvSelf(int tag, Channel & theChannel,
+                    FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
@@ -239,187 +222,170 @@ MyRCM::recvSelf (int tag, Channel & theChannel, FEM_ObjectBroker & theBroker)
 
 
 
-const ID &
-MyRCM::number (Graph & theGraph, const ID & startVertices)
+const ID & MyRCM::number(Graph & theGraph, const ID & startVertices)
 {
     // first check our size, if not same make new
 
-    if (numVertex != theGraph.getNumVertex ())
-      {
+    if (numVertex != theGraph.getNumVertex()) {
 
-          // delete the old
-          if (theRefResult != 0)
-              delete theRefResult;
+        // delete the old
+        if (theRefResult != 0)
+            delete theRefResult;
 
-          numVertex = theGraph.getNumVertex ();
-          theRefResult = new ID (numVertex);
+        numVertex = theGraph.getNumVertex();
+        theRefResult = new ID(numVertex);
 
-          if (theRefResult == 0)
-            {
-                opserr << "ERROR:  MyRCM::number - Out of Memory\n";
-                theRefResult = new ID (0);
-                numVertex = 0;
-                return *theRefResult;
-            }
-      }
-
+        if (theRefResult == 0) {
+            opserr << "ERROR:  MyRCM::number - Out of Memory\n";
+            theRefResult = new ID(0);
+            numVertex = 0;
+            return *theRefResult;
+        }
+    }
     // see if we can do quick return
 
     if (numVertex == 0)
         return *theRefResult;
 
-    ID copyStart (startVertices);
+    ID copyStart(startVertices);
 
     // we determine which node to start with
     int minStartVertexTag = 0;
     int minAvgProfile = 0;
-    int startVerticesSize = startVertices.Size ();
+    int startVerticesSize = startVertices.Size();
 
-    for (int j = 0; j < startVerticesSize; j++)
-      {
-          // we first set the Tmp of all vertices to -1, indicating
-          // they have not yet been added.
+    for (int j = 0; j < startVerticesSize; j++) {
+        // we first set the Tmp of all vertices to -1, indicating
+        // they have not yet been added.
 
-          Vertex *vertexPtr;
-          VertexIter & vertexIter = theGraph.getVertices ();
+        Vertex *vertexPtr;
+        VertexIter & vertexIter = theGraph.getVertices();
 
-          while ((vertexPtr = vertexIter ()) != 0)
-              vertexPtr->setTmp (-1);
+        while ((vertexPtr = vertexIter()) != 0)
+            vertexPtr->setTmp(-1);
 
-          // we now set up; setting our markers and set first vertices
-          VertexIter & vertexIter2 = theGraph.getVertices ();
-          int currentMark = numVertex - 1;      // marks current vertex visiting.
-          int nextMark = currentMark - 1;
+        // we now set up; setting our markers and set first vertices
+        VertexIter & vertexIter2 = theGraph.getVertices();
+        int currentMark = numVertex - 1;        // marks current vertex visiting.
+        int nextMark = currentMark - 1;
 
-          for (int k = 0; k < startVerticesSize; k++)
-              if (k != j)
-                  copyStart (k) = 0;
-              else
-                  copyStart (k) = 1;
+        for (int k = 0; k < startVerticesSize; k++)
+            if (k != j)
+                copyStart(k) = 0;
+            else
+                copyStart(k) = 1;
 
-          vertexPtr = theGraph.getVertexPtr (startVertices (j));
-          (*theRefResult) (currentMark) = vertexPtr->getTag ();
-          vertexPtr->setTmp (currentMark);
+        vertexPtr = theGraph.getVertexPtr(startVertices(j));
+        (*theRefResult) (currentMark) = vertexPtr->getTag();
+        vertexPtr->setTmp(currentMark);
 
-          int numFromStart = 1;
-          int avgProfile = 1;
-          while (numFromStart < startVerticesSize)
-            {
-                // get the current vertex and its adjacency
+        int numFromStart = 1;
+        int avgProfile = 1;
+        while (numFromStart < startVerticesSize) {
+            // get the current vertex and its adjacency
 
-                vertexPtr =
-                    theGraph.getVertexPtr ((*theRefResult) (currentMark));
-                const ID & adjacency = vertexPtr->getAdjacency ();
+            vertexPtr =
+                theGraph.getVertexPtr((*theRefResult) (currentMark));
+            const ID & adjacency = vertexPtr->getAdjacency();
 
-                // go through the vertices adjacency and add vertices which
-                // have not yet been Tmp'ed to the (*theRefResult)
+            // go through the vertices adjacency and add vertices which
+            // have not yet been Tmp'ed to the (*theRefResult)
 
-                int size = adjacency.Size ();
-                for (int i = 0; i < size; i++)
-                  {
-                      int vertexTag = adjacency (i);
-                      int loc = startVertices.getLocation (vertexTag);
-                      if (loc >= 0)
-                        {
-                            vertexPtr = theGraph.getVertexPtr (vertexTag);
-                            if ((vertexPtr->getTmp ()) == -1)
-                              {
-                                  vertexPtr->setTmp (nextMark);
-                                  copyStart (loc) = 1;
-                                  numFromStart++;
-                                  avgProfile += currentMark - nextMark;
-                                  (*theRefResult) (nextMark--) = vertexTag;
-                              }
-                        }
-                  }
-
-                // go to the next vertex
-                //  we decrement because we are doing reverse Cuthill-McKee
-
-                currentMark--;
-
-                // check to see if graph is disconneted
-
-                if (currentMark == nextMark
-                    && numFromStart < startVerticesSize)
-                  {
-                      // loop over iter till we get a vertex not yet included
-
-                      for (int l = 0; l < startVerticesSize; l++)
-                          if (copyStart (l) == 0)
-                            {
-                                int vertexTag = startVertices (l);
-                                vertexPtr = theGraph.getVertexPtr (vertexTag);
-                                nextMark--;
-                                copyStart (l) = 1;
-                                vertexPtr->setTmp (currentMark);
-                                numFromStart++;
-                                (*theRefResult) (currentMark) =
-                                    vertexPtr->getTag ();
-                                l = startVerticesSize;
-                            }
-                  }
+            int size = adjacency.Size();
+            for (int i = 0; i < size; i++) {
+                int vertexTag = adjacency(i);
+                int loc = startVertices.getLocation(vertexTag);
+                if (loc >= 0) {
+                    vertexPtr = theGraph.getVertexPtr(vertexTag);
+                    if ((vertexPtr->getTmp()) == -1) {
+                        vertexPtr->setTmp(nextMark);
+                        copyStart(loc) = 1;
+                        numFromStart++;
+                        avgProfile += currentMark - nextMark;
+                        (*theRefResult) (nextMark--) = vertexTag;
+                    }
+                }
             }
 
-          currentMark = numVertex - 1;  // set current to the first again
-          nextMark = numVertex - startVerticesSize - 1;
+            // go to the next vertex
+            //  we decrement because we are doing reverse Cuthill-McKee
 
-          // we continue till the ID is full
+            currentMark--;
 
-          while (nextMark >= 0)
-            {
-                // get the current vertex and its adjacency
+            // check to see if graph is disconneted
 
-                vertexPtr =
-                    theGraph.getVertexPtr ((*theRefResult) (currentMark));
-                const ID & adjacency = vertexPtr->getAdjacency ();
+            if (currentMark == nextMark
+                && numFromStart < startVerticesSize) {
+                // loop over iter till we get a vertex not yet included
 
-                // go through the vertices adjacency and add vertices which
-                // have not yet been Tmp'ed to the (*theRefResult)
-
-                int size = adjacency.Size ();
-                for (int i = 0; i < size; i++)
-                  {
-
-                      int vertexTag = adjacency (i);
-                      vertexPtr = theGraph.getVertexPtr (vertexTag);
-                      if ((vertexPtr->getTmp ()) == -1)
-                        {
-                            vertexPtr->setTmp (nextMark);
-                            avgProfile += currentMark - nextMark;
-
-                            (*theRefResult) (nextMark--) = vertexTag;
-                        }
-                  }
-                // go to the next vertex
-                //  we decrement because we are doing reverse Cuthill-McKee
-
-                currentMark--;
-
-                // check to see if graph is disconneted
-
-                if ((currentMark == nextMark) && (currentMark >= 0))
-                  {
-
-                      // loop over iter till we get a vertex not yet Tmped
-
-                      while (((vertexPtr = vertexIter2 ()) != 0) &&
-                             (vertexPtr->getTmp () != -1))
-                          ;
-
-                      nextMark--;
-                      vertexPtr->setTmp (currentMark);
-                      (*theRefResult) (currentMark) = vertexPtr->getTag ();
-                  }
+                for (int l = 0; l < startVerticesSize; l++)
+                    if (copyStart(l) == 0) {
+                        int vertexTag = startVertices(l);
+                        vertexPtr = theGraph.getVertexPtr(vertexTag);
+                        nextMark--;
+                        copyStart(l) = 1;
+                        vertexPtr->setTmp(currentMark);
+                        numFromStart++;
+                        (*theRefResult) (currentMark) =
+                            vertexPtr->getTag();
+                        l = startVerticesSize;
+                    }
             }
+        }
 
-          if (j == 0 || minAvgProfile > avgProfile)
-            {
-                minStartVertexTag = startVertices (j);
-                minAvgProfile = avgProfile;
+        currentMark = numVertex - 1;    // set current to the first again
+        nextMark = numVertex - startVerticesSize - 1;
+
+        // we continue till the ID is full
+
+        while (nextMark >= 0) {
+            // get the current vertex and its adjacency
+
+            vertexPtr =
+                theGraph.getVertexPtr((*theRefResult) (currentMark));
+            const ID & adjacency = vertexPtr->getAdjacency();
+
+            // go through the vertices adjacency and add vertices which
+            // have not yet been Tmp'ed to the (*theRefResult)
+
+            int size = adjacency.Size();
+            for (int i = 0; i < size; i++) {
+
+                int vertexTag = adjacency(i);
+                vertexPtr = theGraph.getVertexPtr(vertexTag);
+                if ((vertexPtr->getTmp()) == -1) {
+                    vertexPtr->setTmp(nextMark);
+                    avgProfile += currentMark - nextMark;
+
+                    (*theRefResult) (nextMark--) = vertexTag;
+                }
             }
+            // go to the next vertex
+            //  we decrement because we are doing reverse Cuthill-McKee
 
-      }
+            currentMark--;
+
+            // check to see if graph is disconneted
+
+            if ((currentMark == nextMark) && (currentMark >= 0)) {
+
+                // loop over iter till we get a vertex not yet Tmped
+
+                while (((vertexPtr = vertexIter2()) != 0) &&
+                       (vertexPtr->getTmp() != -1));
+
+                nextMark--;
+                vertexPtr->setTmp(currentMark);
+                (*theRefResult) (currentMark) = vertexPtr->getTag();
+            }
+        }
+
+        if (j == 0 || minAvgProfile > avgProfile) {
+            minStartVertexTag = startVertices(j);
+            minAvgProfile = avgProfile;
+        }
+
+    }
 
 
     // now we numebr based on minStartVErtexTag
@@ -428,82 +394,75 @@ MyRCM::number (Graph & theGraph, const ID & startVertices)
     // they have not yet been added.
 
     Vertex *vertexPtr;
-    VertexIter & vertexIter = theGraph.getVertices ();
+    VertexIter & vertexIter = theGraph.getVertices();
 
-    while ((vertexPtr = vertexIter ()) != 0)
-        vertexPtr->setTmp (-1);
+    while ((vertexPtr = vertexIter()) != 0)
+        vertexPtr->setTmp(-1);
 
     // we now set up; setting our markers and set first vertices
-    VertexIter & vertexIter2 = theGraph.getVertices ();
+    VertexIter & vertexIter2 = theGraph.getVertices();
     int currentMark = numVertex - 1;    // marks current vertex visiting.
     int nextMark = currentMark - 1;
 
-    vertexPtr = theGraph.getVertexPtr (minStartVertexTag);
-    (*theRefResult) (currentMark) = vertexPtr->getTag ();
-    vertexPtr->setTmp (currentMark);
+    vertexPtr = theGraph.getVertexPtr(minStartVertexTag);
+    (*theRefResult) (currentMark) = vertexPtr->getTag();
+    vertexPtr->setTmp(currentMark);
     currentMark--;
 
-    int loc = startVertices.getLocation (minStartVertexTag);
+    int loc = startVertices.getLocation(minStartVertexTag);
     for (int k = 0; k < startVerticesSize; k++)
         if (k != loc)
-            copyStart (k) = 0;
+            copyStart(k) = 0;
 
 
     int numFromStart = 1;
-    while (numFromStart < startVerticesSize)
-      {
-          // get the current vertex and its adjacency
+    while (numFromStart < startVerticesSize) {
+        // get the current vertex and its adjacency
 
-          vertexPtr = theGraph.getVertexPtr ((*theRefResult) (currentMark));
-          const ID & adjacency = vertexPtr->getAdjacency ();
+        vertexPtr = theGraph.getVertexPtr((*theRefResult) (currentMark));
+        const ID & adjacency = vertexPtr->getAdjacency();
 
-          // go through the vertices adjacency and add vertices which
-          // have not yet been Tmp'ed to the (*theRefResult)
+        // go through the vertices adjacency and add vertices which
+        // have not yet been Tmp'ed to the (*theRefResult)
 
-          int size = adjacency.Size ();
-          for (int i = 0; i < size; i++)
-            {
-                int vertexTag = adjacency (i);
-                int loc = startVertices.getLocation (vertexTag);
-                if (loc >= 0)
-                  {
-                      vertexPtr = theGraph.getVertexPtr (vertexTag);
-                      if ((vertexPtr->getTmp ()) == -1)
-                        {
-                            vertexPtr->setTmp (nextMark);
-                            copyStart (loc) = 1;
-                            numFromStart++;
-                            (*theRefResult) (nextMark--) = vertexTag;
-                        }
-                  }
+        int size = adjacency.Size();
+        for (int i = 0; i < size; i++) {
+            int vertexTag = adjacency(i);
+            int loc = startVertices.getLocation(vertexTag);
+            if (loc >= 0) {
+                vertexPtr = theGraph.getVertexPtr(vertexTag);
+                if ((vertexPtr->getTmp()) == -1) {
+                    vertexPtr->setTmp(nextMark);
+                    copyStart(loc) = 1;
+                    numFromStart++;
+                    (*theRefResult) (nextMark--) = vertexTag;
+                }
             }
+        }
 
-          // go to the next vertex
-          //  we decrement because we are doing reverse Cuthill-McKee
+        // go to the next vertex
+        //  we decrement because we are doing reverse Cuthill-McKee
 
-          currentMark--;
+        currentMark--;
 
-          // check to see if graph is disconneted
+        // check to see if graph is disconneted
 
-          if (currentMark == nextMark && numFromStart < startVerticesSize)
-            {
-                // loop over iter till we get a vertex not yet included
+        if (currentMark == nextMark && numFromStart < startVerticesSize) {
+            // loop over iter till we get a vertex not yet included
 
-                for (int l = 0; l < startVerticesSize; l++)
-                    if (copyStart (l) == 0)
-                      {
-                          int vertexTag = startVertices (l);
-                          vertexPtr = theGraph.getVertexPtr (vertexTag);
-                          nextMark--;
-                          copyStart (l) = 1;
-                          vertexPtr->setTmp (currentMark);
-                          numFromStart++;
-                          (*theRefResult) (currentMark) =
-                              vertexPtr->getTag ();
-                          l = startVerticesSize;
-                      }
-            }
-      }
+            for (int l = 0; l < startVerticesSize; l++)
+                if (copyStart(l) == 0) {
+                    int vertexTag = startVertices(l);
+                    vertexPtr = theGraph.getVertexPtr(vertexTag);
+                    nextMark--;
+                    copyStart(l) = 1;
+                    vertexPtr->setTmp(currentMark);
+                    numFromStart++;
+                    (*theRefResult) (currentMark) = vertexPtr->getTag();
+                    l = startVerticesSize;
+                }
+        }
+    }
 
     currentMark = numVertex - 1;        // set current to the first again
     nextMark = numVertex - startVerticesSize - 1;
@@ -512,64 +471,58 @@ MyRCM::number (Graph & theGraph, const ID & startVertices)
     currentMark = numVertex - 1;        // set current to the first again
 
     // we continue till the ID is full
-    while (nextMark >= 0)
-      {
+    while (nextMark >= 0) {
 
-          // get the current vertex and its adjacency
+        // get the current vertex and its adjacency
 
-          vertexPtr = theGraph.getVertexPtr ((*theRefResult) (currentMark));
-          const ID & adjacency = vertexPtr->getAdjacency ();
+        vertexPtr = theGraph.getVertexPtr((*theRefResult) (currentMark));
+        const ID & adjacency = vertexPtr->getAdjacency();
 
-          // go through the vertices adjacency and add vertices which
-          // have not yet been Tmp'ed to the (*theRefResult)
+        // go through the vertices adjacency and add vertices which
+        // have not yet been Tmp'ed to the (*theRefResult)
 
-          int size = adjacency.Size ();
-          for (int i = 0; i < size; i++)
-            {
+        int size = adjacency.Size();
+        for (int i = 0; i < size; i++) {
 
-                int vertexTag = adjacency (i);
-                vertexPtr = theGraph.getVertexPtr (vertexTag);
-                if ((vertexPtr->getTmp ()) == -1)
-                  {
-                      vertexPtr->setTmp (nextMark);
-                      (*theRefResult) (nextMark--) = vertexTag;
-                  }
+            int vertexTag = adjacency(i);
+            vertexPtr = theGraph.getVertexPtr(vertexTag);
+            if ((vertexPtr->getTmp()) == -1) {
+                vertexPtr->setTmp(nextMark);
+                (*theRefResult) (nextMark--) = vertexTag;
             }
+        }
 
-          // go to the next vertex
-          //  we decrement because we are doing reverse Cuthill-McKee
+        // go to the next vertex
+        //  we decrement because we are doing reverse Cuthill-McKee
 
-          currentMark--;
+        currentMark--;
 
-          // check to see if graph is disconneted
+        // check to see if graph is disconneted
 
-          if ((currentMark == nextMark) && (currentMark >= 0))
-            {
-                opserr << "WARNING:  MyRCM::number - Disconnected graph ";
+        if ((currentMark == nextMark) && (currentMark >= 0)) {
+            opserr << "WARNING:  MyRCM::number - Disconnected graph ";
 
-                // loop over iter till we get a vertex not yet Tmped
+            // loop over iter till we get a vertex not yet Tmped
 
-                while (((vertexPtr = vertexIter2 ()) != 0) &&
-                       (vertexPtr->getTmp () != -1))
-                    ;
+            while (((vertexPtr = vertexIter2()) != 0) &&
+                   (vertexPtr->getTmp() != -1));
 
-                nextMark--;
-                vertexPtr->setTmp (currentMark);
-                (*theRefResult) (currentMark) = vertexPtr->getTag ();
-            }
+            nextMark--;
+            vertexPtr->setTmp(currentMark);
+            (*theRefResult) (currentMark) = vertexPtr->getTag();
+        }
 
-      }
+    }
 
     // now set the vertex references instead of the vertex tags
     // in the result, we change the Tmp to indicate number and return
 
-    for (int m = 0; m < numVertex; m++)
-      {
-          int vertexTag = (*theRefResult) (m);
-          vertexPtr = theGraph.getVertexPtr (vertexTag);
-          vertexPtr->setTmp (m + 1);    // 1 through numVertex
-          (*theRefResult) (m) = vertexPtr->getTag ();
-      }
+    for (int m = 0; m < numVertex; m++) {
+        int vertexTag = (*theRefResult) (m);
+        vertexPtr = theGraph.getVertexPtr(vertexTag);
+        vertexPtr->setTmp(m + 1);       // 1 through numVertex
+        (*theRefResult) (m) = vertexPtr->getTag();
+    }
 
     return *theRefResult;
 }

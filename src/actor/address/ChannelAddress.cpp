@@ -38,17 +38,16 @@
 
 
 
-ChannelAddress::ChannelAddress (int type):
-theType (type)
+ChannelAddress::ChannelAddress(int type):theType(type)
 {
 }
 
-ChannelAddress::~ChannelAddress ()
+ChannelAddress::~ChannelAddress()
 {
 }
 
 int
-ChannelAddress::getType (void) const
+ ChannelAddress::getType(void) const
 {
     return theType;
 }

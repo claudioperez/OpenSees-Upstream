@@ -41,15 +41,16 @@
 //#include <fstream>
 #include <math.h>
 
-SimulatedRandomProcessSeries::SimulatedRandomProcessSeries (int tag,
-                                                            RandomNumberGenerator
-                                                            *
-                                                            theRandNumGenerator,
-                                                            Spectrum *
-                                                            theSpectr,
-                                                            int numFreqInt,
-                                                            double pmean):
-TimeSeries (tag, TSERIES_TAG_SimulatedRandomProcessSeries)
+SimulatedRandomProcessSeries::SimulatedRandomProcessSeries(int tag,
+                                                           RandomNumberGenerator
+                                                           *
+                                                           theRandNumGenerator,
+                                                           Spectrum *
+                                                           theSpectr,
+                                                           int numFreqInt,
+                                                           double
+                                                           pmean):TimeSeries
+    (tag, TSERIES_TAG_SimulatedRandomProcessSeries)
 {
     theRandomNumberGenerator = theRandNumGenerator;
     theSpectrum = theSpectr;
@@ -59,38 +60,37 @@ TimeSeries (tag, TSERIES_TAG_SimulatedRandomProcessSeries)
 
     // Generate random numbers, uniformly distributed between 0 and 2pi
     double pi = 3.14159265358979;
-    theRandomNumberGenerator->
-        generate_nIndependentUniformNumbers (numFreqIntervals, 0.0, (2 * pi));
-    Vector theta1 = theRandomNumberGenerator->getGeneratedNumbers ();
-    theta = new Vector (theta1);
+    theRandomNumberGenerator->generate_nIndependentUniformNumbers
+        (numFreqIntervals, 0.0, (2 * pi));
+    Vector theta1 = theRandomNumberGenerator->getGeneratedNumbers();
+    theta = new Vector(theta1);
 
 
     // Generate standard normal random numbers
-    theRandomNumberGenerator->
-        generate_nIndependentStdNormalNumbers (numFreqIntervals);
-    Vector A1 = theRandomNumberGenerator->getGeneratedNumbers ();
-    A = new Vector (A1);
+    theRandomNumberGenerator->generate_nIndependentStdNormalNumbers
+        (numFreqIntervals);
+    Vector A1 = theRandomNumberGenerator->getGeneratedNumbers();
+    A = new Vector(A1);
 
 
     // Length of each interval
     deltaW =
-        (theSpectrum->getMaxFrequency () -
-         theSpectrum->getMinFrequency ()) / numFreqIntervals;
+        (theSpectrum->getMaxFrequency() -
+         theSpectrum->getMinFrequency()) / numFreqIntervals;
 
 
 }
 
 
 
-TimeSeries *
-SimulatedRandomProcessSeries::getCopy (void)
+TimeSeries *SimulatedRandomProcessSeries::getCopy(void)
 {
     opserr <<
         "SimulatedRandomProcessSeries::getCopy(void) - not yet implemented\n";
     return 0;
 }
 
-SimulatedRandomProcessSeries::~SimulatedRandomProcessSeries ()
+SimulatedRandomProcessSeries::~SimulatedRandomProcessSeries()
 {
     if (theta != 0)
         delete theta;
@@ -100,54 +100,49 @@ SimulatedRandomProcessSeries::~SimulatedRandomProcessSeries ()
 
 
 double
-SimulatedRandomProcessSeries::getFactor (double time)
+ SimulatedRandomProcessSeries::getFactor(double time)
 {
 //static ofstream outputFile( "simulated_process.out" , ios::out );
 
-    if (time == 0.0)
-      {
-          return 0.0;
-      }
-    else
-      {
+    if (time == 0.0) {
+        return 0.0;
+    } else {
 
-          // Add up over all frequency intervals
-          double factor = 0.0;
-          double W, S;
-          for (int i = 0; i < numFreqIntervals; i++)
-            {
-                W = (i + 0.5) * deltaW + theSpectrum->getMinFrequency ();
-                S = theSpectrum->getAmplitude (W);
-                factor +=
-                    sqrt (2.0 * S * deltaW) * (*A) (i) * cos (W * time +
-                                                              (*theta) (i));
-            }
+        // Add up over all frequency intervals
+        double factor = 0.0;
+        double W, S;
+        for (int i = 0; i < numFreqIntervals; i++) {
+            W = (i + 0.5) * deltaW + theSpectrum->getMinFrequency();
+            S = theSpectrum->getAmplitude(W);
+            factor +=
+                sqrt(2.0 * S * deltaW) * (*A) (i) * cos(W * time +
+                                                        (*theta) (i));
+        }
 
 //outputFile << (mean+factor) << endl;
 
-          return (mean + factor);
-      }
+        return (mean + factor);
+    }
 }
 
 
 
 
-int
-SimulatedRandomProcessSeries::sendSelf (int commitTag, Channel & theChannel)
+int SimulatedRandomProcessSeries::sendSelf(int commitTag,
+                                           Channel & theChannel)
 {
     return 0;
 }
 
 
-int
-SimulatedRandomProcessSeries::recvSelf (int commitTag, Channel & theChannel,
-                                        FEM_ObjectBroker & theBroker)
+int SimulatedRandomProcessSeries::recvSelf(int commitTag,
+                                           Channel & theChannel,
+                                           FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
 
-void
-SimulatedRandomProcessSeries::Print (OPS_Stream & s, int flag)
+void SimulatedRandomProcessSeries::Print(OPS_Stream & s, int flag)
 {
 }

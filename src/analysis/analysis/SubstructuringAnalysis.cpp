@@ -54,24 +54,24 @@
 // Constructor
 //    sets theModel and theSysOFEqn to 0 and the Algorithm to the one supplied
 
-SubstructuringAnalysis::SubstructuringAnalysis (Subdomain & the_Domain, ConstraintHandler & handler, DOF_Numberer & numberer, AnalysisModel & model, DomainDecompAlgo & theSolnAlgo, IncrementalIntegrator & integrator, LinearSOE & theLinSOE, DomainSolver & theDDSolver, ConvergenceTest * theTest):DomainDecompositionAnalysis (the_Domain,
-                             handler,
-                             numberer,
-                             model,
-                             theSolnAlgo,
-                             integrator, theLinSOE, theDDSolver, theTest)
+SubstructuringAnalysis::SubstructuringAnalysis(Subdomain & the_Domain, ConstraintHandler & handler, DOF_Numberer & numberer, AnalysisModel & model, DomainDecompAlgo & theSolnAlgo, IncrementalIntegrator & integrator, LinearSOE & theLinSOE, DomainSolver & theDDSolver, ConvergenceTest * theTest):DomainDecompositionAnalysis(the_Domain,
+                            handler,
+                            numberer,
+                            model,
+                            theSolnAlgo,
+                            integrator, theLinSOE, theDDSolver, theTest)
 {
 
 }
 
 
-SubstructuringAnalysis::~SubstructuringAnalysis ()
+SubstructuringAnalysis::~SubstructuringAnalysis()
 {
 
 }
 
 int
-SubstructuringAnalysis::analyze (void)
+ SubstructuringAnalysis::analyze(void)
 {
     opserr << "SubstructuringAnalysis::analyze(void)";
     opserr << "does nothing and should not have been called\n";

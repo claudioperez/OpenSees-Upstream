@@ -30,63 +30,54 @@
 #include <DamageResponse.h>
 #include <DamageModel.h>
 
-DamageResponse::DamageResponse (DamageModel * dmg, int id):
-Response (),
-theDamage (dmg),
-responseID (id)
+DamageResponse::DamageResponse(DamageModel * dmg, int id):Response(),
+theDamage(dmg), responseID(id)
 {
 
 }
 
-DamageResponse::DamageResponse (DamageModel * dmg, int id, int val):
-Response (val),
-theDamage (dmg),
-responseID (id)
+DamageResponse::DamageResponse(DamageModel * dmg, int id,
+                               int val):Response(val), theDamage(dmg),
+responseID(id)
 {
 
 }
 
-DamageResponse::DamageResponse (DamageModel * dmg, int id, double val):
-Response (val),
-theDamage (dmg),
-responseID (id)
+DamageResponse::DamageResponse(DamageModel * dmg, int id,
+                               double val):Response(val), theDamage(dmg),
+responseID(id)
 {
 
 }
 
-DamageResponse::DamageResponse (DamageModel * dmg, int id, const ID & val):
-Response (val),
-theDamage (dmg),
-responseID (id)
+DamageResponse::DamageResponse(DamageModel * dmg, int id,
+                               const ID & val):Response(val),
+theDamage(dmg), responseID(id)
 {
 
 }
 
-DamageResponse::DamageResponse (DamageModel * dmg, int id,
-                                const Vector & val):
-Response (val),
-theDamage (dmg),
-responseID (id)
+DamageResponse::DamageResponse(DamageModel * dmg, int id,
+                               const Vector & val):Response(val),
+theDamage(dmg), responseID(id)
 {
 
 }
 
-DamageResponse::DamageResponse (DamageModel * dmg, int id,
-                                const Matrix & val):
-Response (val),
-theDamage (dmg),
-responseID (id)
+DamageResponse::DamageResponse(DamageModel * dmg, int id,
+                               const Matrix & val):Response(val),
+theDamage(dmg), responseID(id)
 {
 
 }
 
-DamageResponse::~DamageResponse ()
+DamageResponse::~DamageResponse()
 {
 
 }
 
 int
-DamageResponse::getResponse (void)
+ DamageResponse::getResponse(void)
 {
-    return theDamage->getResponse (responseID, myInfo);
+    return theDamage->getResponse(responseID, myInfo);
 }

@@ -44,88 +44,78 @@ static int num_pyUCLA = 0;
 
 OPS_Export void *
 #ifdef OPS_API_COMMANDLINE
-OPS_pyUCLA (void)
+OPS_pyUCLA(void)
 {
-    if (num_pyUCLA == 0)
-      {
-          num_pyUCLA++;
-          //OPS_Error("pyUCLAMaterial unaxial material - Written by H.Shin, P.Arduino, U.Washington\n based on model of E.Taciroglu, C.Rha, J.Wallace, UCLA", 1);
-          opserr <<
-              "pyUCLAMaterial unaxial material - Written by H.Shin, P.Arduino, U.Washington\n based on model of E.Taciroglu, C.Rha, J.Wallace, UCLA\n";
-      }
-
+    if (num_pyUCLA == 0) {
+        num_pyUCLA++;
+        //OPS_Error("pyUCLAMaterial unaxial material - Written by H.Shin, P.Arduino, U.Washington\n based on model of E.Taciroglu, C.Rha, J.Wallace, UCLA", 1);
+        opserr <<
+            "pyUCLAMaterial unaxial material - Written by H.Shin, P.Arduino, U.Washington\n based on model of E.Taciroglu, C.Rha, J.Wallace, UCLA\n";
+    }
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
 
-    if (OPS_GetNumRemainingInputArgs () != 5)
-      {
-          opserr <<
-              "Invalid #args,  want: uniaxialMaterial pyUCLA tag? soilType? pult? y50? Cd? "
-              << endln;
-          return 0;
-      }
+    if (OPS_GetNumRemainingInputArgs() != 5) {
+        opserr <<
+            "Invalid #args,  want: uniaxialMaterial pyUCLA tag? soilType? pult? y50? Cd? "
+            << endln;
+        return 0;
+    }
 
     int iData[2];
     double dData[3];
 
     int numData = 2;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr <<
-              "WARNING invalid tag or soilType uniaxialMaterial pyUCLAMaterial"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr <<
+            "WARNING invalid tag or soilType uniaxialMaterial pyUCLAMaterial"
+            << endln;
+        return 0;
+    }
 
     numData = 3;
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "Invalid pyData data for material uniaxial pyUCLA " <<
-              iData[0] << endln;
-          return 0;
-      }
-
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "Invalid pyData data for material uniaxial pyUCLA " <<
+            iData[0] << endln;
+        return 0;
+    }
     // Parsing was successful, allocate the material
     theMaterial =
-        new pyUCLA (iData[0], iData[1], dData[0], dData[1], dData[2]);
+        new pyUCLA(iData[0], iData[1], dData[0], dData[1], dData[2]);
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type pyUCLAMaterial\n";
-          return 0;
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type pyUCLAMaterial\n";
+        return 0;
+    }
 
     return theMaterial;
 }
 #endif
 
 
-pyUCLA::pyUCLA (int tag, int type, double Pu, double yc, double CdRatio):
-UniaxialMaterial (tag, MAT_TAG_pyUCLA),
-soilType (type),
-pult (Pu),
-y50 (yc),
-Cd (CdRatio)
+pyUCLA::pyUCLA(int tag, int type, double Pu, double yc,
+               double CdRatio):UniaxialMaterial(tag, MAT_TAG_pyUCLA),
+soilType(type), pult(Pu), y50(yc), Cd(CdRatio)
 {
     // Initialize variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-pyUCLA::pyUCLA ():UniaxialMaterial (0, 0),
-soilType (1), pult (0.0), y50 (0.0), Cd (0.0)
+pyUCLA::pyUCLA():UniaxialMaterial(0, 0),
+soilType(1), pult(0.0), y50(0.0), Cd(0.0)
 {
     // Initialize variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-pyUCLA::~pyUCLA ()
+pyUCLA::~pyUCLA()
 {
 
 }
 
 int
-pyUCLA::setTrialStrain (double strain, double strainRate)
+ pyUCLA::setTrialStrain(double strain, double strainRate)
 {
     pult50 = 0.5 * pult;
     n = 1.0 / 3.0;
@@ -134,8 +124,8 @@ pyUCLA::setTrialStrain (double strain, double strainRate)
     limitStress = 1.0;
     //limitStress = 0.0001;
 
-    epsilonY = pow (pult50 / (E * pow (y50, n)), 1.0 / (1 - n));
-    theta = (pult50 * n) / pow (y50, n);
+    epsilonY = pow(pult50 / (E * pow(y50, n)), 1.0 / (1 - n));
+    theta = (pult50 * n) / pow(y50, n);
 
 
     Ed = 1.0e6;
@@ -150,122 +140,105 @@ pyUCLA::setTrialStrain (double strain, double strainRate)
     int plumin1 = -signLimitStress1;
 
 
-    if (strain == 0.0)
-      {
-          Tstress1 = 0.0;
-          Ttangent1 = E;
-          TplasticStrain1 = CplasticStrain1;
-          Thardening1 = Chardening1;
-      }
-    else
-      {
+    if (strain == 0.0) {
+        Tstress1 = 0.0;
+        Ttangent1 = E;
+        TplasticStrain1 = CplasticStrain1;
+        Thardening1 = Chardening1;
+    } else {
 
-          Tstress1 = E * (strain - CplasticStrain1);
-          Ttangent1 = E;
-          double f1 = Tstress1 * plumin1 - Chardening1;
-          Tstrain1 = strain * plumin1 - epsilonY;
+        Tstress1 = E * (strain - CplasticStrain1);
+        Ttangent1 = E;
+        double f1 = Tstress1 * plumin1 - Chardening1;
+        Tstrain1 = strain * plumin1 - epsilonY;
 
 
-          //--- hyperelastic below epsilonY
-          if (Tstrain1 < 1.0e-16 && Chardening1 == 0.0)
-            {
-                Tstress1 = E * strain;
-                Ttangent1 = E;
-                TplasticStrain1 = 0.0;
-                Thardening1 = 0.0;
+        //--- hyperelastic below epsilonY
+        if (Tstrain1 < 1.0e-16 && Chardening1 == 0.0) {
+            Tstress1 = E * strain;
+            Ttangent1 = E;
+            TplasticStrain1 = 0.0;
+            Thardening1 = 0.0;
 
-            }
-          //--- elastic step
-          else if (f1 < 1.0e-16)
-            {
-                //Tstress1 = Tstress1;
-                //Ttangent1 = E ; 
-                TplasticStrain1 = CplasticStrain1;
-                Thardening1 = Chardening1;
-            }
-          //--- plastic step
-          else
-            {
-                int signStrain1 = (strain < 0) ? -1 : 1;
-                Tstress1 =
-                    pult50 * signStrain1 * pow ((fabs (strain) / y50), n);
-                Ttangent1 = theta * pow (fabs (strain), n - 1);
-                TplasticStrain1 = strain - (Tstress1 / E);
-                Thardening1 = fabs (Tstress1);
-            }
-      }
+        }
+        //--- elastic step
+        else if (f1 < 1.0e-16) {
+            //Tstress1 = Tstress1;
+            //Ttangent1 = E ; 
+            TplasticStrain1 = CplasticStrain1;
+            Thardening1 = Chardening1;
+        }
+        //--- plastic step
+        else {
+            int signStrain1 = (strain < 0) ? -1 : 1;
+            Tstress1 = pult50 * signStrain1 * pow((fabs(strain) / y50), n);
+            Ttangent1 = theta * pow(fabs(strain), n - 1);
+            TplasticStrain1 = strain - (Tstress1 / E);
+            Thardening1 = fabs(Tstress1);
+        }
+    }
 
 
     //--- (2) py (no compression) =======================================
     int signLimitStress2 = (-limitStress < 0) ? -1 : 1;
     int plumin2 = -signLimitStress2;
 
-    if (strain == 0.0)
-      {
-          Tstress2 = 0.0;
-          Ttangent2 = E;
-          TplasticStrain2 = CplasticStrain2;
-          Thardening2 = Chardening2;
-      }
-    else
-      {
+    if (strain == 0.0) {
+        Tstress2 = 0.0;
+        Ttangent2 = E;
+        TplasticStrain2 = CplasticStrain2;
+        Thardening2 = Chardening2;
+    } else {
 
-          Tstress2 = E * (strain - CplasticStrain2);
-          Ttangent2 = E;
-          double f2 = Tstress2 * plumin2 - Chardening2;
-          Tstrain2 = strain * plumin2 - epsilonY;
+        Tstress2 = E * (strain - CplasticStrain2);
+        Ttangent2 = E;
+        double f2 = Tstress2 * plumin2 - Chardening2;
+        Tstrain2 = strain * plumin2 - epsilonY;
 
 
-          //--- hyperelastic below epsilonY
-          if (Tstrain2 < 1.0e-16 && Chardening2 == 0.0)
-            {
-                Tstress2 = E * strain;
-                Ttangent2 = E;
-                TplasticStrain2 = 0.0;
-                Thardening2 = 0.0;
+        //--- hyperelastic below epsilonY
+        if (Tstrain2 < 1.0e-16 && Chardening2 == 0.0) {
+            Tstress2 = E * strain;
+            Ttangent2 = E;
+            TplasticStrain2 = 0.0;
+            Thardening2 = 0.0;
 
-            }
-          //--- elastic step
-          else if (f2 < 1.0e-16)
-            {
-                //Tstress2 = Tstress2;
-                //Ttangent2 = E ; 
-                TplasticStrain2 = CplasticStrain2;
-                Thardening2 = Chardening2;
-            }
-          //--- plastic step
-          else
-            {
-                int signStrain2 = (strain < 0) ? -1 : 1;
-                Tstress2 =
-                    pult50 * signStrain2 * pow ((fabs (strain) / y50), n);
-                Ttangent2 = theta * pow (fabs (strain), n - 1);
-                TplasticStrain2 = strain - (Tstress2 / E);
-                Thardening2 = fabs (Tstress2);
-            }
-      }
+        }
+        //--- elastic step
+        else if (f2 < 1.0e-16) {
+            //Tstress2 = Tstress2;
+            //Ttangent2 = E ; 
+            TplasticStrain2 = CplasticStrain2;
+            Thardening2 = Chardening2;
+        }
+        //--- plastic step
+        else {
+            int signStrain2 = (strain < 0) ? -1 : 1;
+            Tstress2 = pult50 * signStrain2 * pow((fabs(strain) / y50), n);
+            Ttangent2 = theta * pow(fabs(strain), n - 1);
+            TplasticStrain2 = strain - (Tstress2 / E);
+            Thardening2 = fabs(Tstress2);
+        }
+    }
 
 
 
     //--- (3) drag element =================================================
     Tstress3 = Ed * (strain - CplasticStrain3); // Elastic trial stress
-    double f3 = fabs (Tstress3) - dragStress;   // Compute yield criterion
+    double f3 = fabs(Tstress3) - dragStress;    // Compute yield criterion
 
-    if (f3 <= 1.0e-16)
-      {
-          TplasticStrain3 = CplasticStrain3;    // Update plastic strain
-          //Tstress3 = Tstress3;
-          Ttangent3 = Ed;       // Set trial tangent
-      }
-    else
-      {
-          double dGamma = f3 / (Ed);    // Compute consistency parameter
-          int signTstress3 = (Tstress3 < 0) ? -1 : 1;
-          TplasticStrain3 = CplasticStrain3 + dGamma * signTstress3;    // Update plastic strain
-          Tstress3 = (1.0 - dGamma * Ed / fabs (Tstress3)) * Tstress3;
-          Ttangent3 = 0.0;
+    if (f3 <= 1.0e-16) {
+        TplasticStrain3 = CplasticStrain3;      // Update plastic strain
+        //Tstress3 = Tstress3;
+        Ttangent3 = Ed;         // Set trial tangent
+    } else {
+        double dGamma = f3 / (Ed);      // Compute consistency parameter
+        int signTstress3 = (Tstress3 < 0) ? -1 : 1;
+        TplasticStrain3 = CplasticStrain3 + dGamma * signTstress3;      // Update plastic strain
+        Tstress3 = (1.0 - dGamma * Ed / fabs(Tstress3)) * Tstress3;
+        Ttangent3 = 0.0;
 
-      }
+    }
 
 
 
@@ -278,7 +251,7 @@ pyUCLA::setTrialStrain (double strain, double strainRate)
 	opserr << "BeforeTtangent2: " << Ttangent2 << "\n";
 */
 
-    projectStressTangent ();
+    projectStressTangent();
 
 /*	
 	opserr << "plumin1: " << plumin1 << "\n";	
@@ -303,52 +276,45 @@ pyUCLA::setTrialStrain (double strain, double strainRate)
 
 
 
-void
-pyUCLA::projectStressTangent ()
+void pyUCLA::projectStressTangent()
 {
 
-    double beta = log (2.0) / (2.0 * limitStress);
+    double beta = log(2.0) / (2.0 * limitStress);
     Tstress1 =
         Tstress1 -
-        1.0 / (2.0 * beta) * log (0.5 * (exp (2.0 * beta * Tstress1) + 1));
+        1.0 / (2.0 * beta) * log(0.5 * (exp(2.0 * beta * Tstress1) + 1));
     Tstress2 =
         Tstress2 -
-        1.0 / (2.0 * beta) * log (0.5 * (exp (2.0 * beta * Tstress2) + 1));
-    Ttangent1 = 1.0 / (pow (2, Tstress1 / limitStress) + 1) * Ttangent1;
-    Ttangent2 = 1.0 / (pow (2, Tstress2 / limitStress) + 1) * Ttangent2;
+        1.0 / (2.0 * beta) * log(0.5 * (exp(2.0 * beta * Tstress2) + 1));
+    Ttangent1 = 1.0 / (pow(2, Tstress1 / limitStress) + 1) * Ttangent1;
+    Ttangent2 = 1.0 / (pow(2, Tstress2 / limitStress) + 1) * Ttangent2;
 
-    if (Tstress1 > 1.0e10)
-      {
-          Tstress1 = limitStress;
-      }
+    if (Tstress1 > 1.0e10) {
+        Tstress1 = limitStress;
+    }
 
-    if (Tstress2 > 1.0e10)
-      {
-          Tstress2 = limitStress;
-      }
+    if (Tstress2 > 1.0e10) {
+        Tstress2 = limitStress;
+    }
 }
 
 
-double
-pyUCLA::getStress (void)
+double pyUCLA::getStress(void)
 {
     return Tstress;
 }
 
-double
-pyUCLA::getTangent (void)
+double pyUCLA::getTangent(void)
 {
     return Ttangent;
 }
 
-double
-pyUCLA::getStrain (void)
+double pyUCLA::getStrain(void)
 {
     return Tstrain;
 }
 
-int
-pyUCLA::commitState (void)
+int pyUCLA::commitState(void)
 {
     // Commit trial history variables
     CplasticStrain1 = TplasticStrain1;
@@ -359,14 +325,12 @@ pyUCLA::commitState (void)
     return 0;
 }
 
-int
-pyUCLA::revertToLastCommit (void)
+int pyUCLA::revertToLastCommit(void)
 {
     return 0;
 }
 
-int
-pyUCLA::revertToStart (void)
+int pyUCLA::revertToStart(void)
 {
     // Reset committed history variables
     CplasticStrain1 = 0.0;
@@ -401,13 +365,12 @@ pyUCLA::revertToStart (void)
     return 0;
 }
 
-UniaxialMaterial *
-pyUCLA::getCopy (void)
+UniaxialMaterial *pyUCLA::getCopy(void)
 {
     //pyUCLA *theCopy =
     //new pyUCLA(this->getTag(), soilType, pult, y50, Cd);
     pyUCLA *theCopy;
-    theCopy = new pyUCLA ();
+    theCopy = new pyUCLA();
     *theCopy = *this;
 
     // Copy committed history variables
@@ -445,26 +408,25 @@ pyUCLA::getCopy (void)
     return theCopy;
 }
 
-int
-pyUCLA::sendSelf (int cTag, Channel & theChannel)
+int pyUCLA::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
 
-    static Vector data (13);
+    static Vector data(13);
 
-    data (0) = this->getTag ();
-    data (1) = soilType;
-    data (2) = pult;
-    data (3) = y50;
-    data (4) = Cd;
-    data (5) = CplasticStrain1;
-    data (6) = CplasticStrain2;
-    data (7) = CplasticStrain3;
-    data (8) = Chardening1;
-    data (9) = Chardening2;
-    data (10) = Tstrain;
-    data (11) = Tstress;
-    data (12) = Ttangent;
+    data(0) = this->getTag();
+    data(1) = soilType;
+    data(2) = pult;
+    data(3) = y50;
+    data(4) = Cd;
+    data(5) = CplasticStrain1;
+    data(6) = CplasticStrain2;
+    data(7) = CplasticStrain3;
+    data(8) = Chardening1;
+    data(9) = Chardening2;
+    data(10) = Tstrain;
+    data(11) = Tstress;
+    data(12) = Ttangent;
 
     /*data(13) = Tstrain1;
        data(14) = Tstrain2;
@@ -478,63 +440,58 @@ pyUCLA::sendSelf (int cTag, Channel & theChannel)
      */
 
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "pyUCLA::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-pyUCLA::recvSelf (int cTag, Channel & theChannel,
-                  FEM_ObjectBroker & theBroker)
+int pyUCLA::recvSelf(int cTag, Channel & theChannel,
+                     FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static Vector data (13);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(13);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
 
-    if (res < 0)
-      {
-          opserr << "pyUCLA::recvSelf() - failed to receive data\n";
-          E = 0;
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag ((int) data (0));
-          soilType = data (1);
-          pult = data (2);
-          y50 = data (3);
-          Cd = data (4);
-          CplasticStrain1 = data (5);
-          CplasticStrain2 = data (6);
-          CplasticStrain3 = data (7);
-          Chardening1 = data (8);
-          Chardening2 = data (9);
-          Tstrain = data (10);
-          Tstress = data (11);
-          Ttangent = data (12);
+    if (res < 0) {
+        opserr << "pyUCLA::recvSelf() - failed to receive data\n";
+        E = 0;
+        this->setTag(0);
+    } else {
+        this->setTag((int) data(0));
+        soilType = data(1);
+        pult = data(2);
+        y50 = data(3);
+        Cd = data(4);
+        CplasticStrain1 = data(5);
+        CplasticStrain2 = data(6);
+        CplasticStrain3 = data(7);
+        Chardening1 = data(8);
+        Chardening2 = data(9);
+        Tstrain = data(10);
+        Tstress = data(11);
+        Ttangent = data(12);
 
-          /*Tstrain1              = data(13);
-             Tstrain2             = data(14);
-             Tstrain3             = data(15);
-             Tstress1             = data(16);
-             Tstress2             = data(17);
-             Tstress3             = data(18);
-             Ttangent1            = data(19);
-             Ttangent2            = data(20);  
-             Ttangent3            = data(21);
-           */
-      }
+        /*Tstrain1              = data(13);
+           Tstrain2             = data(14);
+           Tstrain3             = data(15);
+           Tstress1             = data(16);
+           Tstress2             = data(17);
+           Tstress3             = data(18);
+           Ttangent1            = data(19);
+           Ttangent2            = data(20);  
+           Ttangent3            = data(21);
+         */
+    }
 
     return res;
 }
 
-void
-pyUCLA::Print (OPS_Stream & s, int flag)
+void pyUCLA::Print(OPS_Stream & s, int flag)
 {
-    s << "pyUCLA, tag: " << this->getTag () << endln;
+    s << "pyUCLA, tag: " << this->getTag() << endln;
     s << "  SoilType: " << soilType << endln;
     s << "  Pult: " << pult << endln;
     s << "  Y50: " << y50 << endln;

@@ -39,11 +39,13 @@
 
 #include <math.h>
 
-MaterialBackbone::MaterialBackbone (int tag, UniaxialMaterial & material):
-HystereticBackbone (tag, BACKBONE_TAG_Material),
-theMaterial (0)
+MaterialBackbone::MaterialBackbone(int tag,
+                                   UniaxialMaterial &
+                                   material):HystereticBackbone(tag,
+                                                                BACKBONE_TAG_Material),
+theMaterial(0)
 {
-    theMaterial = material.getCopy ();
+    theMaterial = material.getCopy();
 
     if (theMaterial == 0)
         opserr <<
@@ -51,174 +53,155 @@ theMaterial (0)
             << endln;
 }
 
-MaterialBackbone::MaterialBackbone ():
-HystereticBackbone (0, BACKBONE_TAG_Material), theMaterial (0)
+MaterialBackbone::MaterialBackbone():
+HystereticBackbone(0, BACKBONE_TAG_Material), theMaterial(0)
 {
 
 }
 
-MaterialBackbone::~MaterialBackbone ()
+MaterialBackbone::~MaterialBackbone()
 {
     if (theMaterial)
         delete theMaterial;
 }
 
 double
-MaterialBackbone::getTangent (double strain)
+ MaterialBackbone::getTangent(double strain)
 {
-    theMaterial->setTrialStrain (strain);
+    theMaterial->setTrialStrain(strain);
 
-    return theMaterial->getTangent ();
+    return theMaterial->getTangent();
 }
 
-double
-MaterialBackbone::getStress (double strain)
+double MaterialBackbone::getStress(double strain)
 {
-    theMaterial->setTrialStrain (strain);
+    theMaterial->setTrialStrain(strain);
 
-    return theMaterial->getStress ();
+    return theMaterial->getStress();
 }
 
-double
-MaterialBackbone::getEnergy (double strain)
+double MaterialBackbone::getEnergy(double strain)
 {
     const double incr = 1.0e-6;
     double energy = 0.0;
 
     // Mid-point integration
-    for (double x = incr / 2; x < strain; x += incr)
-      {
-          theMaterial->setTrialStrain (x);
-          energy += theMaterial->getStress ();
-      }
+    for (double x = incr / 2; x < strain; x += incr) {
+        theMaterial->setTrialStrain(x);
+        energy += theMaterial->getStress();
+    }
 
     return energy * incr;
 }
 
-double
-MaterialBackbone::getYieldStrain (void)
+double MaterialBackbone::getYieldStrain(void)
 {
     return 0.002;               // Fix later
 }
 
-HystereticBackbone *
-MaterialBackbone::getCopy (void)
+HystereticBackbone *MaterialBackbone::getCopy(void)
 {
     MaterialBackbone *theCopy =
-        new MaterialBackbone (this->getTag (), *theMaterial);
+        new MaterialBackbone(this->getTag(), *theMaterial);
 
     return theCopy;
 }
 
-void
-MaterialBackbone::Print (OPS_Stream & s, int flag)
+void MaterialBackbone::Print(OPS_Stream & s, int flag)
 {
-    s << "MaterialBackbone, tag: " << this->getTag () << endln;
-    s << "\tmaterial: " << theMaterial->getTag () << endln;
+    s << "MaterialBackbone, tag: " << this->getTag() << endln;
+    s << "\tmaterial: " << theMaterial->getTag() << endln;
 }
 
-int
-MaterialBackbone::setVariable (char *argv)
+int MaterialBackbone::setVariable(char *argv)
 {
     return -1;
 }
 
-int
-MaterialBackbone::getVariable (int varID, double &theValue)
+int MaterialBackbone::getVariable(int varID, double &theValue)
 {
     return -1;
 }
 
-int
-MaterialBackbone::sendSelf (int cTag, Channel & theChannel)
+int MaterialBackbone::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
 
-    static ID classTags (3);
+    static ID classTags(3);
 
-    int clTag = theMaterial->getClassTag ();
-    int dbTag = theMaterial->getDbTag ();
+    int clTag = theMaterial->getClassTag();
+    int dbTag = theMaterial->getDbTag();
 
-    classTags (0) = clTag;
+    classTags(0) = clTag;
 
-    if (dbTag == 0)
-      {
-          dbTag = theChannel.getDbTag ();
-          if (dbTag != 0)
-              theMaterial->setDbTag (dbTag);
-      }
+    if (dbTag == 0) {
+        dbTag = theChannel.getDbTag();
+        if (dbTag != 0)
+            theMaterial->setDbTag(dbTag);
+    }
 
-    classTags (1) = dbTag;
-    classTags (2) = this->getTag ();
+    classTags(1) = dbTag;
+    classTags(2) = this->getTag();
 
-    res += theChannel.sendID (this->getDbTag (), cTag, classTags);
-    if (res < 0)
-      {
-          opserr << "MaterialBackbone::sendSelf -- could not send ID" <<
-              endln;
-          return res;
-      }
+    res += theChannel.sendID(this->getDbTag(), cTag, classTags);
+    if (res < 0) {
+        opserr << "MaterialBackbone::sendSelf -- could not send ID" <<
+            endln;
+        return res;
+    }
 
-    res += theMaterial->sendSelf (cTag, theChannel);
+    res += theMaterial->sendSelf(cTag, theChannel);
 
     return res;
 }
 
-int
-MaterialBackbone::recvSelf (int cTag, Channel & theChannel,
-                            FEM_ObjectBroker & theBroker)
+int MaterialBackbone::recvSelf(int cTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static ID classTags (3);
+    static ID classTags(3);
 
-    res += theChannel.recvID (this->getDbTag (), cTag, classTags);
-    if (res < 0)
-      {
-          opserr << "MaterialBackbone::recvSelf -- could not receive ID" <<
-              endln;
-          return res;
-      }
+    res += theChannel.recvID(this->getDbTag(), cTag, classTags);
+    if (res < 0) {
+        opserr << "MaterialBackbone::recvSelf -- could not receive ID" <<
+            endln;
+        return res;
+    }
 
-    this->setTag (classTags (2));
+    this->setTag(classTags(2));
 
     // Check if the material is null; if so, get a new one
-    if (theMaterial == 0)
-      {
-          theMaterial = theBroker.getNewUniaxialMaterial (classTags (0));
-          if (theMaterial == 0)
-            {
-                opserr <<
-                    "MaterialBackbone::recvSelf -- could not get a UniaxialMaterial"
-                    << endln;
-                return -1;
-            }
-      }
+    if (theMaterial == 0) {
+        theMaterial = theBroker.getNewUniaxialMaterial(classTags(0));
+        if (theMaterial == 0) {
+            opserr <<
+                "MaterialBackbone::recvSelf -- could not get a UniaxialMaterial"
+                << endln;
+            return -1;
+        }
+    }
     // Check that the material is of the right type; if not, delete
     // the current one and get a new one of the right type
-    if (theMaterial->getClassTag () != classTags (0))
-      {
-          delete theMaterial;
-          theMaterial = theBroker.getNewUniaxialMaterial (classTags (0));
-          if (theMaterial == 0)
-            {
-                opserr <<
-                    "MaterialBackbone::recvSelf -- could not get a UniaxialMaterial"
-                    << endln;
-                return -1;
-            }
-      }
-
+    if (theMaterial->getClassTag() != classTags(0)) {
+        delete theMaterial;
+        theMaterial = theBroker.getNewUniaxialMaterial(classTags(0));
+        if (theMaterial == 0) {
+            opserr <<
+                "MaterialBackbone::recvSelf -- could not get a UniaxialMaterial"
+                << endln;
+            return -1;
+        }
+    }
     // Now, receive the material
-    theMaterial->setDbTag (classTags (1));
-    res += theMaterial->recvSelf (cTag, theChannel, theBroker);
-    if (res < 0)
-      {
-          opserr <<
-              "MaterialBackbone::recvSelf -- could not receive UniaxialMaterial"
-              << endln;
-          return res;
-      }
+    theMaterial->setDbTag(classTags(1));
+    res += theMaterial->recvSelf(cTag, theChannel, theBroker);
+    if (res < 0) {
+        opserr <<
+            "MaterialBackbone::recvSelf -- could not receive UniaxialMaterial"
+            << endln;
+        return res;
+    }
 
     return res;
 }

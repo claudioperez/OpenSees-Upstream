@@ -45,59 +45,52 @@
 // SingleDomAllSP_Iter(SingleDomAllain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-SingleDomAllSP_Iter::SingleDomAllSP_Iter (Domain & domain):theDomain (&domain),
-doneDomainSPs
-(false)
+SingleDomAllSP_Iter::SingleDomAllSP_Iter(Domain & domain):theDomain(&domain),
+    doneDomainSPs
+    (false)
 {
 
 }
 
-SingleDomAllSP_Iter::~SingleDomAllSP_Iter ()
+SingleDomAllSP_Iter::~SingleDomAllSP_Iter()
 {
 }
 
 
 void
-SingleDomAllSP_Iter::reset (void)
+ SingleDomAllSP_Iter::reset(void)
 {
-    theDomainSPs = &(theDomain->getSPs ());
-    theLoadPatterns = &(theDomain->getLoadPatterns ());
+    theDomainSPs = &(theDomain->getSPs());
+    theLoadPatterns = &(theDomain->getLoadPatterns());
     currentLoadPattern = (*theLoadPatterns) ();
-    if (currentLoadPattern != 0)
-      {
-          theLoadPatternSPs = &(currentLoadPattern->getSPs ());
-      }
+    if (currentLoadPattern != 0) {
+        theLoadPatternSPs = &(currentLoadPattern->getSPs());
+    }
 
     doneDomainSPs = false;
 }
 
 
-SP_Constraint *
-SingleDomAllSP_Iter::operator () (void)
-{
+SP_Constraint *SingleDomAllSP_Iter::operator () (void) {
     SP_Constraint * theRes = 0;
 
-    if (doneDomainSPs == false)
-      {
-          theRes = (*theDomainSPs) ();
-          if (theRes != 0)
-              return theRes;
-          else
-              doneDomainSPs = true;
-      }
+    if (doneDomainSPs == false) {
+        theRes = (*theDomainSPs) ();
+        if (theRes != 0)
+            return theRes;
+        else
+            doneDomainSPs = true;
+    }
 
-    while (currentLoadPattern != 0)
-      {
-          theRes = (*theLoadPatternSPs) ();
-          if (theRes == 0)
-            {
-                currentLoadPattern = (*theLoadPatterns) ();
-                if (currentLoadPattern != 0)
-                    theLoadPatternSPs = &(currentLoadPattern->getSPs ());
-            }
-          else
-              return theRes;
-      }
+    while (currentLoadPattern != 0) {
+        theRes = (*theLoadPatternSPs) ();
+        if (theRes == 0) {
+            currentLoadPattern = (*theLoadPatterns) ();
+            if (currentLoadPattern != 0)
+                theLoadPatternSPs = &(currentLoadPattern->getSPs());
+        } else
+            return theRes;
+    }
 
     return 0;
 }

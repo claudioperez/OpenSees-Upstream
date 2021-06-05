@@ -41,42 +41,40 @@
 // SimpleFE_Iter(AnalysisModel &theModel):
 //      constructor that takes the model, just the basic iter
 
-SimpleFE_Iter::SimpleFE_Iter (AnalysisModel & theModel):myModel (theModel), currIndex (0),
-numDone (0)
+SimpleFE_Iter::SimpleFE_Iter(AnalysisModel & theModel):myModel(theModel), currIndex(0),
+numDone(0)
 {
 }
 
 
-SimpleFE_Iter::~SimpleFE_Iter ()
+SimpleFE_Iter::~SimpleFE_Iter()
 {
 }
 
 void
-SimpleFE_Iter::reset (void)
+ SimpleFE_Iter::reset(void)
 {
     currIndex = 0;
     numDone = 0;
 }
 
-FE_Element *
-SimpleFE_Iter::operator () (void)
-{
+FE_Element *SimpleFE_Iter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
     if (numDone >= myModel.numFE_Ele)
         return 0;
 
     // search through domains ele list till we find the next element
-    while ((currIndex < myModel.sizeEle) && (myModel.theFEs[currIndex] == 0))
+    while ((currIndex < myModel.sizeEle)
+           && (myModel.theFEs[currIndex] == 0))
         currIndex++;
 
     // if not at the end of the list return the element
-    if (currIndex < myModel.sizeEle)
-      {
-          FE_Element *result = myModel.theFEs[currIndex];
-          numDone++;
-          currIndex++;
-          return (result);
-      }
+    if (currIndex < myModel.sizeEle) {
+        FE_Element *result = myModel.theFEs[currIndex];
+        numDone++;
+        currIndex++;
+        return (result);
+    }
     return (0);
 }

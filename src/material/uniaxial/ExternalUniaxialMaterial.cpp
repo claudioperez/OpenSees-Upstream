@@ -36,14 +36,15 @@
 #include <float.h>
 
 
-ExternalUniaxialMaterial::ExternalUniaxialMaterial (int tag):
-UniaxialMaterial (tag, MAT_TAG_ExternalUniaxialMaterial)
+ExternalUniaxialMaterial::
+ExternalUniaxialMaterial(int tag):UniaxialMaterial(tag,
+                                                   MAT_TAG_ExternalUniaxialMaterial)
 {
 
 }
 
 void
-ExternalUniaxialMaterial::SetLinks (UMSetTrialStrain _setTrialStrain,
+ ExternalUniaxialMaterial::SetLinks(UMSetTrialStrain _setTrialStrain,
                                     UMGetStress _getStress,
                                     UMGetTangent _getTangent,
                                     UMGetInitialTangent _getInitialTangent,
@@ -52,7 +53,8 @@ ExternalUniaxialMaterial::SetLinks (UMSetTrialStrain _setTrialStrain,
                                     UMGetStrainRate _getStrainRate,
                                     UMGetRho _getRho,
                                     UMCommitState _commitState,
-                                    UMRevertToLastCommit _revertToLastCommit,
+                                    UMRevertToLastCommit
+                                    _revertToLastCommit,
                                     UMRevertToStart _revertToStart,
                                     UMGetCopy _getCopy, UMPrint _print)
 {
@@ -73,7 +75,7 @@ ExternalUniaxialMaterial::SetLinks (UMSetTrialStrain _setTrialStrain,
 
 }
 
-ExternalUniaxialMaterial::~ExternalUniaxialMaterial ()
+ExternalUniaxialMaterial::~ExternalUniaxialMaterial()
 {
 
 }
@@ -135,15 +137,14 @@ ExternalUniaxialMaterial::~ExternalUniaxialMaterial ()
 //}
 
 int
-ExternalUniaxialMaterial::sendSelf (int cTag, Channel & theChannel)
+ ExternalUniaxialMaterial::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
     return res;
 }
 
-int
-ExternalUniaxialMaterial::recvSelf (int cTag, Channel & theChannel,
-                                    FEM_ObjectBroker & theBroker)
+int ExternalUniaxialMaterial::recvSelf(int cTag, Channel & theChannel,
+                                       FEM_ObjectBroker & theBroker)
 {
     int res = 0;
     return res;

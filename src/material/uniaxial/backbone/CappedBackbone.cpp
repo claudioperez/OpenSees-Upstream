@@ -38,26 +38,25 @@
 
 #include <G3Globals.h>
 
-CappedBackbone::CappedBackbone (int tag, HystereticBackbone & backbone,
-                                HystereticBackbone & cap):
-HystereticBackbone (tag, BACKBONE_TAG_Capped),
-theBackbone (0),
-theCap (0),
-eCap (0.0)
+CappedBackbone::CappedBackbone(int tag, HystereticBackbone & backbone,
+                               HystereticBackbone &
+                               cap):HystereticBackbone(tag,
+                                                       BACKBONE_TAG_Capped),
+theBackbone(0), theCap(0), eCap(0.0)
 {
-    theBackbone = backbone.getCopy ();
+    theBackbone = backbone.getCopy();
 
     if (theBackbone == 0)
         opserr <<
             "CappedBackbone::CappedBackbone -- failed to get copy of backbone"
             << endln;
 
-    theCap = cap.getCopy ();
+    theCap = cap.getCopy();
 
     if (theCap == 0)
         opserr <<
-            "CappedBackbone::CappedBackbone -- failed to get copy of cap" <<
-            endln;
+            "CappedBackbone::CappedBackbone -- failed to get copy of cap"
+            << endln;
 
     // Determine eCap, the root of h(x) := f(x) - g(x)
     // This is the strain at which the backbone and the cap intersect
@@ -67,27 +66,25 @@ eCap (0.0)
 
     // Newton-Raphson
     double residual =
-        theBackbone->getStress (eCap) - theCap->getStress (eCap);
+        theBackbone->getStress(eCap) - theCap->getStress(eCap);
 
-    while (fabs (residual) > tol)
-      {
-          double tangent =
-              theBackbone->getTangent (eCap) - theCap->getTangent (eCap);
+    while (fabs(residual) > tol) {
+        double tangent =
+            theBackbone->getTangent(eCap) - theCap->getTangent(eCap);
 
-          if (fabs (tangent) > tol)
-              eCap -= residual / tangent;
-          else
-            {
-                opserr <<
-                    "CappedBackbone::CappedBackbone -- zero tangent encountered in finding cap strain"
-                    << endln;
+        if (fabs(tangent) > tol)
+            eCap -= residual / tangent;
+        else {
+            opserr <<
+                "CappedBackbone::CappedBackbone -- zero tangent encountered in finding cap strain"
+                << endln;
 
-                eCap = theBackbone->getYieldStrain ();  // Or something else???
-                break;
-            }
+            eCap = theBackbone->getYieldStrain();       // Or something else???
+            break;
+        }
 
-          residual = theBackbone->getStress (eCap) - theCap->getStress (eCap);
-      }
+        residual = theBackbone->getStress(eCap) - theCap->getStress(eCap);
+    }
 
     /*
        // Regula-falsi ... slower, but converges
@@ -116,14 +113,14 @@ eCap (0.0)
      */
 }
 
-CappedBackbone::CappedBackbone ():
-HystereticBackbone (0, BACKBONE_TAG_Capped),
-theBackbone (0), theCap (0), eCap (0.0)
+CappedBackbone::CappedBackbone():
+HystereticBackbone(0, BACKBONE_TAG_Capped),
+theBackbone(0), theCap(0), eCap(0.0)
 {
 
 }
 
-CappedBackbone::~CappedBackbone ()
+CappedBackbone::~CappedBackbone()
 {
     if (theBackbone)
         delete theBackbone;
@@ -133,253 +130,219 @@ CappedBackbone::~CappedBackbone ()
 }
 
 double
-CappedBackbone::getTangent (double strain)
+ CappedBackbone::getTangent(double strain)
 {
     if (strain < eCap)
-        return theBackbone->getTangent (strain);
+        return theBackbone->getTangent(strain);
     else
-        return theCap->getTangent (strain);
+        return theCap->getTangent(strain);
 }
 
-double
-CappedBackbone::getStress (double strain)
+double CappedBackbone::getStress(double strain)
 {
     if (strain < eCap)
-        return theBackbone->getStress (strain);
+        return theBackbone->getStress(strain);
     else
-        return theCap->getStress (strain);
+        return theCap->getStress(strain);
 }
 
-double
-CappedBackbone::getEnergy (double strain)
+double CappedBackbone::getEnergy(double strain)
 {
     if (strain < eCap)
-        return theBackbone->getEnergy (strain);
+        return theBackbone->getEnergy(strain);
     else
-        return theBackbone->getEnergy (eCap) +
-            theCap->getEnergy (strain) - theCap->getEnergy (eCap);
+        return theBackbone->getEnergy(eCap) +
+            theCap->getEnergy(strain) - theCap->getEnergy(eCap);
 }
 
-double
-CappedBackbone::getYieldStrain (void)
+double CappedBackbone::getYieldStrain(void)
 {
-    double eb = theBackbone->getYieldStrain ();
+    double eb = theBackbone->getYieldStrain();
 
     return (eCap < eb) ? eCap : eb;
 }
 
-HystereticBackbone *
-CappedBackbone::getCopy (void)
+HystereticBackbone *CappedBackbone::getCopy(void)
 {
     CappedBackbone *theCopy =
-        new CappedBackbone (this->getTag (), *theBackbone, *theCap);
+        new CappedBackbone(this->getTag(), *theBackbone, *theCap);
 
     return theCopy;
 }
 
-void
-CappedBackbone::Print (OPS_Stream & s, int flag)
+void CappedBackbone::Print(OPS_Stream & s, int flag)
 {
-    s << "CappedBackbone, tag: " << this->getTag () << endln;
-    s << "\tBackbone: " << theBackbone->getTag () << endln;
-    s << "\tCap: " << theCap->getTag () << endln;
+    s << "CappedBackbone, tag: " << this->getTag() << endln;
+    s << "\tBackbone: " << theBackbone->getTag() << endln;
+    s << "\tCap: " << theCap->getTag() << endln;
 }
 
-int
-CappedBackbone::setVariable (char *argv)
+int CappedBackbone::setVariable(char *argv)
 {
     return -1;
 }
 
-int
-CappedBackbone::getVariable (int varID, double &theValue)
+int CappedBackbone::getVariable(int varID, double &theValue)
 {
     return -1;
 }
 
-int
-CappedBackbone::sendSelf (int cTag, Channel & theChannel)
+int CappedBackbone::sendSelf(int cTag, Channel & theChannel)
 {
     // Create and send Vector with CappedBackbone data
-    static Vector data (2);
-    data (0) = this->getTag ();
-    data (1) = eCap;
+    static Vector data(2);
+    data(0) = this->getTag();
+    data(1) = eCap;
 
-    int res = theChannel.sendVector (this->getDbTag (), cTag, data);
-    if (res < 0)
-      {
-          opserr << "CappedBackbone::sendSelf -- could not send Vector" <<
-              endln;
+    int res = theChannel.sendVector(this->getDbTag(), cTag, data);
+    if (res < 0) {
+        opserr << "CappedBackbone::sendSelf -- could not send Vector" <<
+            endln;
 
-          return res;
-      }
-
+        return res;
+    }
     // Send backbone and cap class tags
-    static ID classTags (4);
-    classTags (0) = theBackbone->getClassTag ();
-    classTags (1) = theCap->getClassTag ();
+    static ID classTags(4);
+    classTags(0) = theBackbone->getClassTag();
+    classTags(1) = theCap->getClassTag();
 
     int dbTag;
 
-    dbTag = theBackbone->getDbTag ();
+    dbTag = theBackbone->getDbTag();
 
-    if (dbTag == 0)
-      {
-          dbTag = theChannel.getDbTag ();
-          if (dbTag != 0)
-              theBackbone->setDbTag (dbTag);
-      }
+    if (dbTag == 0) {
+        dbTag = theChannel.getDbTag();
+        if (dbTag != 0)
+            theBackbone->setDbTag(dbTag);
+    }
 
-    classTags (2) = dbTag;
+    classTags(2) = dbTag;
 
-    dbTag = theCap->getDbTag ();
+    dbTag = theCap->getDbTag();
 
-    if (dbTag == 0)
-      {
-          dbTag = theChannel.getDbTag ();
-          if (dbTag != 0)
-              theCap->setDbTag (dbTag);
-      }
+    if (dbTag == 0) {
+        dbTag = theChannel.getDbTag();
+        if (dbTag != 0)
+            theCap->setDbTag(dbTag);
+    }
 
-    classTags (3) = dbTag;
+    classTags(3) = dbTag;
 
-    res += theChannel.sendID (this->getDbTag (), cTag, classTags);
-    if (res < 0)
-      {
-          opserr << "CappedBackbone::sendSelf -- could not send ID" << endln;
+    res += theChannel.sendID(this->getDbTag(), cTag, classTags);
+    if (res < 0) {
+        opserr << "CappedBackbone::sendSelf -- could not send ID" << endln;
 
-          return res;
-      }
-
+        return res;
+    }
     // Ask backbone to send itself
-    res += theBackbone->sendSelf (cTag, theChannel);
-    if (res < 0)
-      {
-          opserr <<
-              "CappedBackbone::sendSelf -- could not send HystereticBackbone"
-              << endln;
+    res += theBackbone->sendSelf(cTag, theChannel);
+    if (res < 0) {
+        opserr <<
+            "CappedBackbone::sendSelf -- could not send HystereticBackbone"
+            << endln;
 
-          return res;
-      }
-
+        return res;
+    }
     // Ask cap to send itself
-    res += theCap->sendSelf (cTag, theChannel);
-    if (res < 0)
-      {
-          opserr <<
-              "CappedBackbone::sendSelf -- could not send HystereticBackbone"
-              << endln;
+    res += theCap->sendSelf(cTag, theChannel);
+    if (res < 0) {
+        opserr <<
+            "CappedBackbone::sendSelf -- could not send HystereticBackbone"
+            << endln;
 
-          return res;
-      }
+        return res;
+    }
 
     return res;
 }
 
-int
-CappedBackbone::recvSelf (int cTag, Channel & theChannel,
-                          FEM_ObjectBroker & theBroker)
+int CappedBackbone::recvSelf(int cTag, Channel & theChannel,
+                             FEM_ObjectBroker & theBroker)
 {
     // Create a Vector and receive CappedBackbone data
-    static Vector data (2);
-    int res = theChannel.recvVector (this->getDbTag (), cTag, data);
-    if (res < 0)
-      {
-          opserr << "CappedBackbone::recvSelf -- could not receive Vector" <<
-              endln;
+    static Vector data(2);
+    int res = theChannel.recvVector(this->getDbTag(), cTag, data);
+    if (res < 0) {
+        opserr << "CappedBackbone::recvSelf -- could not receive Vector" <<
+            endln;
 
-          return res;
-      }
+        return res;
+    }
 
-    this->setTag ((int) data (0));
-    eCap = data (1);
+    this->setTag((int) data(0));
+    eCap = data(1);
 
     // Receive the classTags for the backbone and cap
-    static ID classTags (4);
-    res += theChannel.recvID (this->getDbTag (), cTag, classTags);
-    if (res < 0)
-      {
-          opserr << "CappedBackbone::recvSelf -- could not receive ID" <<
-              endln;
+    static ID classTags(4);
+    res += theChannel.recvID(this->getDbTag(), cTag, classTags);
+    if (res < 0) {
+        opserr << "CappedBackbone::recvSelf -- could not receive ID" <<
+            endln;
 
-          return res;
-      }
-
+        return res;
+    }
     // Check if the backbone is null; if so, get a new one
-    if (theBackbone == 0)
-      {
-          //theBackbone = theBroker.getNewHystereticBackbone(classTags(0));
-          if (theBackbone == 0)
-            {
-                opserr <<
-                    "CappedBackbone::recvSelf -- could not receive HystereticBackbone"
-                    << endln;
-                return -1;
-            }
-      }
+    if (theBackbone == 0) {
+        //theBackbone = theBroker.getNewHystereticBackbone(classTags(0));
+        if (theBackbone == 0) {
+            opserr <<
+                "CappedBackbone::recvSelf -- could not receive HystereticBackbone"
+                << endln;
+            return -1;
+        }
+    }
     // Check that the backbone is of the right type; if not, delete
     // the current one and get a new one of the right type
-    if (theBackbone->getClassTag () != classTags (0))
-      {
-          delete theBackbone;
-          //theBackbone = theBroker.getNewHystereticBackbone(classTags(0));
-          if (theBackbone == 0)
-            {
-                opserr <<
-                    "CappedBackbone::recvSelf -- could not get a HystereticBackbone"
-                    << endln;
-                return -1;
-            }
-      }
-
+    if (theBackbone->getClassTag() != classTags(0)) {
+        delete theBackbone;
+        //theBackbone = theBroker.getNewHystereticBackbone(classTags(0));
+        if (theBackbone == 0) {
+            opserr <<
+                "CappedBackbone::recvSelf -- could not get a HystereticBackbone"
+                << endln;
+            return -1;
+        }
+    }
     // Now, receive the backbone
-    theBackbone->setDbTag (classTags (2));
-    res += theBackbone->recvSelf (cTag, theChannel, theBroker);
-    if (res < 0)
-      {
-          opserr <<
-              "CappedBackbone::recvSelf -- could not receive HystereticBackbone"
-              << endln;
-          return res;
-      }
-
+    theBackbone->setDbTag(classTags(2));
+    res += theBackbone->recvSelf(cTag, theChannel, theBroker);
+    if (res < 0) {
+        opserr <<
+            "CappedBackbone::recvSelf -- could not receive HystereticBackbone"
+            << endln;
+        return res;
+    }
     // Check if the cap is null; if so, get a new one
-    if (theCap == 0)
-      {
-          //theCap = theBroker.getNewHystereticBackbone(classTags(1));
-          if (theCap == 0)
-            {
-                opserr <<
-                    "CappedBackbone::recvSelf -- could not get a HystereticBackbone"
-                    << endln;
-                return -1;
-            }
-      }
+    if (theCap == 0) {
+        //theCap = theBroker.getNewHystereticBackbone(classTags(1));
+        if (theCap == 0) {
+            opserr <<
+                "CappedBackbone::recvSelf -- could not get a HystereticBackbone"
+                << endln;
+            return -1;
+        }
+    }
     // Check that the cap is of the right type; if not, delete
     // the current one and get a new one of the right type
-    if (theCap->getClassTag () != classTags (1))
-      {
-          delete theCap;
-          //theCap = theBroker.getNewHystereticBackbone(classTags(1));
-          if (theCap == 0)
-            {
-                opserr <<
-                    "CappedBackbone::recvSelf -- could not get a HystereticBackbone"
-                    << endln;
-                return -1;
-            }
-      }
-
+    if (theCap->getClassTag() != classTags(1)) {
+        delete theCap;
+        //theCap = theBroker.getNewHystereticBackbone(classTags(1));
+        if (theCap == 0) {
+            opserr <<
+                "CappedBackbone::recvSelf -- could not get a HystereticBackbone"
+                << endln;
+            return -1;
+        }
+    }
     // Now, receive the cap
-    theCap->setDbTag (classTags (3));
-    res += theCap->recvSelf (cTag, theChannel, theBroker);
-    if (res < 0)
-      {
-          opserr <<
-              "CappedBackbone::recvSelf -- could not receive HystereticBackbone"
-              << endln;
-          return res;
-      }
+    theCap->setDbTag(classTags(3));
+    res += theCap->recvSelf(cTag, theChannel, theBroker);
+    if (res < 0) {
+        opserr <<
+            "CappedBackbone::recvSelf -- could not receive HystereticBackbone"
+            << endln;
+        return res;
+    }
 
     return res;
 }

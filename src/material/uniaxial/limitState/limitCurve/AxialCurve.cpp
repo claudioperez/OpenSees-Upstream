@@ -42,158 +42,119 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-using
-    std::ifstream;
-using
-    std::ios;
-using
-    std::setw;
-using
-    std::setprecision;
-using
-    std::setiosflags;
+using std::ifstream;
+using std::ios;
+using std::setw;
+using std::setprecision;
+using std::setiosflags;
 
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_AxialCurve ()
+void *OPS_AxialCurve()
 {
-    int
-        numdata = OPS_GetNumRemainingInputArgs ();
-    if (numdata < 7)
-      {
-          opserr << "WARNING invalid number of arguments\n";
-          opserr << "Want: limitCurve Axial tag? eleTag? Fsw? Kdeg? Fres? defType? forType?" << endln;  //SDK
-          opserr << "<ndI? ndJ? dof? perpDirn? delta? eleRemove?>" << endln;
-          return 0;
-      }
-    int
-        tag;
-    int
-        eleTag;
-    double
-        Fsw;                    //SDK
-    double
-        Kdeg;
-    double
-        Fres;
-    int
-        defType,
-        forType;
-    int
-        ndI = 0;
-    int
-        ndJ = 0;
-    int
-        dof = 0;
-    int
-        perpDirn = 0;
-    int
-        eleRemove = 0;
-    double
-        delta = 0.0;
+    int numdata = OPS_GetNumRemainingInputArgs();
+    if (numdata < 7) {
+        opserr << "WARNING invalid number of arguments\n";
+        opserr << "Want: limitCurve Axial tag? eleTag? Fsw? Kdeg? Fres? defType? forType?" << endln;    //SDK
+        opserr << "<ndI? ndJ? dof? perpDirn? delta? eleRemove?>" << endln;
+        return 0;
+    }
+    int tag;
+    int eleTag;
+    double Fsw;                 //SDK
+    double Kdeg;
+    double Fres;
+    int defType, forType;
+    int ndI = 0;
+    int ndJ = 0;
+    int dof = 0;
+    int perpDirn = 0;
+    int eleRemove = 0;
+    double delta = 0.0;
 
     numdata = 1;
-    if (OPS_GetIntInput (&numdata, &tag) < 0)
-      {
-          opserr << "WARNING invalid Axial LimitCurve tag" << endln;
-          return 0;
-      }
-    if (OPS_GetIntInput (&numdata, &eleTag) < 0)
-      {
-          opserr <<
-              "WARNING invalid element tag for associated beam-column element (eleTag)\n";
-          opserr << "LimitCurve Axial: " << tag << endln;
-          return 0;
-      }
-    if (OPS_GetDoubleInput (&numdata, &Fsw) < 0)
-      {
-          opserr << "WARNING invalid Fsw\n";
-          opserr << "LimitCurve Axial: " << tag << endln;
-          return 0;
-      }
-    if (OPS_GetDoubleInput (&numdata, &Kdeg) < 0)
-      {
-          opserr << "WARNING invalid degrading slope Kdeg\n";
-          opserr << "LimitCurve Axial: " << tag << endln;
-          return 0;
-      }
-    if (OPS_GetDoubleInput (&numdata, &Fres) < 0)
-      {
-          opserr << "WARNING invalid residual capacity Fres\n";
-          opserr << "LimitCurve Axial: " << tag << endln;
-          return 0;
-      }
-    if (OPS_GetIntInput (&numdata, &defType) < 0)
-      {
-          opserr << "WARNING invalid deformation type defType\n";
-          opserr << "LimitCurve Axial: " << tag << endln;
-          return 0;
-      }
-    if (OPS_GetIntInput (&numdata, &forType) < 0)
-      {
-          opserr << "WARNING invalid force type forType\n";
-          opserr << "LimitCurve Axial: " << tag << endln;
-          return 0;
-      }
-    if (defType == 2)
-      {
-          if (OPS_GetNumRemainingInputArgs () < 4)
-            {
-                opserr << "WARNING invalid number of arguments\n";
-                opserr << "Want: limitCurve Axial tag? eleTag? Fsw? Kdeg? Fres? defType? forType?" << endln;    //SDK
-                opserr << "ndI? ndJ? dof? perpDirn? <delta? eleRemove?>" <<
-                    endln;
-                return 0;
-            }
-          if (OPS_GetIntInput (&numdata, &ndI) < 0)
-            {
-                opserr << "WARNING invalid node I\n";
-                opserr << "LimitCurve Axial: " << tag << endln;
-                return 0;
-            }
-          if (OPS_GetIntInput (&numdata, &ndJ) < 0)
-            {
-                opserr << "WARNING invalid node J\n";
-                opserr << "LimitCurve Axial: " << tag << endln;
-                return 0;
-            }
-          if (OPS_GetIntInput (&numdata, &dof) < 0)
-            {
-                opserr << "WARNING invalid degree of freedom for drift\n";
-                opserr << "LimitCurve Axial: " << tag << endln;
-                return 0;
-            }
-          if (OPS_GetIntInput (&numdata, &perpDirn) < 0)
-            {
-                opserr << "WARNING invalid direction for column length\n";
-                opserr << "LimitCurve Axial: " << tag << endln;
-                return 0;
-            }
-      }
-    if (OPS_GetNumRemainingInputArgs () > 0)
-      {
-          if (OPS_GetDoubleInput (&numdata, &delta) < 0)
-            {
-                opserr << "WARNING invalid shift in drift surface (delta)\n";
-                opserr << "LimitCurve Axial: " << tag << endln;
-                return 0;
-            }
-      }
-    if (OPS_GetNumRemainingInputArgs () > 0)
-      {
-          if (OPS_GetIntInput (&numdata, &eleRemove) < 0)
-            {
-                opserr << "WARNING invalid element removal option\n";
-                opserr << "LimitCurve Axial: " << tag << endln;
-                return 0;
-            }
-      }
+    if (OPS_GetIntInput(&numdata, &tag) < 0) {
+        opserr << "WARNING invalid Axial LimitCurve tag" << endln;
+        return 0;
+    }
+    if (OPS_GetIntInput(&numdata, &eleTag) < 0) {
+        opserr <<
+            "WARNING invalid element tag for associated beam-column element (eleTag)\n";
+        opserr << "LimitCurve Axial: " << tag << endln;
+        return 0;
+    }
+    if (OPS_GetDoubleInput(&numdata, &Fsw) < 0) {
+        opserr << "WARNING invalid Fsw\n";
+        opserr << "LimitCurve Axial: " << tag << endln;
+        return 0;
+    }
+    if (OPS_GetDoubleInput(&numdata, &Kdeg) < 0) {
+        opserr << "WARNING invalid degrading slope Kdeg\n";
+        opserr << "LimitCurve Axial: " << tag << endln;
+        return 0;
+    }
+    if (OPS_GetDoubleInput(&numdata, &Fres) < 0) {
+        opserr << "WARNING invalid residual capacity Fres\n";
+        opserr << "LimitCurve Axial: " << tag << endln;
+        return 0;
+    }
+    if (OPS_GetIntInput(&numdata, &defType) < 0) {
+        opserr << "WARNING invalid deformation type defType\n";
+        opserr << "LimitCurve Axial: " << tag << endln;
+        return 0;
+    }
+    if (OPS_GetIntInput(&numdata, &forType) < 0) {
+        opserr << "WARNING invalid force type forType\n";
+        opserr << "LimitCurve Axial: " << tag << endln;
+        return 0;
+    }
+    if (defType == 2) {
+        if (OPS_GetNumRemainingInputArgs() < 4) {
+            opserr << "WARNING invalid number of arguments\n";
+            opserr << "Want: limitCurve Axial tag? eleTag? Fsw? Kdeg? Fres? defType? forType?" << endln;        //SDK
+            opserr << "ndI? ndJ? dof? perpDirn? <delta? eleRemove?>" <<
+                endln;
+            return 0;
+        }
+        if (OPS_GetIntInput(&numdata, &ndI) < 0) {
+            opserr << "WARNING invalid node I\n";
+            opserr << "LimitCurve Axial: " << tag << endln;
+            return 0;
+        }
+        if (OPS_GetIntInput(&numdata, &ndJ) < 0) {
+            opserr << "WARNING invalid node J\n";
+            opserr << "LimitCurve Axial: " << tag << endln;
+            return 0;
+        }
+        if (OPS_GetIntInput(&numdata, &dof) < 0) {
+            opserr << "WARNING invalid degree of freedom for drift\n";
+            opserr << "LimitCurve Axial: " << tag << endln;
+            return 0;
+        }
+        if (OPS_GetIntInput(&numdata, &perpDirn) < 0) {
+            opserr << "WARNING invalid direction for column length\n";
+            opserr << "LimitCurve Axial: " << tag << endln;
+            return 0;
+        }
+    }
+    if (OPS_GetNumRemainingInputArgs() > 0) {
+        if (OPS_GetDoubleInput(&numdata, &delta) < 0) {
+            opserr << "WARNING invalid shift in drift surface (delta)\n";
+            opserr << "LimitCurve Axial: " << tag << endln;
+            return 0;
+        }
+    }
+    if (OPS_GetNumRemainingInputArgs() > 0) {
+        if (OPS_GetIntInput(&numdata, &eleRemove) < 0) {
+            opserr << "WARNING invalid element removal option\n";
+            opserr << "LimitCurve Axial: " << tag << endln;
+            return 0;
+        }
+    }
     // Parsing was successful, allocate the limit curve
     // Subtract one from dof and perpDirn for C indexing
-    Domain *
-        theDomain = OPS_GetDomain ();
+    Domain *theDomain = OPS_GetDomain();
     if (theDomain == 0)
         return 0;
     //return new AxialCurve(interp, tag, eleTag, theDomain, Fsw, //SDK
@@ -203,25 +164,9 @@ OPS_AxialCurve ()
 #endif
 
 
-AxialCurve::AxialCurve (Tcl_Interp * passedTclInterp, int tag, int eTag, Domain * theDom, double Fsw, double Kd, double Fr,     //SDK 
-                        int dType, int fType,
-                        int ni, int nj, int df, int dirn,
-                        double del, int eleRem):
-LimitCurve (tag, TAG_AxialCurve),
-eleTag (eTag),
-theDomain (theDom),
-theElement (0),
-Fsw (Fsw),
-Kdeg (Kd),
-Fres (Fr),
-defType (dType),
-forType (fType),                //SDK
-ndI (ni),
-ndJ (nj),
-dof (df),
-perpDirn (dirn),
-eleRemove (eleRem),
-delta (del)
+AxialCurve::AxialCurve(Tcl_Interp * passedTclInterp, int tag, int eTag, Domain * theDom, double Fsw, double Kd, double Fr,      //SDK 
+                       int dType, int fType, int ni, int nj, int df, int dirn, double del, int eleRem):LimitCurve(tag, TAG_AxialCurve), eleTag(eTag), theDomain(theDom), theElement(0), Fsw(Fsw), Kdeg(Kd), Fres(Fr), defType(dType), forType(fType),   //SDK
+ndI(ni), ndJ(nj), dof(df), perpDirn(dirn), eleRemove(eleRem), delta(del)
 {
     theTclInterp = passedTclInterp;
     stateFlag = 0;
@@ -235,9 +180,9 @@ delta (del)
 }
 
 
-AxialCurve::AxialCurve ():
-LimitCurve (0, TAG_AxialCurve), eleTag (0), theDomain (0), theElement (0), Fsw (0), Kdeg (0), Fres (0), defType (0), forType (0),       //SDK
-    ndI (0), ndJ (0), dof (0), perpDirn (0), eleRemove (0), delta (0)
+AxialCurve::AxialCurve():
+LimitCurve(0, TAG_AxialCurve), eleTag(0), theDomain(0), theElement(0), Fsw(0), Kdeg(0), Fres(0), defType(0), forType(0),        //SDK
+    ndI(0), ndJ(0), dof(0), perpDirn(0), eleRemove(0), delta(0)
 {
     stateFlag = 0;
     theta2 = -1.45;             //SDK
@@ -250,19 +195,18 @@ LimitCurve (0, TAG_AxialCurve), eleTag (0), theDomain (0), theElement (0), Fsw (
 }
 
 
-AxialCurve::~AxialCurve ()
+AxialCurve::~AxialCurve()
 {
 //VOID//
 }
 
 
-LimitCurve *
-AxialCurve::getCopy (void)
+LimitCurve *AxialCurve::getCopy(void)
 {
-    AxialCurve *theCopy = new AxialCurve (theTclInterp, this->getTag (),
-                                          eleTag, theDomain, Fsw, Kdeg, Fres, defType, forType, //SDK
-                                          ndI, ndJ, dof, perpDirn, delta,
-                                          eleRemove);
+    AxialCurve *theCopy = new AxialCurve(theTclInterp, this->getTag(),
+                                         eleTag, theDomain, Fsw, Kdeg, Fres, defType, forType,  //SDK
+                                         ndI, ndJ, dof, perpDirn, delta,
+                                         eleRemove);
 
     theCopy->stateFlag = stateFlag;
     theCopy->theta2 = theta2;   //SDK
@@ -280,8 +224,7 @@ AxialCurve::getCopy (void)
 
 
 // check if limit state surface has been reached
-int
-AxialCurve::checkElementState (double springForce)
+int AxialCurve::checkElementState(double springForce)
 {
     static DummyStream dummy;
     // Terje
@@ -290,265 +233,237 @@ AxialCurve::checkElementState (double springForce)
     stepCounter++;
 
     // if element has not been removed (element removal not fully implemented)
-    if (eleRemove != 2)
-      {
+    if (eleRemove != 2) {
 
-          // find associated beam-column element on first visit
-          if (theElement == 0)
-            {
-                theElement = theDomain->getElement (eleTag);
+        // find associated beam-column element on first visit
+        if (theElement == 0) {
+            theElement = theDomain->getElement(eleTag);
 
-                if (theElement == 0)
-                  {
+            if (theElement == 0) {
 //                              g3ErrorHandler->fatal("WARNING AxialCurve - no element with tag %i exists in Domain",eleTag);
-                  }
-                // find length between nodes if drift is desired
-                if (defType == 2)
-                  {
-                      Node *nodeI = theDomain->getNode (ndI);
-                      Node *nodeJ = theDomain->getNode (ndJ);
+            }
+            // find length between nodes if drift is desired
+            if (defType == 2) {
+                Node *nodeI = theDomain->getNode(ndI);
+                Node *nodeJ = theDomain->getNode(ndJ);
 
-                      const Vector & crdI = nodeI->getCrds ();
-                      const Vector & crdJ = nodeJ->getCrds ();
+                const Vector & crdI = nodeI->getCrds();
+                const Vector & crdJ = nodeJ->getCrds();
 
-                      if (crdI (perpDirn) == crdJ (perpDirn))
-                        {
+                if (crdI(perpDirn) == crdJ(perpDirn)) {
 //                                      g3ErrorHandler->warning("%s -- Nodal projection has zero component along chosen direction",
 //                                                      "AxialCurve::AxialCurve");
 
-                            oneOverL = 0.0;
-                        }
-                      else
-                          oneOverL =
-                              1.0 / fabs (crdJ (perpDirn) - crdI (perpDirn));
-                  }
+                    oneOverL = 0.0;
+                } else
+                    oneOverL = 1.0 / fabs(crdJ(perpDirn) - crdI(perpDirn));
             }
+        }
 
-          dP = 0;               //zero change in axial load
-          double deform;        // value of deformation parameter from element
-          double force;         // value of force parameter from element
+        dP = 0;                 //zero change in axial load
+        double deform;          // value of deformation parameter from element
+        double force;           // value of force parameter from element
 //              double Ps;       // axial load at shear failure - for now assumed to be current axial load (Commented out by Terje)
-          int result = 0;       //junk variable
+        int result = 0;         //junk variable
 
 
-          // Based on "defType" and "forType" calculate 
-          // the desired response parameters "deform" and "force"
-          if (defType == 1)     // maximum chord rotation
-            {
+        // Based on "defType" and "forType" calculate 
+        // the desired response parameters "deform" and "force"
+        if (defType == 1)       // maximum chord rotation
+        {
 
-                Response *theRotations = 0;     // integer element returns in setResponse
+            Response *theRotations = 0; // integer element returns in setResponse
 
-                const char *r[1] = { "basicDeformation" };      // must be implemented in element
+            const char *r[1] = { "basicDeformation" };  // must be implemented in element
 
-                Vector *rotVec; //vector of chord rotations at beam-column ends
+            Vector *rotVec;     //vector of chord rotations at beam-column ends
 
-                // set type of beam-column element response desired
-                theRotations = theElement->setResponse (r, 1, dummy);
+            // set type of beam-column element response desired
+            theRotations = theElement->setResponse(r, 1, dummy);
 
-                if (theRotations == 0)
-                  {
-                      opserr <<
-                          "AxialCurve::checkElementState, defType = 1, basicDeformations not implemented in element setResponse"
-                          << endln;
-                      return -1;
-                  }
-
-                // put element response in the vector of "myInfo"
-                result = theRotations->getResponse ();
-
-                // access the myInfo vector containing the response (new for Version 1.2)
-                Information & theInfo = theRotations->getInformation ();
-                rotVec = (theInfo.theVector);
-
-                deform = (fabs ((*rotVec) (1)) > fabs ((*rotVec) (2))) ? fabs ((*rotVec) (1)) : fabs ((*rotVec) (2));   //use larger of two end rotations
+            if (theRotations == 0) {
+                opserr <<
+                    "AxialCurve::checkElementState, defType = 1, basicDeformations not implemented in element setResponse"
+                    << endln;
+                return -1;
             }
-          else if (defType == 2)        // interstory drift
-            {
-                // find associated nodes 
-                Node *nodeI = theDomain->getNode (ndI);
-                Node *nodeJ = theDomain->getNode (ndJ);
+            // put element response in the vector of "myInfo"
+            result = theRotations->getResponse();
 
-                // get displacements
-                const Vector & dispI = nodeI->getTrialDisp ();
-                const Vector & dispJ = nodeJ->getTrialDisp ();
+            // access the myInfo vector containing the response (new for Version 1.2)
+            Information & theInfo = theRotations->getInformation();
+            rotVec = (theInfo.theVector);
 
-                // calc drift
-                double dx = fabs (dispJ (dof) - dispI (dof));
-                deform = dx * oneOverL;
-            }
-          else
-            {
+            deform = (fabs((*rotVec) (1)) > fabs((*rotVec) (2))) ? fabs((*rotVec) (1)) : fabs((*rotVec) (2));   //use larger of two end rotations
+        } else if (defType == 2)        // interstory drift
+        {
+            // find associated nodes 
+            Node *nodeI = theDomain->getNode(ndI);
+            Node *nodeJ = theDomain->getNode(ndJ);
+
+            // get displacements
+            const Vector & dispI = nodeI->getTrialDisp();
+            const Vector & dispJ = nodeJ->getTrialDisp();
+
+            // calc drift
+            double dx = fabs(dispJ(dof) - dispI(dof));
+            deform = dx * oneOverL;
+        } else {
 //                      g3ErrorHandler->fatal("WARNING AxialCurve - deformation type flag %i not implemented",defType);
-            }
+        }
 
-          Response *theForces = 0;
+        Response *theForces = 0;
 
-          const char *f[1] = { "localForce" };  // does not include influence of P-delta
-          // for P-delta use forType = 0
+        const char *f[1] = { "localForce" };    // does not include influence of P-delta
+        // for P-delta use forType = 0
 
-          Vector *forceVec;     //vector of basic forces from beam column
+        Vector *forceVec;       //vector of basic forces from beam column
 
-          // set type of beam-column element response desired
-          theForces = theElement->setResponse (f, 1, dummy);
+        // set type of beam-column element response desired
+        theForces = theElement->setResponse(f, 1, dummy);
 
-          // put element response in the vector of "myInfo"
-          result += theForces->getResponse ();
+        // put element response in the vector of "myInfo"
+        result += theForces->getResponse();
 
-          // access the myInfo vector containing the response (new for Version 1.2)
-          Information & theInfo = theForces->getInformation ();
-          forceVec = (theInfo.theVector);
+        // access the myInfo vector containing the response (new for Version 1.2)
+        Information & theInfo = theForces->getInformation();
+        forceVec = (theInfo.theVector);
 
-          // Local forces (assuming no element loads)
-          if (forType == 0)
-              force = springForce;      //force in associated hysteretic material
-          else if (forType == 1)
-              force = fabs ((*forceVec) (1));   // shear 
-          else if (forType == 2)
-              force = (*forceVec) (0);  //axial - positive for compression 
-          else
-            {
+        // Local forces (assuming no element loads)
+        if (forType == 0)
+            force = springForce;        //force in associated hysteretic material
+        else if (forType == 1)
+            force = fabs((*forceVec) (1));      // shear 
+        else if (forType == 2)
+            force = (*forceVec) (0);    //axial - positive for compression 
+        else {
 //                      g3ErrorHandler->fatal("WARNING AxialMaterial - force type flag %i not implemented",forType);
-            }
+        }
 
-          // Determine if (deform,force) is outside limit state surface.
-          // 
-          // Use absolute value of deform
-          // Use signed value of force to see if in compression
-          double forceSurface = findLimit (deform);     // force on surface at deform
-          // double deformSurface = findLimit(force); // deform on surface at force SDK
-
-
+        // Determine if (deform,force) is outside limit state surface.
+        // 
+        // Use absolute value of deform
+        // Use signed value of force to see if in compression
+        double forceSurface = findLimit(deform);        // force on surface at deform
+        // double deformSurface = findLimit(force); // deform on surface at force SDK
 
 
 
 
-          //cout << "force = " << force << ", forceSurface = " << forceSurface << endln;
 
-          if (stateFlag == 0)   //prior to failure
+
+        //cout << "force = " << force << ", forceSurface = " << forceSurface << endln;
+
+        if (stateFlag == 0)     //prior to failure
+        {
+
+
+            if (force >= forceSurface)  // on/outside failure surface
+                //if (deform >= deformSurface) // on/outside failure surface SDK
             {
+                // remove element and change eleRemove flag (not fully implemented)
+                if (eleRemove == 1) {
+                    Element *theEle = theDomain->removeElement(eleTag);
+                    eleRemove = 2;      // do not check element again
+                    stateFlag = 0;
 
+                    if (theEle != 0) {
+                        delete theEle;
+                    }
 
-                if (force >= forceSurface)      // on/outside failure surface
-                    //if (deform >= deformSurface) // on/outside failure surface SDK
-                  {
-                      // remove element and change eleRemove flag (not fully implemented)
-                      if (eleRemove == 1)
-                        {
-                            Element *theEle =
-                                theDomain->removeElement (eleTag);
-                            eleRemove = 2;      // do not check element again
-                            stateFlag = 0;
+                } else {
 
-                            if (theEle != 0)
-                              {
-                                  delete theEle;
-                              }
+                    stateFlag = 1;
 
-                        }
-                      else
-                        {
+                    dP = fabs(force) - fabs(forceSurface);      //change in axial load
+                    opserr << "AxialCurve - failure detected at deform = " << deform << ", force = " << force << ",element: " << eleTag << endln;       //SDK
 
-                            stateFlag = 1;
+                    failDrift = (dP * deform_old - dP_old * deform) / (dP - dP_old);    //SDK
 
-                            dP = fabs (force) - fabs (forceSurface);    //change in axial load
-                            opserr << "AxialCurve - failure detected at deform = " << deform << ", force = " << force << ",element: " << eleTag << endln;       //SDK
+                    // Terje
+                    // Failure has occurred for the first time, so we 
+                    // print data to be employed by the limit-state function
 
-                            failDrift = (dP * deform_old - dP_old * deform) / (dP - dP_old);    //SDK
+                    char myString[100];
+                    sprintf(myString, "AxialFailureOfElement%d.txt",
+                            eleTag);
+                    ofstream outputFile(myString, ios::out);
 
-                            // Terje
-                            // Failure has occurred for the first time, so we 
-                            // print data to be employed by the limit-state function
+                    sprintf(myString, "%d %20.8e  %20.8e  %20.8e",
+                            stepCounter, deform_old, failDrift, deform);
 
-                            char myString[100];
-                            sprintf (myString, "AxialFailureOfElement%d.txt",
-                                     eleTag);
-                            ofstream outputFile (myString, ios::out);
+                    outputFile << myString << endln;
 
-                            sprintf (myString, "%d %20.8e  %20.8e  %20.8e",
-                                     stepCounter, deform_old, failDrift,
-                                     deform);
+                    outputFile.close();
 
-                            outputFile << myString << endln;
-
-                            outputFile.close ();
-
-                        }
-                  }
-                else            // inside failure surface
-                  {
-                      stateFlag = 0;
-
-                      dP_old = fabs (force) - fabs (forceSurface);      //SDK
-                      deform_old = deform;      //SDK
-
-
-                  }
-
-            }
-          else                  // after failure
+                }
+            } else              // inside failure surface
             {
-                if (force >= forceSurface)      // on/outside failure surface
-                    //      if (deform >= deformSurface) // on/outside failure surface SDK
+                stateFlag = 0;
+
+                dP_old = fabs(force) - fabs(forceSurface);      //SDK
+                deform_old = deform;    //SDK
 
 
-                  {
-                      if (forceSurface == Fres)
-                          stateFlag = 4;        // once at residual capacity, do not check state again
-                      else
-                          stateFlag = 2;
-
-                      dP = fabs (force) - fabs (forceSurface);  //change in axial load
-                      // SDK  opserr << "AxialCurve - on failure surface at deform = " << deform << ", force = " << force << endln;
-                  }
-                else            // inside failure surface
-                  {
-                      stateFlag = 3;
-                  }
             }
-      }
+
+        } else                  // after failure
+        {
+            if (force >= forceSurface)  // on/outside failure surface
+                //      if (deform >= deformSurface) // on/outside failure surface SDK
+
+
+            {
+                if (forceSurface == Fres)
+                    stateFlag = 4;      // once at residual capacity, do not check state again
+                else
+                    stateFlag = 2;
+
+                dP = fabs(force) - fabs(forceSurface);  //change in axial load
+                // SDK  opserr << "AxialCurve - on failure surface at deform = " << deform << ", force = " << force << endln;
+            } else              // inside failure surface
+            {
+                stateFlag = 3;
+            }
+        }
+    }
 
     return stateFlag;
 }
 
 
-double
-AxialCurve::getDegSlope (void)
+double AxialCurve::getDegSlope(void)
 {
     return Kdeg;
 }
 
 
-double
-AxialCurve::getResForce (void)
+double AxialCurve::getResForce(void)
 {
     return Fres;
 }
 
-double
-AxialCurve::getUnbalanceForce (void)
+double AxialCurve::getUnbalanceForce(void)
 {
     return dP;
 }
 
-int
-AxialCurve::sendSelf (int commitTag, Channel & theChannel)
+int AxialCurve::sendSelf(int commitTag, Channel & theChannel)
 {
     return -1;
 }
 
 
-int
-AxialCurve::recvSelf (int commitTag, Channel & theChannel,
-                      FEM_ObjectBroker & theBroker)
+int AxialCurve::recvSelf(int commitTag, Channel & theChannel,
+                         FEM_ObjectBroker & theBroker)
 {
     return -1;
 }
 
 
-void
-AxialCurve::Print (OPS_Stream & s, int flag)
+void AxialCurve::Print(OPS_Stream & s, int flag)
 {
-    s << "Axial Limit Curve, tag: " << this->getTag () << endln;
+    s << "Axial Limit Curve, tag: " << this->getTag() << endln;
     s << "Fsw: " << Fsw << endln;
     s << "eleTag: " << eleTag << endln;
     s << "nodeI: " << ndI << endln;
@@ -562,15 +477,13 @@ AxialCurve::Print (OPS_Stream & s, int flag)
 
 
 // AXIAL FAILURE MODEL FROM ELWOOD (2002)
-double
-AxialCurve::findLimit (double x)
+double AxialCurve::findLimit(double x)
 {
     double y = 0.0;
 
-    if (x < 0 || x > 0.08)
-      {
+    if (x < 0 || x > 0.08) {
 //              g3ErrorHandler->warning("Warning: Outside limits of AxialCurve");
-      }
+    }
 
     double theta = 65.0 * PI / 180.0;
     double d = x - delta;
@@ -579,15 +492,14 @@ AxialCurve::findLimit (double x)
         d = 1.0e-9;
 
     // positive for compression
-    y = ((1 + tan (theta) * tan (theta)) / (25 * d) -
-         tan (theta)) * Fsw * tan (theta);
+    y = ((1 + tan(theta) * tan(theta)) / (25 * d) -
+         tan(theta)) * Fsw * tan(theta);
 
     //Do not allow axial load to be reduced below residual capacity (may be zero)
     //Input as positive
-    if (y < Fres)
-      {
-          y = Fres;
-      }
+    if (y < Fres) {
+        y = Fres;
+    }
 
     return y;
 }
@@ -636,8 +548,8 @@ AxialCurve::findLimit(double DR)
 
 
 // AddingSensitivity:BEGIN ///////////////////////////////////
-int
-AxialCurve::setParameter (const char **argv, int argc, Parameter & param)
+int AxialCurve::setParameter(const char **argv, int argc,
+                             Parameter & param)
 {
     if (argc < 1)
         return -1;
@@ -651,17 +563,15 @@ AxialCurve::setParameter (const char **argv, int argc, Parameter & param)
 
 
 
-int
-AxialCurve::updateParameter (int parameterID, Information & info)
+int AxialCurve::updateParameter(int parameterID, Information & info)
 {
-    switch (parameterID)
-      {
-      case -1:
-          return -1;
+    switch (parameterID) {
+    case -1:
+        return -1;
 
-      default:
-          return -1;
-      }
+    default:
+        return -1;
+    }
 
 
     return 0;
@@ -670,8 +580,7 @@ AxialCurve::updateParameter (int parameterID, Information & info)
 
 /////////////////////////////////////////ENDS
 
-int
-AxialCurve::revertToStart ()
+int AxialCurve::revertToStart()
 {
     stateFlag = 0;
     theta2 = -1.45;             //SDK

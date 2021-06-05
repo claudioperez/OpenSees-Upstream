@@ -38,13 +38,13 @@
 #include <TransientAnalysis.h>
 #include <Domain.h>
 
-TransientAnalysis::TransientAnalysis (Domain & theDom):Analysis (theDom)
+TransientAnalysis::TransientAnalysis(Domain & theDom):Analysis(theDom)
 {
 
 }
 
 
-TransientAnalysis::~TransientAnalysis ()
+TransientAnalysis::~TransientAnalysis()
 {
 
 }

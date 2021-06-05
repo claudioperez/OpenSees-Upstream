@@ -50,34 +50,30 @@ using namespace std;
 // #include <elementAPI.h> // cmp
 #include <sstream>
 
-int
-OPS_ShallowFoundationGen ()
+int OPS_ShallowFoundationGen()
 {
-    if (OPS_GetNumRemainingInputArgs () < 4)
-      {
-          opserr <<
-              "WARNING ShallowFoundationGen FoundationID? ConnectingNode? InputDataFile? FoundationMatType?";
-          opserr << "Must have 4 arguments." << endln;
-          return -1;
-      }
+    if (OPS_GetNumRemainingInputArgs() < 4) {
+        opserr <<
+            "WARNING ShallowFoundationGen FoundationID? ConnectingNode? InputDataFile? FoundationMatType?";
+        opserr << "Must have 4 arguments." << endln;
+        return -1;
+    }
 
     int tags[2];
     int num = 2;
-    if (OPS_GetIntInput (&num, tags) < 0)
-      {
-          opserr << "WARNING: invalid integer input\n";
-          return -1;
-      }
+    if (OPS_GetIntInput(&num, tags) < 0) {
+        opserr << "WARNING: invalid integer input\n";
+        return -1;
+    }
 
-    const char *filename = OPS_GetString ();
+    const char *filename = OPS_GetString();
 
     int ftype;
     num = 1;
-    if (OPS_GetIntInput (&num, &ftype) < 0)
-      {
-          opserr << "WARNING: invalid integer input\n";
-          return -1;
-      }
+    if (OPS_GetIntInput(&num, &ftype) < 0) {
+        opserr << "WARNING: invalid integer input\n";
+        return -1;
+    }
 
     std::stringstream ss;
     ss << tags[0] << " " << tags[1] << " " << ftype;
@@ -85,51 +81,52 @@ OPS_ShallowFoundationGen ()
     ss >> id >> cnode >> foundtype;
 
     ShallowFoundationGen gen;
-    gen.GetShallowFoundation (id.c_str (), cnode.c_str (), filename,
-                              foundtype.c_str ());
+    gen.GetShallowFoundation(id.c_str(), cnode.c_str(), filename,
+                             foundtype.c_str());
 
     return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Constructor initializes global variables to zero
-ShallowFoundationGen::ShallowFoundationGen ()
+ShallowFoundationGen::ShallowFoundationGen()
 {
 }
 
 /////////////////////////////////////////////////////////////////////////
 // Destructor deletes dynamically allocated arrays
-ShallowFoundationGen::~ShallowFoundationGen ()
+ShallowFoundationGen::~ShallowFoundationGen()
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Function to get inputfile and writing output tcl source file
 void
-ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
+ ShallowFoundationGen::GetShallowFoundation(const char *FoundationID,
                                             const char *ConnectingNode,
                                             const char *InputDataFile,
-                                            const char *FoundationCondition)
+                                            const char
+                                            *FoundationCondition)
 {
     int FoundationTag;
     int ConNode;
     int FootingCondition;
 
-    FoundationTag = atoi (FoundationID);
-    ConNode = atoi (ConnectingNode);
-    FootingCondition = atoi (FoundationCondition);
+    FoundationTag = atoi(FoundationID);
+    ConNode = atoi(ConnectingNode);
+    FootingCondition = atoi(FoundationCondition);
 
 
     // Define local variables
-    string str1 ("Foundation_");
-    string str2 (FoundationID);
-    string str3 (".tcl");
+    string str1("Foundation_");
+    string str2(FoundationID);
+    string str3(".tcl");
     string str4;
     str4 = (str1 + str2 + str3);
     const char *OutFile;
-    OutFile = str4.c_str ();
+    OutFile = str4.c_str();
 
-    ofstream ShallowFoundationOut (OutFile, ios::out);  // Initialize output stream
+    ofstream ShallowFoundationOut(OutFile, ios::out);   // Initialize output stream
 
     // Write headers for output file
     ShallowFoundationOut <<
@@ -157,20 +154,20 @@ ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
         "######################################################################################"
         << endln << endln;
     ShallowFoundationOut << endln;
-    ShallowFoundationOut << " # Foundation Tag =" << FoundationTag << endln;
+    ShallowFoundationOut << " # Foundation Tag =" << FoundationTag <<
+        endln;
     ShallowFoundationOut << " # Foundation Base Condition Tag =" <<
         FootingCondition << endln;
     ShallowFoundationOut << endln;
 
     //Opening input file for reading        
-    ifstream inFile (InputDataFile, ios::in);
+    ifstream inFile(InputDataFile, ios::in);
 
-    if (!inFile)
-      {
-          opserr << "File " << InputDataFile << "does not exist.  Must exit."
-              << endln;
-          exit (-1);
-      }
+    if (!inFile) {
+        opserr << "File " << InputDataFile << "does not exist.  Must exit."
+            << endln;
+        exit(-1);
+    }
 
     string tmpString;           //defining temporary string
 
@@ -201,179 +198,159 @@ ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
     char charBuffer[256];
 
 //individually read lines from the input file, into tmpString class
-    while (!inFile.eof ())      //while not at end of file
-      {
-          inFile >> tmpString;
-          if (tmpString[0] == '#')
-            {
-                // Skip comment lines
-            }
-          //Reading soil property data
-          else if (tmpString.compare ("SoilProp") == 0)
-            {
-                inFile >> SoilType;
-                inFile >> cSoil;
-                inFile >> PhiSoil;
-                inFile >> GammaSoil;
-                inFile >> GSoil;
-                inFile >> NuSoil;
-                inFile >> CradSoil;
-                inFile >> TpSoil;
-                CapTag = 0;     //setting tag for further input
-            }
+    while (!inFile.eof())       //while not at end of file
+    {
+        inFile >> tmpString;
+        if (tmpString[0] == '#') {
+            // Skip comment lines
+        }
+        //Reading soil property data
+        else if (tmpString.compare("SoilProp") == 0) {
+            inFile >> SoilType;
+            inFile >> cSoil;
+            inFile >> PhiSoil;
+            inFile >> GammaSoil;
+            inFile >> GSoil;
+            inFile >> NuSoil;
+            inFile >> CradSoil;
+            inFile >> TpSoil;
+            CapTag = 0;         //setting tag for further input
+        }
+        //Reading soil capacity properties
+        else if (tmpString.compare("CapSoil") == 0) {
+            inFile >> Qult;
+            inFile >> Pult;
+            inFile >> Tult;
+            inFile >> Kv;
+            inFile >> Kx;
+            CapTag = 1;         //setting tag for not calculating Qult
+        }
+        //Reading Footing properties
+        else if (tmpString.compare("FootProp") == 0) {
+            inFile >> Lfoot;
+            inFile >> Bfoot;
+            inFile >> Hfoot;
+            inFile >> Dfoot;
+            inFile >> Efoot;
+            inFile >> Wg;
+            inFile >> beta;
+        }
+        //Reading Footing Mesh properties
+        else if (tmpString.compare("MeshProp") == 0) {
+            inFile >> Rk;
+            inFile >> Re;
+            inFile >> leRatio;
+        }
 
-          //Reading soil capacity properties
-          else if (tmpString.compare ("CapSoil") == 0)
-            {
-                inFile >> Qult;
-                inFile >> Pult;
-                inFile >> Tult;
-                inFile >> Kv;
-                inFile >> Kx;
-                CapTag = 1;     //setting tag for not calculating Qult
-            }
-
-          //Reading Footing properties
-          else if (tmpString.compare ("FootProp") == 0)
-            {
-                inFile >> Lfoot;
-                inFile >> Bfoot;
-                inFile >> Hfoot;
-                inFile >> Dfoot;
-                inFile >> Efoot;
-                inFile >> Wg;
-                inFile >> beta;
-            }
-
-          //Reading Footing Mesh properties
-          else if (tmpString.compare ("MeshProp") == 0)
-            {
-                inFile >> Rk;
-                inFile >> Re;
-                inFile >> leRatio;
-            }
-
-          inFile.getline (charBuffer, 256);     // purge the line
-      }
-    inFile.close ();            //Closing input file
+        inFile.getline(charBuffer, 256);        // purge the line
+    }
+    inFile.close();             //Closing input file
 
     //Calculate capacities (Qult, Pult and Tult); if not given
 
 
-    if (CapTag == 0)
-      {
-          double pi;
-          double phirad;
-          double tph;
-          double Nphi;
-          double q;
-          double Nq;
-          double Nc;
-          double Ngamma;
-          double Fcs;
-          double Fqs;
-          double Fgammas;
-          double Fcd;
-          double Fqd;
-          double Fgammad;
-          double Fci;
-          double Fqi;
-          double Fgammai;
-          double qu;
-          double Kp;
-          double delta;
+    if (CapTag == 0) {
+        double pi;
+        double phirad;
+        double tph;
+        double Nphi;
+        double q;
+        double Nq;
+        double Nc;
+        double Ngamma;
+        double Fcs;
+        double Fqs;
+        double Fgammas;
+        double Fcd;
+        double Fqd;
+        double Fgammad;
+        double Fci;
+        double Fqi;
+        double Fgammai;
+        double qu;
+        double Kp;
+        double delta;
 
 //-------- CALCULATION OF Qult (VERTICAL BEARING CAPACITY)
-          pi = 3.14159265;
-          phirad = PhiSoil * pi / 180;
-          tph = tan (phirad);
-          Nphi = pow (tan (pi / 4 + phirad / 2), 2);
-          q = GammaSoil * Dfoot;
+        pi = 3.14159265;
+        phirad = PhiSoil * pi / 180;
+        tph = tan(phirad);
+        Nphi = pow(tan(pi / 4 + phirad / 2), 2);
+        q = GammaSoil * Dfoot;
 
 // Bearing capacity factors (Meyerhof, 1963)
-          Nq = Nphi * exp (pi * tph);
-          if (PhiSoil == 0)
-            {
-                Nc = 5.7;       //using table 3.2 (Das, 2006)
-            }
-          else
-            {
-                Nc = (Nq - 1) / tph;    //(Meyerhof, 1963)
-            }
-          Ngamma = (Nq - 1) * tan (1.4 * phirad);       //(Meyerhof, 1963)
+        Nq = Nphi * exp(pi * tph);
+        if (PhiSoil == 0) {
+            Nc = 5.7;           //using table 3.2 (Das, 2006)
+        } else {
+            Nc = (Nq - 1) / tph;        //(Meyerhof, 1963)
+        }
+        Ngamma = (Nq - 1) * tan(1.4 * phirad);  //(Meyerhof, 1963)
 // Shape factors (Meyerhof, 1963)
-          if (PhiSoil == 0)
-            {
-                Fcs = 1 + 0.2 * (Bfoot / Lfoot);
-                Fqs = 1;
-                Fgammas = Fqs;
-            }
-          else
-            {
-                Fcs = 1 + 0.2 * (Bfoot / Lfoot) * Nphi;
-                Fqs = 1 + 0.1 * (Bfoot / Lfoot) * Nphi;
-                Fgammas = Fqs;
-            }
+        if (PhiSoil == 0) {
+            Fcs = 1 + 0.2 * (Bfoot / Lfoot);
+            Fqs = 1;
+            Fgammas = Fqs;
+        } else {
+            Fcs = 1 + 0.2 * (Bfoot / Lfoot) * Nphi;
+            Fqs = 1 + 0.1 * (Bfoot / Lfoot) * Nphi;
+            Fgammas = Fqs;
+        }
 // Depth factors (Meyerhof, 1963)
-          if (PhiSoil == 0)
-            {
-                Fcd = 1 + 0.2 * (Dfoot / Bfoot);
-                Fqd = 1;
-                Fgammad = Fqd;
-            }
-          else
-            {
-                Fcd = 1 + 0.2 * (Dfoot / Bfoot) * (sqrt (Nphi));
-                Fqd = 1 + 0.1 * (Dfoot / Bfoot) * (sqrt (Nphi));
-                Fgammad = Fqd;
-            }
+        if (PhiSoil == 0) {
+            Fcd = 1 + 0.2 * (Dfoot / Bfoot);
+            Fqd = 1;
+            Fgammad = Fqd;
+        } else {
+            Fcd = 1 + 0.2 * (Dfoot / Bfoot) * (sqrt(Nphi));
+            Fqd = 1 + 0.1 * (Dfoot / Bfoot) * (sqrt(Nphi));
+            Fgammad = Fqd;
+        }
 // Inclination factors (Meyerhof, 1963)
-          Fci = pow ((1.0 - beta / 90.0), 2);
-          Fqi = Fci;
+        Fci = pow((1.0 - beta / 90.0), 2);
+        Fqi = Fci;
 
-          if (PhiSoil == 0)
-            {
-                Fgammai = 1.0;
-            }
-          else
-            {
-                Fgammai = pow ((1.0 - beta / PhiSoil), 2);
-            }
+        if (PhiSoil == 0) {
+            Fgammai = 1.0;
+        } else {
+            Fgammai = pow((1.0 - beta / PhiSoil), 2);
+        }
 
 //Ultimate bearing capacity
-          qu = cSoil * Nc * Fcs * Fcd * Fci + q * Nq * Fqs * Fqd * Fqi +
-              0.5 * GammaSoil * Bfoot * Ngamma * Fgammas * Fgammad * Fgammai;
+        qu = cSoil * Nc * Fcs * Fcd * Fci + q * Nq * Fqs * Fqd * Fqi +
+            0.5 * GammaSoil * Bfoot * Ngamma * Fgammas * Fgammad * Fgammai;
 // Ultimate load capacity
-          Qult = qu * Lfoot * Bfoot;
+        Qult = qu * Lfoot * Bfoot;
 //----------- END CALCULATION OF BEARING CAPACITY
 
 
 //-------- CALCULATION OF Pult (LATERAL PASSIVE CAPACITY)
-          Kp = Nphi;            //following Rankin's passive earth pressure theory (Rankin, 1857)
-          Pult = (0.5 * Kp * GammaSoil * Dfoot * Dfoot + 2 * cSoil * Dfoot * sqrt (Kp)) * Lfoot;        //passive capacity of the footing 
+        Kp = Nphi;              //following Rankin's passive earth pressure theory (Rankin, 1857)
+        Pult = (0.5 * Kp * GammaSoil * Dfoot * Dfoot + 2 * cSoil * Dfoot * sqrt(Kp)) * Lfoot;   //passive capacity of the footing 
 //-------- END OF Pult CALCULATION
 
 //-------- CALCULATION OF Tult (LATERAL SLIDING CAPACITY)
-          delta = 0.667 * phirad;       //assuming that for concrete footing, the friction angle delta=2/3 of phi
-          Tult = (cSoil + Wg * tan (delta)) * Lfoot * Bfoot;    //sliding capacity of the footing 
+        delta = 0.667 * phirad; //assuming that for concrete footing, the friction angle delta=2/3 of phi
+        Tult = (cSoil + Wg * tan(delta)) * Lfoot * Bfoot;       //sliding capacity of the footing 
 //-------- END OF Tult CALCULATION
 
 
 //-------- CALCULATION OF STIFFNESS
 //Stiffness calculation (Gazetas 1991)
 // Horizontal soil stiffness
-          Kx = ((GSoil * Lfoot) / (2 - NuSoil)) * (2 +
-                                                   2.5 *
-                                                   (pow
-                                                    ((Bfoot / Lfoot), 0.85)));
+        Kx = ((GSoil * Lfoot) / (2 - NuSoil)) * (2 +
+                                                 2.5 *
+                                                 (pow
+                                                  ((Bfoot / Lfoot),
+                                                   0.85)));
 // Vertical soil stiffness
-          Kv = ((GSoil * Lfoot) / (1 - NuSoil)) * (0.73 +
-                                                   1.54 *
-                                                   (pow
-                                                    ((Bfoot / Lfoot), 0.75)));
+        Kv = ((GSoil * Lfoot) / (1 - NuSoil)) * (0.73 +
+                                                 1.54 *
+                                                 (pow
+                                                  ((Bfoot / Lfoot),
+                                                   0.75)));
 //-------- END OF STIFFNESS CALCULATION
-      }
-
+    }
 //------MESH GENERATION FOR SHALLOW FOUNDATION
     double Lmid;
     double LMidEleTrial;
@@ -414,10 +391,10 @@ ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
 
 //Properties for each footing and spring elements
     Afoot = Lfoot * Bfoot;      //area of entire footing
-    Ifoot = Bfoot * pow (Lfoot, 3) / 12.0;      //inertia of each footing element
+    Ifoot = Bfoot * pow(Lfoot, 3) / 12.0;       //inertia of each footing element
 
     Aelefoot = (Bfoot * Hfoot); //area of each footing element -mid and end
-    Ielefoot = Bfoot * pow (Hfoot, 3) / (12.0); //inertia of each footing element - mid and end
+    Ielefoot = Bfoot * pow(Hfoot, 3) / (12.0);  //inertia of each footing element - mid and end
 
 
     qmid = Qult * (LmidEle / Lfoot);    //vertical capacity of each spring at mid region (unit=load/length)
@@ -443,42 +420,34 @@ ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
     ShallowFoundationOut << " #node  " << " $NodeTag " << " $Xcoord " <<
         " $Ycoord " << endln;
 
-    for (i = 1; i <= nodeTotal; i++)
-      {
-          if ((i >= 1) && (i <= ndivEnd + 1))
-            {
-                Xcoord = midNodeX - Lfoot / 2 + (i - 1) * LendEle;      // for end nodes in left side 
-            }
-          else if ((i >= nodeTotal - ndivEnd) && (i <= nodeTotal))
-            {
-                Xcoord = midNodeX + Lfoot / 2 + (i - nodeTotal) * LendEle;      //for end nodes in right side 
-            }
-          else if ((i > ndivEnd + 1) && (i < nodeTotal - ndivEnd))
-            {
-                Xcoord = midNodeX - Lfoot / 2 + LendEle * ndivEnd + (i - ndivEnd - 1) * LmidEle;        // for middle nodes 
-            }
-          Ycoord = midNodeY;    // Y coordinate 
+    for (i = 1; i <= nodeTotal; i++) {
+        if ((i >= 1) && (i <= ndivEnd + 1)) {
+            Xcoord = midNodeX - Lfoot / 2 + (i - 1) * LendEle;  // for end nodes in left side 
+        } else if ((i >= nodeTotal - ndivEnd) && (i <= nodeTotal)) {
+            Xcoord = midNodeX + Lfoot / 2 + (i - nodeTotal) * LendEle;  //for end nodes in right side 
+        } else if ((i > ndivEnd + 1) && (i < nodeTotal - ndivEnd)) {
+            Xcoord = midNodeX - Lfoot / 2 + LendEle * ndivEnd + (i - ndivEnd - 1) * LmidEle;    // for middle nodes 
+        }
+        Ycoord = midNodeY;      // Y coordinate 
 
-          ShallowFoundationOut << " node  " << FoundationTag * 1000 +
-              i << "  " << Xcoord << " " << Ycoord << endln;
-          ShallowFoundationOut << " node  " << FoundationTag * 100000 +
-              i << " " << Xcoord << " " << Ycoord << endln;
+        ShallowFoundationOut << " node  " << FoundationTag * 1000 +
+            i << "  " << Xcoord << " " << Ycoord << endln;
+        ShallowFoundationOut << " node  " << FoundationTag * 100000 +
+            i << " " << Xcoord << " " << Ycoord << endln;
 
-          // For horizontal springs for foot conditions 3 
-          if ((i == nodeTotal) && (FootingCondition == 3))
-            {
-                ShallowFoundationOut << " node  " << FoundationTag * 100000 +
-                    i + 1 << " " << Xcoord << " " << Ycoord << endln;
-            }
-          // For horizontal springs for foot conditions 5 
-          if ((i == nodeTotal) && (FootingCondition == 5))
-            {
-                ShallowFoundationOut << " node  " << FoundationTag * 100000 +
-                    i + 1 << " " << Xcoord << " " << Ycoord << endln;
-                ShallowFoundationOut << " node  " << FoundationTag * 100000 +
-                    i + 2 << " " << Xcoord << " " << Ycoord << endln;
-            }
-      }
+        // For horizontal springs for foot conditions 3 
+        if ((i == nodeTotal) && (FootingCondition == 3)) {
+            ShallowFoundationOut << " node  " << FoundationTag * 100000 +
+                i + 1 << " " << Xcoord << " " << Ycoord << endln;
+        }
+        // For horizontal springs for foot conditions 5 
+        if ((i == nodeTotal) && (FootingCondition == 5)) {
+            ShallowFoundationOut << " node  " << FoundationTag * 100000 +
+                i + 1 << " " << Xcoord << " " << Ycoord << endln;
+            ShallowFoundationOut << " node  " << FoundationTag * 100000 +
+                i + 2 << " " << Xcoord << " " << Ycoord << endln;
+        }
+    }
 
 
 
@@ -486,8 +455,8 @@ ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
 //EqualDOF command
     ShallowFoundationOut << endln <<
         " #equalDOF $rNodeTag $cNodeTag $dof1 $dof2 $dof3" << endln;
-    ShallowFoundationOut << " equalDOF " << ConNode << "  " << FoundationTag *
-        1000 + midNode << " 1 2 3 " << endln;
+    ShallowFoundationOut << " equalDOF " << ConNode << "  " <<
+        FoundationTag * 1000 + midNode << " 1 2 3 " << endln;
 
 //ShallowFoundationOut << endln <<" set midNode_"<<ConNode << "   " << FoundationTag*1000+midNode <<endln;
 
@@ -506,17 +475,15 @@ ShallowFoundationGen::GetShallowFoundation (const char *FoundationID,
     double Cd;
 
     if (SoilType == 1)          //soilType=clay
-      {
-          kvfactor = 0.525;     //for QzSimple2 material
-          kxpfactor = 8.0;      //for PySimple2 material
-          kxtfactor = 0.708;    //for TzSimple2 material
-      }
-    else
-      {                         //soilType=sand
-          kvfactor = 1.39;      //for QzSimple2 material
-          kxpfactor = 0.542;    //for PySimple2 material
-          kxtfactor = 2.05;     //for TzSimple2 material
-      }
+    {
+        kvfactor = 0.525;       //for QzSimple2 material
+        kxpfactor = 8.0;        //for PySimple2 material
+        kxtfactor = 0.708;      //for TzSimple2 material
+    } else {                    //soilType=sand
+        kvfactor = 1.39;        //for QzSimple2 material
+        kxpfactor = 0.542;      //for PySimple2 material
+        kxtfactor = 2.05;       //for TzSimple2 material
+    }
     z50mid = kvfactor * qmid / kvMidSpring;
     z50end = kvfactor * qend / kvEndSpring;
     z50endext = kvfactor * qendext / kvEndExt;
@@ -537,245 +504,237 @@ Condition 4: nonlinear qz vertical springs; sliding restrained
 Condition 5: nonlinear vertical and lateral springs
 */
 
-    ShallowFoundationOut << endln << " #Materials for shallow foundation" <<
-        endln;
+    ShallowFoundationOut << endln << " #Materials for shallow foundation"
+        << endln;
 
 //writing foundation conditions 
     if (FootingCondition == 1)  //fixed base case
-      {
-          ShallowFoundationOut << endln << " #fix " << " $ConnectingNode " <<
-              " " << 1 << " " << 1 << " " << 1 << endln;
-          ShallowFoundationOut << " fix " << ConNode << "  " << 1 << " " << 1
-              << " " << 1 << endln;
+    {
+        ShallowFoundationOut << endln << " #fix " << " $ConnectingNode " <<
+            " " << 1 << " " << 1 << " " << 1 << endln;
+        ShallowFoundationOut << " fix " << ConNode << "  " << 1 << " " << 1
+            << " " << 1 << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $KvendExtreme " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 1 << "  " << kvEndExt << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $KvendExtreme " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 1 << "  " << kvEndExt << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kvend " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 2 << "  " << kvEndSpring << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kvend " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 2 << "  " << kvEndSpring << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kvmid " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 3 << "  " << kvMidSpring << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kvmid " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 3 << "  " << kvMidSpring << endln;
 
-      }
+    }
 
     if (FootingCondition == 2)  //elastic vertical springs; sliding restrained
-      {
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $KvendExtreme " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 1 << "  " << kvEndExt << endln;
+    {
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $KvendExtreme " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 1 << "  " << kvEndExt << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kvend " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 2 << "  " << kvEndSpring << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kvend " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 2 << "  " << kvEndSpring << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kvmid " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 3 << "  " << kvMidSpring << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kvmid " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 3 << "  " << kvMidSpring << endln;
 
-          ShallowFoundationOut << endln << " #fix " << " $midNode " << " " <<
-              1 << " " << 0 << " " << 0 << endln;
-          ShallowFoundationOut << " fix " << ConNode << " " << 1 << " " << 0
-              << " " << 0 << endln;
-      }
+        ShallowFoundationOut << endln << " #fix " << " $midNode " << " " <<
+            1 << " " << 0 << " " << 0 << endln;
+        ShallowFoundationOut << " fix " << ConNode << " " << 1 << " " << 0
+            << " " << 0 << endln;
+    }
 
     if (FootingCondition == 3)  //elastic vertical sand lateral springs
-      {
+    {
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $KvendExtreme " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 1 << "  " << kvEndExt << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $KvendExtreme " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 1 << "  " << kvEndExt << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kvend " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 2 << "  " << kvEndSpring << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kvend " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 2 << "  " << kvEndSpring << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kvmid " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 3 << "  " << kvMidSpring << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kvmid " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 3 << "  " << kvMidSpring << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " Elastic " << " $matTag " << " $Kx" << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
-              FoundationTag * 100 + 4 << "  " << Kx << endln;
-      }
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " Elastic " << " $matTag " << " $Kx" << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " Elastic " <<
+            FoundationTag * 100 + 4 << "  " << Kx << endln;
+    }
 
     if (FootingCondition == 4)  //nonlinear qz vertical springs; sliding restrained
-      {
+    {
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " QzSimple2 " << " $matTag " << " $SoilType " <<
-              " $Qult-end-extreme " << " $z50-end " << " <TpSoil> " <<
-              " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
-              FoundationTag * 100 +
-              1 << "  " << SoilType << " " << qendext << " " << z50endext <<
-              " " << TpSoil << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " QzSimple2 " << " $matTag " << " $SoilType " <<
+            " $Qult-end-extreme " << " $z50-end " << " <TpSoil> " <<
+            " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
+            FoundationTag * 100 +
+            1 << "  " << SoilType << " " << qendext << " " << z50endext <<
+            " " << TpSoil << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-end "
-              << " $z50-end " << " <TpSoil> " << " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
-              FoundationTag * 100 +
-              2 << "  " << SoilType << " " << qend << " " << z50end << " " <<
-              TpSoil << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-end "
+            << " $z50-end " << " <TpSoil> " << " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
+            FoundationTag * 100 +
+            2 << "  " << SoilType << " " << qend << " " << z50end << " " <<
+            TpSoil << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-mid "
-              << " $z50-mid " << " <TpSoil> " << " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
-              FoundationTag * 100 +
-              3 << "  " << SoilType << " " << qmid << " " << z50mid << " " <<
-              TpSoil << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-mid "
+            << " $z50-mid " << " <TpSoil> " << " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
+            FoundationTag * 100 +
+            3 << "  " << SoilType << " " << qmid << " " << z50mid << " " <<
+            TpSoil << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #fix " << " $midNode " << " " <<
-              1 << " " << 0 << " " << 0 << endln;
-          ShallowFoundationOut << " fix " << ConNode << " " << 1 << " " << 0
-              << " " << 0 << endln;
-      }
+        ShallowFoundationOut << endln << " #fix " << " $midNode " << " " <<
+            1 << " " << 0 << " " << 0 << endln;
+        ShallowFoundationOut << " fix " << ConNode << " " << 1 << " " << 0
+            << " " << 0 << endln;
+    }
 
     if (FootingCondition == 5)  //nonlinear vertical and lateral springs
-      {
+    {
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " QzSimple2 " << " $matTag " << " $SoilType " <<
-              " $Qult-end-extreme " << " $z50-end " << " <TpSoil> " <<
-              " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
-              FoundationTag * 100 +
-              1 << "  " << SoilType << " " << qendext << " " << z50endext <<
-              " " << TpSoil << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " QzSimple2 " << " $matTag " << " $SoilType " <<
+            " $Qult-end-extreme " << " $z50-end " << " <TpSoil> " <<
+            " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
+            FoundationTag * 100 +
+            1 << "  " << SoilType << " " << qendext << " " << z50endext <<
+            " " << TpSoil << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-end "
-              << " $z50-end " << " <TpSoil> " << " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
-              FoundationTag * 100 +
-              2 << "  " << SoilType << " " << qend << " " << z50end << " " <<
-              TpSoil << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-end "
+            << " $z50-end " << " <TpSoil> " << " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
+            FoundationTag * 100 +
+            2 << "  " << SoilType << " " << qend << " " << z50end << " " <<
+            TpSoil << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-mid "
-              << " $z50-mid " << " <TpSoil> " << " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
-              FoundationTag * 100 +
-              3 << "  " << SoilType << " " << qmid << " " << z50mid << " " <<
-              TpSoil << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " QzSimple2 " << " $matTag " << " $SoilType " << " $Qult-mid "
+            << " $z50-mid " << " <TpSoil> " << " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " QzSimple2 " <<
+            FoundationTag * 100 +
+            3 << "  " << SoilType << " " << qmid << " " << z50mid << " " <<
+            TpSoil << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " PySimple2 " << " $matTag " << " $SoilType " << " $Pp " <<
-              " $xp50 " << " Cd " << " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " PySimple2 " <<
-              FoundationTag * 100 +
-              5 << "  " << SoilType << " " << Pult << " " << xp50 << " " << Cd
-              << " " << CradSoil << endln;
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " PySimple2 " << " $matTag " << " $SoilType " << " $Pp " <<
+            " $xp50 " << " Cd " << " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " PySimple2 " <<
+            FoundationTag * 100 +
+            5 << "  " << SoilType << " " << Pult << " " << xp50 << " " <<
+            Cd << " " << CradSoil << endln;
 
-          ShallowFoundationOut << endln << " #uniaxialMaterial " <<
-              " TzSimple2 " << " $matTag " << " $SoilType " << " $Tult " <<
-              " $xt50 " << " <CradSoil> " << endln;
-          ShallowFoundationOut << " uniaxialMaterial " << " TzSimple2 " <<
-              FoundationTag * 100 +
-              6 << "  " << SoilType << " " << Tult << " " << xt50 << " " << Cd
-              << " " << CradSoil << endln;
-      }
-
+        ShallowFoundationOut << endln << " #uniaxialMaterial " <<
+            " TzSimple2 " << " $matTag " << " $SoilType " << " $Tult " <<
+            " $xt50 " << " <CradSoil> " << endln;
+        ShallowFoundationOut << " uniaxialMaterial " << " TzSimple2 " <<
+            FoundationTag * 100 +
+            6 << "  " << SoilType << " " << Tult << " " << xt50 << " " <<
+            Cd << " " << CradSoil << endln;
+    }
 //--------END OF MATERIAL GENERATION
 
 //--------ELEMENT GENERATION
 //Vertical Spring element connectivity 
-    ShallowFoundationOut << endln << " #Vertical spring element connectivity"
-        << endln;
-    ShallowFoundationOut << " #element  " << " zeroLength " << " $eleTag " <<
-        " $iNode " << " $jNode " << " -mat" << "$matTag " << " -dir " <<
+    ShallowFoundationOut << endln <<
+        " #Vertical spring element connectivity" << endln;
+    ShallowFoundationOut << " #element  " << " zeroLength " << " $eleTag "
+        << " $iNode " << " $jNode " << " -mat" << "$matTag " << " -dir " <<
         " $dir " << endln;
-    for (i = 1; i <= nodeTotal; i++)
-      {
-          if (i > ndivEnd && i <= ndivEnd + ndivMid + 1)
-            {
-                ShallowFoundationOut << " element  " << " zeroLength " <<
-                    FoundationTag * 100000 +
-                    i << "  " << FoundationTag * 100000 +
-                    i << "  " << FoundationTag * 1000 +
-                    i << " -mat " << FoundationTag * 100 +
-                    3 << "  " << " -dir " << " 2 " << endln;
-            }
-          else if (i == 1 || i == nodeTotal)
-            {
-                ShallowFoundationOut << " element  " << " zeroLength " <<
-                    FoundationTag * 100000 +
-                    i << "  " << FoundationTag * 100000 +
-                    i << "  " << FoundationTag * 1000 +
-                    i << " -mat " << FoundationTag * 100 +
-                    1 << "  " << " -dir " << " 2 " << endln;
-            }
-          else
-            {
-                ShallowFoundationOut << " element  " << " zeroLength " <<
-                    FoundationTag * 100000 +
-                    i << "  " << FoundationTag * 100000 +
-                    i << "  " << FoundationTag * 1000 +
-                    i << " -mat " << FoundationTag * 100 +
-                    2 << "  " << " -dir " << " 2 " << endln;
-            }
-      }
+    for (i = 1; i <= nodeTotal; i++) {
+        if (i > ndivEnd && i <= ndivEnd + ndivMid + 1) {
+            ShallowFoundationOut << " element  " << " zeroLength " <<
+                FoundationTag * 100000 +
+                i << "  " << FoundationTag * 100000 +
+                i << "  " << FoundationTag * 1000 +
+                i << " -mat " << FoundationTag * 100 +
+                3 << "  " << " -dir " << " 2 " << endln;
+        } else if (i == 1 || i == nodeTotal) {
+            ShallowFoundationOut << " element  " << " zeroLength " <<
+                FoundationTag * 100000 +
+                i << "  " << FoundationTag * 100000 +
+                i << "  " << FoundationTag * 1000 +
+                i << " -mat " << FoundationTag * 100 +
+                1 << "  " << " -dir " << " 2 " << endln;
+        } else {
+            ShallowFoundationOut << " element  " << " zeroLength " <<
+                FoundationTag * 100000 +
+                i << "  " << FoundationTag * 100000 +
+                i << "  " << FoundationTag * 1000 +
+                i << " -mat " << FoundationTag * 100 +
+                2 << "  " << " -dir " << " 2 " << endln;
+        }
+    }
 
 
 //Horizontal Spring element connectivity 
 
     if (FootingCondition == 3)  //elastic lateral spring
-      {
-          ShallowFoundationOut << endln <<
-              " #Horizontal spring element connectivity" << endln;
-          ShallowFoundationOut << " #element  " << " zeroLength " <<
-              " $eleTag " << " $iNode " << " $jNode " << " -mat" << "$matTag "
-              << " -dir " << " $dir " << endln;
-          ShallowFoundationOut << " element  " << " zeroLength " <<
-              FoundationTag * 100000 + nodeTotal +
-              1 << "  " << FoundationTag * 1000 +
-              nodeTotal << "  " << FoundationTag * 100000 + nodeTotal +
-              1 << " -mat " << FoundationTag * 100 +
-              4 << "  " << " -dir " << " 1 " << endln;
-      }
+    {
+        ShallowFoundationOut << endln <<
+            " #Horizontal spring element connectivity" << endln;
+        ShallowFoundationOut << " #element  " << " zeroLength " <<
+            " $eleTag " << " $iNode " << " $jNode " << " -mat" <<
+            "$matTag " << " -dir " << " $dir " << endln;
+        ShallowFoundationOut << " element  " << " zeroLength " <<
+            FoundationTag * 100000 + nodeTotal +
+            1 << "  " << FoundationTag * 1000 +
+            nodeTotal << "  " << FoundationTag * 100000 + nodeTotal +
+            1 << " -mat " << FoundationTag * 100 +
+            4 << "  " << " -dir " << " 1 " << endln;
+    }
 
     if (FootingCondition == 5)  //Nonlinear lateral springs
-      {
-          ShallowFoundationOut << endln <<
-              " #Horizontal spring element connectivity" << endln;
-          ShallowFoundationOut << " #element  " << " zeroLength " <<
-              " $eleTag " << " $iNode " << " $jNode " << " -mat" << "$matTag "
-              << " -dir " << " $dir " << endln;
-          ShallowFoundationOut << " element  " << " zeroLength " <<
-              FoundationTag * 100000 + nodeTotal +
-              1 << "  " << FoundationTag * 1000 +
-              nodeTotal << "  " << FoundationTag * 100000 + nodeTotal +
-              1 << " -mat " << FoundationTag * 100 +
-              5 << "  " << " -dir " << " 1 " << endln;
-          ShallowFoundationOut << " element  " << " zeroLength " <<
-              FoundationTag * 100000 + nodeTotal +
-              2 << "  " << FoundationTag * 1000 +
-              nodeTotal << "  " << FoundationTag * 100000 + nodeTotal +
-              2 << " -mat " << FoundationTag * 100 +
-              6 << "  " << " -dir " << " 1 " << endln;
-      }
-
+    {
+        ShallowFoundationOut << endln <<
+            " #Horizontal spring element connectivity" << endln;
+        ShallowFoundationOut << " #element  " << " zeroLength " <<
+            " $eleTag " << " $iNode " << " $jNode " << " -mat" <<
+            "$matTag " << " -dir " << " $dir " << endln;
+        ShallowFoundationOut << " element  " << " zeroLength " <<
+            FoundationTag * 100000 + nodeTotal +
+            1 << "  " << FoundationTag * 1000 +
+            nodeTotal << "  " << FoundationTag * 100000 + nodeTotal +
+            1 << " -mat " << FoundationTag * 100 +
+            5 << "  " << " -dir " << " 1 " << endln;
+        ShallowFoundationOut << " element  " << " zeroLength " <<
+            FoundationTag * 100000 + nodeTotal +
+            2 << "  " << FoundationTag * 1000 +
+            nodeTotal << "  " << FoundationTag * 100000 + nodeTotal +
+            2 << " -mat " << FoundationTag * 100 +
+            6 << "  " << " -dir " << " 1 " << endln;
+    }
 // Foundation element connectivity
     double transfTag;
     transfTag = 10 * FoundationTag;     //geometric transfer tag (for foundation)
     ShallowFoundationOut << endln <<
-        " # geomTransf Linear $transfTag <-jntOffset $dXi $dYi $dXj $dYj>" <<
-        endln;
+        " # geomTransf Linear $transfTag <-jntOffset $dXi $dYi $dXj $dYj>"
+        << endln;
     ShallowFoundationOut << " geomTransf Linear  " << transfTag << endln;
 
 
@@ -783,66 +742,58 @@ Condition 5: nonlinear vertical and lateral springs
     ShallowFoundationOut << endln << " #foundation element connectivity" <<
         endln;
     ShallowFoundationOut << " #element  " << " elasticBeamColumn " <<
-        " $eleTag " << " $iNode " << " $jNode " << " $A " << " $E " << " $Iz "
-        << " $transfTag " << endln;
+        " $eleTag " << " $iNode " << " $jNode " << " $A " << " $E " <<
+        " $Iz " << " $transfTag " << endln;
 
-    for (i = 1; i < nodeTotal; i++)
-      {
+    for (i = 1; i < nodeTotal; i++) {
 //writing Foundation connectivity
-          if (i > ndivEnd && i <= ndivEnd + ndivMid)
-            {
-                ShallowFoundationOut << " element " << "elasticBeamColumn " <<
-                    FoundationTag * 1000 + i << " " << FoundationTag * 1000 +
-                    i << "  " << FoundationTag * 1000 + i +
-                    1 << " " << Aelefoot << " " << Efoot << " " << Ielefoot <<
-                    " " << transfTag << endln;
-            }
-          else
-            {
-                ShallowFoundationOut << " element " << "elasticBeamColumn " <<
-                    FoundationTag * 1000 + i << " " << FoundationTag * 1000 +
-                    i << "  " << FoundationTag * 1000 + i +
-                    1 << " " << Aelefoot << " " << Efoot << " " << Ielefoot <<
-                    " " << transfTag << endln;
-            }
-      }
+        if (i > ndivEnd && i <= ndivEnd + ndivMid) {
+            ShallowFoundationOut << " element " << "elasticBeamColumn " <<
+                FoundationTag * 1000 + i << " " << FoundationTag * 1000 +
+                i << "  " << FoundationTag * 1000 + i +
+                1 << " " << Aelefoot << " " << Efoot << " " << Ielefoot <<
+                " " << transfTag << endln;
+        } else {
+            ShallowFoundationOut << " element " << "elasticBeamColumn " <<
+                FoundationTag * 1000 + i << " " << FoundationTag * 1000 +
+                i << "  " << FoundationTag * 1000 + i +
+                1 << " " << Aelefoot << " " << Efoot << " " << Ielefoot <<
+                " " << transfTag << endln;
+        }
+    }
 
 //writing Spring Fixity
     ShallowFoundationOut << endln << " #fixity " << endln;
-    for (i = 1; i <= nodeTotal; i++)
-      {
-          ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
-              i << " 1 1 1" << endln;
-      }
+    for (i = 1; i <= nodeTotal; i++) {
+        ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
+            i << " 1 1 1" << endln;
+    }
 
-    if (FootingCondition == 3)
-      {
-          ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
-              nodeTotal + 1 << " 1 1 1" << endln;
-      }
+    if (FootingCondition == 3) {
+        ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
+            nodeTotal + 1 << " 1 1 1" << endln;
+    }
 
-    if (FootingCondition == 5)
-      {
-          ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
-              nodeTotal + 1 << " 1 1 1" << endln;
-          ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
-              nodeTotal + 2 << " 1 1 1" << endln;
-      }
-
+    if (FootingCondition == 5) {
+        ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
+            nodeTotal + 1 << " 1 1 1" << endln;
+        ShallowFoundationOut << " fix  " << FoundationTag * 100000 +
+            nodeTotal + 2 << " 1 1 1" << endln;
+    }
 //--------END OF ELEMENT GENERATION
 
 //Setting required nodes and elements 
-    ShallowFoundationOut << endln << " set endFootNodeL_" << FoundationTag <<
-        "   " << FoundationTag * 1000 + 1 << endln;
-    ShallowFoundationOut << " set endFootNodeR_" << FoundationTag << "   " <<
-        FoundationTag * 1000 + nodeTotal << endln;
+    ShallowFoundationOut << endln << " set endFootNodeL_" << FoundationTag
+        << "   " << FoundationTag * 1000 + 1 << endln;
+    ShallowFoundationOut << " set endFootNodeR_" << FoundationTag << "   "
+        << FoundationTag * 1000 + nodeTotal << endln;
     ShallowFoundationOut << " set endSprEleL_" << FoundationTag << "   " <<
         FoundationTag * 100000 + 1 << endln;
     ShallowFoundationOut << " set endSprEleR_" << FoundationTag << "   " <<
         FoundationTag * 100000 + nodeTotal << endln;
     ShallowFoundationOut << " set midSprEle_" << FoundationTag << "   " <<
         FoundationTag * 100000 + midNode << endln;
-    ShallowFoundationOut.close ();
+    ShallowFoundationOut.close();
 
     return;
 }

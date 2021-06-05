@@ -46,8 +46,7 @@
 // #include <elementAPI.h> // cmp
 #include <OPS_Globals.h>
 
-void *
-OPS_NewConcrete01A ()
+void *OPS_NewConcrete01A()
 {
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
@@ -56,57 +55,46 @@ OPS_NewConcrete01A ()
     double dData[7];
     int numData = 1;
 
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid uniaxialMaterial Concrete01 tag" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid uniaxialMaterial Concrete01 tag" <<
+            endln;
+        return 0;
+    }
 
-    numData = OPS_GetNumRemainingInputArgs ();
+    numData = OPS_GetNumRemainingInputArgs();
 
-    if (numData != 4)
-      {
-          opserr << "Invalid #args, want: uniaxialMaterial Concrete01 " <<
-              iData[0] << "fpc? epsc0? fpcu? epscu?\n";
-          return 0;
-      }
+    if (numData != 4) {
+        opserr << "Invalid #args, want: uniaxialMaterial Concrete01 " <<
+            iData[0] << "fpc? epsc0? fpcu? epscu?\n";
+        return 0;
+    }
 
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "Invalid #args, want: uniaxialMaterial Concrete01 " <<
-              iData[0] << "fpc? epsc0? fpcu? epscu?\n";
-          return 0;
-      }
-
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "Invalid #args, want: uniaxialMaterial Concrete01 " <<
+            iData[0] << "fpc? epsc0? fpcu? epscu?\n";
+        return 0;
+    }
 
     // Parsing was successful, allocate the material
     theMaterial =
-        new Concrete01A (iData[0], dData[0], dData[1], dData[2], dData[3]);
+        new Concrete01A(iData[0], dData[0], dData[1], dData[2], dData[3]);
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type Concrete01 Material\n";
-          return 0;
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type Concrete01 Material\n";
+        return 0;
+    }
 
     return theMaterial;
 }
 
 
 
-Concrete01A::Concrete01A (int tag, double FPC, double EPSC0, double FPCU,
-                          double EPSCU):
-UniaxialMaterial (tag, MAT_TAG_Concrete01A),
-fpc (FPC),
-epsc0 (EPSC0),
-fpcu (FPCU),
-epscu (EPSCU),
-CminStrain (0.0),
-CendStrain (0.0),
-Cstrain (0.0),
-Cstress (0.0)
+Concrete01A::Concrete01A(int tag, double FPC, double EPSC0, double FPCU,
+                         double EPSCU):UniaxialMaterial(tag,
+                                                        MAT_TAG_Concrete01A),
+fpc(FPC), epsc0(EPSC0), fpcu(FPCU), epscu(EPSCU), CminStrain(0.0),
+CendStrain(0.0), Cstrain(0.0), Cstress(0.0)
 {
     // Make all concrete parameters negative
     if (fpc > 0.0)
@@ -128,7 +116,7 @@ Cstress (0.0)
     Ttangent = Ec0;
 
     // Set trial values
-    this->revertToLastCommit ();
+    this->revertToLastCommit();
 
     // AddingSensitivity:BEGIN /////////////////////////////////////
     parameterID = 0;
@@ -136,13 +124,13 @@ Cstress (0.0)
     // AddingSensitivity:END //////////////////////////////////////
 }
 
-Concrete01A::Concrete01A ():UniaxialMaterial (0, MAT_TAG_Concrete01A),
-fpc (0.0), epsc0 (0.0), fpcu (0.0), epscu (0.0),
-CminStrain (0.0), CunloadSlope (0.0), CendStrain (0.0),
-Cstrain (0.0), Cstress (0.0)
+Concrete01A::Concrete01A():UniaxialMaterial(0, MAT_TAG_Concrete01A),
+fpc(0.0), epsc0(0.0), fpcu(0.0), epscu(0.0),
+CminStrain(0.0), CunloadSlope(0.0), CendStrain(0.0),
+Cstrain(0.0), Cstress(0.0)
 {
     // Set trial values
-    this->revertToLastCommit ();
+    this->revertToLastCommit();
 
     // AddingSensitivity:BEGIN /////////////////////////////////////
     parameterID = 0;
@@ -150,14 +138,14 @@ Cstrain (0.0), Cstress (0.0)
     // AddingSensitivity:END //////////////////////////////////////
 }
 
-Concrete01A::~Concrete01A ()
+Concrete01A::~Concrete01A()
 {
     // Does nothing
 }
 
 
 int
-Concrete01A::setTrialStrain (double strain, double strainRate)
+ Concrete01A::setTrialStrain(double strain, double strainRate)
 {
     /*
        // Reset trial history variables to last committed state
@@ -173,23 +161,22 @@ Concrete01A::setTrialStrain (double strain, double strainRate)
      */
     double dStrain = strain - Cstrain;
 
-    if (fabs (dStrain) < DBL_EPSILON)
+    if (fabs(dStrain) < DBL_EPSILON)
         return 0;
 
     // Set trial strain
     Tstrain = strain;
-    this->envelope ();
+    this->envelope();
 
     // check for a quick return
-    if (Tstrain > 0.0)
-      {
-          opserr << "here...................................................."
-              << endln;
-          Tstress = 0;
-          Ttangent = 0;
-          return 0;
-      }
-
+    if (Tstrain > 0.0) {
+        opserr <<
+            "here...................................................." <<
+            endln;
+        Tstress = 0;
+        Ttangent = 0;
+        return 0;
+    }
     // Calculate the trial state given the change in strain
     // determineTrialState (dStrain);
 //  TunloadSlope = CunloadSlope;
@@ -226,9 +213,8 @@ Concrete01A::setTrialStrain (double strain, double strainRate)
 
 
 
-int
-Concrete01A::setTrial (double strain, double &stress, double &tangent,
-                       double strainRate)
+int Concrete01A::setTrial(double strain, double &stress, double &tangent,
+                          double strainRate)
 {
     // Reset trial history variables to last committed state
     /*
@@ -250,17 +236,15 @@ Concrete01A::setTrial (double strain, double &stress, double &tangent,
      */
     // Set trial strain
     Tstrain = strain;
-    envelope ();                //Abbas
+    envelope();                 //Abbas
     // check for a quick return
-    if (Tstrain > 0.0)
-      {
-          Tstress = 0;
-          Ttangent = 0;
-          stress = 0;
-          tangent = 0;
-          return 0;
-      }
-
+    if (Tstrain > 0.0) {
+        Tstress = 0;
+        Ttangent = 0;
+        stress = 0;
+        tangent = 0;
+        return 0;
+    }
 
     // Calculate the trial state given the change in strain
 
@@ -303,8 +287,7 @@ Concrete01A::setTrial (double strain, double &stress, double &tangent,
     return 0;
 }
 
-void
-Concrete01A::determineTrialState (double dStrain)
+void Concrete01A::determineTrialState(double dStrain)
 {
     /*
        opserr<<"concrete01: determineTrialState::"<<endln;
@@ -339,8 +322,7 @@ Concrete01A::determineTrialState (double dStrain)
      */
 }
 
-void
-Concrete01A::reload ()
+void Concrete01A::reload()
 {
     // opserr<<"reload.................."<<endln;
 /*  
@@ -369,30 +351,23 @@ Concrete01A::reload ()
   */
 }
 
-void
-Concrete01A::envelope ()
+void Concrete01A::envelope()
 {
-    if (Tstrain > epsc0)
-      {
-          double eta = Tstrain / epsc0;
-          Tstress = fpc * (2 * eta - eta * eta);
-          double Ec0 = 2.0 * fpc / epsc0;
-          Ttangent = Ec0 * (1.0 - eta);
-      }
-    else if (Tstrain > epscu)
-      {
-          Ttangent = (fpc - fpcu) / (epsc0 - epscu);
-          Tstress = fpc + Ttangent * (Tstrain - epsc0);
-      }
-    else
-      {
-          Tstress = fpcu;
-          Ttangent = 0.0;
-      }
+    if (Tstrain > epsc0) {
+        double eta = Tstrain / epsc0;
+        Tstress = fpc * (2 * eta - eta * eta);
+        double Ec0 = 2.0 * fpc / epsc0;
+        Ttangent = Ec0 * (1.0 - eta);
+    } else if (Tstrain > epscu) {
+        Ttangent = (fpc - fpcu) / (epsc0 - epscu);
+        Tstress = fpc + Ttangent * (Tstrain - epsc0);
+    } else {
+        Tstress = fpcu;
+        Ttangent = 0.0;
+    }
 }
 
-void
-Concrete01A::unload ()
+void Concrete01A::unload()
 {
 
     /*
@@ -438,26 +413,22 @@ Concrete01A::unload ()
      */
 }
 
-double
-Concrete01A::getStress ()
+double Concrete01A::getStress()
 {
     return Tstress;
 }
 
-double
-Concrete01A::getStrain ()
+double Concrete01A::getStrain()
 {
     return Tstrain;
 }
 
-double
-Concrete01A::getTangent ()
+double Concrete01A::getTangent()
 {
     return Ttangent;
 }
 
-int
-Concrete01A::commitState ()
+int Concrete01A::commitState()
 {
     // History variables
     //  CminStrain = TminStrain;
@@ -472,8 +443,7 @@ Concrete01A::commitState ()
     return 0;
 }
 
-int
-Concrete01A::revertToLastCommit ()
+int Concrete01A::revertToLastCommit()
 {
     /*
        // Reset trial history variables to last committed state
@@ -489,8 +459,7 @@ Concrete01A::revertToLastCommit ()
     return 0;
 }
 
-int
-Concrete01A::revertToStart ()
+int Concrete01A::revertToStart()
 {
 //      double Ec0 = 2.0*fpc/epsc0;
 /*
@@ -514,11 +483,10 @@ Concrete01A::revertToStart ()
     return 0;
 }
 
-UniaxialMaterial *
-Concrete01A::getCopy ()
+UniaxialMaterial *Concrete01A::getCopy()
 {
-    Concrete01A *theCopy = new Concrete01A (this->getTag (),
-                                            fpc, epsc0, fpcu, epscu);
+    Concrete01A *theCopy = new Concrete01A(this->getTag(),
+                                           fpc, epsc0, fpcu, epscu);
 
     // Converged history variables
 /*
@@ -534,18 +502,17 @@ Concrete01A::getCopy ()
     return theCopy;
 }
 
-int
-Concrete01A::sendSelf (int commitTag, Channel & theChannel)
+int Concrete01A::sendSelf(int commitTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (7);
-    data (0) = this->getTag ();
+    static Vector data(7);
+    data(0) = this->getTag();
 
     // Material properties
-    data (1) = fpc;
-    data (2) = epsc0;
-    data (3) = fpcu;
-    data (4) = epscu;
+    data(1) = fpc;
+    data(2) = epsc0;
+    data(3) = fpcu;
+    data(4) = epscu;
 
     // History variables from last converged state
 //   data(5) = CminStrain;
@@ -553,66 +520,61 @@ Concrete01A::sendSelf (int commitTag, Channel & theChannel)
     //  data(7) = CendStrain;
 
     // State variables from last converged state
-    data (5) = Cstrain;
-    data (6) = Cstress;
-    data (7) = Ctangent;
+    data(5) = Cstrain;
+    data(6) = Cstress;
+    data(7) = Ctangent;
 
     // Data is only sent after convergence, so no trial variables
     // need to be sent through data vector
 
-    res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+    res = theChannel.sendVector(this->getDbTag(), commitTag, data);
     if (res < 0)
         opserr << "Concrete01::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-Concrete01A::recvSelf (int commitTag, Channel & theChannel,
-                       FEM_ObjectBroker & theBroker)
+int Concrete01A::recvSelf(int commitTag, Channel & theChannel,
+                          FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (7);
-    res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+    static Vector data(7);
+    res = theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-    if (res < 0)
-      {
-          opserr << "Concrete01::recvSelf() - failed to receive data\n";
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag (int (data (0)));
+    if (res < 0) {
+        opserr << "Concrete01::recvSelf() - failed to receive data\n";
+        this->setTag(0);
+    } else {
+        this->setTag(int (data(0)));
 
-          // Material properties 
-          fpc = data (1);
-          epsc0 = data (2);
-          fpcu = data (3);
-          epscu = data (4);
+        // Material properties 
+        fpc = data(1);
+        epsc0 = data(2);
+        fpcu = data(3);
+        epscu = data(4);
 
-          // History variables from last converged state
-          //  CminStrain = data(5);
-          //   CunloadSlope = data(6);
-          //   CendStrain = data(7);
+        // History variables from last converged state
+        //  CminStrain = data(5);
+        //   CunloadSlope = data(6);
+        //   CendStrain = data(7);
 
-          // State variables from last converged state
-          //   Cstrain = data(8);
-          //    Cstress = data(9);
-          //   Ctangent = data(10);
+        // State variables from last converged state
+        //   Cstrain = data(8);
+        //    Cstress = data(9);
+        //   Ctangent = data(10);
 
-          // Set trial state variables
-          //   Tstrain = Cstrain;
-          //   Tstress = Cstress;
-          //   Ttangent = Ctangent;
-      }
+        // Set trial state variables
+        //   Tstrain = Cstrain;
+        //   Tstress = Cstress;
+        //   Ttangent = Ctangent;
+    }
 
     return res;
 }
 
-void
-Concrete01A::Print (OPS_Stream & s, int flag)
+void Concrete01A::Print(OPS_Stream & s, int flag)
 {
-    s << "Concrete01, tag: " << this->getTag () << endln;
+    s << "Concrete01, tag: " << this->getTag() << endln;
     s << "  fpc: " << fpc << endln;
     s << "  epsc0: " << epsc0 << endln;
     s << "  fpcu: " << fpcu << endln;
@@ -623,56 +585,47 @@ Concrete01A::Print (OPS_Stream & s, int flag)
 
 
 // AddingSensitivity:BEGIN ///////////////////////////////////
-int
-Concrete01A::setParameter (const char **argv, int argc, Parameter & param)
+int Concrete01A::setParameter(const char **argv, int argc,
+                              Parameter & param)
 {
 
-    if (strcmp (argv[0], "fc") == 0)
-      {                         // Compressive strength
-          param.setValue (fpc);
-          return param.addObject (1, this);
-      }
-    else if (strcmp (argv[0], "epsco") == 0)
-      {                         // Strain at compressive strength
-          param.setValue (epsc0);
-          return param.addObject (2, this);
-      }
-    else if (strcmp (argv[0], "fcu") == 0)
-      {                         // Crushing strength
-          param.setValue (fpcu);
-          return param.addObject (3, this);
-      }
-    else if (strcmp (argv[0], "epscu") == 0)
-      {                         // Strain at crushing strength
-          param.setValue (epscu);
-          return param.addObject (4, this);
-      }
+    if (strcmp(argv[0], "fc") == 0) {   // Compressive strength
+        param.setValue(fpc);
+        return param.addObject(1, this);
+    } else if (strcmp(argv[0], "epsco") == 0) { // Strain at compressive strength
+        param.setValue(epsc0);
+        return param.addObject(2, this);
+    } else if (strcmp(argv[0], "fcu") == 0) {   // Crushing strength
+        param.setValue(fpcu);
+        return param.addObject(3, this);
+    } else if (strcmp(argv[0], "epscu") == 0) { // Strain at crushing strength
+        param.setValue(epscu);
+        return param.addObject(4, this);
+    }
 
     return -1;
 }
 
 
 
-int
-Concrete01A::updateParameter (int parameterID, Information & info)
+int Concrete01A::updateParameter(int parameterID, Information & info)
 {
-    switch (parameterID)
-      {
-      case 1:
-          this->fpc = info.theDouble;
-          break;
-      case 2:
-          this->epsc0 = info.theDouble;
-          break;
-      case 3:
-          this->fpcu = info.theDouble;
-          break;
-      case 4:
-          this->epscu = info.theDouble;
-          break;
-      default:
-          break;
-      }
+    switch (parameterID) {
+    case 1:
+        this->fpc = info.theDouble;
+        break;
+    case 2:
+        this->epsc0 = info.theDouble;
+        break;
+    case 3:
+        this->fpcu = info.theDouble;
+        break;
+    case 4:
+        this->epscu = info.theDouble;
+        break;
+    default:
+        break;
+    }
 
     // Make all concrete parameters negative
     if (fpc > 0.0)
@@ -700,16 +653,14 @@ Concrete01A::updateParameter (int parameterID, Information & info)
 
 
 
-int
-Concrete01A::activateParameter (int passedParameterID)
+int Concrete01A::activateParameter(int passedParameterID)
 {
     parameterID = passedParameterID;
 
     return 0;
 }
 
-double
-Concrete01A::getStressSensitivity (int gradIndex, bool conditional)
+double Concrete01A::getStressSensitivity(int gradIndex, bool conditional)
 {
     // Initialize return value
     double TstressSensitivity = 0.0;
@@ -742,30 +693,21 @@ Concrete01A::getStressSensitivity (int gradIndex, bool conditional)
     double fpcuSensitivity = 0.0;
     double epscuSensitivity = 0.0;
 
-    if (parameterID == 1)
-      {
-          fpcSensitivity = 1.0;
-      }
-    else if (parameterID == 2)
-      {
-          epsc0Sensitivity = 1.0;
-      }
-    else if (parameterID == 3)
-      {
-          fpcuSensitivity = 1.0;
-      }
-    else if (parameterID == 4)
-      {
-          epscuSensitivity = 1.0;
-      }
-
+    if (parameterID == 1) {
+        fpcSensitivity = 1.0;
+    } else if (parameterID == 2) {
+        epsc0Sensitivity = 1.0;
+    } else if (parameterID == 3) {
+        fpcuSensitivity = 1.0;
+    } else if (parameterID == 4) {
+        epscuSensitivity = 1.0;
+    }
     /////////////
-    if (Tstrain > 0)
-      {
-          TstressSensitivity = 0.0;
-          dktdh = 0.0;
-          return 0.0;
-      }
+    if (Tstrain > 0) {
+        TstressSensitivity = 0.0;
+        dktdh = 0.0;
+        return 0.0;
+    }
 ///////////////////
 
     // Strain increment 
@@ -776,49 +718,43 @@ Concrete01A::getStressSensitivity (int gradIndex, bool conditional)
 
     //      if (Tstrain < CminStrain) {                     // loading along the backbone curve
 
-    if (Tstrain > epsc0)
-      {                         //on the parabola
+    if (Tstrain > epsc0) {      //on the parabola
 
-          TstressSensitivity =
-              fpcSensitivity * (2.0 * Tstrain / epsc0 -
-                                (Tstrain / epsc0) * (Tstrain / epsc0)) +
-              fpc *
-              ((2.0 * TstrainSensitivity * epsc0 -
-                2.0 * Tstrain * epsc0Sensitivity) / (epsc0 * epsc0) -
-               2.0 * (Tstrain / epsc0) * (TstrainSensitivity * epsc0 -
-                                          Tstrain * epsc0Sensitivity) /
-               (epsc0 * epsc0));
+        TstressSensitivity =
+            fpcSensitivity * (2.0 * Tstrain / epsc0 -
+                              (Tstrain / epsc0) * (Tstrain / epsc0)) +
+            fpc *
+            ((2.0 * TstrainSensitivity * epsc0 -
+              2.0 * Tstrain * epsc0Sensitivity) / (epsc0 * epsc0) -
+             2.0 * (Tstrain / epsc0) * (TstrainSensitivity * epsc0 -
+                                        Tstrain * epsc0Sensitivity) /
+             (epsc0 * epsc0));
 
-          dktdh =
-              2.0 * ((fpcSensitivity * epsc0 - fpc * epsc0Sensitivity) /
-                     (epsc0 * epsc0)) * (1.0 - Tstrain / epsc0) -
-              2.0 * (fpc / epsc0) * (TstrainSensitivity * epsc0 -
-                                     Tstrain * epsc0Sensitivity) / (epsc0 *
-                                                                    epsc0);
-      }
-    else if (Tstrain > epscu)
-      {                         // on the straight inclined line
+        dktdh =
+            2.0 * ((fpcSensitivity * epsc0 - fpc * epsc0Sensitivity) /
+                   (epsc0 * epsc0)) * (1.0 - Tstrain / epsc0) -
+            2.0 * (fpc / epsc0) * (TstrainSensitivity * epsc0 -
+                                   Tstrain * epsc0Sensitivity) / (epsc0 *
+                                                                  epsc0);
+    } else if (Tstrain > epscu) {       // on the straight inclined line
 //cerr << "ON THE STRAIGHT INCLINED LINE" << endl;
 
-          dktdh = ((fpcSensitivity - fpcuSensitivity)
-                   * (epsc0 - epscu)
-                   - (fpc - fpcu)
-                   * (epsc0Sensitivity - epscuSensitivity))
-              / ((epsc0 - epscu) * (epsc0 - epscu));
+        dktdh = ((fpcSensitivity - fpcuSensitivity)
+                 * (epsc0 - epscu)
+                 - (fpc - fpcu)
+                 * (epsc0Sensitivity - epscuSensitivity))
+            / ((epsc0 - epscu) * (epsc0 - epscu));
 
-          double kt = (fpc - fpcu) / (epsc0 - epscu);
+        double kt = (fpc - fpcu) / (epsc0 - epscu);
 
-          TstressSensitivity = fpcSensitivity
-              + dktdh * (Tstrain - epsc0)
-              + kt * (TstrainSensitivity - epsc0Sensitivity);
-      }
-    else
-      {                         // on the horizontal line
+        TstressSensitivity = fpcSensitivity + dktdh * (Tstrain - epsc0)
+            + kt * (TstrainSensitivity - epsc0Sensitivity);
+    } else {                    // on the horizontal line
 //cerr << "ON THE HORIZONTAL LINES" << endl;
-          TstressSensitivity = fpcuSensitivity;
-          dktdh = 0.0;
+        TstressSensitivity = fpcuSensitivity;
+        dktdh = 0.0;
 
-      }
+    }
     //      }
     /*
        else if (Tstrain < CendStrain) {     // reloading after an unloading that didn't go all the way to zero stress
@@ -856,9 +792,8 @@ Concrete01A::getStressSensitivity (int gradIndex, bool conditional)
 
 
 
-int
-Concrete01A::commitSensitivity (double TstrainSensitivity, int gradIndex,
-                                int numGrads)
+int Concrete01A::commitSensitivity(double TstrainSensitivity,
+                                   int gradIndex, int numGrads)
 {
 
     // Initialize unconditaional stress sensitivity
@@ -872,22 +807,15 @@ Concrete01A::commitSensitivity (double TstrainSensitivity, int gradIndex,
     double fpcuSensitivity = 0.0;
     double epscuSensitivity = 0.0;
 
-    if (parameterID == 1)
-      {
-          fpcSensitivity = 1.0;
-      }
-    else if (parameterID == 2)
-      {
-          epsc0Sensitivity = 1.0;
-      }
-    else if (parameterID == 3)
-      {
-          fpcuSensitivity = 1.0;
-      }
-    else if (parameterID == 4)
-      {
-          epscuSensitivity = 1.0;
-      }
+    if (parameterID == 1) {
+        fpcSensitivity = 1.0;
+    } else if (parameterID == 2) {
+        epsc0Sensitivity = 1.0;
+    } else if (parameterID == 3) {
+        fpcuSensitivity = 1.0;
+    } else if (parameterID == 4) {
+        epscuSensitivity = 1.0;
+    }
     // Pick up sensitivity history variables
 /*
 	double CminStrainSensitivity = 0.0;
@@ -917,48 +845,42 @@ Concrete01A::commitSensitivity (double TstrainSensitivity, int gradIndex,
 
 		if (Tstrain < CminStrain) {			// loading along the backbone curve
 */
-    if (Tstrain > epsc0)
-      {                         //on the parabola
+    if (Tstrain > epsc0) {      //on the parabola
 
-          TstressSensitivity =
-              fpcSensitivity * (2.0 * Tstrain / epsc0 -
-                                (Tstrain / epsc0) * (Tstrain / epsc0)) +
-              fpc *
-              ((2.0 * TstrainSensitivity * epsc0 -
-                2.0 * Tstrain * epsc0Sensitivity) / (epsc0 * epsc0) -
-               2.0 * (Tstrain / epsc0) * (TstrainSensitivity * epsc0 -
-                                          Tstrain * epsc0Sensitivity) /
-               (epsc0 * epsc0));
+        TstressSensitivity =
+            fpcSensitivity * (2.0 * Tstrain / epsc0 -
+                              (Tstrain / epsc0) * (Tstrain / epsc0)) +
+            fpc *
+            ((2.0 * TstrainSensitivity * epsc0 -
+              2.0 * Tstrain * epsc0Sensitivity) / (epsc0 * epsc0) -
+             2.0 * (Tstrain / epsc0) * (TstrainSensitivity * epsc0 -
+                                        Tstrain * epsc0Sensitivity) /
+             (epsc0 * epsc0));
 
-          dktdh =
-              2.0 * ((fpcSensitivity * epsc0 - fpc * epsc0Sensitivity) /
-                     (epsc0 * epsc0)) * (1.0 - Tstrain / epsc0) -
-              2.0 * (fpc / epsc0) * (TstrainSensitivity * epsc0 -
-                                     Tstrain * epsc0Sensitivity) / (epsc0 *
-                                                                    epsc0);
-      }
-    else if (Tstrain > epscu)
-      {                         // on the straight inclined line
+        dktdh =
+            2.0 * ((fpcSensitivity * epsc0 - fpc * epsc0Sensitivity) /
+                   (epsc0 * epsc0)) * (1.0 - Tstrain / epsc0) -
+            2.0 * (fpc / epsc0) * (TstrainSensitivity * epsc0 -
+                                   Tstrain * epsc0Sensitivity) / (epsc0 *
+                                                                  epsc0);
+    } else if (Tstrain > epscu) {       // on the straight inclined line
 
-          dktdh = ((fpcSensitivity - fpcuSensitivity)
-                   * (epsc0 - epscu)
-                   - (fpc - fpcu)
-                   * (epsc0Sensitivity - epscuSensitivity))
-              / ((epsc0 - epscu) * (epsc0 - epscu));
+        dktdh = ((fpcSensitivity - fpcuSensitivity)
+                 * (epsc0 - epscu)
+                 - (fpc - fpcu)
+                 * (epsc0Sensitivity - epscuSensitivity))
+            / ((epsc0 - epscu) * (epsc0 - epscu));
 
-          double kt = (fpc - fpcu) / (epsc0 - epscu);
+        double kt = (fpc - fpcu) / (epsc0 - epscu);
 
-          TstressSensitivity = fpcSensitivity
-              + dktdh * (Tstrain - epsc0)
-              + kt * (TstrainSensitivity - epsc0Sensitivity);
-      }
-    else
-      {                         // on the horizontal line
+        TstressSensitivity = fpcSensitivity + dktdh * (Tstrain - epsc0)
+            + kt * (TstrainSensitivity - epsc0Sensitivity);
+    } else {                    // on the horizontal line
 
-          TstressSensitivity = fpcuSensitivity;
-          dktdh = 0.0;
+        TstressSensitivity = fpcuSensitivity;
+        dktdh = 0.0;
 
-      }
+    }
 /*
  			
 	//	}
@@ -1201,14 +1123,11 @@ Concrete01::commitSensitivity(double TstrainSensitivity, int gradIndex, int numG
 */
 // AddingSensitivity:END /////////////////////////////////////////////
 
-int
-Concrete01A::getVariable (const char *varName, Information & theInfo)
+int Concrete01A::getVariable(const char *varName, Information & theInfo)
 {
-    if (strcmp (varName, "ec") == 0)
-      {
-          theInfo.theDouble = epsc0;
-          return 0;
-      }
-    else
+    if (strcmp(varName, "ec") == 0) {
+        theInfo.theDouble = epsc0;
+        return 0;
+    } else
         return -1;
 }

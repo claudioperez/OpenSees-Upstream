@@ -44,8 +44,7 @@ double ops_Dt = 0;
 Domain *ops_TheActiveDomain = 0;
 Element *ops_TheActiveElement = 0;
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
     //
     // local variables used in test
@@ -64,12 +63,12 @@ main (int argc, char **argv)
     columns[4] = column5;
     int result, result1, result2;
 
-    Vector data1 (numColumns);
-    Vector data2 (numColumns - 1);
+    Vector data1(numColumns);
+    Vector data2(numColumns - 1);
     for (int i = 0; i < numColumns; i++)
-        data1 (i) = i + 1;
+        data1(i) = i + 1;
     for (int i = 0; i < numColumns - 1; i++)
-        data2 (i) = i + 1;
+        data2(i) = i + 1;
 
 
 
@@ -81,7 +80,8 @@ main (int argc, char **argv)
     opserr << " The NEESData class provides implements 2 methods \n";
     opserr <<
         "    createTable() - to create a table, for NEESData this is 2 files,\n";
-    opserr << "                    a <tableName>.out and a <tableName>.xml\n";
+    opserr <<
+        "                    a <tableName>.out and a <tableName>.xml\n";
     opserr <<
         "    insertData()  - to place data into the <tableName>.out file\n\n";
     opserr <<
@@ -93,16 +93,16 @@ main (int argc, char **argv)
 
     opserr << "TEST: Creation of NEESData object\n";
     FEM_ObjectBroker theBroker;
-    Domain *theDomain = new Domain ();
+    Domain *theDomain = new Domain();
 
-    NEESData *theDatabase = new NEESData ("UnitTest", *theDomain, theBroker);
+    NEESData *theDatabase =
+        new NEESData("UnitTest", *theDomain, theBroker);
     if (theDatabase != 0)
         opserr << "PASS: Creation of NEESData object\n\n";
-    else
-      {
-          opserr << "FAIL: Creation of NEESData object\n\n";
-          exit (-1);
-      }
+    else {
+        opserr << "FAIL: Creation of NEESData object\n\n";
+        exit(-1);
+    }
 
 
     //
@@ -121,15 +121,15 @@ main (int argc, char **argv)
 
     opserr <<
         "TEST: createTable() method  with VALID args (2 tables should be created, UnitTest1 and UnitTest2)\n";
-    result1 = theDatabase->createTable ("UnitTest1", numColumns, columns);
-    result2 = theDatabase->createTable ("UnitTest2", numColumns - 1, columns);
+    result1 = theDatabase->createTable("UnitTest1", numColumns, columns);
+    result2 =
+        theDatabase->createTable("UnitTest2", numColumns - 1, columns);
 
     if (result1 == 0 && result2 == 0)
         opserr << "PASS: createTable() method  with VALID args\n\n";
-    else
-      {
-          opserr << "FAIL: createTable() method  with VALID args\n\n";
-      }
+    else {
+        opserr << "FAIL: createTable() method  with VALID args\n\n";
+    }
 
     //
     //  a number of tests to test createTable() method will fail if invalid args passed
@@ -137,33 +137,32 @@ main (int argc, char **argv)
     //  
 
     opserr << "TEST: createTable() method with bad fileName\n";
-    result = theDatabase->createTable ("/UnitTest", 3, columns);
+    result = theDatabase->createTable("/UnitTest", 3, columns);
     if (result != 0)
         opserr << "PASS: createTable() method with bad fileName\n\n";
-    else
-      {
-          opserr << "FAIL: createTable() method with bad fileName\n\n";
-          opserr <<
-              " *** ARE YOU RUNNING THIS AS ROOOT -- YOU SHOULDN'T BE, su AND TRY AGAIN *** \n\n";
-      }
+    else {
+        opserr << "FAIL: createTable() method with bad fileName\n\n";
+        opserr <<
+            " *** ARE YOU RUNNING THIS AS ROOOT -- YOU SHOULDN'T BE, su AND TRY AGAIN *** \n\n";
+    }
 
     opserr << "TEST: createTable() method with duplicate fileName\n";
-    result = theDatabase->createTable ("UnitTest1", 3, columns);
+    result = theDatabase->createTable("UnitTest1", 3, columns);
     if (result != 0)
-        opserr << "PASS: createTable() method with duplicate tableName\n\n";
-    else
-      {
-          opserr << "FAIL: createTable() method with duplicate tableName\n\n";
-      }
+        opserr <<
+            "PASS: createTable() method with duplicate tableName\n\n";
+    else {
+        opserr <<
+            "FAIL: createTable() method with duplicate tableName\n\n";
+    }
 
     opserr << "TEST: createTable() method with 0 columns\n";
-    result = theDatabase->createTable ("UnitTestFail", 0, columns);
+    result = theDatabase->createTable("UnitTestFail", 0, columns);
     if (result != 0)
         opserr << "PASS: createTable() method with 0 columns\n\n";
-    else
-      {
-          opserr << "FAIL: createTable() method with 0 columns\n\n";
-      }
+    else {
+        opserr << "FAIL: createTable() method with 0 columns\n\n";
+    }
 
 
     //
@@ -182,52 +181,51 @@ main (int argc, char **argv)
 
     opserr <<
         "TEST: call insertData() method  with VALID args 3 times on both UNitTest1 and UnitTest2\n";
-    for (int i = 0; i < 3; i++)
-      {
-          result1 = theDatabase->insertData ("UnitTest1", columns, 1, data1);
-          result2 = theDatabase->insertData ("UnitTest2", columns, 1, data2);
-          data1 += numColumns;
-          data2 += numColumns - 1;
-      }
+    for (int i = 0; i < 3; i++) {
+        result1 = theDatabase->insertData("UnitTest1", columns, 1, data1);
+        result2 = theDatabase->insertData("UnitTest2", columns, 1, data2);
+        data1 += numColumns;
+        data2 += numColumns - 1;
+    }
 
     // check the files exist and of correct size, UnitTest1.out should have 3 lines.
-    if (result1 == 0 && result2 == 0)
-      {
+    if (result1 == 0 && result2 == 0) {
 
-      }
+    }
     if (result1 == 0 && result2 == 0)
         opserr << "PASS: insertData() method  with VALID args\n\n";
-    else
-      {
-          opserr << "FAIL: insertData() method  with VALID args\n\n";
-      }
+    else {
+        opserr << "FAIL: insertData() method  with VALID args\n\n";
+    }
 
     //
     //  a number of tests to test the insert data will fail if data invalied
     //     expected result: all should retuen != 0 and <tableName>.out should be unmodified
     //
 
-    opserr << "TEST: call insertData() method with incorrect vector size\n";
-    result = theDatabase->insertData ("UnitTest2", columns, 1, data1);
+    opserr <<
+        "TEST: call insertData() method with incorrect vector size\n";
+    result = theDatabase->insertData("UnitTest2", columns, 1, data1);
 
     if (result != 0)
-        opserr << "PASS: insertData() method  with incorrect vector size\n\n";
-    else
-      {
-          opserr <<
-              "FAIL: insertData() method  with incorrect vector size\n\n";
-      }
+        opserr <<
+            "PASS: insertData() method  with incorrect vector size\n\n";
+    else {
+        opserr <<
+            "FAIL: insertData() method  with incorrect vector size\n\n";
+    }
 
-    opserr << "TEST: call insertData() method to a table not yet created\n";
-    result = theDatabase->insertData ("UnitTest", columns, 1, data1);
+    opserr <<
+        "TEST: call insertData() method to a table not yet created\n";
+    result = theDatabase->insertData("UnitTest", columns, 1, data1);
 
     if (result != 0)
-        opserr << "PASS: insertData() method to a table not yet created\n\n";
-    else
-      {
-          opserr <<
-              "FAIL: insertData() method to a table not yet created\n\n";
-      }
+        opserr <<
+            "PASS: insertData() method to a table not yet created\n\n";
+    else {
+        opserr <<
+            "FAIL: insertData() method to a table not yet created\n\n";
+    }
 
     //
     //  finally test we can destroy a NEESData object.
@@ -238,5 +236,5 @@ main (int argc, char **argv)
 
     // if get to here without a segmentation fault destructor passes
     opserr << "PASS: Destruction of NEESData object\n\n";
-    exit (0);
+    exit(0);
 }

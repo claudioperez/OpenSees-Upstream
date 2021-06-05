@@ -32,11 +32,11 @@
 #include <stdlib.h>
 #include <FedeasHardeningMaterial.h>
 
-FedeasHardeningMaterial::FedeasHardeningMaterial (int tag,
-                                                  double E, double sigmaY,
-                                                  double Hiso, double Hkin):
+FedeasHardeningMaterial::FedeasHardeningMaterial(int tag,
+                                                 double E, double sigmaY,
+                                                 double Hiso, double Hkin):
 // 3 history variables and 4 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasHardening, 3, 4)
+FedeasMaterial(tag, MAT_TAG_FedeasHardening, 3, 4)
 {
     // Fill in material parameters
     data[0] = E;
@@ -48,42 +48,42 @@ FedeasMaterial (tag, MAT_TAG_FedeasHardening, 3, 4)
     tangent = tangentP;
 }
 
-FedeasHardeningMaterial::FedeasHardeningMaterial (int tag, const Vector & d):
+FedeasHardeningMaterial::FedeasHardeningMaterial(int tag,
+                                                 const Vector & d):
 // 3 history variables and 4 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasHardening, 3, 4)
+FedeasMaterial(tag, MAT_TAG_FedeasHardening, 3, 4)
 {
-    if (d.Size () != numData)
-      {
-          opserr <<
-              "FedeasHardeningMaterial::FedeasHardeningMaterial -- not enough input arguments\n";
-          exit (-1);
-      }
+    if (d.Size() != numData) {
+        opserr <<
+            "FedeasHardeningMaterial::FedeasHardeningMaterial -- not enough input arguments\n";
+        exit(-1);
+    }
 
     for (int i = 0; i < numData; i++)
-        data[i] = d (i);
+        data[i] = d(i);
 
     tangentP = data[0];
     tangent = tangentP;
 }
 
-FedeasHardeningMaterial::FedeasHardeningMaterial (void):
-FedeasMaterial (0, MAT_TAG_FedeasHardening, 3, 4)
+FedeasHardeningMaterial::FedeasHardeningMaterial(void):FedeasMaterial(0,
+                                                                      MAT_TAG_FedeasHardening,
+                                                                      3, 4)
 {
     // Does nothing
 }
 
-FedeasHardeningMaterial::~FedeasHardeningMaterial (void)
+FedeasHardeningMaterial::~FedeasHardeningMaterial(void)
 {
     // Does nothing
 }
 
-UniaxialMaterial *
-FedeasHardeningMaterial::getCopy (void)
+UniaxialMaterial *FedeasHardeningMaterial::getCopy(void)
 {
-    Vector d (data, numData);
+    Vector d(data, numData);
 
     FedeasHardeningMaterial *theCopy =
-        new FedeasHardeningMaterial (this->getTag (), d);
+        new FedeasHardeningMaterial(this->getTag(), d);
 
     // Copy history variables
     for (int i = 0; i < 2 * numHstv; i++)
@@ -100,8 +100,7 @@ FedeasHardeningMaterial::getCopy (void)
     return theCopy;
 }
 
-double
-FedeasHardeningMaterial::getInitialTangent (void)
+double FedeasHardeningMaterial::getInitialTangent(void)
 {
     //return E;
     return data[0];

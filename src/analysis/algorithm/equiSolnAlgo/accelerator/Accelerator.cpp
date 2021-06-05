@@ -30,19 +30,18 @@
 
 #include <Accelerator.h>
 
-Accelerator::Accelerator (int classTag):
-MovableObject (classTag)
+Accelerator::Accelerator(int classTag):MovableObject(classTag)
 {
 
 }
 
-Accelerator::~Accelerator ()
+Accelerator::~Accelerator()
 {
 
 }
 
 int
-Accelerator::updateTangent (IncrementalIntegrator & theIntegrator)
+ Accelerator::updateTangent(IncrementalIntegrator & theIntegrator)
 {
     return 0;
 }

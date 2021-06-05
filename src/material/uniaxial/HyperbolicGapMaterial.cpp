@@ -61,99 +61,88 @@
 #ifdef OPS_API_COMMANDLINE
 void *
 #ifdef OPS_API_COMMANDLINE
-OPS_HyperbolicGapMaterial ()
+OPS_HyperbolicGapMaterial()
 {
-    int numdata = OPS_GetNumRemainingInputArgs ();
-    if (numdata < 6)
-      {
-          opserr << "WARNING: Insufficient arguments\n";
-          return 0;
-      }
+    int numdata = OPS_GetNumRemainingInputArgs();
+    if (numdata < 6) {
+        opserr << "WARNING: Insufficient arguments\n";
+        return 0;
+    }
 
     int tag;
     numdata = 1;
-    if (OPS_GetIntInput (&numdata, &tag) < 0)
-      {
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, &tag) < 0) {
+        return 0;
+    }
 
     double data[5];
     numdata = 5;
-    if (OPS_GetDoubleInput (&numdata, data))
-      {
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data)) {
+        return 0;
+    }
 
     UniaxialMaterial *mat =
-        new HyperbolicGapMaterial (tag, data[0], data[1], data[2], data[3],
-                                   data[4]);
-    if (mat == 0)
-      {
-          opserr <<
-              "WARNING: failed to create Hyperbolicgapmaterial material\n";
-          return 0;
-      }
+        new HyperbolicGapMaterial(tag, data[0], data[1], data[2], data[3],
+                                  data[4]);
+    if (mat == 0) {
+        opserr <<
+            "WARNING: failed to create Hyperbolicgapmaterial material\n";
+        return 0;
+    }
 
     return mat;
 }
 #endif
 #endif
 
-HyperbolicGapMaterial::HyperbolicGapMaterial (int tag, double kmax,
-                                              double kur, double rf,
-                                              double fult, double gap0):
-UniaxialMaterial (tag, MAT_TAG_HyperbolicGapMaterial),
-Kmax (kmax),
-Kur (kur),
-Rf (rf),
-Fult (fult),
-gap (gap0)
+HyperbolicGapMaterial::HyperbolicGapMaterial(int tag, double kmax,
+                                             double kur, double rf,
+                                             double fult,
+                                             double
+                                             gap0):UniaxialMaterial(tag,
+                                                                    MAT_TAG_HyperbolicGapMaterial),
+Kmax(kmax), Kur(kur), Rf(rf), Fult(fult), gap(gap0)
 {
-    if (gap >= 0)
-      {
-          opserr <<
-              "HyperbolicGapMaterial::HyperbolicGapMaterial -- Initial gap size must be negative for compression-only material\n";
-          exit (-1);
-      }
-    if (Fult > 0)
-      {
-          opserr <<
-              "HyperbolicGapMaterial::HyperbolicGapMaterial -- Fult must be negative for compression-only material\n";
-          exit (-1);
-      }
-    if (Kmax == 0.0)
-      {
-          opserr <<
-              "HyperbolicGapMaterial::HyperbolicGapMaterial -- Kmax is zero, continuing with Kmax = Fult/0.002\n";
-          if (Fult != 0.0)
-              Kmax = fabs (Fult) / 0.002;
-          else
-            {
-                opserr <<
-                    "HyperbolicGapMaterial::HyperbolicGapMaterial -- Kmax and Fult are zero\n";
-                exit (-1);
-            }
-      }
-    else
+    if (gap >= 0) {
+        opserr <<
+            "HyperbolicGapMaterial::HyperbolicGapMaterial -- Initial gap size must be negative for compression-only material\n";
+        exit(-1);
+    }
+    if (Fult > 0) {
+        opserr <<
+            "HyperbolicGapMaterial::HyperbolicGapMaterial -- Fult must be negative for compression-only material\n";
+        exit(-1);
+    }
+    if (Kmax == 0.0) {
+        opserr <<
+            "HyperbolicGapMaterial::HyperbolicGapMaterial -- Kmax is zero, continuing with Kmax = Fult/0.002\n";
+        if (Fult != 0.0)
+            Kmax = fabs(Fult) / 0.002;
+        else {
+            opserr <<
+                "HyperbolicGapMaterial::HyperbolicGapMaterial -- Kmax and Fult are zero\n";
+            exit(-1);
+        }
+    } else
         // Initialize history variables
-        this->revertToStart ();
-    this->revertToLastCommit ();
+        this->revertToStart();
+    this->revertToLastCommit();
 }
 
-HyperbolicGapMaterial::HyperbolicGapMaterial ():UniaxialMaterial (0, MAT_TAG_HyperbolicGapMaterial),
-Kmax (0.0), Kur (0.0), Rf (0.0), Fult (0.0),
-gap (0.0)
+HyperbolicGapMaterial::HyperbolicGapMaterial():UniaxialMaterial(0, MAT_TAG_HyperbolicGapMaterial),
+Kmax(0.0), Kur(0.0), Rf(0.0), Fult(0.0),
+gap(0.0)
 {
     // does nothing
 }
 
-HyperbolicGapMaterial::~HyperbolicGapMaterial ()
+HyperbolicGapMaterial::~HyperbolicGapMaterial()
 {
     // does nothing
 }
 
 int
-HyperbolicGapMaterial::setTrialStrain (double strain, double strainRate)
+ HyperbolicGapMaterial::setTrialStrain(double strain, double strainRate)
 {
     // set the trial strain
     Tstrain = strain;
@@ -162,74 +151,62 @@ HyperbolicGapMaterial::setTrialStrain (double strain, double strainRate)
     dStrain = Tstrain - Cstrain;
 
     // loading on the envelope curve
-    if (Tstrain <= CstrainMin)
-      {
-          TstrainMin = Tstrain;
-          Ttangent = negEnvTangent (Tstrain);
-          Tstress = negEnvStress (Tstrain);
-      }
-    else
-      {
-          // reloading
-          if (dStrain < 0.0)
-              negativeIncrement (dStrain);
-          // unloading
-          else if (dStrain > 0.0)
-              positiveIncrement (dStrain);
-      }
+    if (Tstrain <= CstrainMin) {
+        TstrainMin = Tstrain;
+        Ttangent = negEnvTangent(Tstrain);
+        Tstress = negEnvStress(Tstrain);
+    } else {
+        // reloading
+        if (dStrain < 0.0)
+            negativeIncrement(dStrain);
+        // unloading
+        else if (dStrain > 0.0)
+            positiveIncrement(dStrain);
+    }
     return 0;
 }
 
-double
-HyperbolicGapMaterial::getStrain (void)
+double HyperbolicGapMaterial::getStrain(void)
 {
     return Tstrain;
 }
 
-double
-HyperbolicGapMaterial::getStress (void)
+double HyperbolicGapMaterial::getStress(void)
 {
     return Tstress;
 }
 
-double
-HyperbolicGapMaterial::getTangent (void)
+double HyperbolicGapMaterial::getTangent(void)
 {
     return Ttangent;
 }
 
-double
-HyperbolicGapMaterial::getInitialTangent (void)
+double HyperbolicGapMaterial::getInitialTangent(void)
 {
     return Kmax;
 }
 
-void
-HyperbolicGapMaterial::positiveIncrement (double dStrain)
+void HyperbolicGapMaterial::positiveIncrement(double dStrain)
 {
     // store strain and stress at which unloading first takes place
-    if (TstrainMin == Cstrain)
-      {
-          TonsetOfUnloadingStrain = TstrainMin;
-          TonsetOfUnloadingStress = Cstress;
-          TonsetOfReloadingStrain =
-              TstrainMin - TonsetOfUnloadingStress / Kur;
-      }
-
+    if (TstrainMin == Cstrain) {
+        TonsetOfUnloadingStrain = TstrainMin;
+        TonsetOfUnloadingStress = Cstress;
+        TonsetOfReloadingStrain =
+            TstrainMin - TonsetOfUnloadingStress / Kur;
+    }
     // unloading
     Tstress = Cstress + Kur * dStrain;
     Ttangent = Kur;
 
     // check whether zero stress has been achieved
-    if (Tstress > 0)
-      {
-          Tstress = 0.0;
-          Ttangent = 0.0;
-      }
+    if (Tstress > 0) {
+        Tstress = 0.0;
+        Ttangent = 0.0;
+    }
 }
 
-void
-HyperbolicGapMaterial::negativeIncrement (double dStrain)
+void HyperbolicGapMaterial::negativeIncrement(double dStrain)
 {
     // reloading
     Tstress = Cstress + Kur * dStrain;
@@ -237,16 +214,14 @@ HyperbolicGapMaterial::negativeIncrement (double dStrain)
         Tstress = Kur * (Tstrain - TonsetOfReloadingStrain);
     Ttangent = Kur;
 
-    if (Tstrain > TonsetOfReloadingStrain)
-      {
-          Tstress = 0.0;
-          Ttangent = 0.0;
-      }
+    if (Tstrain > TonsetOfReloadingStrain) {
+        Tstress = 0.0;
+        Ttangent = 0.0;
+    }
 
 }
 
-int
-HyperbolicGapMaterial::commitState (void)
+int HyperbolicGapMaterial::commitState(void)
 {
     ConsetOfUnloadingStrain = TonsetOfUnloadingStrain;
     ConsetOfReloadingStrain = TonsetOfReloadingStrain;
@@ -256,8 +231,7 @@ HyperbolicGapMaterial::commitState (void)
     return 0;
 }
 
-int
-HyperbolicGapMaterial::revertToLastCommit (void)
+int HyperbolicGapMaterial::revertToLastCommit(void)
 {
     TonsetOfUnloadingStrain = ConsetOfUnloadingStrain;
     TonsetOfReloadingStrain = ConsetOfReloadingStrain;
@@ -268,8 +242,7 @@ HyperbolicGapMaterial::revertToLastCommit (void)
     return 0;
 }
 
-int
-HyperbolicGapMaterial::revertToStart (void)
+int HyperbolicGapMaterial::revertToStart(void)
 {
     Cstrain = 0.0;
     Cstress = 0.0;
@@ -285,11 +258,11 @@ HyperbolicGapMaterial::revertToStart (void)
     return 0;
 }
 
-UniaxialMaterial *
-HyperbolicGapMaterial::getCopy (void)
+UniaxialMaterial *HyperbolicGapMaterial::getCopy(void)
 {
     HyperbolicGapMaterial *theCopy =
-        new HyperbolicGapMaterial (this->getTag (), Kmax, Kur, Rf, Fult, gap);
+        new HyperbolicGapMaterial(this->getTag(), Kmax, Kur, Rf, Fult,
+                                  gap);
 
     theCopy->ConsetOfUnloadingStrain = ConsetOfUnloadingStrain;
     theCopy->ConsetOfReloadingStrain = ConsetOfReloadingStrain;
@@ -303,108 +276,103 @@ HyperbolicGapMaterial::getCopy (void)
     return theCopy;
 }
 
-int
-HyperbolicGapMaterial::sendSelf (int cTag, Channel & theChannel)
+int HyperbolicGapMaterial::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (15);
-    data (0) = this->getTag ();
-    data (1) = Cstrain;
-    data (2) = Kmax;
-    data (3) = Kur;
-    data (4) = Rf;
-    data (5) = Fult;
-    data (6) = gap;
-    data (7) = ConsetOfUnloadingStrain;
-    data (8) = ConsetOfReloadingStrain;
-    data (9) = TonsetOfReloadingStress;
-    data (10) = Cstress;
-    data (11) = Cstrain;
-    data (12) = Ttangent;
-    data (13) = TstrainMin;
-    data (14) = CstrainMin;
+    static Vector data(15);
+    data(0) = this->getTag();
+    data(1) = Cstrain;
+    data(2) = Kmax;
+    data(3) = Kur;
+    data(4) = Rf;
+    data(5) = Fult;
+    data(6) = gap;
+    data(7) = ConsetOfUnloadingStrain;
+    data(8) = ConsetOfReloadingStrain;
+    data(9) = TonsetOfReloadingStress;
+    data(10) = Cstress;
+    data(11) = Cstrain;
+    data(12) = Ttangent;
+    data(13) = TstrainMin;
+    data(14) = CstrainMin;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
-        opserr << "HyperbolicGapMaterial::sendSelf() - failed to send data\n";
+        opserr <<
+            "HyperbolicGapMaterial::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-HyperbolicGapMaterial::recvSelf (int cTag, Channel & theChannel,
-                                 FEM_ObjectBroker & theBroker)
+int HyperbolicGapMaterial::recvSelf(int cTag, Channel & theChannel,
+                                    FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (15);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(15);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
     if (res < 0)
-        opserr << "HyperbolicGapMaterial::recvSelf() - failed to recv data\n";
-    else
-      {
-          this->setTag ((int) data (0));
-          Cstrain = data (1);
-          Tstrain = Cstrain;
-          Kmax = data (2);
-          Kur = data (3);
-          Rf = data (4);
-          Fult = data (5);
-          gap = data (6);
-          ConsetOfUnloadingStrain = data (7);
-          ConsetOfReloadingStrain = data (8);
-          TonsetOfReloadingStress = data (9);
-          Cstress = data (10);
-          Cstrain = data (11);
-          Ttangent = data (12);
-          TstrainMin = data (13);
-          CstrainMin = data (14);
+        opserr <<
+            "HyperbolicGapMaterial::recvSelf() - failed to recv data\n";
+    else {
+        this->setTag((int) data(0));
+        Cstrain = data(1);
+        Tstrain = Cstrain;
+        Kmax = data(2);
+        Kur = data(3);
+        Rf = data(4);
+        Fult = data(5);
+        gap = data(6);
+        ConsetOfUnloadingStrain = data(7);
+        ConsetOfReloadingStrain = data(8);
+        TonsetOfReloadingStress = data(9);
+        Cstress = data(10);
+        Cstrain = data(11);
+        Ttangent = data(12);
+        TstrainMin = data(13);
+        CstrainMin = data(14);
 
-      }
+    }
 
     return res;
 }
 
-void
-HyperbolicGapMaterial::Print (OPS_Stream & s, int flag)
+void HyperbolicGapMaterial::Print(OPS_Stream & s, int flag)
 {
-    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL)
-      {
-          s << "HyperbolicGapMaterial tag: " << this->getTag () << endln;
-          s << "  Kmax: " << Kmax << endln;
-          s << "  Kur: " << Kur << endln;
-          s << "  Rf: " << Rf << endln;
-          s << "  Fult: " << Fult << endln;
-          s << "  initial gap: " << gap << endln;
-      }
+    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL) {
+        s << "HyperbolicGapMaterial tag: " << this->getTag() << endln;
+        s << "  Kmax: " << Kmax << endln;
+        s << "  Kur: " << Kur << endln;
+        s << "  Rf: " << Rf << endln;
+        s << "  Fult: " << Fult << endln;
+        s << "  initial gap: " << gap << endln;
+    }
 
-    if (flag == OPS_PRINT_PRINTMODEL_JSON)
-      {
-          s << "\t\t\t{";
-          s << "\"name\": \"" << this->getTag () << "\", ";
-          s << "\"type\": \"HyperbolicGapMaterial\", ";
-          s << "\"Kmax\": " << Kmax << ", ";
-          s << "\"Kur\": " << Kur << ", ";
-          s << "\"Rf\": " << Rf << ", ";
-          s << "\"Fult\": " << Fult << ", ";
-          s << "\"gap\": " << gap << "}";
-      }
+    if (flag == OPS_PRINT_PRINTMODEL_JSON) {
+        s << "\t\t\t{";
+        s << "\"name\": \"" << this->getTag() << "\", ";
+        s << "\"type\": \"HyperbolicGapMaterial\", ";
+        s << "\"Kmax\": " << Kmax << ", ";
+        s << "\"Kur\": " << Kur << ", ";
+        s << "\"Rf\": " << Rf << ", ";
+        s << "\"Fult\": " << Fult << ", ";
+        s << "\"gap\": " << gap << "}";
+    }
 }
 
-double
-HyperbolicGapMaterial::negEnvStress (double strain)
+double HyperbolicGapMaterial::negEnvStress(double strain)
 {
     if (strain >= gap)
         return 0.0;
     else
-        return (strain - gap) / ((1 / Kmax) + (Rf * (strain - gap) / Fult));
+        return (strain - gap) / ((1 / Kmax) +
+                                 (Rf * (strain - gap) / Fult));
 }
 
-double
-HyperbolicGapMaterial::negEnvTangent (double strain)
+double HyperbolicGapMaterial::negEnvTangent(double strain)
 {
     if (strain > gap)
         return 0.0;
     else
         return 1 / (Kmax *
-                    pow (((1 / Kmax) + (Rf * (strain - gap) / Fult)), 2));
+                    pow(((1 / Kmax) + (Rf * (strain - gap) / Fult)), 2));
 }

@@ -37,27 +37,25 @@
 #include <Load.h>
 
 
-Load::Load (int tag, int clasTag):
-DomainComponent (tag, clasTag),
-loadPatternTag (-1)
+Load::Load(int tag, int clasTag):DomainComponent(tag, clasTag),
+loadPatternTag(-1)
 {
     // does nothing
 }
 
 
-Load::~Load ()
+Load::~Load()
 {
     // does nothing
 }
 
 void
-Load::setLoadPatternTag (int tag)
+ Load::setLoadPatternTag(int tag)
 {
     loadPatternTag = tag;
 }
 
-int
-Load::getLoadPatternTag (void) const
+int Load::getLoadPatternTag(void) const
 {
     return loadPatternTag;
 }

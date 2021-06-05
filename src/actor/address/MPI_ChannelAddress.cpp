@@ -35,23 +35,21 @@
 
 #include <MPI_ChannelAddress.h>
 
-MPI_ChannelAddress::MPI_ChannelAddress (int other):
-ChannelAddress (MPI_TYPE),
-otherTag (other),
-otherComm (MPI_COMM_WORLD)
+MPI_ChannelAddress::MPI_ChannelAddress(int other):ChannelAddress(MPI_TYPE),
+otherTag(other), otherComm(MPI_COMM_WORLD)
 {
 
 }
 
-MPI_ChannelAddress::MPI_ChannelAddress (int other, MPI_Comm otherC):
-ChannelAddress (MPI_TYPE),
-otherTag (other),
-otherComm (otherC)
+MPI_ChannelAddress::MPI_ChannelAddress(int other,
+                                       MPI_Comm
+                                       otherC):ChannelAddress(MPI_TYPE),
+otherTag(other), otherComm(otherC)
 {
 
 }
 
-MPI_ChannelAddress::~MPI_ChannelAddress ()
+MPI_ChannelAddress::~MPI_ChannelAddress()
 {
 
 }

@@ -41,75 +41,68 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_DuctilityStiffnessDegradation (void)
+void *OPS_DuctilityStiffnessDegradation(void)
 {
     StiffnessDegradation *theDegradation = 0;
 
-    if (OPS_GetNumRemainingInputArgs () < 3)
-      {
-          opserr <<
-              "Invalid number of args, want: stiffnessDegradation Ductility tag? alpha? beta?"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetNumRemainingInputArgs() < 3) {
+        opserr <<
+            "Invalid number of args, want: stiffnessDegradation Ductility tag? alpha? beta?"
+            << endln;
+        return 0;
+    }
 
     int iData[1];
     double dData[2];
 
     int numData = 1;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid tag for stiffnessDegradation Ductility"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid tag for stiffnessDegradation Ductility"
+            << endln;
+        return 0;
+    }
 
     numData = 2;
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "WARNING invalid data for stiffnessDegradation Ductility"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "WARNING invalid data for stiffnessDegradation Ductility"
+            << endln;
+        return 0;
+    }
 
     theDegradation =
-        new DuctilityStiffnessDegradation (iData[0], dData[0], dData[1]);
-    if (theDegradation == 0)
-      {
-          opserr <<
-              "WARNING could not create DuctilityStiffnessDegradation\n";
-          return 0;
-      }
+        new DuctilityStiffnessDegradation(iData[0], dData[0], dData[1]);
+    if (theDegradation == 0) {
+        opserr <<
+            "WARNING could not create DuctilityStiffnessDegradation\n";
+        return 0;
+    }
 
     return theDegradation;
 }
 #endif
 
 DuctilityStiffnessDegradation::DuctilityStiffnessDegradation
-    (int tag, double a, double b):
-StiffnessDegradation (tag, DEG_TAG_STIFF_Ductility),
-isNegative (false), alpha (a),
-beta (b)
+    (int tag, double a, double b):StiffnessDegradation(tag,
+                                                       DEG_TAG_STIFF_Ductility),
+isNegative(false), alpha(a), beta(b)
 {
-    this->revertToStart ();
-    this->revertToLastCommit ();
+    this->revertToStart();
+    this->revertToLastCommit();
 }
 
-DuctilityStiffnessDegradation::DuctilityStiffnessDegradation ():
-StiffnessDegradation (0, DEG_TAG_STIFF_Ductility),
-isNegative (false), alpha (0.0), beta (0.0), Cductility (0.0)
-{
-
-}
-
-DuctilityStiffnessDegradation::~DuctilityStiffnessDegradation ()
+DuctilityStiffnessDegradation::DuctilityStiffnessDegradation():
+StiffnessDegradation(0, DEG_TAG_STIFF_Ductility),
+isNegative(false), alpha(0.0), beta(0.0), Cductility(0.0)
 {
 
 }
 
-const char *
-DuctilityStiffnessDegradation::getMeasure (void)
+DuctilityStiffnessDegradation::~DuctilityStiffnessDegradation()
+{
+
+}
+
+const char *DuctilityStiffnessDegradation::getMeasure(void)
 {
     if (!isNegative)
         return "negDuctility";
@@ -117,8 +110,7 @@ DuctilityStiffnessDegradation::getMeasure (void)
         return "posDuctility";
 }
 
-int
-DuctilityStiffnessDegradation::setTrialMeasure (double measure)
+int DuctilityStiffnessDegradation::setTrialMeasure(double measure)
 {
     Tductility = measure;
 
@@ -128,73 +120,66 @@ DuctilityStiffnessDegradation::setTrialMeasure (double measure)
     return 0;
 }
 
-double
-DuctilityStiffnessDegradation::getValue (void)
+double DuctilityStiffnessDegradation::getValue(void)
 {
-    if (Tductility < Cductility)
-      {
-          Tductility = Cductility;
-          return 1.0;
-      }
+    if (Tductility < Cductility) {
+        Tductility = Cductility;
+        return 1.0;
+    }
     if (Tductility > beta)
         return 1.0 + alpha * (Tductility - beta);
     else
         return 1.0;
 }
 
-void
-DuctilityStiffnessDegradation::setNegative (bool flag)
+void DuctilityStiffnessDegradation::setNegative(bool flag)
 {
     isNegative = flag;
 }
 
-int
-DuctilityStiffnessDegradation::commitState (void)
+int DuctilityStiffnessDegradation::commitState(void)
 {
     Cductility = Tductility;
 
     return 0;
 }
 
-int
-DuctilityStiffnessDegradation::revertToLastCommit (void)
+int DuctilityStiffnessDegradation::revertToLastCommit(void)
 {
     Tductility = Cductility;
 
     return 0;
 }
 
-int
-DuctilityStiffnessDegradation::revertToStart (void)
+int DuctilityStiffnessDegradation::revertToStart(void)
 {
     Cductility = 0.0;
 
     return 0;
 }
 
-StiffnessDegradation *
-DuctilityStiffnessDegradation::getCopy (void)
+StiffnessDegradation *DuctilityStiffnessDegradation::getCopy(void)
 {
     DuctilityStiffnessDegradation *theCopy =
-        new DuctilityStiffnessDegradation (this->getTag (), alpha, beta);
+        new DuctilityStiffnessDegradation(this->getTag(), alpha, beta);
 
     theCopy->Cductility = Cductility;
 
     return theCopy;
 }
 
-int
-DuctilityStiffnessDegradation::sendSelf (int commitTag, Channel & theChannel)
+int DuctilityStiffnessDegradation::sendSelf(int commitTag,
+                                            Channel & theChannel)
 {
-    static Vector data (5);
+    static Vector data(5);
 
-    data (0) = this->getTag ();
-    data (1) = alpha;
-    data (2) = beta;
-    data (3) = Cductility;
-    data (4) = (isNegative) ? -1.0 : 1.0;
+    data(0) = this->getTag();
+    data(1) = alpha;
+    data(2) = beta;
+    data(3) = Cductility;
+    data(4) = (isNegative) ? -1.0 : 1.0;
 
-    int res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+    int res = theChannel.sendVector(this->getDbTag(), commitTag, data);
 
     if (res < 0)
         opserr <<
@@ -203,35 +188,31 @@ DuctilityStiffnessDegradation::sendSelf (int commitTag, Channel & theChannel)
     return res;
 }
 
-int
-DuctilityStiffnessDegradation::recvSelf (int commitTag, Channel & theChannel,
-                                         FEM_ObjectBroker & theBroker)
+int DuctilityStiffnessDegradation::recvSelf(int commitTag,
+                                            Channel & theChannel,
+                                            FEM_ObjectBroker & theBroker)
 {
-    static Vector data (5);
-    int res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+    static Vector data(5);
+    int res = theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-    if (res < 0)
-      {
-          opserr <<
-              "DuctilityStiffnessDegradation::recvSelf() - failed to receive data\n";
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag (int (data (0)));
-          alpha = data (1);
-          beta = data (2);
-          Cductility = data (3);
-          isNegative = (data (4) < 0.0) ? true : false;
-      }
+    if (res < 0) {
+        opserr <<
+            "DuctilityStiffnessDegradation::recvSelf() - failed to receive data\n";
+        this->setTag(0);
+    } else {
+        this->setTag(int (data(0)));
+        alpha = data(1);
+        beta = data(2);
+        Cductility = data(3);
+        isNegative = (data(4) < 0.0) ? true : false;
+    }
 
     return res;
 }
 
-void
-DuctilityStiffnessDegradation::Print (OPS_Stream & s, int flag)
+void DuctilityStiffnessDegradation::Print(OPS_Stream & s, int flag)
 {
-    s << "DuctilityStiffnessDegradation, tag: " << this->getTag () << endln;
+    s << "DuctilityStiffnessDegradation, tag: " << this->getTag() << endln;
     s << "alpha: " << alpha << endln;
     s << "beta: " << beta << endln;
 }

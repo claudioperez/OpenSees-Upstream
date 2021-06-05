@@ -40,74 +40,66 @@
 #include <FEM_ObjectBroker.h>
 #include <Timer.h>
 
-StandardEigenAlgo::StandardEigenAlgo ():EigenAlgorithm
+StandardEigenAlgo::StandardEigenAlgo():EigenAlgorithm
     (EigenALGORITHM_TAGS_Standard)
 {
     // do nothing here.
 }
 
-StandardEigenAlgo::~StandardEigenAlgo ()
+StandardEigenAlgo::~StandardEigenAlgo()
 {
     // do nothing here.
 }
 
 int
-StandardEigenAlgo::solveCurrentStep (int numModes)
+ StandardEigenAlgo::solveCurrentStep(int numModes)
 {
-    AnalysisModel *theModel = this->getAnalysisModelPtr ();
-    EigenSOE *theSOE = this->getEigenSOEptr ();
-    EigenIntegrator *theIntegrator = this->getEigenIntegratorPtr ();
+    AnalysisModel *theModel = this->getAnalysisModelPtr();
+    EigenSOE *theSOE = this->getEigenSOEptr();
+    EigenIntegrator *theIntegrator = this->getEigenIntegratorPtr();
 
-    if ((theModel == 0) || (theIntegrator == 0) || (theSOE == 0))
-      {
+    if ((theModel == 0) || (theIntegrator == 0) || (theSOE == 0)) {
 
-          opserr <<
-              "StandardEigenAlgo::solverCurrentStep() -- setLinks() has not been called\n";
-          return -1;
-      }
+        opserr <<
+            "StandardEigenAlgo::solverCurrentStep() -- setLinks() has not been called\n";
+        return -1;
+    }
 
-    if (theIntegrator->formK () < 0)
-      {
-          opserr <<
-              "StandardEigenAlgo::solverCurrentStep() -- the Integrator failed in formK()\n";
-          return -2;
-      }
+    if (theIntegrator->formK() < 0) {
+        opserr <<
+            "StandardEigenAlgo::solverCurrentStep() -- the Integrator failed in formK()\n";
+        return -2;
+    }
 
-    if (theSOE->solve (numModes, false) < 0)
-      {
-          opserr <<
-              "StandardEigenAlgo::solverCurrentStep() -- the EigenSOE failed in solve()\n";
-          return -4;
-      }
-
+    if (theSOE->solve(numModes, false) < 0) {
+        opserr <<
+            "StandardEigenAlgo::solverCurrentStep() -- the EigenSOE failed in solve()\n";
+        return -4;
+    }
     // now set the eigenvalues and eigenvectors in the model
-    theModel->setNumEigenvectors (numModes);
-    Vector theEigenvalues (numModes);
-    for (int i = 1; i <= numModes; i++)
-      {
-          theEigenvalues[i - 1] = theSOE->getEigenvalue (i);
-          theModel->setEigenvector (i, theSOE->getEigenvector (i));
-      }
-    theModel->setEigenvalues (theEigenvalues);
+    theModel->setNumEigenvectors(numModes);
+    Vector theEigenvalues(numModes);
+    for (int i = 1; i <= numModes; i++) {
+        theEigenvalues[i - 1] = theSOE->getEigenvalue(i);
+        theModel->setEigenvector(i, theSOE->getEigenvector(i));
+    }
+    theModel->setEigenvalues(theEigenvalues);
 
     return 0;
 }
 
-int
-StandardEigenAlgo::sendSelf (int cTag, Channel & theChannel)
+int StandardEigenAlgo::sendSelf(int cTag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-StandardEigenAlgo::recvSelf (int cTag, Channel & theChannel,
-                             FEM_ObjectBroker & theBroker)
+int StandardEigenAlgo::recvSelf(int cTag, Channel & theChannel,
+                                FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
-void
-StandardEigenAlgo::Print (OPS_Stream & s, int flag)
+void StandardEigenAlgo::Print(OPS_Stream & s, int flag)
 {
     s << "\tStandardEigenAlgo\n";
 }

@@ -31,48 +31,43 @@
 
 int SOLUTION_ALGORITHM_tangentFlag = 0;
 
-SolutionAlgorithm::SolutionAlgorithm (int clasTag):
-MovableObject (clasTag),
-theRecorders (0),
-numRecorders (0)
+SolutionAlgorithm::SolutionAlgorithm(int clasTag):MovableObject(clasTag),
+theRecorders(0), numRecorders(0)
 {
 
 }
 
-SolutionAlgorithm::~SolutionAlgorithm ()
+SolutionAlgorithm::~SolutionAlgorithm()
 {
     for (int i = 0; i < numRecorders; i++)
         delete theRecorders[i];
 
-    if (theRecorders != 0)
-      {
-          free ((void *) theRecorders);
-      }
+    if (theRecorders != 0) {
+        free((void *) theRecorders);
+    }
 }
 
 int
-SolutionAlgorithm::domainChanged ()
+ SolutionAlgorithm::domainChanged()
 {
     return 0;
 }
 
-int
-SolutionAlgorithm::addRecorder (Recorder & theRecorder)
+int SolutionAlgorithm::addRecorder(Recorder & theRecorder)
 {
     Recorder **newRecorders =
-        (Recorder **) malloc ((numRecorders + 1) * sizeof (Recorder *));
-    if (newRecorders == 0)
-      {
-          opserr << "SolutionAlgorithm::addRecorder - ran out of memory\n";
-          return -1;
-      }
+        (Recorder **) malloc((numRecorders + 1) * sizeof(Recorder *));
+    if (newRecorders == 0) {
+        opserr << "SolutionAlgorithm::addRecorder - ran out of memory\n";
+        return -1;
+    }
 
     for (int i = 0; i < numRecorders; i++)
         newRecorders[i] = theRecorders[i];
     newRecorders[numRecorders] = &theRecorder;
 
     if (theRecorders != 0)
-        free ((void *) theRecorders);
+        free((void *) theRecorders);
 
     theRecorders = newRecorders;
     numRecorders++;
@@ -80,10 +75,9 @@ SolutionAlgorithm::addRecorder (Recorder & theRecorder)
 }
 
 
-int
-SolutionAlgorithm::record (int cTag)
+int SolutionAlgorithm::record(int cTag)
 {
     for (int i = 0; i < numRecorders; i++)
-        theRecorders[i]->record (cTag, 0.0);
+        theRecorders[i]->record(cTag, 0.0);
     return 0;
 }

@@ -3,8 +3,7 @@
 #include <OPS_Globals.h>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_ConcreteSakaiKawashima (void)
+void *OPS_ConcreteSakaiKawashima(void)
 {
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
@@ -13,43 +12,38 @@ OPS_ConcreteSakaiKawashima (void)
     double dData[3];
 
 
-    int numData = OPS_GetNumRemainingInputArgs ();
-    if (numData != 4)
-      {
-          opserr <<
-              "Invalid #args, want: uniaxialMaterial ConcreteSakaiKawashima E0? sigCC? epsCC?\n";
-          return 0;
-      }
+    int numData = OPS_GetNumRemainingInputArgs();
+    if (numData != 4) {
+        opserr <<
+            "Invalid #args, want: uniaxialMaterial ConcreteSakaiKawashima E0? sigCC? epsCC?\n";
+        return 0;
+    }
 
     numData = 1;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr <<
-              "WARNING invalid uniaxialMaterial ConcreteSakaiKawashima tag" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr <<
+            "WARNING invalid uniaxialMaterial ConcreteSakaiKawashima tag"
+            << endln;
+        return 0;
+    }
 
     numData = 3;
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "Invalid #args, want: uniaxialMaterial DoddRestr " <<
-              iData[0] <<
-              " Eo? fy? esh? esh1? fsh1? esu? fsu? Pmajor? Pminor? <slcf? tlcf? Dcrit?>>"
-              << endln;
-          return 0;
-      }
-
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "Invalid #args, want: uniaxialMaterial DoddRestr " <<
+            iData[0] <<
+            " Eo? fy? esh? esh1? fsh1? esu? fsu? Pmajor? Pminor? <slcf? tlcf? Dcrit?>>"
+            << endln;
+        return 0;
+    }
     // Parsing was successful, allocate the material
     theMaterial =
-        new ConcreteSakaiKawashima (iData[0], dData[0], dData[1], dData[2]);
+        new ConcreteSakaiKawashima(iData[0], dData[0], dData[1], dData[2]);
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type ConcreteSakaKawashima  Material\n";
-          return 0;
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type ConcreteSakaKawashima  Material\n";
+        return 0;
+    }
 
     return theMaterial;
 }
@@ -57,12 +51,12 @@ OPS_ConcreteSakaiKawashima (void)
 
 
 
-ConcreteSakaiKawashima::ConcreteSakaiKawashima (int tag, double _YMc,
-                                                double _Sigcc, double _EPScc):
-UniaxialMaterial (tag, MAT_TAG_ConcreteSakaiKawashima),
-YMc (_YMc),
-Sigcc (_Sigcc),
-EPScc (_EPScc)
+ConcreteSakaiKawashima::ConcreteSakaiKawashima(int tag, double _YMc,
+                                               double _Sigcc,
+                                               double
+                                               _EPScc):UniaxialMaterial
+    (tag, MAT_TAG_ConcreteSakaiKawashima), YMc(_YMc), Sigcc(_Sigcc),
+EPScc(_EPScc)
 {
     DE0 = 0.0;
     Sigule = 0.0;
@@ -85,16 +79,14 @@ EPScc (_EPScc)
     Ncyc0 = 8;
 }
 
-ConcreteSakaiKawashima::ConcreteSakaiKawashima (void):
-UniaxialMaterial (0, MAT_TAG_ConcreteSakaiKawashima),
-YMc (0),
-Sigcc (0),
-EPScc (0)
+ConcreteSakaiKawashima::ConcreteSakaiKawashima(void):UniaxialMaterial(0,
+                                                                      MAT_TAG_ConcreteSakaiKawashima),
+YMc(0), Sigcc(0), EPScc(0)
 {
 
 }
 
-ConcreteSakaiKawashima::~ConcreteSakaiKawashima ()
+ConcreteSakaiKawashima::~ConcreteSakaiKawashima()
 {
 
 }
@@ -106,25 +98,26 @@ ConcreteSakaiKawashima::~ConcreteSakaiKawashima ()
 
 #endif
 
-extern "C" int compr14_ (double *EPS1, double *Sig1, double *YMtan, int *Jcon,
-                         double *EPS0, double *Sig0, double *YMc,
-                         double *EPScc, double *Sigcc, double *r,
-                         double *EPSule, double *Sigule, double *EPSpl,
-                         double *Suln, double *YMrl, double *EPSul,
-                         double *Sigul, double *EPSrl, double *Sigrl,
-                         double *EPSpl0, double *Suln0, double *GamRL,
-                         int *Ncyc, int *Jcon0, int *Ncyc0);
+extern "C" int compr14_(double *EPS1, double *Sig1, double *YMtan,
+                        int *Jcon, double *EPS0, double *Sig0, double *YMc,
+                        double *EPScc, double *Sigcc, double *r,
+                        double *EPSule, double *Sigule, double *EPSpl,
+                        double *Suln, double *YMrl, double *EPSul,
+                        double *Sigul, double *EPSrl, double *Sigrl,
+                        double *EPSpl0, double *Suln0, double *GamRL,
+                        int *Ncyc, int *Jcon0, int *Ncyc0);
 
-extern "C" int tensi14_ (double *EPS1, double *Sig1, double *YMtan, int *Jcon,
-                         double *EPS0, double *Sig0, double *EPSule,
-                         double *Sigule, double *EPSpl, double *Suln,
-                         double *EPSul, double *Sigul, double *EPSrl,
-                         double *Sigrl, double *EPSpl0, double *Suln0,
-                         double *GamRL, int *Ncyc, int *Jcon0, int *Ncyc0);
+extern "C" int tensi14_(double *EPS1, double *Sig1, double *YMtan,
+                        int *Jcon, double *EPS0, double *Sig0,
+                        double *EPSule, double *Sigule, double *EPSpl,
+                        double *Suln, double *EPSul, double *Sigul,
+                        double *EPSrl, double *Sigrl, double *EPSpl0,
+                        double *Suln0, double *GamRL, int *Ncyc,
+                        int *Jcon0, int *Ncyc0);
 
 
-int
-ConcreteSakaiKawashima::setTrialStrain (double strain, double strainRate)
+int ConcreteSakaiKawashima::setTrialStrain(double strain,
+                                           double strainRate)
 {
     DE0 = cDE0;
     Sigule = cSigule;
@@ -150,49 +143,41 @@ ConcreteSakaiKawashima::setTrialStrain (double strain, double strainRate)
     double r = YMc * EPScc / (YMc * EPScc - Sigcc);
 
 
-    if (DE == 0)
-      {
-          tStress = cStress;
-          YMtan = cYMtan;
-      }
-    else if (DE < 0)
-      {
-          compr14_ (&tStrain, &tStress, &YMtan, &Jcon, &cStrain, &cStress,
-                    &YMc, &EPScc, &Sigcc, &r, &EPSule, &Sigule, &EPSpl, &Suln,
-                    &YMrl, &EPSul, &Sigul, &EPSrl, &Sigrl, &EPSpl0, &Suln0,
-                    &GamRL, &Ncyc, &Jcon0, &Ncyc0);
+    if (DE == 0) {
+        tStress = cStress;
+        YMtan = cYMtan;
+    } else if (DE < 0) {
+        compr14_(&tStrain, &tStress, &YMtan, &Jcon, &cStrain, &cStress,
+                 &YMc, &EPScc, &Sigcc, &r, &EPSule, &Sigule, &EPSpl, &Suln,
+                 &YMrl, &EPSul, &Sigul, &EPSrl, &Sigrl, &EPSpl0, &Suln0,
+                 &GamRL, &Ncyc, &Jcon0, &Ncyc0);
 
-      }
-    else
-        tensi14_ (&tStrain, &tStress, &YMtan, &Jcon, &cStrain, &cStress,
-                  &EPSule, &Sigule, &EPSpl, &Suln, &EPSul, &Sigul,
-                  &EPSrl, &Sigrl, &EPSpl0, &Suln0, &GamRL,
-                  &Ncyc, &Jcon0, &Ncyc0);
+    } else
+        tensi14_(&tStrain, &tStress, &YMtan, &Jcon, &cStrain, &cStress,
+                 &EPSule, &Sigule, &EPSpl, &Suln, &EPSul, &Sigul,
+                 &EPSrl, &Sigrl, &EPSpl0, &Suln0, &GamRL,
+                 &Ncyc, &Jcon0, &Ncyc0);
 
     return 0;
 }
 
 
-double
-ConcreteSakaiKawashima::getStrain (void)
+double ConcreteSakaiKawashima::getStrain(void)
 {
     return tStrain;
 }
 
-double
-ConcreteSakaiKawashima::getStress (void)
+double ConcreteSakaiKawashima::getStress(void)
 {
     return tStress;
 }
 
-double
-ConcreteSakaiKawashima::getTangent (void)
+double ConcreteSakaiKawashima::getTangent(void)
 {
     return YMtan;
 }
 
-int
-ConcreteSakaiKawashima::commitState (void)
+int ConcreteSakaiKawashima::commitState(void)
 {
     cDE0 = DE0;
     cSigule = Sigule;
@@ -216,8 +201,7 @@ ConcreteSakaiKawashima::commitState (void)
     return 0;
 }
 
-int
-ConcreteSakaiKawashima::revertToLastCommit (void)
+int ConcreteSakaiKawashima::revertToLastCommit(void)
 {
     tStrain = cStrain;
     tTangent = cTangent;
@@ -226,8 +210,7 @@ ConcreteSakaiKawashima::revertToLastCommit (void)
     return 0;
 }
 
-int
-ConcreteSakaiKawashima::revertToStart (void)
+int ConcreteSakaiKawashima::revertToStart(void)
 {
     DE0 = 0.0;
     Sigule = 0.0;
@@ -249,31 +232,27 @@ ConcreteSakaiKawashima::revertToStart (void)
     Jcon0 = 1;
     Ncyc0 = 8;
 
-    return this->commitState ();
+    return this->commitState();
 
 }
 
-UniaxialMaterial *
-ConcreteSakaiKawashima::getCopy (void)
+UniaxialMaterial *ConcreteSakaiKawashima::getCopy(void)
 {
-    return new ConcreteSakaiKawashima (this->getTag (), YMc, Sigcc, EPScc);
+    return new ConcreteSakaiKawashima(this->getTag(), YMc, Sigcc, EPScc);
 }
 
-int
-ConcreteSakaiKawashima::sendSelf (int commitTag, Channel & theChannel)
+int ConcreteSakaiKawashima::sendSelf(int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-ConcreteSakaiKawashima::recvSelf (int commitTag, Channel & theChannel,
-                                  FEM_ObjectBroker & theBroker)
+int ConcreteSakaiKawashima::recvSelf(int commitTag, Channel & theChannel,
+                                     FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
-void
-ConcreteSakaiKawashima::Print (OPS_Stream & s, int flag)
+void ConcreteSakaiKawashima::Print(OPS_Stream & s, int flag)
 {
 
 }

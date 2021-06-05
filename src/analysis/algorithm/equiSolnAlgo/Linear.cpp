@@ -76,16 +76,15 @@ void* OPS_LinearAlgorithm()
 */
 
 // Constructor
-Linear::Linear (int theTangent, int Fact):
-EquiSolnAlgo (EquiALGORITHM_TAGS_Linear),
-incrTangent (theTangent),
-factorOnce (Fact)
+Linear::Linear(int theTangent,
+               int Fact):EquiSolnAlgo(EquiALGORITHM_TAGS_Linear),
+incrTangent(theTangent), factorOnce(Fact)
 {
 
 }
 
 // Destructor
-Linear::~Linear ()
+Linear::~Linear()
 {
 
 }
@@ -94,92 +93,83 @@ Linear::~Linear ()
 //    Performs the linear solution algorithm.
 
 int
-Linear::solveCurrentStep (void)
+ Linear::solveCurrentStep(void)
 {
     // set up some pointers and check they are valid
     // NOTE this could be taken away if we set Ptrs as protecetd in superclass
 
-    AnalysisModel *theAnalysisModel = this->getAnalysisModelPtr ();
-    LinearSOE *theSOE = this->getLinearSOEptr ();
+    AnalysisModel *theAnalysisModel = this->getAnalysisModelPtr();
+    LinearSOE *theSOE = this->getLinearSOEptr();
     IncrementalIntegrator *theIncIntegrator =
-        this->getIncrementalIntegratorPtr ();
+        this->getIncrementalIntegratorPtr();
 
-    if ((theAnalysisModel == 0) || (theIncIntegrator == 0) || (theSOE == 0))
-      {
-          opserr << "WARNING Linear::solveCurrentStep() -";
-          opserr << "setLinks() has not been called.\n";
-          return -5;
-      }
+    if ((theAnalysisModel == 0) || (theIncIntegrator == 0)
+        || (theSOE == 0)) {
+        opserr << "WARNING Linear::solveCurrentStep() -";
+        opserr << "setLinks() has not been called.\n";
+        return -5;
+    }
 
-    if (factorOnce != 2)
-      {
-          if (theIncIntegrator->formTangent (incrTangent) < 0)
-            {
-                opserr << "WARNING Linear::solveCurrentStep() -";
-                opserr << "the Integrator failed in formTangent()\n";
-                return -1;
-            }
-          if (factorOnce == 1)
-              factorOnce = 2;
-      }
+    if (factorOnce != 2) {
+        if (theIncIntegrator->formTangent(incrTangent) < 0) {
+            opserr << "WARNING Linear::solveCurrentStep() -";
+            opserr << "the Integrator failed in formTangent()\n";
+            return -1;
+        }
+        if (factorOnce == 1)
+            factorOnce = 2;
+    }
 
 
-    if (theIncIntegrator->formUnbalance () < 0)
-      {
-          opserr << "WARNING Linear::solveCurrentStep() -";
-          opserr << "the Integrator failed in formUnbalance()\n";
-          return -2;
-      }
+    if (theIncIntegrator->formUnbalance() < 0) {
+        opserr << "WARNING Linear::solveCurrentStep() -";
+        opserr << "the Integrator failed in formUnbalance()\n";
+        return -2;
+    }
 
-    if (theSOE->solve () < 0)
-      {
-          opserr << "WARNING Linear::solveCurrentStep() -";
-          opserr << "the LinearSOE failed in solve()\n";
-          return -3;
-      }
+    if (theSOE->solve() < 0) {
+        opserr << "WARNING Linear::solveCurrentStep() -";
+        opserr << "the LinearSOE failed in solve()\n";
+        return -3;
+    }
 
-    const Vector & deltaU = theSOE->getX ();
+    const Vector & deltaU = theSOE->getX();
 
-    if (theIncIntegrator->update (deltaU) < 0)
-      {
-          opserr << "WARNING Linear::solveCurrentStep() -";
-          opserr << "the Integrator failed in update()\n";
-          return -4;
-      }
+    if (theIncIntegrator->update(deltaU) < 0) {
+        opserr << "WARNING Linear::solveCurrentStep() -";
+        opserr << "the Integrator failed in update()\n";
+        return -4;
+    }
 
     return 0;
 }
 
-int
-Linear::setConvergenceTest (ConvergenceTest * theNewTest)
+int Linear::setConvergenceTest(ConvergenceTest * theNewTest)
 {
     return 0;
 }
 
-int
-Linear::sendSelf (int cTag, Channel & theChannel)
+int Linear::sendSelf(int cTag, Channel & theChannel)
 {
-    static ID iData (2);
-    iData (0) = incrTangent;
-    iData (1) = factorOnce;
-    return theChannel.sendID (cTag, 0, iData);
+    static ID iData(2);
+    iData(0) = incrTangent;
+    iData(1) = factorOnce;
+    return theChannel.sendID(cTag, 0, iData);
 }
 
-int
-Linear::recvSelf (int cTag, Channel & theChannel,
-                  FEM_ObjectBroker & theBroker)
+int Linear::recvSelf(int cTag, Channel & theChannel,
+                     FEM_ObjectBroker & theBroker)
 {
-    static ID iData (2);
-    theChannel.recvID (cTag, 0, iData);
-    incrTangent = iData (0);
-    factorOnce = iData (1);
+    static ID iData(2);
+    theChannel.recvID(cTag, 0, iData);
+    incrTangent = iData(0);
+    factorOnce = iData(1);
 
     return 0;
 }
 
 
-void
-Linear::Print (OPS_Stream & s, int flag)
+void Linear::Print(OPS_Stream & s, int flag)
 {
     s << "\t Linear algorithm";
 }

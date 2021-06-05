@@ -37,24 +37,23 @@
 #include <ID.h>
 #include <Channel.h>
 
-PeriodicAccelerator::PeriodicAccelerator (int iter, int tangent):
-Accelerator (ACCELERATOR_TAGS_Periodic),
-iteration (0),
-totalIter (0),
-maxIter (iter),
-theTangent (tangent)
+PeriodicAccelerator::PeriodicAccelerator(int iter,
+                                         int
+                                         tangent):Accelerator
+    (ACCELERATOR_TAGS_Periodic), iteration(0), totalIter(0), maxIter(iter),
+theTangent(tangent)
 {
     if (maxIter < 1)
         maxIter = 1;
 }
 
-PeriodicAccelerator::~PeriodicAccelerator ()
+PeriodicAccelerator::~PeriodicAccelerator()
 {
 
 }
 
 int
-PeriodicAccelerator::newStep (LinearSOE & theSOE)
+ PeriodicAccelerator::newStep(LinearSOE & theSOE)
 {
     totalIter = 0;
 
@@ -64,9 +63,8 @@ PeriodicAccelerator::newStep (LinearSOE & theSOE)
     return 0;
 }
 
-int
-PeriodicAccelerator::accelerate (Vector & vStar, LinearSOE & theSOE,
-                                 IncrementalIntegrator & theIntegrator)
+int PeriodicAccelerator::accelerate(Vector & vStar, LinearSOE & theSOE,
+                                    IncrementalIntegrator & theIntegrator)
 {
     iteration++;
     totalIter++;
@@ -74,8 +72,8 @@ PeriodicAccelerator::accelerate (Vector & vStar, LinearSOE & theSOE,
     return 0;
 }
 
-int
-PeriodicAccelerator::updateTangent (IncrementalIntegrator & theIntegrator)
+int PeriodicAccelerator::
+updateTangent(IncrementalIntegrator & theIntegrator)
 {
     /*
        if (theTangent == NO_TANGENT)
@@ -107,63 +105,56 @@ PeriodicAccelerator::updateTangent (IncrementalIntegrator & theIntegrator)
     if (iteration < maxIter)
         return 0;
 
-    switch (theTangent)
-      {
-      case CURRENT_TANGENT:
-          iteration = 0;
-          theIntegrator.formTangent (CURRENT_TANGENT);
-          return 1;
-          break;
-      case INITIAL_TANGENT:
-          iteration = 0;
-          theIntegrator.formTangent (INITIAL_TANGENT);
-          return 0;
-          break;
-      case NO_TANGENT:
-          iteration = 0;
-          return 0;
-          break;
-      default:
-          return 0;
-      }
+    switch (theTangent) {
+    case CURRENT_TANGENT:
+        iteration = 0;
+        theIntegrator.formTangent(CURRENT_TANGENT);
+        return 1;
+        break;
+    case INITIAL_TANGENT:
+        iteration = 0;
+        theIntegrator.formTangent(INITIAL_TANGENT);
+        return 0;
+        break;
+    case NO_TANGENT:
+        iteration = 0;
+        return 0;
+        break;
+    default:
+        return 0;
+    }
 }
 
-bool
-PeriodicAccelerator::updateTangent (void)
+bool PeriodicAccelerator::updateTangent(void)
 {
-    if (iteration > maxIter)
-      {
-          iteration = 0;
-          return true;
-      }
-    else
+    if (iteration > maxIter) {
+        iteration = 0;
+        return true;
+    } else
         return false;
 }
 
-void
-PeriodicAccelerator::Print (OPS_Stream & s, int flag)
+void PeriodicAccelerator::Print(OPS_Stream & s, int flag)
 {
     s << "PeriodicAccelerator" << endln;
     s << "\tIterations till restart: " << maxIter << endln;
 }
 
-int
-PeriodicAccelerator::sendSelf (int commitTag, Channel & theChannel)
+int PeriodicAccelerator::sendSelf(int commitTag, Channel & theChannel)
 {
-    static ID data (2);
-    data (0) = theTangent;
-    data (1) = maxIter;
-    return theChannel.sendID (0, commitTag, data);
+    static ID data(2);
+    data(0) = theTangent;
+    data(1) = maxIter;
+    return theChannel.sendID(0, commitTag, data);
 
 }
 
-int
-PeriodicAccelerator::recvSelf (int commitTag, Channel & theChannel,
-                               FEM_ObjectBroker & theBroker)
+int PeriodicAccelerator::recvSelf(int commitTag, Channel & theChannel,
+                                  FEM_ObjectBroker & theBroker)
 {
-    static ID data (2);
-    int res = theChannel.recvID (0, commitTag, data);
-    theTangent = data (0);
-    maxIter = data (1);
+    static ID data(2);
+    int res = theChannel.recvID(0, commitTag, data);
+    theTangent = data(0);
+    maxIter = data(1);
     return res;
 }

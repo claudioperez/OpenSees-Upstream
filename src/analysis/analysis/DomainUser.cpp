@@ -43,7 +43,7 @@
 // All DomainUser are associated with a single domain. 
 
 
-DomainUser::DomainUser (Domain & theDomain):myDomain (theDomain)
+DomainUser::DomainUser(Domain & theDomain):myDomain(theDomain)
 {
 
 }
@@ -53,7 +53,7 @@ DomainUser::DomainUser (Domain & theDomain):myDomain (theDomain)
 // removes the link in the domain by invoking {\em removeDomainUser(*this)}
 // on the domain. 
 
-DomainUser::~DomainUser ()
+DomainUser::~DomainUser()
 {
 //    myDomain.removeDomainUser(this);
 }
@@ -62,7 +62,7 @@ DomainUser::~DomainUser ()
 // A const method which returns a pointer to the Domain object on which
 // the DomainUser performs its DomainUser.
 
-Domain & DomainUser::getDomain (void) const
+Domain & DomainUser::getDomain(void) const
 {
     return myDomain;
 }

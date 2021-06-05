@@ -32,13 +32,14 @@
 #include <stdlib.h>
 #include <FedeasSteel2Material.h>
 
-FedeasSteel2Material::FedeasSteel2Material (int tag,
-                                            double fy, double E0, double b,
-                                            double R0, double cR1, double cR2,
-                                            double a1, double a2, double a3,
-                                            double a4):
+FedeasSteel2Material::FedeasSteel2Material(int tag,
+                                           double fy, double E0, double b,
+                                           double R0, double cR1,
+                                           double cR2, double a1,
+                                           double a2, double a3,
+                                           double a4):
 // 8 history variables and 10 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel2, 8, 10)
 {
     data[0] = fy;
     data[1] = E0;
@@ -55,12 +56,12 @@ FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
     tangentP = E0;
 }
 
-FedeasSteel2Material::FedeasSteel2Material (int tag,
-                                            double fy, double E0, double b,
-                                            double R0, double cR1,
-                                            double cR2):
+FedeasSteel2Material::FedeasSteel2Material(int tag,
+                                           double fy, double E0, double b,
+                                           double R0, double cR1,
+                                           double cR2):
 // 8 history variables and 10 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel2, 8, 10)
 {
     data[0] = fy;
     data[1] = E0;
@@ -79,10 +80,10 @@ FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
     tangentP = E0;
 }
 
-FedeasSteel2Material::FedeasSteel2Material (int tag,
-                                            double fy, double E0, double b):
+FedeasSteel2Material::FedeasSteel2Material(int tag,
+                                           double fy, double E0, double b):
 // 8 history variables and 10 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel2, 8, 10)
 {
     data[0] = fy;
     data[1] = E0;
@@ -103,39 +104,38 @@ FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
     tangentP = E0;
 }
 
-FedeasSteel2Material::FedeasSteel2Material (int tag, const Vector & d):
+FedeasSteel2Material::FedeasSteel2Material(int tag, const Vector & d):
 // 8 history variables and 10 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel2, 8, 10)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel2, 8, 10)
 {
-    if (d.Size () != numData)
-      {
-          opserr <<
-              "FedeasSteel2Material::FedeasSteel2Material -- not enough input arguments\n";
-          exit (-1);
-      }
+    if (d.Size() != numData) {
+        opserr <<
+            "FedeasSteel2Material::FedeasSteel2Material -- not enough input arguments\n";
+        exit(-1);
+    }
 
     for (int i = 0; i < numData; i++)
-        data[i] = d (i);
+        data[i] = d(i);
 }
 
-FedeasSteel2Material::FedeasSteel2Material (void):
-FedeasMaterial (0, MAT_TAG_FedeasSteel2, 8, 10)
+FedeasSteel2Material::FedeasSteel2Material(void):FedeasMaterial(0,
+                                                                MAT_TAG_FedeasSteel2,
+                                                                8, 10)
 {
     // Does nothing
 }
 
-FedeasSteel2Material::~FedeasSteel2Material (void)
+FedeasSteel2Material::~FedeasSteel2Material(void)
 {
     // Does nothing
 }
 
-UniaxialMaterial *
-FedeasSteel2Material::getCopy (void)
+UniaxialMaterial *FedeasSteel2Material::getCopy(void)
 {
-    Vector d (data, numData);
+    Vector d(data, numData);
 
     FedeasSteel2Material *theCopy =
-        new FedeasSteel2Material (this->getTag (), d);
+        new FedeasSteel2Material(this->getTag(), d);
 
     // Copy history variables
     for (int i = 0; i < 2 * numHstv; i++)
@@ -152,8 +152,7 @@ FedeasSteel2Material::getCopy (void)
     return theCopy;
 }
 
-double
-FedeasSteel2Material::getInitialTangent (void)
+double FedeasSteel2Material::getInitialTangent(void)
 {
     //return E;
     return data[1];

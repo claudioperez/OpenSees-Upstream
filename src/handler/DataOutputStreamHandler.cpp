@@ -33,65 +33,58 @@
 #include "DataOutputStreamHandler.h"
 #include <Vector.h>
 
-DataOutputStreamHandler::DataOutputStreamHandler (bool echoD):
-DataOutputHandler (DATAHANDLER_TAGS_DataOutputStreamHandler),
-echoDescription (echoD),
-numColumns (0)
+DataOutputStreamHandler::
+DataOutputStreamHandler(bool
+                        echoD):DataOutputHandler
+(DATAHANDLER_TAGS_DataOutputStreamHandler), echoDescription(echoD), numColumns(0)
 {
 
 }
 
-DataOutputStreamHandler::~DataOutputStreamHandler ()
+DataOutputStreamHandler::~DataOutputStreamHandler()
 {
     // does nothing
 }
 
 int
-DataOutputStreamHandler::open (char **dataDescription, int numData)
+ DataOutputStreamHandler::open(char **dataDescription, int numData)
 {
-    if (numData < 0)
-      {
-          opserr << "DataOutputStreamHandler::open() - numColumns (" <<
-              numData << ") < 0\n";
-          return -1;
-      }
-    else
+    if (numData < 0) {
+        opserr << "DataOutputStreamHandler::open() - numColumns (" <<
+            numData << ") < 0\n";
+        return -1;
+    } else
         numColumns = numData;
 
-    if (echoDescription == true)
-      {
-          for (int i = 0; i < numData; i++)
-              opserr << dataDescription[i] << " ";
-          opserr << endln;
-      }
+    if (echoDescription == true) {
+        for (int i = 0; i < numData; i++)
+            opserr << dataDescription[i] << " ";
+        opserr << endln;
+    }
 
     return 0;
 }
 
-int
-DataOutputStreamHandler::write (Vector & data)
+int DataOutputStreamHandler::write(Vector & data)
 {
-    if (data.Size () == numColumns)
+    if (data.Size() == numColumns)
         outputStream << data;
-    else
-      {
-          opserr <<
-              "DataOutputStreamHandler::write() - Vector not of correct size\n";
-          return -1;
-      }
+    else {
+        opserr <<
+            "DataOutputStreamHandler::write() - Vector not of correct size\n";
+        return -1;
+    }
 
     return 0;
 }
 
-int
-DataOutputStreamHandler::sendSelf (int commitTag, Channel & theChannel)
+int DataOutputStreamHandler::sendSelf(int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-DataOutputStreamHandler::recvSelf (int commitTag, Channel & theChannel,
-                                   FEM_ObjectBroker & theBroker)
+int DataOutputStreamHandler::recvSelf(int commitTag, Channel & theChannel,
+                                      FEM_ObjectBroker & theBroker)
 {
     return 0;
 }

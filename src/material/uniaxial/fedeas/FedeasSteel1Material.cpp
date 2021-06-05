@@ -32,12 +32,12 @@
 #include <stdlib.h>
 #include <FedeasSteel1Material.h>
 
-FedeasSteel1Material::FedeasSteel1Material (int tag,
-                                            double fy, double E0, double b,
-                                            double a1, double a2, double a3,
-                                            double a4):
+FedeasSteel1Material::FedeasSteel1Material(int tag,
+                                           double fy, double E0, double b,
+                                           double a1, double a2, double a3,
+                                           double a4):
 // 7 history variables and 7 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel1, 7, 7)
 {
     data[0] = fy;
     data[1] = E0;
@@ -51,10 +51,10 @@ FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
     tangentP = E0;
 }
 
-FedeasSteel1Material::FedeasSteel1Material (int tag,
-                                            double fy, double E0, double b):
+FedeasSteel1Material::FedeasSteel1Material(int tag,
+                                           double fy, double E0, double b):
 // 7 history variables and 7 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel1, 7, 7)
 {
     data[0] = fy;
     data[1] = E0;
@@ -70,39 +70,38 @@ FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
     tangentP = E0;
 }
 
-FedeasSteel1Material::FedeasSteel1Material (int tag, const Vector & d):
+FedeasSteel1Material::FedeasSteel1Material(int tag, const Vector & d):
 // 7 history variables and 7 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasMaterial(tag, MAT_TAG_FedeasSteel1, 7, 7)
 {
-    if (d.Size () != numData)
-      {
-          opserr <<
-              "FedeasSteel1Material::FedeasSteel1Material -- not enough input arguments\n";
-          exit (-1);
-      }
+    if (d.Size() != numData) {
+        opserr <<
+            "FedeasSteel1Material::FedeasSteel1Material -- not enough input arguments\n";
+        exit(-1);
+    }
 
     for (int i = 0; i < numData; i++)
-        data[i] = d (i);
+        data[i] = d(i);
 }
 
-FedeasSteel1Material::FedeasSteel1Material (void):
-FedeasMaterial (0, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasSteel1Material::FedeasSteel1Material(void):FedeasMaterial(0,
+                                                                MAT_TAG_FedeasSteel1,
+                                                                7, 7)
 {
     // Does nothing
 }
 
-FedeasSteel1Material::~FedeasSteel1Material (void)
+FedeasSteel1Material::~FedeasSteel1Material(void)
 {
     // Does nothing
 }
 
-UniaxialMaterial *
-FedeasSteel1Material::getCopy (void)
+UniaxialMaterial *FedeasSteel1Material::getCopy(void)
 {
-    Vector d (data, numData);
+    Vector d(data, numData);
 
     FedeasSteel1Material *theCopy =
-        new FedeasSteel1Material (this->getTag (), d);
+        new FedeasSteel1Material(this->getTag(), d);
 
     // Copy history variables
     for (int i = 0; i < 2 * numHstv; i++)
@@ -118,8 +117,7 @@ FedeasSteel1Material::getCopy (void)
     return theCopy;
 }
 
-double
-FedeasSteel1Material::getInitialTangent (void)
+double FedeasSteel1Material::getInitialTangent(void)
 {
     //return E;
     return data[1];

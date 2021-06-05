@@ -37,18 +37,14 @@
 // LoadIter(LoadCase &loadcase):
 //      constructor that takes the nodes associated with a load
 
-LoadIter::LoadIter (const LoadCase & loadcase):
-myLoadCase (loadcase),
-currIndexLoads (0),
-currIndexLoadCases (0)
+LoadIter::LoadIter(const LoadCase & loadcase):myLoadCase(loadcase),
+currIndexLoads(0), currIndexLoadCases(0)
 {
 
 }
 
 
-Load *
-LoadIter::operator () (void)
-{
+Load *LoadIter::operator () (void) {
 /** WARNING - HAVE TO CHANGE FOR LOAD CASES */
 
     // if we still have loads from myLoads to return

@@ -37,33 +37,27 @@
 
 #define DEBG   0
 
-Mehanny::Mehanny (int tag, double alpha, double beta, double gamma,
-                  double ultimatePosValue, double ultimateNegValue,
-                  double abstol, double reltol, double posmodifier,
-                  double negmodifier):
-DamageModel (tag, DMG_TAG_Mehanny),
-Alpha (alpha),
-Beta (beta),
-Gamma (gamma),
-UltimatePosValue (ultimatePosValue),
-UltimateNegValue (ultimateNegValue),
-PosModifier (posmodifier),
-NegModifier (negmodifier),
-AbsTol (abstol),
-RelTol (reltol)
+Mehanny::Mehanny(int tag, double alpha, double beta, double gamma,
+                 double ultimatePosValue, double ultimateNegValue,
+                 double abstol, double reltol, double posmodifier,
+                 double negmodifier):DamageModel(tag, DMG_TAG_Mehanny),
+Alpha(alpha),
+Beta(beta),
+Gamma(gamma),
+UltimatePosValue(ultimatePosValue),
+UltimateNegValue(ultimateNegValue),
+PosModifier(posmodifier),
+NegModifier(negmodifier), AbsTol(abstol), RelTol(reltol)
 {
     if (UltimatePosValue <= 0 || Alpha < 0 || Beta < 0 || Gamma < 0)
         opserr <<
             "CumulativePeak::CumulativePeak : Incorrect arguments for the damage model";
 
-    if (UltimateNegValue == 0.0)
-      {
-          UltimateNegValue = UltimatePosValue;
-      }
-    else
-      {
-          UltimateNegValue = fabs (UltimateNegValue);
-      }
+    if (UltimateNegValue == 0.0) {
+        UltimateNegValue = UltimatePosValue;
+    } else {
+        UltimateNegValue = fabs(UltimateNegValue);
+    }
 
     if (AbsTol < 0.0)
         AbsTol = 1.0;
@@ -74,7 +68,7 @@ RelTol (reltol)
     if (NegModifier < 0.0)
         NegModifier = 1.0;
 
-    this->revertToStart ();
+    this->revertToStart();
 
     /*
        if ( DEBG ==1 )
@@ -88,12 +82,12 @@ RelTol (reltol)
      */
 }
 
-Mehanny::Mehanny ():DamageModel (0, DMG_TAG_Mehanny)
+Mehanny::Mehanny():DamageModel(0, DMG_TAG_Mehanny)
 {
     // Does nothing
 }
 
-Mehanny::~Mehanny ()
+Mehanny::~Mehanny()
 {
     /*
        if ( DEBG == 1 )
@@ -105,58 +99,53 @@ Mehanny::~Mehanny ()
 
 
 int
-Mehanny::setTrial (const Vector & trialVector)
+ Mehanny::setTrial(const Vector & trialVector)
 {
-    if (trialVector.Size () != 3)
-      {
-          opserr <<
-              "WARNING: Mehanny::setTrial Wrong vector size for trial data" <<
-              endln;
-          return -1;
-      }
+    if (trialVector.Size() != 3) {
+        opserr <<
+            "WARNING: Mehanny::setTrial Wrong vector size for trial data"
+            << endln;
+        return -1;
+    }
 
-    double TrialDefo = trialVector (0);
-    double TrialForce = trialVector (1);
-    double TrialKU = trialVector (2);
+    double TrialDefo = trialVector(0);
+    double TrialForce = trialVector(1);
+    double TrialKU = trialVector(2);
 
     double TrialScalar = 0.0;
 
     // calculate the plastic deformation once the unloading stiffness is defined as non zero
-    if (TrialKU != 0.0)
-      {
-          TrialScalar = TrialDefo - TrialForce / TrialKU;
-      }
-    else
-      {
+    if (TrialKU != 0.0) {
+        TrialScalar = TrialDefo - TrialForce / TrialKU;
+    } else {
 
-          // use the elastic deformation instead
-          TrialScalar = TrialDefo;
-      }
+        // use the elastic deformation instead
+        TrialScalar = TrialDefo;
+    }
 
-    return this->processData (TrialScalar);
+    return this->processData(TrialScalar);
 }
 
 
-double
-Mehanny::getDamage (void)
+double Mehanny::getDamage(void)
 {
     double PosDamage, NegDamage, OveralDamage;
 
     PosDamage =
-        (pow (TrialPosPHC, Alpha) +
-         pow (TrialSumPosFHC, Beta)) / (pow (UltimatePosValue,
-                                             Alpha) + pow (TrialSumPosFHC,
-                                                           Beta));
+        (pow(TrialPosPHC, Alpha) +
+         pow(TrialSumPosFHC, Beta)) / (pow(UltimatePosValue,
+                                           Alpha) + pow(TrialSumPosFHC,
+                                                        Beta));
 
     NegDamage =
-        (pow (fabs (TrialNegPHC), Alpha) +
-         pow (fabs (TrialSumNegFHC), Beta)) / (pow (fabs (UltimateNegValue),
-                                                    Alpha) +
-                                               pow (fabs (TrialSumNegFHC),
-                                                    Beta));
+        (pow(fabs(TrialNegPHC), Alpha) +
+         pow(fabs(TrialSumNegFHC), Beta)) / (pow(fabs(UltimateNegValue),
+                                                 Alpha) +
+                                             pow(fabs(TrialSumNegFHC),
+                                                 Beta));
 
     OveralDamage =
-        pow ((pow (PosDamage, Gamma) + pow (NegDamage, Gamma)), 1 / Gamma);
+        pow((pow(PosDamage, Gamma) + pow(NegDamage, Gamma)), 1 / Gamma);
 
     if (OveralDamage < CommDamage)
         OveralDamage = CommDamage;
@@ -164,60 +153,57 @@ Mehanny::getDamage (void)
 }
 
 
-double
-Mehanny::getPosDamage (void)
+double Mehanny::getPosDamage(void)
 {
     double PosDamage, NegDamage, OveralDamage;
 
     PosDamage =
-        (pow (TrialPosPHC, Alpha) +
-         pow (TrialSumPosFHC, Beta)) / (pow (UltimatePosValue,
-                                             Alpha) + pow (TrialSumPosFHC,
-                                                           Beta));
+        (pow(TrialPosPHC, Alpha) +
+         pow(TrialSumPosFHC, Beta)) / (pow(UltimatePosValue,
+                                           Alpha) + pow(TrialSumPosFHC,
+                                                        Beta));
 
     NegDamage =
-        (pow (fabs (TrialNegPHC), Alpha) +
-         pow (fabs (TrialSumNegFHC), Beta)) / (pow (fabs (UltimateNegValue),
-                                                    Alpha) +
-                                               pow (fabs (TrialSumNegFHC),
-                                                    Beta));;
+        (pow(fabs(TrialNegPHC), Alpha) +
+         pow(fabs(TrialSumNegFHC), Beta)) / (pow(fabs(UltimateNegValue),
+                                                 Alpha) +
+                                             pow(fabs(TrialSumNegFHC),
+                                                 Beta));;
 
     OveralDamage =
-        pow ((1.0 * pow (PosDamage, Gamma) +
-              NegModifier * pow (NegDamage, Gamma)), 1 / Gamma);
+        pow((1.0 * pow(PosDamage, Gamma) +
+             NegModifier * pow(NegDamage, Gamma)), 1 / Gamma);
 
     return OveralDamage;
 }
 
 
-double
-Mehanny::getNegDamage (void)
+double Mehanny::getNegDamage(void)
 {
     double PosDamage, NegDamage, OveralDamage;
 
     PosDamage =
-        (pow (TrialPosPHC, Alpha) +
-         pow (TrialSumPosFHC, Beta)) / (pow (UltimatePosValue,
-                                             Alpha) + pow (TrialSumPosFHC,
-                                                           Beta));
+        (pow(TrialPosPHC, Alpha) +
+         pow(TrialSumPosFHC, Beta)) / (pow(UltimatePosValue,
+                                           Alpha) + pow(TrialSumPosFHC,
+                                                        Beta));
 
     NegDamage =
-        (pow (fabs (TrialNegPHC), Alpha) +
-         pow (fabs (TrialSumNegFHC), Beta)) / (pow (fabs (UltimateNegValue),
-                                                    Alpha) +
-                                               pow (fabs (TrialSumNegFHC),
-                                                    Beta));;
+        (pow(fabs(TrialNegPHC), Alpha) +
+         pow(fabs(TrialSumNegFHC), Beta)) / (pow(fabs(UltimateNegValue),
+                                                 Alpha) +
+                                             pow(fabs(TrialSumNegFHC),
+                                                 Beta));;
 
     OveralDamage =
-        pow ((PosModifier * pow (PosDamage, Gamma) +
-              1.0 * pow (NegDamage, Gamma)), 1 / Gamma);
+        pow((PosModifier * pow(PosDamage, Gamma) +
+             1.0 * pow(NegDamage, Gamma)), 1 / Gamma);
 
     return OveralDamage;
 }
 
 
-int
-Mehanny::commitState (void)
+int Mehanny::commitState(void)
 {
     /*
        if ( DEBG ==1 )
@@ -250,8 +236,7 @@ Mehanny::commitState (void)
     return 0;
 }
 
-int
-Mehanny::revertToLastCommit (void)
+int Mehanny::revertToLastCommit(void)
 {
     CommPlasticDefo = LCommPlasticDefo;
     CommDefoIncr = LCommDefoIncr;
@@ -267,8 +252,7 @@ Mehanny::revertToLastCommit (void)
     return 0;
 }
 
-int
-Mehanny::revertToStart (void)
+int Mehanny::revertToStart(void)
 {
     CommPlasticDefo = LCommPlasticDefo = 0.0;
     CommDefoIncr = LCommDefoIncr = 0.0;
@@ -284,13 +268,12 @@ Mehanny::revertToStart (void)
     return 0;
 }
 
-DamageModel *
-Mehanny::getCopy (void)
+DamageModel *Mehanny::getCopy(void)
 {
     Mehanny *theCopy =
-        new Mehanny (this->getTag (), Alpha, Beta, Gamma, UltimatePosValue,
-                     UltimateNegValue, AbsTol, RelTol, PosModifier,
-                     NegModifier);
+        new Mehanny(this->getTag(), Alpha, Beta, Gamma, UltimatePosValue,
+                    UltimateNegValue, AbsTol, RelTol, PosModifier,
+                    NegModifier);
 
     theCopy->TrialPlasticDefo = TrialPlasticDefo;
     theCopy->TrialDefoIncr = TrialDefoIncr;
@@ -331,89 +314,82 @@ Mehanny::getCopy (void)
 }
 
 
-Response *
-Mehanny::setResponse (const char **argv, int argc, OPS_Stream & info)
+Response *Mehanny::setResponse(const char **argv, int argc,
+                               OPS_Stream & info)
 {
     //
     // we compare argv[0] for known response types for the Truss
     //
 
-    if (strcmp (argv[0], "damage") == 0
-        || strcmp (argv[0], "damageindex") == 0)
-        return new DamageResponse (this, 1, 0.0);
+    if (strcmp(argv[0], "damage") == 0
+        || strcmp(argv[0], "damageindex") == 0)
+        return new DamageResponse(this, 1, 0.0);
 
-    else if (strcmp (argv[0], "Value") == 0 || strcmp (argv[0], "defo") == 0
-             || strcmp (argv[0], "deformation") == 0)
-        return new DamageResponse (this, 2, 0.0);
+    else if (strcmp(argv[0], "Value") == 0 || strcmp(argv[0], "defo") == 0
+             || strcmp(argv[0], "deformation") == 0)
+        return new DamageResponse(this, 2, 0.0);
 
-    else if (strcmp (argv[0], "trial") == 0
-             || strcmp (argv[0], "trialinfo") == 0)
-        return new DamageResponse (this, 3, Vector (4));
+    else if (strcmp(argv[0], "trial") == 0
+             || strcmp(argv[0], "trialinfo") == 0)
+        return new DamageResponse(this, 3, Vector(4));
 
     else
         return 0;
 
 }
 
-int
-Mehanny::getResponse (int responseID, Information & info)
+int Mehanny::getResponse(int responseID, Information & info)
 {
-    switch (responseID)
-      {
-      case -1:
-          return -1;
+    switch (responseID) {
+    case -1:
+        return -1;
 
-      case 1:
-          return info.setDouble (this->getDamage ());
+    case 1:
+        return info.setDouble(this->getDamage());
 
-      case 2:
-          return info.setDouble (TrialPlasticDefo);
+    case 2:
+        return info.setDouble(TrialPlasticDefo);
 
-      case 3:
-          if (info.theVector != 0)
-            {
-                (*(info.theVector)) (0) = TrialPosPHC;
-                (*(info.theVector)) (1) = TrialSumPosFHC;
-                (*(info.theVector)) (2) = TrialNegPHC;
-                (*(info.theVector)) (3) = TrialSumNegFHC;
-            }
-          return 0;
+    case 3:
+        if (info.theVector != 0) {
+            (*(info.theVector)) (0) = TrialPosPHC;
+            (*(info.theVector)) (1) = TrialSumPosFHC;
+            (*(info.theVector)) (2) = TrialNegPHC;
+            (*(info.theVector)) (3) = TrialSumNegFHC;
+        }
+        return 0;
 
-      default:
-          return -1;
-      }
+    default:
+        return -1;
+    }
 }
 
 
-int
-Mehanny::sendSelf (int commitTag, Channel & theChannel)
+int Mehanny::sendSelf(int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
 
-int
-Mehanny::recvSelf (int commitTag, Channel & theChannel,
-                   FEM_ObjectBroker & theBroker)
+int Mehanny::recvSelf(int commitTag, Channel & theChannel,
+                      FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
 
-void
-Mehanny::Print (OPS_Stream & s, int flag)
+void Mehanny::Print(OPS_Stream & s, int flag)
 {
-    s << "CumulativePeak tag: " << this->getTag () << endln;
-    s << "  Alpha: " << Alpha << " Beta: " << Beta << "  Gamma: " << Gamma <<
-        endln;
-    s << " UltimatePosValue: " << UltimatePosValue << " UltimateNegValue: " <<
-        UltimateNegValue << endln;
+    s << "CumulativePeak tag: " << this->getTag() << endln;
+    s << "  Alpha: " << Alpha << " Beta: " << Beta << "  Gamma: " << Gamma
+        << endln;
+    s << " UltimatePosValue: " << UltimatePosValue << " UltimateNegValue: "
+        << UltimateNegValue << endln;
 }
 
 
 // Perivate functions
-int
-Mehanny::processData (double PDefo)
+int Mehanny::processData(double PDefo)
 {
     TrialPlasticDefo = PDefo;
     TrialDefoIncr = PDefo - CommPlasticDefo;
@@ -426,131 +402,100 @@ Mehanny::processData (double PDefo)
     TrialNegPHC = CommNegPHC;
     TrialDamage = CommDamage;
 
-    if (TrialDefoIncr != 0.0)
-      {
-          // For a non-zero step
-          if (((TrialDefoIncr >= AbsTol)
-               && (TrialDefoIncr >= RelTol * TrialPosPHC))
-              || ((TrialDefoIncr + TrialTempPDefo) >= AbsTol
-                  && (TrialDefoIncr + TrialTempPDefo) >= RelTol * TrialPosPHC)
-              || ((TrialDefoIncr <= -AbsTol)
-                  && (TrialDefoIncr >= -RelTol * TrialPosPHC))
-              || ((TrialDefoIncr + TrialTempPDefo) <= -AbsTol
-                  && (TrialDefoIncr + TrialTempPDefo) <=
-                  -RelTol * TrialPosPHC))
-            {
-                // in case the plastic deformation increament is significant enough
-                // or the current increment is larger than the tolerence
+    if (TrialDefoIncr != 0.0) {
+        // For a non-zero step
+        if (((TrialDefoIncr >= AbsTol)
+             && (TrialDefoIncr >= RelTol * TrialPosPHC))
+            || ((TrialDefoIncr + TrialTempPDefo) >= AbsTol
+                && (TrialDefoIncr + TrialTempPDefo) >=
+                RelTol * TrialPosPHC)
+            || ((TrialDefoIncr <= -AbsTol)
+                && (TrialDefoIncr >= -RelTol * TrialPosPHC))
+            || ((TrialDefoIncr + TrialTempPDefo) <= -AbsTol
+                && (TrialDefoIncr + TrialTempPDefo) <=
+                -RelTol * TrialPosPHC)) {
+            // in case the plastic deformation increament is significant enough
+            // or the current increment is larger than the tolerence
 
-                if (TrialPosCycle == 0.0 && TrialNegCycle == 0.0)
-                  {
-                      // For a brand new cycle
-                      if (TrialDefoIncr > 0.0)
-                        {
-                            TrialPosCycle = TrialDefoIncr;
-                        }
-                      else
-                        {
-                            TrialNegCycle = TrialDefoIncr;
-                        }
-                  }
-                else if (TrialPosCycle > 0.0 && TrialNegCycle == 0.0)
-                  {
-                      // Check the status for a positive half cycle
-                      // Determine the status of this step, if a new cycle has started
-                      // or still on the last cycle
-                      //
-                      if (TrialDefoIncr + TrialTempPDefo >= 0.0)
-                        {
-                            // just add the temporarily saved and recent cycle to the current positive cycle
-                            TrialPosCycle =
-                                TrialPosCycle + TrialDefoIncr +
-                                TrialTempPDefo;
-                        }
-                      else
-                        {
-                            // end this positive half cycle and initiate a new negative half cycle
-                            TrialPosCycle = 0.0;
-                            TrialNegCycle = TrialDefoIncr + TrialTempPDefo;
-                        }
-                  }
-                else if (TrialPosCycle == 0.0 && TrialNegCycle < 0.0)
-                  {
-                      // Check the status for a negative half cycle
-                      // Determine the status of this step, if a new cycle has started
-                      // or still on the last cycle
-                      //
+            if (TrialPosCycle == 0.0 && TrialNegCycle == 0.0) {
+                // For a brand new cycle
+                if (TrialDefoIncr > 0.0) {
+                    TrialPosCycle = TrialDefoIncr;
+                } else {
+                    TrialNegCycle = TrialDefoIncr;
+                }
+            } else if (TrialPosCycle > 0.0 && TrialNegCycle == 0.0) {
+                // Check the status for a positive half cycle
+                // Determine the status of this step, if a new cycle has started
+                // or still on the last cycle
+                //
+                if (TrialDefoIncr + TrialTempPDefo >= 0.0) {
+                    // just add the temporarily saved and recent cycle to the current positive cycle
+                    TrialPosCycle =
+                        TrialPosCycle + TrialDefoIncr + TrialTempPDefo;
+                } else {
+                    // end this positive half cycle and initiate a new negative half cycle
+                    TrialPosCycle = 0.0;
+                    TrialNegCycle = TrialDefoIncr + TrialTempPDefo;
+                }
+            } else if (TrialPosCycle == 0.0 && TrialNegCycle < 0.0) {
+                // Check the status for a negative half cycle
+                // Determine the status of this step, if a new cycle has started
+                // or still on the last cycle
+                //
 
-                      if (TrialDefoIncr + TrialTempPDefo <= 0.0)
-                        {
-                            // just add the temporarily saved and recent cycle to the current negative cycle
-                            TrialNegCycle =
-                                TrialNegCycle + TrialDefoIncr +
-                                TrialTempPDefo;
-                        }
-                      else
-                        {
-                            // end this negative half cycle and initiate a new positive half cycle
-                            TrialNegCycle = 0.0;
-                            TrialPosCycle = TrialDefoIncr + TrialTempPDefo;
-                        }
-                  }
-                else
-                  {
-                      // This is an internal error case
-                      opserr <<
-                          "Mehanny::processData :Error, Can not detect a half cycle"
-                          << endln;
-                      return -1;
-                  }
-
-                // reset the temporary plastic deformation
-                TrialTempPDefo = 0.0;
-            }
-          else
-            {
-                // for very small increments, the increment is only added to the temporary plastic deformation
-                TrialTempPDefo = TrialTempPDefo + TrialDefoIncr;
-
+                if (TrialDefoIncr + TrialTempPDefo <= 0.0) {
+                    // just add the temporarily saved and recent cycle to the current negative cycle
+                    TrialNegCycle =
+                        TrialNegCycle + TrialDefoIncr + TrialTempPDefo;
+                } else {
+                    // end this negative half cycle and initiate a new positive half cycle
+                    TrialNegCycle = 0.0;
+                    TrialPosCycle = TrialDefoIncr + TrialTempPDefo;
+                }
+            } else {
+                // This is an internal error case
+                opserr <<
+                    "Mehanny::processData :Error, Can not detect a half cycle"
+                    << endln;
+                return -1;
             }
 
-          // Process the current step
-          // now detect the peaks
-          if (TrialPosCycle > 0.0 && TrialNegCycle == 0.0)
-            {
-                // deal with a positive half cycle
-                if (TrialPosCycle > TrialPosPHC)
-                  {
-                      TrialPosPHC = TrialPosCycle;
-                  }
-                else
-                  {
-                      TrialSumPosFHC =
-                          TrialSumPosFHC - CommPosCycle + TrialPosCycle;
-                  }
+            // reset the temporary plastic deformation
+            TrialTempPDefo = 0.0;
+        } else {
+            // for very small increments, the increment is only added to the temporary plastic deformation
+            TrialTempPDefo = TrialTempPDefo + TrialDefoIncr;
+
+        }
+
+        // Process the current step
+        // now detect the peaks
+        if (TrialPosCycle > 0.0 && TrialNegCycle == 0.0) {
+            // deal with a positive half cycle
+            if (TrialPosCycle > TrialPosPHC) {
+                TrialPosPHC = TrialPosCycle;
+            } else {
+                TrialSumPosFHC =
+                    TrialSumPosFHC - CommPosCycle + TrialPosCycle;
             }
-          else if (TrialPosCycle == 0.0 && TrialNegCycle < 0.0)
-            {
-                // deal with a negative half cycle
-                if (TrialNegCycle < TrialNegPHC)
-                  {
-                      TrialNegPHC = TrialNegCycle;
-                  }
-                else
-                  {
-                      TrialSumNegFHC =
-                          TrialSumNegFHC - CommNegCycle + TrialNegCycle;
-                  }
+        } else if (TrialPosCycle == 0.0 && TrialNegCycle < 0.0) {
+            // deal with a negative half cycle
+            if (TrialNegCycle < TrialNegPHC) {
+                TrialNegPHC = TrialNegCycle;
+            } else {
+                TrialSumNegFHC =
+                    TrialSumNegFHC - CommNegCycle + TrialNegCycle;
             }
-      }
+        }
+    }
 
     return 0;
 }
 
 
-int
-Mehanny::setInputResponse (Element * elem, const char **argv, int argc,
-                           int ndof)
+int Mehanny::setInputResponse(Element * elem, const char **argv, int argc,
+                              int ndof)
 {
     return -1;
 }

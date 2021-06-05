@@ -38,10 +38,9 @@
 #include <SocketAddress.h>
 #include <Message.h>
 
-int
-main (int argv, char **argc)
+int main(int argv, char **argc)
 {
-    int channelType = atoi (argc[1]);
+    int channelType = atoi(argc[1]);
 
 
     //
@@ -49,12 +48,11 @@ main (int argv, char **argc)
     //
 
     Channel *theChannel = 0;
-    if (channelType == 1)
-      {
-          char *machine = argc[2];
-          int port = atoi (argc[3]);
-          theChannel = new TCP_Socket (port, machine);
-      }
+    if (channelType == 1) {
+        char *machine = argc[2];
+        int port = atoi(argc[3]);
+        theChannel = new TCP_Socket(port, machine);
+    }
     //    else if (channelType == 2) {
     //  char *machine = argc[2];        
     //  int port = atoi(argc[3]);           
@@ -65,20 +63,17 @@ main (int argv, char **argc)
     // int port = atoi(argc[3]);            
     // theChannel = new TCP_SocketNoDelay(port,machine);
     // }   
-    else
-      {
-          opserr << "ACTOR PROCESS: ShadowSubdomainActor Exiting ";
-          opserr << "- invalid channel type " << channelType << endln;
-          exit (-1);
-      }
+    else {
+        opserr << "ACTOR PROCESS: ShadowSubdomainActor Exiting ";
+        opserr << "- invalid channel type " << channelType << endln;
+        exit(-1);
+    }
 
-    if (theChannel == 0)
-      {
-          opserr << "ACTOR PROCESS: ShadowSubdomainActor Exiting ";
-          opserr << "- could not create the channel " << endln;
-          exit (-1);
-      }
-
+    if (theChannel == 0) {
+        opserr << "ACTOR PROCESS: ShadowSubdomainActor Exiting ";
+        opserr << "- could not create the channel " << endln;
+        exit(-1);
+    }
     //
     // create an object broker
     //
@@ -89,11 +84,11 @@ main (int argv, char **argc)
     // create the actor object and start it running
     //
 
-    ActorSubdomain theActor (*theChannel, theObjectBroker);
-    theActor.run ();
+    ActorSubdomain theActor(*theChannel, theObjectBroker);
+    theActor.run();
 
     // exit normally
     opserr << "ShadowSubdomainActor:: ACTOR PROCESS EXITING\n\n";
     // opserr << theActor;
-    exit (0);
+    exit(0);
 }

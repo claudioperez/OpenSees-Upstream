@@ -39,50 +39,41 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_BFGS ()
+void *OPS_BFGS()
 {
     int formTangent = CURRENT_TANGENT;
     int count = -1;
 
-    while (OPS_GetNumRemainingInputArgs () > 0)
-      {
-          const char *flag = OPS_GetString ();
+    while (OPS_GetNumRemainingInputArgs() > 0) {
+        const char *flag = OPS_GetString();
 
-          if (strcmp (flag, "-secant") == 0)
-            {
-                formTangent = CURRENT_SECANT;
+        if (strcmp(flag, "-secant") == 0) {
+            formTangent = CURRENT_SECANT;
 
-            }
-          else if (strcmp (flag, "-initial") == 0)
-            {
-                formTangent = INITIAL_TANGENT;
+        } else if (strcmp(flag, "-initial") == 0) {
+            formTangent = INITIAL_TANGENT;
 
+        } else if (strcmp(flag, "-count") == 0
+                   && OPS_GetNumRemainingInputArgs() > 0) {
+            int numdata = 1;
+            if (OPS_GetIntInput(&numdata, &count) < 0) {
+                opserr << "WARNING Broyden failed to read count\n";
+                return 0;
             }
-          else if (strcmp (flag, "-count") == 0
-                   && OPS_GetNumRemainingInputArgs () > 0)
-            {
-                int numdata = 1;
-                if (OPS_GetIntInput (&numdata, &count) < 0)
-                  {
-                      opserr << "WARNING Broyden failed to read count\n";
-                      return 0;
-                  }
-            }
-      }
+        }
+    }
 
     if (count == -1)
-        return new BFGS (formTangent);
+        return new BFGS(formTangent);
     else
-        return new BFGS (formTangent, count);
+        return new BFGS(formTangent, count);
 }
 #endif
 
 // Constructor
-BFGS::BFGS (int theTangentToUse, int n):
-EquiSolnAlgo (EquiALGORITHM_TAGS_BFGS),
-tangent (theTangentToUse),
-numberLoops (n)
+BFGS::BFGS(int theTangentToUse,
+           int n):EquiSolnAlgo(EquiALGORITHM_TAGS_BFGS),
+tangent(theTangentToUse), numberLoops(n)
 {
 
     theTest = 0;
@@ -102,20 +93,18 @@ numberLoops (n)
     rdotz = 0;
     sdotr = 0;
 
-    for (int i = 0; i < numberLoops + 3; i++)
-      {
-          s[i] = 0;
-          z[i] = 0;
-      }
+    for (int i = 0; i < numberLoops + 3; i++) {
+        s[i] = 0;
+        z[i] = 0;
+    }
 
     localTest = 0;
 }
 
 //Constructor
-BFGS::BFGS (ConvergenceTest & theT, int theTangentToUse, int n):
-EquiSolnAlgo (EquiALGORITHM_TAGS_BFGS),
-tangent (theTangentToUse),
-numberLoops (n)
+BFGS::BFGS(ConvergenceTest & theT, int theTangentToUse,
+           int n):EquiSolnAlgo(EquiALGORITHM_TAGS_BFGS),
+tangent(theTangentToUse), numberLoops(n)
 {
     theTest = &theT;
 
@@ -131,17 +120,16 @@ numberLoops (n)
     rdotz = 0;
     sdotr = 0;
 
-    for (int i = 0; i < numberLoops + 3; i++)
-      {
-          s[i] = 0;
-          z[i] = 0;
-      }
+    for (int i = 0; i < numberLoops + 3; i++) {
+        s[i] = 0;
+        z[i] = 0;
+    }
 
-    localTest = theTest->getCopy (numberLoops);
+    localTest = theTest->getCopy(numberLoops);
 }
 
 // Destructor
-BFGS::~BFGS ()
+BFGS::~BFGS()
 {
     if (temp != 0)
         delete temp;
@@ -171,17 +159,16 @@ BFGS::~BFGS ()
         delete[]sdotr;
     sdotr = 0;
 
-    for (int i = 0; i < numberLoops + 3; i++)
-      {
-          if (s[i] != 0)
-              delete s[i];
-          if (z[i] != 0)
-              delete z[i];
-          //delete r[i];
-          s[i] = 0;
-          z[i] = 0;
-          //r[i] = 0;
-      }                         //end for i
+    for (int i = 0; i < numberLoops + 3; i++) {
+        if (s[i] != 0)
+            delete s[i];
+        if (z[i] != 0)
+            delete z[i];
+        //delete r[i];
+        s[i] = 0;
+        z[i] = 0;
+        //r[i] = 0;
+    }                           //end for i
 
     if (s != 0)
         delete[]s;
@@ -196,11 +183,11 @@ BFGS::~BFGS ()
 }
 
 void
-BFGS::setLinks (AnalysisModel & theModel,
+ BFGS::setLinks(AnalysisModel & theModel,
                 IncrementalIntegrator & theIntegrator,
                 LinearSOE & theSOE, ConvergenceTest * theTest)
 {
-    this->EquiSolnAlgo::setLinks (theModel, theIntegrator, theSOE, theTest);
+    this->EquiSolnAlgo::setLinks(theModel, theIntegrator, theSOE, theTest);
 
     if (theTest == 0)
         return;
@@ -208,17 +195,15 @@ BFGS::setLinks (AnalysisModel & theModel,
     if (localTest != 0)
         delete localTest;
 
-    localTest = theTest->getCopy (this->numberLoops);
-    if (localTest == 0)
-      {
-          opserr << "BFGS::setLinks() - could not get a copy\n";
-      }
+    localTest = theTest->getCopy(this->numberLoops);
+    if (localTest == 0) {
+        opserr << "BFGS::setLinks() - could not get a copy\n";
+    }
 }
 
-int
-BFGS::setConvergenceTest (ConvergenceTest * newTest)
+int BFGS::setConvergenceTest(ConvergenceTest * newTest)
 {
-    this->EquiSolnAlgo::setConvergenceTest (newTest);
+    this->EquiSolnAlgo::setConvergenceTest(newTest);
 
     if (theTest == 0)
         return 0;
@@ -226,51 +211,46 @@ BFGS::setConvergenceTest (ConvergenceTest * newTest)
     if (localTest != 0)
         delete localTest;
 
-    localTest = theTest->getCopy (this->numberLoops);
-    if (localTest == 0)
-      {
-          opserr <<
-              "BFGS::setConvergenceTest() - could not get copy for local test\n";
-          return -1;
-      }
-    else
+    localTest = theTest->getCopy(this->numberLoops);
+    if (localTest == 0) {
+        opserr <<
+            "BFGS::setConvergenceTest() - could not get copy for local test\n";
+        return -1;
+    } else
         return 0;
 }
 
 
 
-int
-BFGS::solveCurrentStep (void)
+int BFGS::solveCurrentStep(void)
 {
 
     // set up some pointers and check they are valid
     // NOTE this could be taken away if we set Ptrs as protecetd in superclass
 
-    AnalysisModel *theAnaModel = this->getAnalysisModelPtr ();
+    AnalysisModel *theAnaModel = this->getAnalysisModelPtr();
 
     IncrementalIntegrator *theIntegrator =
-        this->getIncrementalIntegratorPtr ();
+        this->getIncrementalIntegratorPtr();
 
-    LinearSOE *theSOE = this->getLinearSOEptr ();
+    LinearSOE *theSOE = this->getLinearSOEptr();
 
     if ((theAnaModel == 0) || (theIntegrator == 0) || (theSOE == 0)
-        || (theTest == 0))
-      {
-          opserr << "WARNING BFGS::solveCurrentStep() - setLinks() has";
-          opserr << " not been called - or no ConvergenceTest has been set\n";
-          return -5;
-      }
-
+        || (theTest == 0)) {
+        opserr << "WARNING BFGS::solveCurrentStep() - setLinks() has";
+        opserr <<
+            " not been called - or no ConvergenceTest has been set\n";
+        return -5;
+    }
     // set itself as the ConvergenceTest objects EquiSolnAlgo
-    theTest->setEquiSolnAlgo (*this);
-    if (theTest->start () < 0)
-      {
-          opserr << "BFGS::solveCurrentStep() -";
-          opserr << "the ConvergenceTest object failed in start()\n";
-          return -3;
-      }
+    theTest->setEquiSolnAlgo(*this);
+    if (theTest->start() < 0) {
+        opserr << "BFGS::solveCurrentStep() -";
+        opserr << "the ConvergenceTest object failed in start()\n";
+        return -3;
+    }
 
-    localTest->setEquiSolnAlgo (*this);
+    localTest->setEquiSolnAlgo(*this);
 
     if (rdotz == 0)
         rdotz = new double[numberLoops + 3];
@@ -281,158 +261,141 @@ BFGS::solveCurrentStep (void)
 
     int result = -1;
     int count = 0;
-    do
-      {
+    do {
 
-          // opserr << "      BFGS -- Forming New Tangent" << endln;
+        // opserr << "      BFGS -- Forming New Tangent" << endln;
 
-          //form the initial tangent
-          if (theIntegrator->formTangent (tangent) < 0)
-            {
-                opserr << "WARNING BFGS::solveCurrentStep() -";
-                opserr << "the Integrator failed in formTangent()\n";
-                return -1;
-            }
+        //form the initial tangent
+        if (theIntegrator->formTangent(tangent) < 0) {
+            opserr << "WARNING BFGS::solveCurrentStep() -";
+            opserr << "the Integrator failed in formTangent()\n";
+            return -1;
+        }
+        //form the initial residual 
+        if (theIntegrator->formUnbalance() < 0) {
+            opserr << "WARNING BFGS::solveCurrentStep() -";
+            opserr << "the Integrator failed in formUnbalance()\n";
+        }
+        //solve
+        if (theSOE->solve() < 0) {
+            opserr << "WARNING BFGS::solveCurrentStep() -";
+            opserr << "the LinearSysOfEqn failed in solve()\n";
+            return -3;
+        }
+        //update
+        if (theIntegrator->update(theSOE->getX()) < 0) {
+            opserr << "WARNING BFGS::solveCurrentStep() -";
+            opserr << "the Integrator failed in update()\n";
+            return -4;
+        }
 
-          //form the initial residual 
-          if (theIntegrator->formUnbalance () < 0)
-            {
-                opserr << "WARNING BFGS::solveCurrentStep() -";
-                opserr << "the Integrator failed in formUnbalance()\n";
-            }
+        //    int systemSize = ( theSOE->getB() ).Size();
+        int systemSize = theSOE->getNumEqn();
 
-          //solve
-          if (theSOE->solve () < 0)
-            {
+        //temporary vector
+        if (temp == 0)
+            temp = new Vector(systemSize);
+
+        //initial displacement increment
+        if (s[1] == 0)
+            s[1] = new Vector(systemSize);
+
+        *s[1] = theSOE->getX();
+
+        if (residOld == 0)
+            residOld = new Vector(systemSize);
+
+        *residOld = theSOE->getB();
+        *residOld *= (-1.0);
+
+        //form the residual again
+        if (theIntegrator->formUnbalance() < 0) {
+            opserr << "WARNING BFGS::solveCurrentStep() -";
+            opserr << "the Integrator failed in formUnbalance()\n";
+        }
+
+        if (residNew == 0)
+            residNew = new Vector(systemSize);
+
+        if (du == 0)
+            du = new Vector(systemSize);
+
+        if (b == 0)
+            b = new Vector(systemSize);
+
+        localTest->start();
+
+        int nBFGS = 1;
+        do {
+
+            //save residual
+            *residNew = theSOE->getB();
+            *residNew *= (-1.0);
+
+
+            //solve
+            if (theSOE->solve() < 0) {
                 opserr << "WARNING BFGS::solveCurrentStep() -";
                 opserr << "the LinearSysOfEqn failed in solve()\n";
                 return -3;
             }
+            //save right hand side
+            *b = theSOE->getB();
 
-          //update
-          if (theIntegrator->update (theSOE->getX ()) < 0)
-            {
+            //save displacement increment
+            *du = theSOE->getX();
+
+            //BFGS modifications to du
+            BFGSUpdate(theIntegrator, theSOE, *du, *b, nBFGS);
+
+            if (theIntegrator->update(*du) < 0) {
                 opserr << "WARNING BFGS::solveCurrentStep() -";
                 opserr << "the Integrator failed in update()\n";
                 return -4;
             }
 
+            /* opserr << "        BFGS Iteration " << nBFGS 
+               << " Residual Norm = " 
+               << sqrt( (*residNew) ^ (*residNew) ) << endln;
+             */
 
-          //    int systemSize = ( theSOE->getB() ).Size();
-          int systemSize = theSOE->getNumEqn ();
+            //increment broyden counter
+            nBFGS += 1;
 
-          //temporary vector
-          if (temp == 0)
-              temp = new Vector (systemSize);
+            //save displacement increment
+            if (s[nBFGS] == 0)
+                s[nBFGS] = new Vector(systemSize);
 
-          //initial displacement increment
-          if (s[1] == 0)
-              s[1] = new Vector (systemSize);
+            *s[nBFGS] = *du;
 
-          *s[1] = theSOE->getX ();
+            //swap residuals
+            *residOld = *residNew;
 
-          if (residOld == 0)
-              residOld = new Vector (systemSize);
-
-          *residOld = theSOE->getB ();
-          *residOld *= (-1.0);
-
-          //form the residual again
-          if (theIntegrator->formUnbalance () < 0)
-            {
+            //form the residual again
+            if (theIntegrator->formUnbalance() < 0) {
                 opserr << "WARNING BFGS::solveCurrentStep() -";
                 opserr << "the Integrator failed in formUnbalance()\n";
             }
 
-          if (residNew == 0)
-              residNew = new Vector (systemSize);
-
-          if (du == 0)
-              du = new Vector (systemSize);
-
-          if (b == 0)
-              b = new Vector (systemSize);
-
-          localTest->start ();
-
-          int nBFGS = 1;
-          do
-            {
-
-                //save residual
-                *residNew = theSOE->getB ();
-                *residNew *= (-1.0);
+            result = localTest->test();
 
 
-                //solve
-                if (theSOE->solve () < 0)
-                  {
-                      opserr << "WARNING BFGS::solveCurrentStep() -";
-                      opserr << "the LinearSysOfEqn failed in solve()\n";
-                      return -3;
-                  }
-
-                //save right hand side
-                *b = theSOE->getB ();
-
-                //save displacement increment
-                *du = theSOE->getX ();
-
-                //BFGS modifications to du
-                BFGSUpdate (theIntegrator, theSOE, *du, *b, nBFGS);
-
-                if (theIntegrator->update (*du) < 0)
-                  {
-                      opserr << "WARNING BFGS::solveCurrentStep() -";
-                      opserr << "the Integrator failed in update()\n";
-                      return -4;
-                  }
-
-                /* opserr << "        BFGS Iteration " << nBFGS 
-                   << " Residual Norm = " 
-                   << sqrt( (*residNew) ^ (*residNew) ) << endln;
-                 */
-
-                //increment broyden counter
-                nBFGS += 1;
-
-                //save displacement increment
-                if (s[nBFGS] == 0)
-                    s[nBFGS] = new Vector (systemSize);
-
-                *s[nBFGS] = *du;
-
-                //swap residuals
-                *residOld = *residNew;
-
-                //form the residual again
-                if (theIntegrator->formUnbalance () < 0)
-                  {
-                      opserr << "WARNING BFGS::solveCurrentStep() -";
-                      opserr << "the Integrator failed in formUnbalance()\n";
-                  }
-
-                result = localTest->test ();
+        }
+        while (result == -1 && nBFGS <= numberLoops);
 
 
-            }
-          while (result == -1 && nBFGS <= numberLoops);
+        result = theTest->test();
+        this->record(count++);
 
-
-          result = theTest->test ();
-          this->record (count++);
-
-      }
+    }
     while (result == -1);
 
 
-    if (result == -2)
-      {
-          opserr << "BFGS::solveCurrentStep() -";
-          opserr << "the ConvergenceTest object failed in test()\n";
-          return -3;
-      }
-
+    if (result == -2) {
+        opserr << "BFGS::solveCurrentStep() -";
+        opserr << "the ConvergenceTest object failed in test()\n";
+        return -3;
+    }
     // note - if positive result we are returning what the convergence test returned
     // which should be the number of iterations
     return result;
@@ -440,15 +403,15 @@ BFGS::solveCurrentStep (void)
 
 
 
-void
-BFGS::BFGSUpdate (IncrementalIntegrator * theIntegrator,
-                  LinearSOE * theSOE, Vector & du, Vector & b, int nBFGS)
+void BFGS::BFGSUpdate(IncrementalIntegrator * theIntegrator,
+                      LinearSOE * theSOE, Vector & du, Vector & b,
+                      int nBFGS)
 {
 
     static const double eps = 1.0e-16;
 
     //  int systemSize = ( theSOE->getB() ).Size();
-    int systemSize = theSOE->getNumEqn ();
+    int systemSize = theSOE->getNumEqn();
 
 
     //compute z
@@ -456,58 +419,56 @@ BFGS::BFGSUpdate (IncrementalIntegrator * theIntegrator,
     //    theSOE->setB( (*residNew) - (*residOld) );
     *temp = *residNew;
     *temp -= *residOld;
-    theSOE->setB (*temp);
+    theSOE->setB(*temp);
 
 
-    if (theSOE->solve () < 0)
-      {
-          opserr << "WARNING BFGS::solveCurrentStep() -";
-          opserr << "the LinearSysOfEqn failed in solve()\n";
-      }
+    if (theSOE->solve() < 0) {
+        opserr << "WARNING BFGS::solveCurrentStep() -";
+        opserr << "the LinearSysOfEqn failed in solve()\n";
+    }
 
     if (z[nBFGS] == 0)
-        z[nBFGS] = new Vector (systemSize);
+        z[nBFGS] = new Vector(systemSize);
 
-    *z[nBFGS] = theSOE->getX ();
+    *z[nBFGS] = theSOE->getX();
     //  *z[nBFGS] *= (-1.0);
 
     int i;
-    for (i = 1; i <= (nBFGS - 1); i++)
-      {
+    for (i = 1; i <= (nBFGS - 1); i++) {
 
-          if (sdotr[i] < eps)
-              break;
+        if (sdotr[i] < eps)
+            break;
 
-          double fact1 = 1.0 + (rdotz[i] / sdotr[i]);
+        double fact1 = 1.0 + (rdotz[i] / sdotr[i]);
 
-          fact1 /= sdotr[i];
+        fact1 /= sdotr[i];
 
-          double pdotb = (*s[i]) ^ (theSOE->getB ());
-
-
-          fact1 *= pdotb;
-
-          //    *z[nBFGS] +=  fact1 * ( *s[i] );
-          *temp = *s[i];
-          *temp *= fact1;
-          *z[nBFGS] += *temp;
+        double pdotb = (*s[i]) ^ (theSOE->getB());
 
 
-          double bdotz = (*z[i]) ^ (theSOE->getB ());
+        fact1 *= pdotb;
 
-          //    *z[nBFGS] -= (1.0/sdotr[i]) * 
-          //             ( bdotz * (*s[i])   +  pdotb * (*z[i]) );   
-          *temp = *s[i];
-          *temp *= bdotz;
-          *temp /= sdotr[i];
-          *z[nBFGS] -= *temp;
+        //    *z[nBFGS] +=  fact1 * ( *s[i] );
+        *temp = *s[i];
+        *temp *= fact1;
+        *z[nBFGS] += *temp;
 
-          *temp = *z[i];
-          *temp *= pdotb;
-          *temp /= sdotr[i];
-          *z[nBFGS] -= *temp;
 
-      }                         //end for i
+        double bdotz = (*z[i]) ^ (theSOE->getB());
+
+        //    *z[nBFGS] -= (1.0/sdotr[i]) * 
+        //             ( bdotz * (*s[i])   +  pdotb * (*z[i]) );   
+        *temp = *s[i];
+        *temp *= bdotz;
+        *temp /= sdotr[i];
+        *z[nBFGS] -= *temp;
+
+        *temp = *z[i];
+        *temp *= pdotb;
+        *temp /= sdotr[i];
+        *z[nBFGS] -= *temp;
+
+    }                           //end for i
 
 
     //sdotr[nBFGS] = *s[nBFGS] ^ ( *residNew - *residOld );
@@ -523,71 +484,66 @@ BFGS::BFGSUpdate (IncrementalIntegrator * theIntegrator,
 
 
     //BFGS modifications to du
-    for (i = 1; i <= nBFGS; i++)
-      {
+    for (i = 1; i <= nBFGS; i++) {
 
-          if (sdotr[i] < eps)
-              break;
+        if (sdotr[i] < eps)
+            break;
 
-          double fact1 = 1.0 + (rdotz[i] / sdotr[i]);
+        double fact1 = 1.0 + (rdotz[i] / sdotr[i]);
 
-          fact1 /= sdotr[i];
+        fact1 /= sdotr[i];
 
-          double sdotb = (*s[i]) ^ b;
+        double sdotb = (*s[i]) ^ b;
 
-          fact1 *= sdotb;
+        fact1 *= sdotb;
 
-          //du +=  fact1 * ( *s[i] );
-          *temp = *s[i];
-          *temp *= fact1;
-          du += *temp;
-
-
-          double bdotz = (*z[i]) ^ b;
-
-          //du -= (1.0/sdotr[i]) * 
-          //             ( bdotz * (*s[i])   +  sdotb * (*z[i]) );   
-          *temp = *s[i];
-          *temp *= bdotz;
-          *temp /= sdotr[i];
-          du -= *temp;
-
-          *temp = *z[i];
-          *temp *= sdotb;
-          *temp /= sdotr[i];
-          du -= *temp;
+        //du +=  fact1 * ( *s[i] );
+        *temp = *s[i];
+        *temp *= fact1;
+        du += *temp;
 
 
-      }                         //end for i
+        double bdotz = (*z[i]) ^ b;
+
+        //du -= (1.0/sdotr[i]) * 
+        //             ( bdotz * (*s[i])   +  sdotb * (*z[i]) );   
+        *temp = *s[i];
+        *temp *= bdotz;
+        *temp /= sdotr[i];
+        du -= *temp;
+
+        *temp = *z[i];
+        *temp *= sdotb;
+        *temp /= sdotr[i];
+        du -= *temp;
+
+
+    }                           //end for i
 
 }
 
 
-ConvergenceTest *
-BFGS::getConvergenceTest (void)
+ConvergenceTest *BFGS::getConvergenceTest(void)
 {
     return theTest;
 }
 
-int
-BFGS::sendSelf (int cTag, Channel & theChannel)
+int BFGS::sendSelf(int cTag, Channel & theChannel)
 {
     return -1;
 }
 
-int
-BFGS::recvSelf (int cTag, Channel & theChannel, FEM_ObjectBroker & theBroker)
+int BFGS::recvSelf(int cTag, Channel & theChannel,
+                   FEM_ObjectBroker & theBroker)
 {
     return -1;
 }
 
 
-void
-BFGS::Print (OPS_Stream & s, int flag)
+void BFGS::Print(OPS_Stream & s, int flag)
 {
-    if (flag == 0)
-      {
-          s << "BFGS" << endln;
-          s << "  Number of Iterations = " << numberLoops << endln;
-      }
+    if (flag == 0) {
+        s << "BFGS" << endln;
+        s << "  Number of Iterations = " << numberLoops << endln;
+    }
 }

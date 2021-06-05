@@ -36,51 +36,45 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_MultilinearBackbone (void)
+void *OPS_MultilinearBackbone(void)
 {
     HystereticBackbone *theBackbone = 0;
 
-    if (OPS_GetNumRemainingInputArgs () < 7)
-      {
-          opserr <<
-              "Invalid number of args, want: hystereticBackbone Multilinear tag? e1? s1? e2? s2? ..."
-              << endln;
-          return 0;
-      }
+    if (OPS_GetNumRemainingInputArgs() < 7) {
+        opserr <<
+            "Invalid number of args, want: hystereticBackbone Multilinear tag? e1? s1? e2? s2? ..."
+            << endln;
+        return 0;
+    }
 
     int iData[1];
     int numData = 1;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid tag for hystereticBackbone Multilinear"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid tag for hystereticBackbone Multilinear"
+            << endln;
+        return 0;
+    }
 
-    int numPoints = OPS_GetNumRemainingInputArgs () / 2;
+    int numPoints = OPS_GetNumRemainingInputArgs() / 2;
     numData = 2 * numPoints;
-    Vector e (numPoints);
-    Vector s (numPoints);
+    Vector e(numPoints);
+    Vector s(numPoints);
     double *dData = new double[numData];
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "WARNING invalid data for hystereticBackbone Multilinear"
-              << endln;
-          return 0;
-      }
-    for (int i = 0; i < numPoints; i++)
-      {
-          e (i) = dData[2 * i];
-          s (i) = dData[2 * i + 1];
-      }
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "WARNING invalid data for hystereticBackbone Multilinear"
+            << endln;
+        return 0;
+    }
+    for (int i = 0; i < numPoints; i++) {
+        e(i) = dData[2 * i];
+        s(i) = dData[2 * i + 1];
+    }
 
-    theBackbone = new MultilinearBackbone (iData[0], numPoints, e, s);
-    if (theBackbone == 0)
-      {
-          opserr << "WARNING could not create MultilinearBackbone\n";
-          return 0;
-      }
+    theBackbone = new MultilinearBackbone(iData[0], numPoints, e, s);
+    if (theBackbone == 0) {
+        opserr << "WARNING could not create MultilinearBackbone\n";
+        return 0;
+    }
 
     delete[]dData;
 
@@ -88,15 +82,12 @@ OPS_MultilinearBackbone (void)
 }
 #endif
 
-MultilinearBackbone::MultilinearBackbone (int tag, int num,
-                                          const Vector & def,
-                                          const Vector & force):
-HystereticBackbone (tag, BACKBONE_TAG_Multilinear),
-E (0),
-e (0),
-s (0),
-c (0),
-numPoints (num)
+MultilinearBackbone::MultilinearBackbone(int tag, int num,
+                                         const Vector & def,
+                                         const Vector &
+                                         force):HystereticBackbone(tag,
+                                                                   BACKBONE_TAG_Multilinear),
+E(0), e(0), s(0), c(0), numPoints(num)
 {
     E = new double[numPoints];
     if (E == 0)
@@ -128,43 +119,40 @@ numPoints (num)
 
     int i;
 
-    for (i = 1; i <= numPoints; i++)
-      {
-          e[i] = def (i - 1);
-          s[i] = force (i - 1);
-      }
+    for (i = 1; i <= numPoints; i++) {
+        e[i] = def(i - 1);
+        s[i] = force(i - 1);
+    }
 
     for (i = 1; i <= numPoints; i++)
         if (e[i] < e[i - 1])
             error = true;
 
-    if (error)
-      {
-          delete[]E;
-          delete[]e;
-          delete[]s;
-          delete[]c;
+    if (error) {
+        delete[]E;
+        delete[]e;
+        delete[]s;
+        delete[]c;
 
-          opserr <<
-              "MultilinearBackbone::MultilinearBackbone -- input backbone is not unique (one-to-one)"
-              << endln;
-      }
+        opserr <<
+            "MultilinearBackbone::MultilinearBackbone -- input backbone is not unique (one-to-one)"
+            << endln;
+    }
 
-    for (i = 1; i <= numPoints; i++)
-      {
-          E[i - 1] = (s[i] - s[i - 1]) / (e[i] - e[i - 1]);
-          c[i] = c[i - 1] + 0.5 * (s[i] - s[i - 1]) * (e[i] - e[i - 1]);
-      }
+    for (i = 1; i <= numPoints; i++) {
+        E[i - 1] = (s[i] - s[i - 1]) / (e[i] - e[i - 1]);
+        c[i] = c[i - 1] + 0.5 * (s[i] - s[i - 1]) * (e[i] - e[i - 1]);
+    }
 }
 
-MultilinearBackbone::MultilinearBackbone ():
-HystereticBackbone (0, BACKBONE_TAG_Multilinear),
-E (0), e (0), s (0), c (0), numPoints (0)
+MultilinearBackbone::MultilinearBackbone():
+HystereticBackbone(0, BACKBONE_TAG_Multilinear),
+E(0), e(0), s(0), c(0), numPoints(0)
 {
 
 }
 
-MultilinearBackbone::~MultilinearBackbone ()
+MultilinearBackbone::~MultilinearBackbone()
 {
     if (E != 0)
         delete[]E;
@@ -180,103 +168,90 @@ MultilinearBackbone::~MultilinearBackbone ()
 }
 
 double
-MultilinearBackbone::getTangent (double strain)
+ MultilinearBackbone::getTangent(double strain)
 {
-    for (int i = 1; i <= numPoints; i++)
-      {
-          if (strain < e[i])
-              return E[i - 1];
-      }
+    for (int i = 1; i <= numPoints; i++) {
+        if (strain < e[i])
+            return E[i - 1];
+    }
 
     return E[0] * 1.0e-9;
 }
 
-double
-MultilinearBackbone::getStress (double strain)
+double MultilinearBackbone::getStress(double strain)
 {
-    for (int i = 1; i <= numPoints; i++)
-      {
-          if (strain < e[i])
-              return s[i - 1] + E[i - 1] * (strain - e[i - 1]);
-      }
+    for (int i = 1; i <= numPoints; i++) {
+        if (strain < e[i])
+            return s[i - 1] + E[i - 1] * (strain - e[i - 1]);
+    }
 
     return s[numPoints];
 }
 
-double
-MultilinearBackbone::getEnergy (double strain)
+double MultilinearBackbone::getEnergy(double strain)
 {
-    for (int i = 1; i <= numPoints; i++)
-      {
-          if (strain < e[i])
-              return c[i - 1] + 0.5 * E[i - 1] * (strain -
-                                                  e[i - 1]) * (strain - e[i -
-                                                                          1]);
-      }
+    for (int i = 1; i <= numPoints; i++) {
+        if (strain < e[i])
+            return c[i - 1] + 0.5 * E[i - 1] * (strain -
+                                                e[i - 1]) * (strain - e[i -
+                                                                        1]);
+    }
 
     return c[numPoints] + s[numPoints] * (strain - e[numPoints]);
 }
 
-double
-MultilinearBackbone::getYieldStrain (void)
+double MultilinearBackbone::getYieldStrain(void)
 {
     return e[1];
 }
 
-HystereticBackbone *
-MultilinearBackbone::getCopy (void)
+HystereticBackbone *MultilinearBackbone::getCopy(void)
 {
-    Vector def (&e[1], numPoints);
-    Vector force (&s[1], numPoints);
+    Vector def(&e[1], numPoints);
+    Vector force(&s[1], numPoints);
 
     MultilinearBackbone *theCopy =
-        new MultilinearBackbone (this->getTag (), numPoints, def, force);
+        new MultilinearBackbone(this->getTag(), numPoints, def, force);
 
     return theCopy;
 }
 
-void
-MultilinearBackbone::Print (OPS_Stream & o, int flag)
+void MultilinearBackbone::Print(OPS_Stream & o, int flag)
 {
-    Vector def (&e[1], numPoints);
-    Vector force (&s[1], numPoints);
+    Vector def(&e[1], numPoints);
+    Vector force(&s[1], numPoints);
 
-    o << "MultilinearBackbone, tag: " << this->getTag () << endln;
+    o << "MultilinearBackbone, tag: " << this->getTag() << endln;
     o << "\tStrains: " << def << endln;
     o << "\tStresses: " << force << endln;
 }
 
-int
-MultilinearBackbone::setVariable (char *argv)
+int MultilinearBackbone::setVariable(char *argv)
 {
-    if (strcmp (argv, "yieldStrain") == 0)
+    if (strcmp(argv, "yieldStrain") == 0)
         return 1;
     else
         return -1;
 }
 
-int
-MultilinearBackbone::getVariable (int varID, double &theValue)
+int MultilinearBackbone::getVariable(int varID, double &theValue)
 {
-    switch (varID)
-      {
-      case 1:
-          theValue = e[1];
-          return 1;
-      default:
-          return -1;
-      }
+    switch (varID) {
+    case 1:
+        theValue = e[1];
+        return 1;
+    default:
+        return -1;
+    }
 }
 
-int
-MultilinearBackbone::sendSelf (int commitTag, Channel & theChannel)
+int MultilinearBackbone::sendSelf(int commitTag, Channel & theChannel)
 {
     return -1;
 }
 
-int
-MultilinearBackbone::recvSelf (int commitTag, Channel & theChannel,
-                               FEM_ObjectBroker & theBroker)
+int MultilinearBackbone::recvSelf(int commitTag, Channel & theChannel,
+                                  FEM_ObjectBroker & theBroker)
 {
     return -1;
 }

@@ -42,40 +42,33 @@
 #include <DOF_Group.h>
 #include <FE_Element.h>
 
-ArrayGraph::ArrayGraph (int arraySize):
-numVertex (0),
-numEdge (0),
-sizeVertices (arraySize),
-lastEmpty (0),
-theVertices (0),
-myIter (*this)
+ArrayGraph::ArrayGraph(int arraySize):numVertex(0),
+numEdge(0),
+sizeVertices(arraySize), lastEmpty(0), theVertices(0), myIter(*this)
 {
     // we now try and get an array of size arraySize
     theVertices = new Vertex *[arraySize];
-    if (theVertices == 0)
-      {
-          opserr << "Warning ArrayGraph::ArrayGraph";
-          opserr << " - no contiguous memory block big enough available\n";
-          sizeVertices = 0;
-      }
-
+    if (theVertices == 0) {
+        opserr << "Warning ArrayGraph::ArrayGraph";
+        opserr << " - no contiguous memory block big enough available\n";
+        sizeVertices = 0;
+    }
     // zero the pointers
 
     for (int i = 0; i < arraySize; i++)
         theVertices[i] = 0;
 }
 
-ArrayGraph::~ArrayGraph ()
+ArrayGraph::~ArrayGraph()
 {
     // delete all the vertices, then delete theVertices array
 
-    if (theVertices != 0)
-      {
-          for (int i = 0; i < numVertex; i++)
-              if (theVertices[i] != 0)
-                  delete theVertices[i];
-          delete[]theVertices;
-      }
+    if (theVertices != 0) {
+        for (int i = 0; i < numVertex; i++)
+            if (theVertices[i] != 0)
+                delete theVertices[i];
+        delete[]theVertices;
+    }
 }
 
 
@@ -95,87 +88,73 @@ ArrayGraph::~ArrayGraph ()
 
 
 bool
-ArrayGraph::addVertex (Vertex * vertexPtr)
+ ArrayGraph::addVertex(Vertex * vertexPtr)
 {
     // check the vertex * and its adjacency list
-    if (vertexPtr == 0)
-      {
-          opserr << "WARNING ArrayGraph::addVertex";
-          opserr << " - attempting to add a NULL vertex*\n";
-          return false;
-      }
+    if (vertexPtr == 0) {
+        opserr << "WARNING ArrayGraph::addVertex";
+        opserr << " - attempting to add a NULL vertex*\n";
+        return false;
+    }
 
-    if (vertexPtr->getDegree () != 0)
-      {
-          const ID & adjacency = vertexPtr->getAdjacency ();
-          int size = adjacency.Size ();
-          for (int i = 0; i < size; i++)
-            {
-                Vertex *other = this->getVertexPtr (adjacency (i));
-                if (other == 0)
-                  {
-                      opserr << "WARNING ArrayGraph::addVertex";
-                      opserr <<
-                          " - vertex with adjacent vertex not in graph\n";
-                      return false;
-                  }
-            }
-      }
-
-    // check if we have room to place the vertex
-    if (numVertex == sizeVertices)
-      {
-
-          int newSize = sizeVertices * 2;
-          Vertex **newVertices = new Vertex *[newSize];
-
-          if (newVertices == 0)
-            {
+    if (vertexPtr->getDegree() != 0) {
+        const ID & adjacency = vertexPtr->getAdjacency();
+        int size = adjacency.Size();
+        for (int i = 0; i < size; i++) {
+            Vertex *other = this->getVertexPtr(adjacency(i));
+            if (other == 0) {
                 opserr << "WARNING ArrayGraph::addVertex";
-                opserr <<
-                    " - out of contiguous memory could not create a new array";
-                delete vertexPtr;
+                opserr << " - vertex with adjacent vertex not in graph\n";
                 return false;
             }
+        }
+    }
+    // check if we have room to place the vertex
+    if (numVertex == sizeVertices) {
 
-          // copy the old and 0 the extra, then delete the old
-          for (int i = 0; i < sizeVertices; i++)
-              newVertices[i] = theVertices[i];
-          for (int j = sizeVertices; j < newSize; j++)
-              newVertices[j] = 0;
+        int newSize = sizeVertices * 2;
+        Vertex **newVertices = new Vertex *[newSize];
 
-          delete[]theVertices;
+        if (newVertices == 0) {
+            opserr << "WARNING ArrayGraph::addVertex";
+            opserr <<
+                " - out of contiguous memory could not create a new array";
+            delete vertexPtr;
+            return false;
+        }
+        // copy the old and 0 the extra, then delete the old
+        for (int i = 0; i < sizeVertices; i++)
+            newVertices[i] = theVertices[i];
+        for (int j = sizeVertices; j < newSize; j++)
+            newVertices[j] = 0;
 
-          theVertices = newVertices;
-          sizeVertices = newSize;
-      }
+        delete[]theVertices;
 
+        theVertices = newVertices;
+        sizeVertices = newSize;
+    }
     // now see if we can add the Vertex into the array in its vertexTag location
-    int vertexTag = vertexPtr->getTag ();
+    int vertexTag = vertexPtr->getTag();
     if ((vertexTag >= 0) && (vertexTag < sizeVertices) &&
-        (theVertices[vertexTag] == 0))
-      {
+        (theVertices[vertexTag] == 0)) {
 
-          theVertices[vertexTag] = vertexPtr;
-          numVertex++;
-          return 0;
+        theVertices[vertexTag] = vertexPtr;
+        numVertex++;
+        return 0;
 
-      }
-    else
-      {
+    } else {
 
-          // we have to serach through the array till we find an empty spot
+        // we have to serach through the array till we find an empty spot
 
-          for (int i = 0; i < sizeVertices; i++)
-              if (theVertices[i] == 0)
-                {
+        for (int i = 0; i < sizeVertices; i++)
+            if (theVertices[i] == 0) {
 
-                    lastEmpty = i + 1;  // stores the lastEmpty place
-                    theVertices[i] = vertexPtr;
-                    numVertex++;
-                    return true;
-                }
-      }
+                lastEmpty = i + 1;      // stores the lastEmpty place
+                theVertices[i] = vertexPtr;
+                numVertex++;
+                return true;
+            }
+    }
 
     // we should never get here
 
@@ -189,29 +168,25 @@ ArrayGraph::addVertex (Vertex * vertexPtr)
 // vertex it is looking for. If no such vertex exists in the graph $0$ is
 // returned.\\ 
 
-Vertex *
-ArrayGraph::getVertexPtr (int vertexTag)
+Vertex *ArrayGraph::getVertexPtr(int vertexTag)
 {
     // check first to see if it's in a nice position
     if ((vertexTag >= 0) && (vertexTag < sizeVertices) &&
         (theVertices[vertexTag] != 0) &&
-        (theVertices[vertexTag]->getTag () == vertexTag))
-      {
+        (theVertices[vertexTag]->getTag() == vertexTag)) {
 
-          return theVertices[vertexTag];
-      }
+        return theVertices[vertexTag];
+    }
     // it's not nicely positioned, we have to search
     // through theVertices until we find it
 
     else
         for (int i = 0; i < sizeVertices; i++)
             if ((theVertices[i] != 0) &&
-                (theVertices[i]->getTag () == vertexTag))
-              {
+                (theVertices[i]->getTag() == vertexTag)) {
 
-                  return theVertices[i];
-              }
-
+                return theVertices[i];
+            }
     // else the vertex is not there
 
     return 0;
@@ -225,20 +200,19 @@ ArrayGraph::getVertexPtr (int vertexTag)
 // addEdge()} on each of the corresponding vertices in the 
 // graph. Returns $0$ if sucessfull, a negative number if not.
 
-int
-ArrayGraph::addEdge (int vertexTag, int otherVertexTag)
+int ArrayGraph::addEdge(int vertexTag, int otherVertexTag)
 {
     // get pointers to the vertices, if one does not exist return
 
-    Vertex *vertex1 = this->getVertexPtr (vertexTag);
-    Vertex *vertex2 = this->getVertexPtr (otherVertexTag);
+    Vertex *vertex1 = this->getVertexPtr(vertexTag);
+    Vertex *vertex2 = this->getVertexPtr(otherVertexTag);
     if ((vertex1 == 0) || (vertex2 == 0))
         return -1;
 
     // add an edge to each vertex
     int result;
-    if ((result = vertex1->addEdge (otherVertexTag)) == 0)
-        if ((result = vertex2->addEdge (vertexTag)) == 0)
+    if ((result = vertex1->addEdge(otherVertexTag)) == 0)
+        if ((result = vertex2->addEdge(vertexTag)) == 0)
             numEdge++;
 
     return result;
@@ -248,37 +222,33 @@ ArrayGraph::addEdge (int vertexTag, int otherVertexTag)
 // A method which first invokes {\em reset()} on the graphs ArrayVertexIter
 // and then returns a reference to this iter.\\
 
-VertexIter & ArrayGraph::getVertices (void)
+VertexIter & ArrayGraph::getVertices(void)
 {
     // reset the iter and then return it
-    myIter.reset ();
+    myIter.reset();
     return myIter;
 }
 
 
-int
-ArrayGraph::getNumVertex (void) const
+int ArrayGraph::getNumVertex(void) const
 {
     return numVertex;
 }
 
 
-int
-ArrayGraph::getNumEdge (void) const
+int ArrayGraph::getNumEdge(void) const
 {
     return numEdge;
 }
 
 
-int
-ArrayGraph::getArraySize (void) const
+int ArrayGraph::getArraySize(void) const
 {
     return sizeVertices;
 }
 
 
-void
-ArrayGraph::Print (OPS_Stream & s) const
+void ArrayGraph::Print(OPS_Stream & s) const
 {
     s << numVertex << " " << numEdge << endln;
 
@@ -286,16 +256,15 @@ ArrayGraph::Print (OPS_Stream & s) const
 
     // loop over the vertices and print each
 
-    for (int i = 0; i < sizeVertices; i++)
-      {
-          vertexPtr = theVertices[i];
-          if (vertexPtr != 0)
-              vertexPtr->Print (s);
-      }
+    for (int i = 0; i < sizeVertices; i++) {
+        vertexPtr = theVertices[i];
+        if (vertexPtr != 0)
+            vertexPtr->Print(s);
+    }
 }
 
-OPS_Stream & operator<< (OPS_Stream & s, const ArrayGraph & M)
+OPS_Stream & operator<<(OPS_Stream & s, const ArrayGraph & M)
 {
-    M.Print (s);
+    M.Print(s);
     return s;
 }

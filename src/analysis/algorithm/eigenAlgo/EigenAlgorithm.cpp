@@ -42,23 +42,20 @@
 #include <EigenIntegrator.h>
 #include <EigenSOE.h>
 
-EigenAlgorithm::EigenAlgorithm (int classTag):
-SolutionAlgorithm (classTag),
-theModel (0),
-theIntegrator (0),
-theSOE (0)
+EigenAlgorithm::EigenAlgorithm(int classTag):SolutionAlgorithm(classTag),
+theModel(0), theIntegrator(0), theSOE(0)
 {
     // need do nothing here.
 }
 
 
-EigenAlgorithm::~EigenAlgorithm ()
+EigenAlgorithm::~EigenAlgorithm()
 {
     // do nothing here.
 }
 
 void
-EigenAlgorithm::setLinks (AnalysisModel & theNewModel,
+ EigenAlgorithm::setLinks(AnalysisModel & theNewModel,
                           EigenIntegrator & theNewIntegrator,
                           EigenSOE & theNewSOE)
 {
@@ -67,20 +64,17 @@ EigenAlgorithm::setLinks (AnalysisModel & theNewModel,
     theSOE = &theNewSOE;
 }
 
-AnalysisModel *
-EigenAlgorithm::getAnalysisModelPtr () const
+AnalysisModel *EigenAlgorithm::getAnalysisModelPtr() const
 {
     return theModel;
 }
 
-EigenIntegrator *
-EigenAlgorithm::getEigenIntegratorPtr () const
+EigenIntegrator *EigenAlgorithm::getEigenIntegratorPtr() const
 {
     return theIntegrator;
 }
 
-EigenSOE *
-EigenAlgorithm::getEigenSOEptr () const
+EigenSOE *EigenAlgorithm::getEigenSOEptr() const
 {
     return theSOE;
 }

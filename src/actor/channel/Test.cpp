@@ -3,51 +3,50 @@
 #include <stdio.h>
 #include <string.h>
 
-extern int httpGet (char const *URL, char const *page, unsigned int port,
+extern int httpGet(char const *URL, char const *page, unsigned int port,
+                   char **dataPtr);
+
+
+extern int httpsGet(char const *URL, char const *page, unsigned int port,
                     char **dataPtr);
 
 
-extern int httpsGet (char const *URL, char const *page, unsigned int port,
-                     char **dataPtr);
+extern int neesLogin(const char *user, const char *pass, char **cookieRes);
+
+extern int neesSEND(const char *page,
+                    const char *cookie,
+                    const char *postData,
+                    const char *contentType, bool, char **resData);
 
 
-extern int neesLogin (const char *user, const char *pass, char **cookieRes);
-
-extern int neesSEND (const char *page,
-                     const char *cookie,
-                     const char *postData,
-                     const char *contentType, bool, char **resData);
-
-
-extern int neesSENDTrial (const char *cookie,
-                          int projID,
-                          int expID,
-                          const char *name,
-                          const char *title,
-                          const char *objective, const char *description);
+extern int neesSENDTrial(const char *cookie,
+                         int projID,
+                         int expID,
+                         const char *name,
+                         const char *title,
+                         const char *objective, const char *description);
 
 
-extern int neesPOSTTrial_File (const char *cookie,
-                               int projID, int expID, const char *name);
+extern int neesPOSTTrial_File(const char *cookie,
+                              int projID, int expID, const char *name);
 
-extern int neesADD_TrialAnalysisFile (const char *cookie,
-                                      int projID,
-                                      int expID,
-                                      int trialID,
-                                      const char *path,
-                                      int length,
-                                      const char *name,
-                                      const char *description);
-
-extern int neesADD_TrialAnalysisDir (const char *cookie,
+extern int neesADD_TrialAnalysisFile(const char *cookie,
                                      int projID,
                                      int expID,
                                      int trialID,
-                                     const char *path, const char *dirName);
+                                     const char *path,
+                                     int length,
+                                     const char *name,
+                                     const char *description);
+
+extern int neesADD_TrialAnalysisDir(const char *cookie,
+                                    int projID,
+                                    int expID,
+                                    int trialID,
+                                    const char *path, const char *dirName);
 
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
     int res;
     char *resData;
@@ -55,16 +54,13 @@ main (int argc, char **argv)
     char *pass = "amk875002";
     char *cookie = 0;
 
-    res = neesLogin (user, pass, &cookie);
+    res = neesLogin(user, pass, &cookie);
 
-    if (res != 0)
-      {
-          fprintf (stderr, "Failed to logon\n");
-      }
-    else
-      {
-          fprintf (stderr, "Success Logging on\nCookie: %s\n", cookie);
-      }
+    if (res != 0) {
+        fprintf(stderr, "Failed to logon\n");
+    } else {
+        fprintf(stderr, "Success Logging on\nCookie: %s\n", cookie);
+    }
 
     char *page = "/REST/Project/150/Experiment/197/Trial";
     char *data =
@@ -109,9 +105,9 @@ main (int argc, char **argv)
 
     //  neesADD_TrialAnalysisFile(cookie, 150, 710, 3096, path, strlen(path)-17, "Test.cpp","test.coo description");    
 
-    neesADD_TrialAnalysisFile (cookie, 150, 710, 3096, path,
-                               strlen (path) - 17, "Test.cpp",
-                               "test.coo description");
+    neesADD_TrialAnalysisFile(cookie, 150, 710, 3096, path,
+                              strlen(path) - 17, "Test.cpp",
+                              "test.coo description");
 
     /*
        neesADD_TrialAnalysisFile(cookie, 150, 198, 769, "/", "curl.txt","test.coo description");    
@@ -123,10 +119,10 @@ main (int argc, char **argv)
      */
 
 
-    free (cookie);
+    free(cookie);
     //  free(resData);
 
-    fprintf (stdout, "BYE\n");
+    fprintf(stdout, "BYE\n");
 
-    exit (0);
+    exit(0);
 }

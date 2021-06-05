@@ -38,27 +38,23 @@
 #include <ParallelSection.h>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_RCTBeamSection2d ()
+void *OPS_RCTBeamSection2d()
 {
-    if (OPS_GetNumRemainingInputArgs () < 18)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr <<
-              "Want: section RCTBeamSection2d tag? coreTag? coverTag? steelTag? d? bw? beff? hf? Atop? Abottom? flcov? wcov? Nflcover? Nwcover? Nflcore? Nwcore? NsteelTop?  NsteelBottom?"
-              << endln;
-          return 0;
-      }
-
+    if (OPS_GetNumRemainingInputArgs() < 18) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr <<
+            "Want: section RCTBeamSection2d tag? coreTag? coverTag? steelTag? d? bw? beff? hf? Atop? Abottom? flcov? wcov? Nflcover? Nwcover? Nflcore? Nwcore? NsteelTop?  NsteelBottom?"
+            << endln;
+        return 0;
+    }
     // int
     int numdata = 4;
     int idata[6];
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr << "WARNING invalid section RCTBeamSection2d int inputs" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr << "WARNING invalid section RCTBeamSection2d int inputs" <<
+            endln;
+        return 0;
+    }
     int tag = idata[0];
     int coreTag = idata[1];
     int coverTag = idata[2];
@@ -67,12 +63,11 @@ OPS_RCTBeamSection2d ()
     // double
     numdata = 8;
     double data[8];
-    if (OPS_GetDoubleInput (&numdata, data) < 0)
-      {
-          opserr << "WARNING invalid double inputs" << endln;
-          opserr << "RCTBeamSection2d section: " << tag << endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data) < 0) {
+        opserr << "WARNING invalid double inputs" << endln;
+        opserr << "RCTBeamSection2d section: " << tag << endln;
+        return 0;
+    }
 
     double d = data[0];
     double bw = data[1];
@@ -85,12 +80,11 @@ OPS_RCTBeamSection2d ()
 
     // int
     numdata = 6;
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr << "WARNING invalid section RCTBeamSection2d int inputs" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr << "WARNING invalid section RCTBeamSection2d int inputs" <<
+            endln;
+        return 0;
+    }
     int Nflcover = idata[0];
     int Nwcover = idata[1];
     int Nflcore = idata[2];
@@ -98,63 +92,60 @@ OPS_RCTBeamSection2d ()
     int NsteelTop = idata[4];
     int NsteelBottom = idata[5];
 
-    UniaxialMaterial *theSteel = OPS_getUniaxialMaterial (steelTag);
-    if (theSteel == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << steelTag;
-          opserr << "\nRCTBeamSection2d section: " << tag << endln;
-          return 0;
-      }
+    UniaxialMaterial *theSteel = OPS_getUniaxialMaterial(steelTag);
+    if (theSteel == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << steelTag;
+        opserr << "\nRCTBeamSection2d section: " << tag << endln;
+        return 0;
+    }
 
     RCTBeamSectionIntegration
-        rctbeamsect (d, bw, beff, hf, Atop, Abottom, flcov, wcov,
-                     Nflcover, Nwcover, Nflcore, Nwcore,
-                     NsteelTop, NsteelBottom);
+        rctbeamsect(d, bw, beff, hf, Atop, Abottom, flcov, wcov,
+                    Nflcover, Nwcover, Nflcore, Nwcore,
+                    NsteelTop, NsteelBottom);
 
 
-    NDMaterial *theCore = OPS_getNDMaterial (coreTag);
-    if (theCore == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << coreTag;
-          opserr << "\nRCTBeamSection2d section: " << tag << endln;
-          return 0;
-      }
+    NDMaterial *theCore = OPS_getNDMaterial(coreTag);
+    if (theCore == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << coreTag;
+        opserr << "\nRCTBeamSection2d section: " << tag << endln;
+        return 0;
+    }
 
-    NDMaterial *theCover = OPS_getNDMaterial (coverTag);
-    if (theCover == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\4n";
-          opserr << "material: " << coverTag;
-          opserr << "\nRCTBeamSection2d section: " << tag << endln;
-          return 0;
-      }
+    NDMaterial *theCover = OPS_getNDMaterial(coverTag);
+    if (theCover == 0) {
+        opserr << "WARNING uniaxial material does not exist\4n";
+        opserr << "material: " << coverTag;
+        opserr << "\nRCTBeamSection2d section: " << tag << endln;
+        return 0;
+    }
 
-    int numCFibers = rctbeamsect.getNumFibers (concrete);
-    int numSFibers = rctbeamsect.getNumFibers (steel);
+    int numCFibers = rctbeamsect.getNumFibers(concrete);
+    int numSFibers = rctbeamsect.getNumFibers(steel);
 
     NDMaterial **theNDMat = new NDMaterial *[numCFibers];
     UniaxialMaterial **theUniMat = new UniaxialMaterial *[numSFibers];
 
-    rctbeamsect.arrangeFibers (theUniMat, theNDMat, theCore, theCover,
-                               theSteel);
+    rctbeamsect.arrangeFibers(theUniMat, theNDMat, theCore, theCover,
+                              theSteel);
 
     //theSection = new McftSection2dfiber(tag, theNDMat, theUniMat, rctbeamsect);
 
 
 
     RCTBeamSectionIntegration
-        steel (d, bw, beff, hf, Atop, Abottom, flcov, wcov,
-               0, 0, 0, 0, NsteelTop, NsteelBottom);
-    steel.arrangeFibers (theUniMat, theNDMat, 0, 0, theSteel);
-    FiberSection2d steelSec (0, numSFibers, theUniMat, steel);
+        steel(d, bw, beff, hf, Atop, Abottom, flcov, wcov,
+              0, 0, 0, 0, NsteelTop, NsteelBottom);
+    steel.arrangeFibers(theUniMat, theNDMat, 0, 0, theSteel);
+    FiberSection2d steelSec(0, numSFibers, theUniMat, steel);
 
     RCTBeamSectionIntegration
-        concrete (d, bw, beff, hf, Atop, Abottom, flcov, wcov,
-                  Nflcover, Nwcover, Nflcore, Nwcore, 0, 0);
-    concrete.arrangeFibers (theUniMat, theNDMat, theCore, theCover, 0);
-    NDFiberSection2d concSec (0, numCFibers, theNDMat, concrete);
+        concrete(d, bw, beff, hf, Atop, Abottom, flcov, wcov,
+                 Nflcover, Nwcover, Nflcore, Nwcore, 0, 0);
+    concrete.arrangeFibers(theUniMat, theNDMat, theCore, theCover, 0);
+    NDFiberSection2d concSec(0, numCFibers, theNDMat, concrete);
 
 
 
@@ -162,7 +153,7 @@ OPS_RCTBeamSection2d ()
     theSections[1] = &steelSec;
     theSections[0] = &concSec;
     SectionForceDeformation *theSection =
-        new ParallelSection (tag, 2, theSections);
+        new ParallelSection(tag, 2, theSections);
 
 
 
@@ -173,28 +164,24 @@ OPS_RCTBeamSection2d ()
 #endif
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_RCTBeamSectionUniMat2d ()
+void *OPS_RCTBeamSectionUniMat2d()
 {
-    if (OPS_GetNumRemainingInputArgs () < 18)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr <<
-              "Want: section RCTBeamSectionUniMat2d tag? coreTag? coverTag? steelTag? d? bw? beff? hf? Atop? Abottom? flcov? wcov? Nflcover? Nwcover? Nflcore? Nwcore? NsteelTop?  NsteelBottom?"
-              << endln;
-          return 0;
-      }
-
+    if (OPS_GetNumRemainingInputArgs() < 18) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr <<
+            "Want: section RCTBeamSectionUniMat2d tag? coreTag? coverTag? steelTag? d? bw? beff? hf? Atop? Abottom? flcov? wcov? Nflcover? Nwcover? Nflcore? Nwcore? NsteelTop?  NsteelBottom?"
+            << endln;
+        return 0;
+    }
     // int
     int numdata = 4;
     int idata[6];
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr <<
-              "WARNING invalid section RCTBeamSectionUniMat2d int inputs" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr <<
+            "WARNING invalid section RCTBeamSectionUniMat2d int inputs" <<
+            endln;
+        return 0;
+    }
     int tag = idata[0];
     int coreTag = idata[1];
     int coverTag = idata[2];
@@ -203,12 +190,11 @@ OPS_RCTBeamSectionUniMat2d ()
     // double
     numdata = 8;
     double data[8];
-    if (OPS_GetDoubleInput (&numdata, data) < 0)
-      {
-          opserr << "WARNING invalid double inputs" << endln;
-          opserr << "RCTBeamSectionUniMat2d section: " << tag << endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data) < 0) {
+        opserr << "WARNING invalid double inputs" << endln;
+        opserr << "RCTBeamSectionUniMat2d section: " << tag << endln;
+        return 0;
+    }
 
     double d = data[0];
     double bw = data[1];
@@ -221,13 +207,12 @@ OPS_RCTBeamSectionUniMat2d ()
 
     // int
     numdata = 6;
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr <<
-              "WARNING invalid section RCTBeamSectionUniMat2d int inputs" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr <<
+            "WARNING invalid section RCTBeamSectionUniMat2d int inputs" <<
+            endln;
+        return 0;
+    }
     int Nflcover = idata[0];
     int Nwcover = idata[1];
     int Nflcore = idata[2];
@@ -235,46 +220,43 @@ OPS_RCTBeamSectionUniMat2d ()
     int NsteelTop = idata[4];
     int NsteelBottom = idata[5];
 
-    UniaxialMaterial *theSteel = OPS_getUniaxialMaterial (steelTag);
-    if (theSteel == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << steelTag;
-          opserr << "\nRCTBeamSectionUniMat2d section: " << tag << endln;
-          return 0;
-      }
+    UniaxialMaterial *theSteel = OPS_getUniaxialMaterial(steelTag);
+    if (theSteel == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << steelTag;
+        opserr << "\nRCTBeamSectionUniMat2d section: " << tag << endln;
+        return 0;
+    }
 
     RCTBeamSectionIntegration
-        rctbeamsect (d, bw, beff, hf, Atop, Abottom, flcov, wcov,
-                     Nflcover, Nwcover, Nflcore, Nwcore,
-                     NsteelTop, NsteelBottom);
+        rctbeamsect(d, bw, beff, hf, Atop, Abottom, flcov, wcov,
+                    Nflcover, Nwcover, Nflcore, Nwcore,
+                    NsteelTop, NsteelBottom);
 
-    UniaxialMaterial *theCore = OPS_getUniaxialMaterial (coreTag);
-    if (theCore == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << coreTag;
-          opserr << "\nRCTBeamSectionUniMat2d section: " << tag << endln;
-          return 0;
-      }
+    UniaxialMaterial *theCore = OPS_getUniaxialMaterial(coreTag);
+    if (theCore == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << coreTag;
+        opserr << "\nRCTBeamSectionUniMat2d section: " << tag << endln;
+        return 0;
+    }
 
-    UniaxialMaterial *theCover = OPS_getUniaxialMaterial (coverTag);
-    if (theCover == 0)
-      {
-          opserr << "WARNING uniaxial material does not exist\n";
-          opserr << "material: " << coreTag;
-          opserr << "\nRCTBeamSectionUniMat2d section: " << tag << endln;
-          return 0;
-      }
+    UniaxialMaterial *theCover = OPS_getUniaxialMaterial(coverTag);
+    if (theCover == 0) {
+        opserr << "WARNING uniaxial material does not exist\n";
+        opserr << "material: " << coreTag;
+        opserr << "\nRCTBeamSectionUniMat2d section: " << tag << endln;
+        return 0;
+    }
 
-    int numFibers = rctbeamsect.getNumFibers ();
+    int numFibers = rctbeamsect.getNumFibers();
 
     UniaxialMaterial **theUniMat = new UniaxialMaterial *[numFibers];
 
-    rctbeamsect.arrangeFibers (theUniMat, theCore, theCover, theSteel);
+    rctbeamsect.arrangeFibers(theUniMat, theCore, theCover, theSteel);
 
     SectionForceDeformation *theSection =
-        new FiberSection2d (tag, numFibers, theUniMat, rctbeamsect);
+        new FiberSection2d(tag, numFibers, theUniMat, rctbeamsect);
 
     delete[]theUniMat;
 
@@ -282,36 +264,25 @@ OPS_RCTBeamSectionUniMat2d ()
 }
 #endif
 
-RCTBeamSectionIntegration::RCTBeamSectionIntegration (double D,
-                                                      double BW,
-                                                      double BEFF,
-                                                      double HF,
-                                                      double AT,
-                                                      double AB,
-                                                      double FLCOV,
-                                                      double WCOV,
-                                                      int NFLCOVER,
-                                                      int NWCOVER,
-                                                      int NFLCORE,
-                                                      int NWCORE,
-                                                      int NSTEELTOP,
-                                                      int NSTEELBOTTOM):
-SectionIntegration (SECTION_INTEGRATION_TAG_RCT),
-d (D),
-bw (BW),
-beff (BEFF),
-hf (HF),
-Atop (AT),
-Abottom (AB),
-flcov (FLCOV),
-wcov (WCOV),
-Nflcover (NFLCOVER),
-Nwcover (NWCOVER),
-Nflcore (NFLCORE),
-Nwcore (NWCORE),
-NsteelTop (NSTEELTOP),
-NsteelBottom (NSTEELBOTTOM),
-parameterID (0)
+RCTBeamSectionIntegration::RCTBeamSectionIntegration(double D,
+                                                     double BW,
+                                                     double BEFF,
+                                                     double HF,
+                                                     double AT,
+                                                     double AB,
+                                                     double FLCOV,
+                                                     double WCOV,
+                                                     int NFLCOVER,
+                                                     int NWCOVER,
+                                                     int NFLCORE,
+                                                     int NWCORE,
+                                                     int NSTEELTOP,
+                                                     int
+                                                     NSTEELBOTTOM):SectionIntegration
+    (SECTION_INTEGRATION_TAG_RCT), d(D), bw(BW), beff(BEFF), hf(HF),
+Atop(AT), Abottom(AB), flcov(FLCOV), wcov(WCOV), Nflcover(NFLCOVER),
+Nwcover(NWCOVER), Nflcore(NFLCORE), Nwcore(NWCORE), NsteelTop(NSTEELTOP),
+NsteelBottom(NSTEELBOTTOM), parameterID(0)
 {
     /*
        if (Nflcover < 1)
@@ -334,22 +305,22 @@ parameterID (0)
      */
 }
 
-RCTBeamSectionIntegration::RCTBeamSectionIntegration ():
-SectionIntegration (SECTION_INTEGRATION_TAG_RCT),
-d (0.0), bw (0.0), beff (0.0), hf (0.0), Atop (0.0), Abottom (0.0),
-flcov (0.0), wcov (0.0), Nflcover (0), Nwcover (0), Nflcore (0), Nwcore (0),
-NsteelTop (0), NsteelBottom (0), parameterID (0)
+RCTBeamSectionIntegration::RCTBeamSectionIntegration():
+SectionIntegration(SECTION_INTEGRATION_TAG_RCT),
+d(0.0), bw(0.0), beff(0.0), hf(0.0), Atop(0.0), Abottom(0.0),
+flcov(0.0), wcov(0.0), Nflcover(0), Nwcover(0), Nflcore(0), Nwcore(0),
+NsteelTop(0), NsteelBottom(0), parameterID(0)
 {
 
 }
 
-RCTBeamSectionIntegration::~RCTBeamSectionIntegration ()
+RCTBeamSectionIntegration::~RCTBeamSectionIntegration()
 {
 
 }
 
 int
-RCTBeamSectionIntegration::getNumFibers (FiberType type)
+ RCTBeamSectionIntegration::getNumFibers(FiberType type)
 {
     if (type == steel)
         return NsteelTop + NsteelBottom;
@@ -363,12 +334,11 @@ RCTBeamSectionIntegration::getNumFibers (FiberType type)
 }
 
 //Check for concreteMcft
-int
-RCTBeamSectionIntegration::arrangeFibers (UniaxialMaterial ** theUni,
-                                          NDMaterial ** theND,
-                                          NDMaterial * theCore,
-                                          NDMaterial * theCover,
-                                          UniaxialMaterial * theSteel)
+int RCTBeamSectionIntegration::arrangeFibers(UniaxialMaterial ** theUni,
+                                             NDMaterial ** theND,
+                                             NDMaterial * theCore,
+                                             NDMaterial * theCover,
+                                             UniaxialMaterial * theSteel)
 {
     int loc = 0;
 
@@ -392,11 +362,10 @@ RCTBeamSectionIntegration::arrangeFibers (UniaxialMaterial ** theUni,
     return 0;
 }
 
-int
-RCTBeamSectionIntegration::arrangeFibers (UniaxialMaterial ** theUni,
-                                          UniaxialMaterial * theCore,
-                                          UniaxialMaterial * theCover,
-                                          UniaxialMaterial * theSteel)
+int RCTBeamSectionIntegration::arrangeFibers(UniaxialMaterial ** theUni,
+                                             UniaxialMaterial * theCore,
+                                             UniaxialMaterial * theCover,
+                                             UniaxialMaterial * theSteel)
 {
     int loc = 0;
 
@@ -422,9 +391,8 @@ RCTBeamSectionIntegration::arrangeFibers (UniaxialMaterial ** theUni,
     return 0;
 }
 
-void
-RCTBeamSectionIntegration::getFiberLocations (int nFibers, double *yi,
-                                              double *zi)
+void RCTBeamSectionIntegration::getFiberLocations(int nFibers, double *yi,
+                                                  double *zi)
 {
     double Yg =
         ((d - hf) * bw * (d - hf) / 2 +
@@ -465,17 +433,15 @@ RCTBeamSectionIntegration::getFiberLocations (int nFibers, double *yi,
     for (int i = 0; i < NsteelBottom; i++)
         yi[loc++] = yBot;
 
-    if (zi != 0)
-      {
-          for (int i = 0; i < nFibers; i++)
-              zi[i] = 0.0;
-      }
+    if (zi != 0) {
+        for (int i = 0; i < nFibers; i++)
+            zi[i] = 0.0;
+    }
 
     return;
 }
 
-void
-RCTBeamSectionIntegration::getFiberWeights (int nFibers, double *wt)
+void RCTBeamSectionIntegration::getFiberWeights(int nFibers, double *wt)
 {
     int loc = 0;
 
@@ -509,111 +475,98 @@ RCTBeamSectionIntegration::getFiberWeights (int nFibers, double *wt)
     return;
 }
 
-SectionIntegration *
-RCTBeamSectionIntegration::getCopy (void)
+SectionIntegration *RCTBeamSectionIntegration::getCopy(void)
 {
-    return new RCTBeamSectionIntegration (d, bw, beff, hf, Atop, Abottom,
-                                          flcov, wcov, Nflcover,
-                                          Nwcover, Nflcore, Nwcore,
-                                          NsteelTop, NsteelBottom);
+    return new RCTBeamSectionIntegration(d, bw, beff, hf, Atop, Abottom,
+                                         flcov, wcov, Nflcover,
+                                         Nwcover, Nflcore, Nwcore,
+                                         NsteelTop, NsteelBottom);
 }
 
-int
-RCTBeamSectionIntegration::setParameter (const char **argv, int argc,
-                                         Parameter & param)
+int RCTBeamSectionIntegration::setParameter(const char **argv, int argc,
+                                            Parameter & param)
 {
     if (argc < 1)
         return -1;
 
-    if (strcmp (argv[0], "d") == 0)
-      {
-          param.setValue (d);
-          return param.addObject (1, this);
-      }
-    if (strcmp (argv[0], "bw") == 0)
-      {
-          param.setValue (bw);
-          return param.addObject (2, this);
-      }
-    if (strcmp (argv[0], "beff") == 0)
-      {
-          param.setValue (beff);
-          return param.addObject (3, this);
-      }
-    if (strcmp (argv[0], "hf") == 0)
-      {
-          param.setValue (hf);
-          return param.addObject (4, this);
-      }
-    if (strcmp (argv[0], "Atop") == 0)
-      {
-          param.setValue (Atop);
-          return param.addObject (5, this);
-      }
-    if (strcmp (argv[0], "Abottom") == 0)
-      {
-          param.setValue (Abottom);
-          return param.addObject (6, this);
-      }
-    if (strcmp (argv[0], "flcov") == 0)
-      {
-          param.setValue (flcov);
-          return param.addObject (7, this);
-      }
-    if (strcmp (argv[0], "wcov") == 0)
-      {
-          param.setValue (wcov);
-          return param.addObject (8, this);
-      }
+    if (strcmp(argv[0], "d") == 0) {
+        param.setValue(d);
+        return param.addObject(1, this);
+    }
+    if (strcmp(argv[0], "bw") == 0) {
+        param.setValue(bw);
+        return param.addObject(2, this);
+    }
+    if (strcmp(argv[0], "beff") == 0) {
+        param.setValue(beff);
+        return param.addObject(3, this);
+    }
+    if (strcmp(argv[0], "hf") == 0) {
+        param.setValue(hf);
+        return param.addObject(4, this);
+    }
+    if (strcmp(argv[0], "Atop") == 0) {
+        param.setValue(Atop);
+        return param.addObject(5, this);
+    }
+    if (strcmp(argv[0], "Abottom") == 0) {
+        param.setValue(Abottom);
+        return param.addObject(6, this);
+    }
+    if (strcmp(argv[0], "flcov") == 0) {
+        param.setValue(flcov);
+        return param.addObject(7, this);
+    }
+    if (strcmp(argv[0], "wcov") == 0) {
+        param.setValue(wcov);
+        return param.addObject(8, this);
+    }
     return -1;
 }
 
-int
-RCTBeamSectionIntegration::updateParameter (int parameterID,
-                                            Information & info)
+int RCTBeamSectionIntegration::updateParameter(int parameterID,
+                                               Information & info)
 {
-    switch (parameterID)
-      {
-      case 1:
-          d = info.theDouble;
-          return 0;
-      case 2:
-          bw = info.theDouble;
-          return 0;
-      case 3:
-          beff = info.theDouble;
-          return 0;
-      case 4:
-          hf = info.theDouble;
-          return 0;
-      case 5:
-          Atop = info.theDouble;
-          return 0;
-      case 6:
-          Abottom = info.theDouble;
-          return 0;
-      case 7:
-          flcov = info.theDouble;
-          return 0;
-      case 8:
-          wcov = info.theDouble;
-          return 0;
-      default:
-          return -1;
-      }
+    switch (parameterID) {
+    case 1:
+        d = info.theDouble;
+        return 0;
+    case 2:
+        bw = info.theDouble;
+        return 0;
+    case 3:
+        beff = info.theDouble;
+        return 0;
+    case 4:
+        hf = info.theDouble;
+        return 0;
+    case 5:
+        Atop = info.theDouble;
+        return 0;
+    case 6:
+        Abottom = info.theDouble;
+        return 0;
+    case 7:
+        flcov = info.theDouble;
+        return 0;
+    case 8:
+        wcov = info.theDouble;
+        return 0;
+    default:
+        return -1;
+    }
 }
 
-int
-RCTBeamSectionIntegration::activateParameter (int paramID)
+int RCTBeamSectionIntegration::activateParameter(int paramID)
 {
     parameterID = paramID;
 
     return 0;
 }
 
-void
-RCTBeamSectionIntegration::getLocationsDeriv (int nFibers,
-                                              double *dyidh, double *dzidh)
+void RCTBeamSectionIntegration::getLocationsDeriv(int nFibers,
+                                                  double *dyidh,
+                                                  double *dzidh)
 {
     double dddh = 0.0;
     double dbwdh = 0.0;
@@ -634,77 +587,74 @@ RCTBeamSectionIntegration::getLocationsDeriv (int nFibers,
         dflcovdh = 1.0;
     else if (parameterID == 8)  // wcover
         dwcovdh = 1.0;
-    else
-      {
-          for (int i = 0; i < nFibers; i++)
-              dyidh[i] = 0.0;
-      }
+    else {
+        for (int i = 0; i < nFibers; i++)
+            dyidh[i] = 0.0;
+    }
 
     if (parameterID == 1 || parameterID == 2 || parameterID == 3
-        || parameterID == 4 || parameterID == 7 || parameterID == 8)
-      {
+        || parameterID == 4 || parameterID == 7 || parameterID == 8) {
 
-          double A = (d - hf) * (d - hf) * bw / 2 + beff * hf * (d - hf / 2);
-          double B = beff * hf + (d - hf) * bw;
-          double dAdh =
-              1 / 2 * dbwdh * (d - hf) * (d - hf) + 2 * bw * (d -
-                                                              hf) * (dddh -
-                                                                     dhfdh) +
-              dbeffdh * hf * (d - hf / 2) + beff * dhfdh * (d - hf / 2) +
-              beff * hf * (dddh - dhfdh / 2);
-          double dBdh =
-              dbeffdh * hf + dhfdh * beff + dbwdh * (d - hf) + bw * (dddh -
-                                                                     dhfdh);
-          double dYgdh = dAdh / B - A / B / B * dBdh;
+        double A = (d - hf) * (d - hf) * bw / 2 + beff * hf * (d - hf / 2);
+        double B = beff * hf + (d - hf) * bw;
+        double dAdh =
+            1 / 2 * dbwdh * (d - hf) * (d - hf) + 2 * bw * (d -
+                                                            hf) * (dddh -
+                                                                   dhfdh) +
+            dbeffdh * hf * (d - hf / 2) + beff * dhfdh * (d - hf / 2) +
+            beff * hf * (dddh - dhfdh / 2);
+        double dBdh =
+            dbeffdh * hf + dhfdh * beff + dbwdh * (d - hf) + bw * (dddh -
+                                                                   dhfdh);
+        double dYgdh = dAdh / B - A / B / B * dBdh;
 
-          int loc = 0;
+        int loc = 0;
 
-          // derive Location of core web fibers
-          double dyIncrwdh = (dddh - dhfdh - dwcovdh) / Nwcore;
-          double dyStartwdh = -dYgdh + dwcovdh + 0.5 * dyIncrwdh;
-          for (int i = 0; i < Nwcore; i++)
-              dyidh[loc++] = dyStartwdh + dyIncrwdh * i;
+        // derive Location of core web fibers
+        double dyIncrwdh = (dddh - dhfdh - dwcovdh) / Nwcore;
+        double dyStartwdh = -dYgdh + dwcovdh + 0.5 * dyIncrwdh;
+        for (int i = 0; i < Nwcore; i++)
+            dyidh[loc++] = dyStartwdh + dyIncrwdh * i;
 
-          // derive Location of core flange fibers
-          double dyIncrfldh = (dhfdh - dflcovdh) / Nflcore;
-          double dyStartfldh = dddh - dYgdh - dhfdh + 0.5 * dyIncrfldh;
-          for (int i = 0; i < Nflcore; i++)
-              dyidh[loc++] = dyStartfldh + dyIncrfldh * i;
+        // derive Location of core flange fibers
+        double dyIncrfldh = (dhfdh - dflcovdh) / Nflcore;
+        double dyStartfldh = dddh - dYgdh - dhfdh + 0.5 * dyIncrfldh;
+        for (int i = 0; i < Nflcore; i++)
+            dyidh[loc++] = dyStartfldh + dyIncrfldh * i;
 
-          // derive Location of cover web fibers
-          double dyIncrwcovdh = dwcovdh / Nwcover;
-          double dyStartwcovdh = -dYgdh + 0.5 * dyIncrwcovdh;
-          for (int i = 0; i < Nwcover; i++)
-              dyidh[loc++] = dyStartwcovdh + dyIncrwcovdh * i;
+        // derive Location of cover web fibers
+        double dyIncrwcovdh = dwcovdh / Nwcover;
+        double dyStartwcovdh = -dYgdh + 0.5 * dyIncrwcovdh;
+        for (int i = 0; i < Nwcover; i++)
+            dyidh[loc++] = dyStartwcovdh + dyIncrwcovdh * i;
 
-          // derive Location of cover flange fibers
-          double dyIncrflcovdh = dflcovdh / Nflcover;
-          double dyStartflcovdh =
-              dddh - dYgdh - dflcovdh + 0.5 * dyIncrflcovdh;
-          for (int i = 0; i < Nflcover; i++)
-              dyidh[loc++] = dyStartflcovdh + dyIncrflcovdh * i;
+        // derive Location of cover flange fibers
+        double dyIncrflcovdh = dflcovdh / Nflcover;
+        double dyStartflcovdh =
+            dddh - dYgdh - dflcovdh + 0.5 * dyIncrflcovdh;
+        for (int i = 0; i < Nflcover; i++)
+            dyidh[loc++] = dyStartflcovdh + dyIncrflcovdh * i;
 
-          // derive Location of Steel fibers
-          double dyTopdh = dddh - dYgdh - dflcovdh;
-          for (int i = 0; i < NsteelTop; i++)
-              dyidh[loc++] = dyTopdh;
+        // derive Location of Steel fibers
+        double dyTopdh = dddh - dYgdh - dflcovdh;
+        for (int i = 0; i < NsteelTop; i++)
+            dyidh[loc++] = dyTopdh;
 
-          double dyBotdh = -dYgdh + dwcovdh;
-          for (int i = 0; i < NsteelBottom; i++)
-              dyidh[loc++] = dyBotdh;
-      }
+        double dyBotdh = -dYgdh + dwcovdh;
+        for (int i = 0; i < NsteelBottom; i++)
+            dyidh[loc++] = dyBotdh;
+    }
 
-    if (dzidh != 0)
-      {
-          for (int i = 0; i < nFibers; i++)
-              dzidh[i] = 0.0;
-      }
+    if (dzidh != 0) {
+        for (int i = 0; i < nFibers; i++)
+            dzidh[i] = 0.0;
+    }
 
     return;
 }
 
-void
-RCTBeamSectionIntegration::getWeightsDeriv (int nFibers, double *dwtsdh)
+void RCTBeamSectionIntegration::getWeightsDeriv(int nFibers,
+                                                double *dwtsdh)
 {
     double dddh = 0.0;
     double dhfdh = 0.0;
@@ -731,64 +681,58 @@ RCTBeamSectionIntegration::getWeightsDeriv (int nFibers, double *dwtsdh)
         dflcovdh = 1.0;
     else if (parameterID == 8)  // wcover
         dwcovdh = 1.0;
-    else
-      {
-          for (int i = 0; i < nFibers; i++)
-              dwtsdh[i] = 0.0;
-      }
+    else {
+        for (int i = 0; i < nFibers; i++)
+            dwtsdh[i] = 0.0;
+    }
 
-    if (parameterID >= 1 && parameterID <= 8)
-      {
+    if (parameterID >= 1 && parameterID <= 8) {
 
-          int loc = 0;
+        int loc = 0;
 
-          // derive Weight of core web fibers
-          double dAwcoredh =
-              dbwdh * (d - hf - wcov) / Nwcore + bw * (dddh - dhfdh -
-                                                       dwcovdh) / Nwcore;
-          for (int i = 0; i < Nwcore; i++)
-            {
-                dwtsdh[loc++] = dAwcoredh;
-            }
+        // derive Weight of core web fibers
+        double dAwcoredh =
+            dbwdh * (d - hf - wcov) / Nwcore + bw * (dddh - dhfdh -
+                                                     dwcovdh) / Nwcore;
+        for (int i = 0; i < Nwcore; i++) {
+            dwtsdh[loc++] = dAwcoredh;
+        }
 
-          // derive Weight of core flange fibers
-          double dAflcoredh =
-              (dhfdh - dflcovdh) * beff / Nflcore + (hf -
-                                                     flcov) * dbeffdh /
-              Nflcore;
-          for (int i = 0; i < Nflcore; i++)
-            {
-                dwtsdh[loc++] = dAflcoredh;
-            }
+        // derive Weight of core flange fibers
+        double dAflcoredh =
+            (dhfdh - dflcovdh) * beff / Nflcore + (hf -
+                                                   flcov) * dbeffdh /
+            Nflcore;
+        for (int i = 0; i < Nflcore; i++) {
+            dwtsdh[loc++] = dAflcoredh;
+        }
 
-          // derive Weight of cover web fibers
-          double dAwcoverdh = dbwdh * wcov / Nwcover + bw * dwcovdh / Nwcover;
-          for (int i = 0; i < Nwcover; i++)
-            {
-                dwtsdh[loc++] = dAwcoverdh;
-            }
+        // derive Weight of cover web fibers
+        double dAwcoverdh =
+            dbwdh * wcov / Nwcover + bw * dwcovdh / Nwcover;
+        for (int i = 0; i < Nwcover; i++) {
+            dwtsdh[loc++] = dAwcoverdh;
+        }
 
-          // derive Weight of cover flange fibers
-          double dAflcoverdh =
-              dbeffdh * flcov / Nflcover + dflcovdh * beff / Nflcover;
-          for (int i = 0; i < Nflcover; i++)
-            {
-                dwtsdh[loc++] = dAflcoverdh;
-            }
+        // derive Weight of cover flange fibers
+        double dAflcoverdh =
+            dbeffdh * flcov / Nflcover + dflcovdh * beff / Nflcover;
+        for (int i = 0; i < Nflcover; i++) {
+            dwtsdh[loc++] = dAflcoverdh;
+        }
 
-          // derive Weight of Steel fibers
-          for (int i = 0; i < NsteelTop; i++)
-              dwtsdh[loc++] = dAtopdh;
+        // derive Weight of Steel fibers
+        for (int i = 0; i < NsteelTop; i++)
+            dwtsdh[loc++] = dAtopdh;
 
-          for (int i = 0; i < NsteelBottom; i++)
-              dwtsdh[loc++] = dAbottomdh;
-      }
+        for (int i = 0; i < NsteelBottom; i++)
+            dwtsdh[loc++] = dAbottomdh;
+    }
 
     return;
 }
 
-void
-RCTBeamSectionIntegration::Print (OPS_Stream & s, int flag)
+void RCTBeamSectionIntegration::Print(OPS_Stream & s, int flag)
 {
     s << "RCT" << endln;
     s << " d = " << d;
@@ -809,68 +753,64 @@ RCTBeamSectionIntegration::Print (OPS_Stream & s, int flag)
     return;
 }
 
-int
-RCTBeamSectionIntegration::sendSelf (int cTag, Channel & theChannel)
+int RCTBeamSectionIntegration::sendSelf(int cTag, Channel & theChannel)
 {
-    static Vector data (14);
+    static Vector data(14);
 
-    data (0) = d;
-    data (1) = bw;
-    data (2) = beff;
-    data (3) = hf;
-    data (4) = Atop;
-    data (5) = Abottom;
-    data (6) = flcov;
-    data (7) = wcov;
-    data (8) = Nflcover;
-    data (9) = Nwcover;
-    data (10) = Nflcore;
-    data (11) = Nwcore;
-    data (12) = NsteelTop;
-    data (13) = NsteelBottom;
+    data(0) = d;
+    data(1) = bw;
+    data(2) = beff;
+    data(3) = hf;
+    data(4) = Atop;
+    data(5) = Abottom;
+    data(6) = flcov;
+    data(7) = wcov;
+    data(8) = Nflcover;
+    data(9) = Nwcover;
+    data(10) = Nflcore;
+    data(11) = Nwcore;
+    data(12) = NsteelTop;
+    data(13) = NsteelBottom;
 
 
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    if (theChannel.sendVector (dbTag, cTag, data) < 0)
-      {
-          opserr <<
-              "RCTBeamSectionIntegration::sendSelf() - failed to send Vector data\n";
-          return -1;
-      }
+    if (theChannel.sendVector(dbTag, cTag, data) < 0) {
+        opserr <<
+            "RCTBeamSectionIntegration::sendSelf() - failed to send Vector data\n";
+        return -1;
+    }
 
     return 0;
 }
 
-int
-RCTBeamSectionIntegration::recvSelf (int cTag, Channel & theChannel,
-                                     FEM_ObjectBroker & theBroker)
+int RCTBeamSectionIntegration::recvSelf(int cTag, Channel & theChannel,
+                                        FEM_ObjectBroker & theBroker)
 {
-    static Vector data (14);
+    static Vector data(14);
 
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    if (theChannel.recvVector (dbTag, cTag, data) < 0)
-      {
-          opserr <<
-              "RCTBeamSectionIntegration::recvSelf() - failed to receive Vector data\n";
-          return -1;
-      }
+    if (theChannel.recvVector(dbTag, cTag, data) < 0) {
+        opserr <<
+            "RCTBeamSectionIntegration::recvSelf() - failed to receive Vector data\n";
+        return -1;
+    }
 
-    d = data (0);
-    bw = data (1);
-    beff = data (2);
-    hf = data (3);
-    Atop = data (4);
-    Abottom = data (5);
-    flcov = data (6);
-    wcov = data (7);
-    Nflcover = (int) data (8);
-    Nwcover = (int) data (9);
-    Nflcore = (int) data (10);
-    Nwcore = (int) data (11);
-    NsteelTop = (int) data (12);
-    NsteelBottom = (int) data (13);
+    d = data(0);
+    bw = data(1);
+    beff = data(2);
+    hf = data(3);
+    Atop = data(4);
+    Abottom = data(5);
+    flcov = data(6);
+    wcov = data(7);
+    Nflcover = (int) data(8);
+    Nwcover = (int) data(9);
+    Nflcore = (int) data(10);
+    Nwcore = (int) data(11);
+    NsteelTop = (int) data(12);
+    NsteelBottom = (int) data(13);
 
     return 0;
 }

@@ -31,17 +31,18 @@
 #include <DrainClough2Material.h>
 #include <Vector.h>
 
-DrainClough2Material::DrainClough2Material (int tag,
-                                            double E, double fyp, double fyn,
-                                            double alpha, double ecaps,
-                                            double ecapk, double ecapa,
-                                            double ecapd, double cs,
-                                            double ck, double ca, double cd,
-                                            double capSlope, double capDispP,
-                                            double capDispN, double res,
-                                            double b):
+DrainClough2Material::DrainClough2Material(int tag,
+                                           double E, double fyp,
+                                           double fyn, double alpha,
+                                           double ecaps, double ecapk,
+                                           double ecapa, double ecapd,
+                                           double cs, double ck, double ca,
+                                           double cd, double capSlope,
+                                           double capDispP,
+                                           double capDispN, double res,
+                                           double b):
 // 19 history variables and 16 material parameters
-DrainMaterial (tag, MAT_TAG_DrainClough2, 19, 16, b)
+DrainMaterial(tag, MAT_TAG_DrainClough2, 19, 16, b)
 {
     data[0] = E;
     data[1] = fyp;
@@ -61,34 +62,35 @@ DrainMaterial (tag, MAT_TAG_DrainClough2, 19, 16, b)
     data[15] = res;
 
     // Initialize history variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-DrainClough2Material::DrainClough2Material (int tag, const Vector & input,
-                                            double b):
+DrainClough2Material::DrainClough2Material(int tag, const Vector & input,
+                                           double b):
 // 19 history variables and 16 material parameters
-DrainMaterial (tag, MAT_TAG_DrainClough2, 19, 16, b)
+DrainMaterial(tag, MAT_TAG_DrainClough2, 19, 16, b)
 {
     for (int i = 0; i < 16; i++)
-        data[i] = input (i);
+        data[i] = input(i);
 
     // Initialize history variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-DrainClough2Material::DrainClough2Material (void):
-DrainMaterial (0, MAT_TAG_DrainClough2, 19, 16)
+DrainClough2Material::DrainClough2Material(void):DrainMaterial(0,
+                                                               MAT_TAG_DrainClough2,
+                                                               19, 16)
 {
     // Does nothing
 }
 
-DrainClough2Material::~DrainClough2Material (void)
+DrainClough2Material::~DrainClough2Material(void)
 {
     // Does nothing
 }
 
 int
-DrainClough2Material::revertToStart (void)
+ DrainClough2Material::revertToStart(void)
 {
     double dyp = data[1] / data[0];     // fyp/E
     double dyn = data[2] / data[0];     // fyn/E
@@ -120,13 +122,12 @@ DrainClough2Material::revertToStart (void)
     return 0;
 }
 
-UniaxialMaterial *
-DrainClough2Material::getCopy (void)
+UniaxialMaterial *DrainClough2Material::getCopy(void)
 {
-    Vector input (data, 16);
+    Vector input(data, 16);
 
     DrainClough2Material *theCopy =
-        new DrainClough2Material (this->getTag (), input, beto);
+        new DrainClough2Material(this->getTag(), input, beto);
 
     return theCopy;
 }

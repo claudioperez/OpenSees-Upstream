@@ -37,38 +37,36 @@
 #include <ID.h>
 #include <Channel.h>
 
-RaphsonAccelerator::RaphsonAccelerator (int tangent):
-Accelerator (ACCELERATOR_TAGS_Raphson),
-theTangent (tangent),
-totalIter (0)
+RaphsonAccelerator::
+RaphsonAccelerator(int tangent):Accelerator(ACCELERATOR_TAGS_Raphson),
+theTangent(tangent), totalIter(0)
 {
 
 }
 
-RaphsonAccelerator::~RaphsonAccelerator ()
+RaphsonAccelerator::~RaphsonAccelerator()
 {
 
 }
 
 int
-RaphsonAccelerator::newStep (LinearSOE & theSOE)
+ RaphsonAccelerator::newStep(LinearSOE & theSOE)
 {
     totalIter = 0;
 
     return 0;
 }
 
-int
-RaphsonAccelerator::accelerate (Vector & vStar, LinearSOE & theSOE,
-                                IncrementalIntegrator & theIntegrator)
+int RaphsonAccelerator::accelerate(Vector & vStar, LinearSOE & theSOE,
+                                   IncrementalIntegrator & theIntegrator)
 {
     totalIter++;
 
     return 0;
 }
 
-int
-RaphsonAccelerator::updateTangent (IncrementalIntegrator & theIntegrator)
+int RaphsonAccelerator::
+updateTangent(IncrementalIntegrator & theIntegrator)
 {
     /*
        if (theTangent == NO_TANGENT)
@@ -89,42 +87,38 @@ RaphsonAccelerator::updateTangent (IncrementalIntegrator & theIntegrator)
        }
      */
 
-    switch (theTangent)
-      {
-      case CURRENT_TANGENT:
-          theIntegrator.formTangent (CURRENT_TANGENT);
-          return 1;
-          break;
-      case INITIAL_TANGENT:
-          theIntegrator.formTangent (INITIAL_TANGENT);
-          return 0;
-          break;
-      default:
-          return 0;
-          break;
-      }
+    switch (theTangent) {
+    case CURRENT_TANGENT:
+        theIntegrator.formTangent(CURRENT_TANGENT);
+        return 1;
+        break;
+    case INITIAL_TANGENT:
+        theIntegrator.formTangent(INITIAL_TANGENT);
+        return 0;
+        break;
+    default:
+        return 0;
+        break;
+    }
 }
 
-void
-RaphsonAccelerator::Print (OPS_Stream & s, int flag)
+void RaphsonAccelerator::Print(OPS_Stream & s, int flag)
 {
     s << "RaphsonAccelerator" << endln;
 }
 
-int
-RaphsonAccelerator::sendSelf (int commitTag, Channel & theChannel)
+int RaphsonAccelerator::sendSelf(int commitTag, Channel & theChannel)
 {
-    static ID data (1);
-    data (0) = theTangent;
-    return theChannel.sendID (0, commitTag, data);
+    static ID data(1);
+    data(0) = theTangent;
+    return theChannel.sendID(0, commitTag, data);
 }
 
-int
-RaphsonAccelerator::recvSelf (int commitTag, Channel & theChannel,
-                              FEM_ObjectBroker & theBroker)
+int RaphsonAccelerator::recvSelf(int commitTag, Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
 {
-    static ID data (1);
-    int res = theChannel.recvID (0, commitTag, data);
-    theTangent = data (0);
+    static ID data(1);
+    int res = theChannel.recvID(0, commitTag, data);
+    theTangent = data(0);
     return res;
 }

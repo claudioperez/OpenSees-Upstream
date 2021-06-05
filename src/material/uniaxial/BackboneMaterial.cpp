@@ -43,136 +43,121 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_Backbone ()
+void *OPS_Backbone()
 {
-    int argc = OPS_GetNumRemainingInputArgs () + 2;
-    if (argc < 4)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr << "Want: uniaxialMaterial Backbone tag? bbTag?\n";
-          return 0;
-      }
-
+    int argc = OPS_GetNumRemainingInputArgs() + 2;
+    if (argc < 4) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr << "Want: uniaxialMaterial Backbone tag? bbTag?\n";
+        return 0;
+    }
     // tag, bbTag;
     int idata[2];
     int numdata = 2;
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr << "WARNING invalid tags\n";
-          opserr << "Backbone material: " << idata[0] << "\n";
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr << "WARNING invalid tags\n";
+        opserr << "Backbone material: " << idata[0] << "\n";
+        return 0;
+    }
 
-    HystereticBackbone *backbone = OPS_getHystereticBackbone (idata[1]);
+    HystereticBackbone *backbone = OPS_getHystereticBackbone(idata[1]);
 
-    if (backbone == 0)
-      {
-          opserr << "WARNING backbone does not exist\n";
-          opserr << "backbone: " << idata[1];
-          opserr << "\nuniaxialMaterial Backbone: " << idata[0] << "\n";
-          return 0;
-      }
+    if (backbone == 0) {
+        opserr << "WARNING backbone does not exist\n";
+        opserr << "backbone: " << idata[1];
+        opserr << "\nuniaxialMaterial Backbone: " << idata[0] << "\n";
+        return 0;
+    }
 
-    return new BackboneMaterial (idata[0], *backbone);
+    return new BackboneMaterial(idata[0], *backbone);
 }
 #endif
 
-BackboneMaterial::BackboneMaterial (int tag, HystereticBackbone & backbone):
-UniaxialMaterial (tag, MAT_TAG_Backbone),
-theBackbone (0),
-strain (0.0)
+BackboneMaterial::BackboneMaterial(int tag,
+                                   HystereticBackbone &
+                                   backbone):UniaxialMaterial(tag,
+                                                              MAT_TAG_Backbone),
+theBackbone(0), strain(0.0)
 {
-    theBackbone = backbone.getCopy ();
+    theBackbone = backbone.getCopy();
 
-    if (theBackbone == 0)
-      {
-          opserr <<
-              "BackboneMaterial::BackboneMaterial -- failed to get copy of material\n";
-          exit (-1);
-      }
+    if (theBackbone == 0) {
+        opserr <<
+            "BackboneMaterial::BackboneMaterial -- failed to get copy of material\n";
+        exit(-1);
+    }
 }
 
-BackboneMaterial::BackboneMaterial ():UniaxialMaterial (0, MAT_TAG_Backbone), theBackbone (0),
-strain (0.0)
+BackboneMaterial::BackboneMaterial():UniaxialMaterial(0, MAT_TAG_Backbone), theBackbone(0),
+strain(0.0)
 {
 
 }
 
-BackboneMaterial::~BackboneMaterial ()
+BackboneMaterial::~BackboneMaterial()
 {
     if (theBackbone != 0)
         delete theBackbone;
 }
 
 int
-BackboneMaterial::setTrialStrain (double eps, double epsdot)
+ BackboneMaterial::setTrialStrain(double eps, double epsdot)
 {
     strain = eps;
 
     return 0;
 }
 
-double
-BackboneMaterial::getStress (void)
+double BackboneMaterial::getStress(void)
 {
-    return theBackbone->getStress (strain);
+    return theBackbone->getStress(strain);
 }
 
 
-double
-BackboneMaterial::getTangent (void)
+double BackboneMaterial::getTangent(void)
 {
-    return theBackbone->getTangent (strain);
+    return theBackbone->getTangent(strain);
 }
 
-double
-BackboneMaterial::getDampTangent (void)
+double BackboneMaterial::getDampTangent(void)
 {
     return 0.0;
 }
 
-double
-BackboneMaterial::getInitialTangent (void)
+double BackboneMaterial::getInitialTangent(void)
 {
-    return theBackbone->getTangent (0.0);
+    return theBackbone->getTangent(0.0);
 }
 
-double
-BackboneMaterial::getStrain (void)
+double BackboneMaterial::getStrain(void)
 {
     return strain;
 }
 
-double
-BackboneMaterial::getStrainRate (void)
+double BackboneMaterial::getStrainRate(void)
 {
     return 0.0;
 }
 
-int
-BackboneMaterial::commitState (void)
+int BackboneMaterial::commitState(void)
 {
     return 0;                   // commit nothing, path independent
 }
 
-int
-BackboneMaterial::revertToLastCommit (void)
+int BackboneMaterial::revertToLastCommit(void)
 {
     return 0;
 }
 
-int
-BackboneMaterial::revertToStart (void)
+int BackboneMaterial::revertToStart(void)
 {
     return 0;
 }
 
-UniaxialMaterial *
-BackboneMaterial::getCopy (void)
+UniaxialMaterial *BackboneMaterial::getCopy(void)
 {
     BackboneMaterial *theCopy =
-        new BackboneMaterial (this->getTag (), *theBackbone);
+        new BackboneMaterial(this->getTag(), *theBackbone);
 
     theCopy->strain = strain;
 
@@ -180,8 +165,7 @@ BackboneMaterial::getCopy (void)
 }
 
 
-int
-BackboneMaterial::sendSelf (int cTag, Channel & theChannel)
+int BackboneMaterial::sendSelf(int cTag, Channel & theChannel)
 {
     return -1;
 
@@ -220,9 +204,8 @@ BackboneMaterial::sendSelf (int cTag, Channel & theChannel)
      */
 }
 
-int
-BackboneMaterial::recvSelf (int cTag, Channel & theChannel,
-                            FEM_ObjectBroker & theBroker)
+int BackboneMaterial::recvSelf(int cTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
 {
     return -1;
 
@@ -272,9 +255,8 @@ BackboneMaterial::recvSelf (int cTag, Channel & theChannel,
      */
 }
 
-void
-BackboneMaterial::Print (OPS_Stream & s, int flag)
+void BackboneMaterial::Print(OPS_Stream & s, int flag)
 {
-    s << "BackboneMaterial tag: " << this->getTag () << endln;
-    theBackbone->Print (s, flag);
+    s << "BackboneMaterial tag: " << this->getTag() << endln;
+    theBackbone->Print(s, flag);
 }

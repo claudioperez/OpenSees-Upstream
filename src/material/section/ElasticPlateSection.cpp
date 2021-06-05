@@ -36,70 +36,63 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_ElasticPlateSection ()
+void *OPS_ElasticPlateSection()
 {
-    if (OPS_GetNumRemainingInputArgs () < 4)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr << "Want: section ElasticPlateSection tag? E? nu? h? " <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetNumRemainingInputArgs() < 4) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr << "Want: section ElasticPlateSection tag? E? nu? h? " <<
+            endln;
+        return 0;
+    }
 
     int tag;
     int numdata = 1;
-    if (OPS_GetIntInput (&numdata, &tag) < 0)
-      {
-          opserr << "WARNING invalid section ElasticPlateSection tag" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, &tag) < 0) {
+        opserr << "WARNING invalid section ElasticPlateSection tag" <<
+            endln;
+        return 0;
+    }
 
     numdata = 3;
     double data[3];
-    if (OPS_GetDoubleInput (&numdata, data) < 0)
-      {
-          opserr <<
-              "WARNING invalid section ElasticPlateSection double inputs" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data) < 0) {
+        opserr <<
+            "WARNING invalid section ElasticPlateSection double inputs" <<
+            endln;
+        return 0;
+    }
     double E = data[0];
     double nu = data[1];
     double h = data[2];
 
-    return new ElasticPlateSection (tag, E, nu, h);
+    return new ElasticPlateSection(tag, E, nu, h);
 }
 #endif
 
 //parameters
-const double
-    ElasticPlateSection::five6 = 5.0 / 6.0;     //shear correction
+const double ElasticPlateSection::five6 = 5.0 / 6.0;    //shear correction
 
 //static vector and matrices
-Vector
-ElasticPlateSection::stress (5);
-Matrix
-ElasticPlateSection::tangent (5, 5);
-ID
-ElasticPlateSection::array (5);
+Vector ElasticPlateSection::stress(5);
+Matrix ElasticPlateSection::tangent(5, 5);
+ID ElasticPlateSection::array(5);
 
 
 //null constructor
-ElasticPlateSection::ElasticPlateSection ():
-SectionForceDeformation (0, SEC_TAG_ElasticPlateSection), strain (5)
+ElasticPlateSection::ElasticPlateSection():
+SectionForceDeformation(0, SEC_TAG_ElasticPlateSection), strain(5)
 {
 }
 
 
 
 //full constructor
-ElasticPlateSection::ElasticPlateSection (int tag,
-                                          double young,
-                                          double poisson, double thickness):
-SectionForceDeformation (tag, SEC_TAG_ElasticPlateSection),
-strain (5)
+ElasticPlateSection::ElasticPlateSection(int tag,
+                                         double young,
+                                         double poisson,
+                                         double
+                                         thickness):SectionForceDeformation
+    (tag, SEC_TAG_ElasticPlateSection), strain(5)
 {
     this->E = young;
     this->nu = poisson;
@@ -109,19 +102,18 @@ strain (5)
 
 
 //destructor
-ElasticPlateSection::~ElasticPlateSection ()
+ElasticPlateSection::~ElasticPlateSection()
 {
 }
 
 
 
 //make a clone of this material
-SectionForceDeformation *
-ElasticPlateSection::getCopy ()
+SectionForceDeformation *ElasticPlateSection::getCopy()
 {
     ElasticPlateSection *clone;
 
-    clone = new ElasticPlateSection (); //new instance of this class
+    clone = new ElasticPlateSection();  //new instance of this class
 
     *clone = *this;             //assignment to make copy
 
@@ -131,16 +123,14 @@ ElasticPlateSection::getCopy ()
 
 
 //send back order of strain in vector form
-int
-ElasticPlateSection::getOrder () const
+int ElasticPlateSection::getOrder() const
 {
     return 5;
 }
 
 
 //send back order of strain in vector form
-const ID &
-ElasticPlateSection::getType ()
+const ID & ElasticPlateSection::getType()
 {
     return array;
 }
@@ -148,8 +138,7 @@ ElasticPlateSection::getType ()
 
 
 //swap history variables
-int
-ElasticPlateSection::commitState ()
+int ElasticPlateSection::commitState()
 {
     return 0;
 }
@@ -157,24 +146,21 @@ ElasticPlateSection::commitState ()
 
 
 //revert to last saved state
-int
-ElasticPlateSection::revertToLastCommit ()
+int ElasticPlateSection::revertToLastCommit()
 {
     return 0;
 }
 
 //revert to start
-int
-ElasticPlateSection::revertToStart ()
+int ElasticPlateSection::revertToStart()
 {
     return 0;
 }
 
 
 //get the strain 
-int
-ElasticPlateSection::setTrialSectionDeformation (const Vector &
-                                                 strain_from_element)
+int ElasticPlateSection::setTrialSectionDeformation(const Vector &
+                                                    strain_from_element)
 {
     this->strain = strain_from_element;
 
@@ -183,16 +169,14 @@ ElasticPlateSection::setTrialSectionDeformation (const Vector &
 
 
 //send back the strain
-const Vector &
-ElasticPlateSection::getSectionDeformation ()
+const Vector & ElasticPlateSection::getSectionDeformation()
 {
     return this->strain;
 }
 
 
 //send back the stress 
-const Vector &
-ElasticPlateSection::getStressResultant ()
+const Vector & ElasticPlateSection::getStressResultant()
 {
     double D = E * (h * h * h) / 12.0 / (1.0 - nu * nu);        //bending modulus
 
@@ -202,15 +186,15 @@ ElasticPlateSection::getStressResultant ()
     G *= h;
 
 
-    stress (0) = -(D * strain (0) + nu * D * strain (1));
+    stress(0) = -(D * strain(0) + nu * D * strain(1));
 
-    stress (1) = -(nu * D * strain (0) + D * strain (1));
+    stress(1) = -(nu * D * strain(0) + D * strain(1));
 
-    stress (2) = -0.5 * D * (1.0 - nu) * strain (2);
+    stress(2) = -0.5 * D * (1.0 - nu) * strain(2);
 
-    stress (3) = G * strain (3);
+    stress(3) = G * strain(3);
 
-    stress (4) = G * strain (4);
+    stress(4) = G * strain(4);
 
 
     return this->stress;
@@ -218,8 +202,7 @@ ElasticPlateSection::getStressResultant ()
 
 
 //send back the tangent 
-const Matrix &
-ElasticPlateSection::getSectionTangent ()
+const Matrix & ElasticPlateSection::getSectionTangent()
 {
 
     double D = E * (h * h * h) / 12.0 / (1.0 - nu * nu);
@@ -227,27 +210,26 @@ ElasticPlateSection::getSectionTangent ()
     double G = 0.5 * E / (1.0 + nu);
 
 
-    tangent.Zero ();
+    tangent.Zero();
 
-    tangent (0, 0) = -D;
-    tangent (1, 1) = -D;
+    tangent(0, 0) = -D;
+    tangent(1, 1) = -D;
 
-    tangent (0, 1) = -nu * D;
-    tangent (1, 0) = tangent (0, 1);
+    tangent(0, 1) = -nu * D;
+    tangent(1, 0) = tangent(0, 1);
 
-    tangent (2, 2) = -0.5 * D * (1.0 - nu);
+    tangent(2, 2) = -0.5 * D * (1.0 - nu);
 
-    tangent (3, 3) = five6 * G * h;
+    tangent(3, 3) = five6 * G * h;
 
-    tangent (4, 4) = tangent (3, 3);
+    tangent(4, 4) = tangent(3, 3);
 
 
     return this->tangent;
 }
 
 //send back the initial tangent 
-const Matrix &
-ElasticPlateSection::getInitialTangent ()
+const Matrix & ElasticPlateSection::getInitialTangent()
 {
 
     double D = E * (h * h * h) / 12.0 / (1.0 - nu * nu);
@@ -255,82 +237,78 @@ ElasticPlateSection::getInitialTangent ()
     double G = 0.5 * E / (1.0 + nu);
 
 
-    tangent.Zero ();
+    tangent.Zero();
 
-    tangent (0, 0) = -D;
-    tangent (1, 1) = -D;
+    tangent(0, 0) = -D;
+    tangent(1, 1) = -D;
 
-    tangent (0, 1) = -nu * D;
-    tangent (1, 0) = tangent (0, 1);
+    tangent(0, 1) = -nu * D;
+    tangent(1, 0) = tangent(0, 1);
 
-    tangent (2, 2) = -0.5 * D * (1.0 - nu);
+    tangent(2, 2) = -0.5 * D * (1.0 - nu);
 
-    tangent (3, 3) = five6 * G * h;
+    tangent(3, 3) = five6 * G * h;
 
-    tangent (4, 4) = tangent (3, 3);
+    tangent(4, 4) = tangent(3, 3);
 
 
     return this->tangent;
 }
 
 //print out data
-void
-ElasticPlateSection::Print (OPS_Stream & s, int flag)
+void ElasticPlateSection::Print(OPS_Stream & s, int flag)
 {
-    if (flag == OPS_PRINT_PRINTMODEL_SECTION)
-      {
-          s << "ElasticPlateSection: \n ";
-          s << "  Young's Modulus E  = " << E << endln;
-          s << "  Poisson's Ratio nu = " << nu << endln;
-          s << "  Thickness h = " << h << endln;
-      }
+    if (flag == OPS_PRINT_PRINTMODEL_SECTION) {
+        s << "ElasticPlateSection: \n ";
+        s << "  Young's Modulus E  = " << E << endln;
+        s << "  Poisson's Ratio nu = " << nu << endln;
+        s << "  Thickness h = " << h << endln;
+    }
 
-    if (flag == OPS_PRINT_PRINTMODEL_JSON)
-      {
-          s << "\t\t\t{";
-          s << "\"name\": \"" << this->getTag () << "\", ";
-          s << "\"type\": \"ElasticPlateSection\", ";
-          s << "\"E\": " << E << ", ";
-          s << "\"nu\": " << nu << ", ";
-          s << "\"thickness\": " << h << "}";
-      }
+    if (flag == OPS_PRINT_PRINTMODEL_JSON) {
+        s << "\t\t\t{";
+        s << "\"name\": \"" << this->getTag() << "\", ";
+        s << "\"type\": \"ElasticPlateSection\", ";
+        s << "\"E\": " << E << ", ";
+        s << "\"nu\": " << nu << ", ";
+        s << "\"thickness\": " << h << "}";
+    }
 }
 
 
-int
-ElasticPlateSection::sendSelf (int cTag, Channel & theChannel)
+int ElasticPlateSection::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (4);
-    data (0) = this->getTag ();
-    data (1) = E;
-    data (2) = nu;
-    data (3) = h;
+    static Vector data(4);
+    data(0) = this->getTag();
+    data(1) = E;
+    data(2) = nu;
+    data(3) = h;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
-        opserr << "ElasticPlateSection::sendSelf() - failed to send data\n";
+        opserr <<
+            "ElasticPlateSection::sendSelf() - failed to send data\n";
 
     return res;
 }
 
 
-int
-ElasticPlateSection::recvSelf (int cTag, Channel & theChannel,
-                               FEM_ObjectBroker & theBroker)
+int ElasticPlateSection::recvSelf(int cTag, Channel & theChannel,
+                                  FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (4);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(4);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
     if (res < 0)
-        opserr << "ElasticPlateSection::recvSelf() - failed to recv data\n";
-    else
-      {
-          this->setTag (data (0));
-          E = data (1);
-          nu = data (2);
-          h = data (3);
-      }
+        opserr <<
+            "ElasticPlateSection::recvSelf() - failed to recv data\n";
+    else {
+        this->setTag(data(0));
+        E = data(1);
+        nu = data(2);
+        h = data(3);
+    }
 
     return res;
 }

@@ -42,14 +42,20 @@
 #include <SP_Constraint.h>
 #include <MP_Constraint.h>
 
-LagrangeDOF_Group::LagrangeDOF_Group (int tag, SP_Constraint & spPtr):
-DOF_Group (tag, 1)
+LagrangeDOF_Group::LagrangeDOF_Group(int tag,
+                                     SP_Constraint & spPtr):DOF_Group(tag,
+                                                                      1)
 {
 
 }
 
-LagrangeDOF_Group::LagrangeDOF_Group (int tag, MP_Constraint & mpPtr):
-DOF_Group (tag, (mpPtr.getRetainedDOFs ()).Size ())
+LagrangeDOF_Group::LagrangeDOF_Group(int tag,
+                                     MP_Constraint & mpPtr):DOF_Group(tag,
+                                                                      (mpPtr.
+                                                                       getRetainedDOFs
+                                                                       ()).
+                                                                      Size
+                                                                      ())
 {
 
 }
@@ -58,38 +64,34 @@ DOF_Group (tag, (mpPtr.getRetainedDOFs ()).Size ())
 // ~LagrangeDOF_Group();    
 //      destructor.
 
-LagrangeDOF_Group::~LagrangeDOF_Group ()
+LagrangeDOF_Group::~LagrangeDOF_Group()
 {
 
 }
 
-const Matrix &
-LagrangeDOF_Group::getTangent (Integrator * theIntegrator)
+const Matrix & LagrangeDOF_Group::getTangent(Integrator * theIntegrator)
 {
     // does nothing - the Lagrange FE_Elements provide coeffs to tangent
-    if (tangent == 0)
-      {
-          int numDOF = this->getNumDOF ();
-          tangent = new Matrix (numDOF, numDOF);
+    if (tangent == 0) {
+        int numDOF = this->getNumDOF();
+        tangent = new Matrix(numDOF, numDOF);
 
-          if (tangent == 0)
-            {
-                opserr << "FATAL LagrangeDOF_Group::getTangent() ";
-                opserr << " ranout of memory\n";
-                exit (-1);
-            }
-      }
+        if (tangent == 0) {
+            opserr << "FATAL LagrangeDOF_Group::getTangent() ";
+            opserr << " ranout of memory\n";
+            exit(-1);
+        }
+    }
 
-    tangent->Zero ();
+    tangent->Zero();
     return *tangent;
 
 }
 
-const Vector &
-LagrangeDOF_Group::getUnbalance (Integrator * theIntegrator)
+const Vector & LagrangeDOF_Group::getUnbalance(Integrator * theIntegrator)
 {
     // does nothing - the Lagrange FE_Elements provide residual 
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }
 
@@ -97,8 +99,7 @@ LagrangeDOF_Group::getUnbalance (Integrator * theIntegrator)
 //      Method to set the corresponding nodes displacements to the
 //      values in u, components identified by myID;
 
-void
-LagrangeDOF_Group::setNodeDisp (const Vector & u)
+void LagrangeDOF_Group::setNodeDisp(const Vector & u)
 {
     return;
 }
@@ -108,8 +109,7 @@ LagrangeDOF_Group::setNodeDisp (const Vector & u)
 //      Method to set the corresponding nodes velocities to the
 //      values in udot, components identified by myID;
 
-void
-LagrangeDOF_Group::setNodeVel (const Vector & udot)
+void LagrangeDOF_Group::setNodeVel(const Vector & udot)
 {
     return;
 }
@@ -120,8 +120,7 @@ LagrangeDOF_Group::setNodeVel (const Vector & udot)
 //      Method to set the corresponding nodes accelerations to the
 //      values in udotdot, components identified by myID;
 
-void
-LagrangeDOF_Group::setNodeAccel (const Vector & udotdot)
+void LagrangeDOF_Group::setNodeAccel(const Vector & udotdot)
 {
     return;
 }
@@ -131,8 +130,7 @@ LagrangeDOF_Group::setNodeAccel (const Vector & udotdot)
 //      Method to set the corresponding nodes displacements to the
 //      values in u, components identified by myID;
 
-void
-LagrangeDOF_Group::incrNodeDisp (const Vector & u)
+void LagrangeDOF_Group::incrNodeDisp(const Vector & u)
 {
     return;
 }
@@ -142,8 +140,7 @@ LagrangeDOF_Group::incrNodeDisp (const Vector & u)
 //      Method to set the corresponding nodes velocities to the
 //      values in udot, components identified by myID;
 
-void
-LagrangeDOF_Group::incrNodeVel (const Vector & udot)
+void LagrangeDOF_Group::incrNodeVel(const Vector & udot)
 {
     return;
 }
@@ -154,86 +151,76 @@ LagrangeDOF_Group::incrNodeVel (const Vector & udot)
 //      Method to set the corresponding nodes accelerations to the
 //      values in udotdot, components identified by myID;
 
-void
-LagrangeDOF_Group::incrNodeAccel (const Vector & udotdot)
+void LagrangeDOF_Group::incrNodeAccel(const Vector & udotdot)
 {
     return;
 }
 
 
-const Vector &
-LagrangeDOF_Group::getCommittedDisp (void)
+const Vector & LagrangeDOF_Group::getCommittedDisp(void)
 {
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }
 
-const Vector &
-LagrangeDOF_Group::getCommittedVel (void)
+const Vector & LagrangeDOF_Group::getCommittedVel(void)
 {
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }
 
-const Vector &
-LagrangeDOF_Group::getCommittedAccel (void)
+const Vector & LagrangeDOF_Group::getCommittedAccel(void)
 {
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }
 
-void
-LagrangeDOF_Group::addMtoTang (double fact)
+void LagrangeDOF_Group::addMtoTang(double fact)
 {
 }
 
-void
-LagrangeDOF_Group::zeroUnbalance (void)
+void LagrangeDOF_Group::zeroUnbalance(void)
 {
 }
 
-void
-LagrangeDOF_Group::zeroTangent (void)
+void LagrangeDOF_Group::zeroTangent(void)
 {
 }
 
-void
-LagrangeDOF_Group::addPtoUnbalance (double fact)
+void LagrangeDOF_Group::addPtoUnbalance(double fact)
 {
 
 }
 
-void
-LagrangeDOF_Group::addPIncInertiaToUnbalance (double fact)
+void LagrangeDOF_Group::addPIncInertiaToUnbalance(double fact)
 {
 
 }
 
-void
-LagrangeDOF_Group::addM_Force (const Vector & Udotdot, double fact)
+void LagrangeDOF_Group::addM_Force(const Vector & Udotdot, double fact)
 {
 
 }
 
 const Vector &
-LagrangeDOF_Group::getTangForce (const Vector & disp, double fact)
+    LagrangeDOF_Group::getTangForce(const Vector & disp, double fact)
 {
     opserr <<
         "WARNING LagrangeDOF_Group::getTangForce() - not yet implemented\n";
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }
 
 const Vector &
-LagrangeDOF_Group::getC_Force (const Vector & disp, double fact)
+    LagrangeDOF_Group::getC_Force(const Vector & disp, double fact)
 {
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }
 
 const Vector &
-LagrangeDOF_Group::getM_Force (const Vector & disp, double fact)
+    LagrangeDOF_Group::getM_Force(const Vector & disp, double fact)
 {
-    unbalance->Zero ();
+    unbalance->Zero();
     return *unbalance;
 }

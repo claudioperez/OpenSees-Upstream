@@ -34,8 +34,7 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_SimpleFractureMaterial (void)
+void *OPS_SimpleFractureMaterial(void)
 {
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
@@ -43,88 +42,78 @@ OPS_SimpleFractureMaterial (void)
     double maxStrain = 1.0e16;
     int iData[2];
 
-    int argc = OPS_GetNumRemainingInputArgs ();
-    if (argc < 3)
-      {
-          opserr <<
-              "WARNING invalid uniaxialMaterial SimpleFracture $tag $otherTag $maxStrain>"
-              << endln;
-          return 0;
-      }
+    int argc = OPS_GetNumRemainingInputArgs();
+    if (argc < 3) {
+        opserr <<
+            "WARNING invalid uniaxialMaterial SimpleFracture $tag $otherTag $maxStrain>"
+            << endln;
+        return 0;
+    }
 
     int numData = 2;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr <<
-              "WARNING invalid uniaxialMaterial SimpleFracture $tag $otherTag $maxStrain"
-              << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr <<
+            "WARNING invalid uniaxialMaterial SimpleFracture $tag $otherTag $maxStrain"
+            << endln;
+        return 0;
+    }
 
-    theOtherMaterial = OPS_GetUniaxialMaterial (iData[1]);
-    if (theOtherMaterial == 0)
-      {
-          opserr <<
-              "WARNING invalid otherTag:  uniaxialMaterial SimpleFracture $tag $otherTag $max: "
-              << iData[0] << endln;
-          return 0;
-      }
+    theOtherMaterial = OPS_GetUniaxialMaterial(iData[1]);
+    if (theOtherMaterial == 0) {
+        opserr <<
+            "WARNING invalid otherTag:  uniaxialMaterial SimpleFracture $tag $otherTag $max: "
+            << iData[0] << endln;
+        return 0;
+    }
 
     numData = 1;
-    if (OPS_GetDoubleInput (&numData, &maxStrain) != 0)
-      {
-          opserr <<
-              "WARNING invalid maxStrain: uniaxialMaterial  SimpleFracture $tag $otherTag $maxStrain"
-              << endln;
-          return 0;
-      }
-
+    if (OPS_GetDoubleInput(&numData, &maxStrain) != 0) {
+        opserr <<
+            "WARNING invalid maxStrain: uniaxialMaterial  SimpleFracture $tag $otherTag $maxStrain"
+            << endln;
+        return 0;
+    }
     // Parsing was successful, allocate the material
     theMaterial =
-        new SimpleFractureMaterial (iData[0], *theOtherMaterial, maxStrain);
+        new SimpleFractureMaterial(iData[0], *theOtherMaterial, maxStrain);
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type SimpleFractureMaterial\n";
-          return 0;
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type SimpleFractureMaterial\n";
+        return 0;
+    }
 
     return theMaterial;
 }
 #endif
 
-SimpleFractureMaterial::SimpleFractureMaterial (int tag,
-                                                UniaxialMaterial & material,
-                                                double max):
-UniaxialMaterial (tag, MAT_TAG_SimpleFractureMaterial),
-theMaterial (0),
-maxStrain (max),
-TstartCompStrain (0),
-CstartCompStrain (0),
-Tfailed (false),
-Cfailed (false)
+SimpleFractureMaterial::SimpleFractureMaterial(int tag,
+                                               UniaxialMaterial & material,
+                                               double
+                                               max):UniaxialMaterial(tag,
+                                                                     MAT_TAG_SimpleFractureMaterial),
+theMaterial(0), maxStrain(max), TstartCompStrain(0), CstartCompStrain(0),
+Tfailed(false), Cfailed(false)
 {
-    theMaterial = material.getCopy ();
+    theMaterial = material.getCopy();
 
-    Cstress = theMaterial->getStress ();
-    Ctangent = theMaterial->getTangent ();
-    Cstrain = theMaterial->getStrain ();
+    Cstress = theMaterial->getStress();
+    Ctangent = theMaterial->getTangent();
+    Cstrain = theMaterial->getStrain();
     Tstress = Cstress;
     Ttangent = Ctangent;
     Tstrain = Cstrain;
 
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::SimpleFractureMaterial -- failed to get copy of material\n";
-          exit (-1);
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "SimpleFractureMaterial::SimpleFractureMaterial -- failed to get copy of material\n";
+        exit(-1);
+    }
 }
 
-SimpleFractureMaterial::SimpleFractureMaterial ():UniaxialMaterial (0, MAT_TAG_SimpleFractureMaterial), theMaterial (0),
-maxStrain (0), TstartCompStrain (0), CstartCompStrain (0), Tfailed (false),
-Cfailed (false)
+SimpleFractureMaterial::SimpleFractureMaterial():UniaxialMaterial(0, MAT_TAG_SimpleFractureMaterial), theMaterial(0),
+maxStrain(0), TstartCompStrain(0), CstartCompStrain(0), Tfailed(false),
+Cfailed(false)
 {
     Cstress = 0;
     Ctangent = 0;
@@ -134,23 +123,22 @@ Cfailed (false)
     Tstrain = Cstrain;
 }
 
-SimpleFractureMaterial::~SimpleFractureMaterial ()
+SimpleFractureMaterial::~SimpleFractureMaterial()
 {
     if (theMaterial)
         delete theMaterial;
 }
 
 int
-SimpleFractureMaterial::setTrialStrain (double strain, double strainRate)
+ SimpleFractureMaterial::setTrialStrain(double strain, double strainRate)
 {
     // for now do this until finialize method below
-    return this->setTrialStrain (strain, 0, strainRate);
+    return this->setTrialStrain(strain, 0, strainRate);
 }
 
 
-int
-SimpleFractureMaterial::setTrialStrain (double strain, double temp,
-                                        double strainRate)
+int SimpleFractureMaterial::setTrialStrain(double strain, double temp,
+                                           double strainRate)
 {
     // determine based on last converged step
     Tfailed = Cfailed;
@@ -158,111 +146,95 @@ SimpleFractureMaterial::setTrialStrain (double strain, double temp,
 
     Tstress = Cstress;
     Tstrain = strain;
-    theMaterial->revertToLastCommit ();
+    theMaterial->revertToLastCommit();
 
-    if (Tfailed == true && strain >= TstartCompStrain)
-      {
+    if (Tfailed == true && strain >= TstartCompStrain) {
 
-          // material has failed and strain is greater than strain where goes into compression
+        // material has failed and strain is greater than strain where goes into compression
 
-          Ttangent = 0.;
-          Tstress = 0.;
-          return 0;
+        Ttangent = 0.;
+        Tstress = 0.;
+        return 0;
 
-      }
-    else if (Tfailed == false && strain > maxStrain)
-      {
-          //    opserr << "(Tfailed == false && strain > maxStrain)\n";
-          // material fails for first time, strain is greater than strain where goes into compression
+    } else if (Tfailed == false && strain > maxStrain) {
+        //    opserr << "(Tfailed == false && strain > maxStrain)\n";
+        // material fails for first time, strain is greater than strain where goes into compression
 
-          Tfailed = true;
-          Ttangent = 0.;
-          Tstress = 0.;
+        Tfailed = true;
+        Ttangent = 0.;
+        Tstress = 0.;
 
-          // use divide & conquer to find strain where crosses into compression (0 stress by unloaading material in small increments)
-          theMaterial->setTrialStrain (maxStrain);
-          double tStress = theMaterial->getStress ();
-          double dStrain = fabs (strain / 1e4);
-          while (tStress > 0.)
-            {
+        // use divide & conquer to find strain where crosses into compression (0 stress by unloaading material in small increments)
+        theMaterial->setTrialStrain(maxStrain);
+        double tStress = theMaterial->getStress();
+        double dStrain = fabs(strain / 1e4);
+        while (tStress > 0.) {
+            strain -= dStrain;
+            theMaterial->setTrialStrain(strain, temp, strainRate);
+            tStress = theMaterial->getStress();
+        }
+        TstartCompStrain = strain;
+        return 0;
+
+    } else if (Tfailed == true && strain < TstartCompStrain) {
+
+        //    opserr << "(Tfailed == true && strain < TstartCompStrain): " << TstartCompStrain << endln;
+        // set strain in material, if tensile, revert to last & increment ro where crosses, set TsratCompStrain
+        theMaterial->setTrialStrain(strain, temp, strainRate);
+        Tstress = theMaterial->getStress();
+        Ttangent = theMaterial->getTangent();
+        double dStrain = fabs(strain / 1e4);
+        if (Tstress > 0) {
+            double tStress = Tstress;
+            Ttangent = 0.;
+            Tstress = 0.;
+            while (tStress > 0.) {
                 strain -= dStrain;
-                theMaterial->setTrialStrain (strain, temp, strainRate);
-                tStress = theMaterial->getStress ();
+                theMaterial->setTrialStrain(strain, temp, strainRate);
+                tStress = theMaterial->getStress();
             }
-          TstartCompStrain = strain;
-          return 0;
+            TstartCompStrain = strain;
+        }
 
-      }
-    else if (Tfailed == true && strain < TstartCompStrain)
-      {
+    } else {
+        //    opserr << "ELSE\n";
+        theMaterial->setTrialStrain(strain, temp, strainRate);
+        Ttangent = theMaterial->getTangent();
+        Tstress = theMaterial->getStress();
+        Tfailed = false;
 
-          //    opserr << "(Tfailed == true && strain < TstartCompStrain): " << TstartCompStrain << endln;
-          // set strain in material, if tensile, revert to last & increment ro where crosses, set TsratCompStrain
-          theMaterial->setTrialStrain (strain, temp, strainRate);
-          Tstress = theMaterial->getStress ();
-          Ttangent = theMaterial->getTangent ();
-          double dStrain = fabs (strain / 1e4);
-          if (Tstress > 0)
-            {
-                double tStress = Tstress;
-                Ttangent = 0.;
-                Tstress = 0.;
-                while (tStress > 0.)
-                  {
-                      strain -= dStrain;
-                      theMaterial->setTrialStrain (strain, temp, strainRate);
-                      tStress = theMaterial->getStress ();
-                  }
-                TstartCompStrain = strain;
-            }
-
-      }
-    else
-      {
-          //    opserr << "ELSE\n";
-          theMaterial->setTrialStrain (strain, temp, strainRate);
-          Ttangent = theMaterial->getTangent ();
-          Tstress = theMaterial->getStress ();
-          Tfailed = false;
-
-      }
+    }
     return 0;
 }
 
 
-double
-SimpleFractureMaterial::getStress (void)
+double SimpleFractureMaterial::getStress(void)
 {
     return Tstress;
 }
 
-double
-SimpleFractureMaterial::getTangent (void)
+double SimpleFractureMaterial::getTangent(void)
 {
     return Ttangent;
 }
 
-double
-SimpleFractureMaterial::getDampTangent (void)
+double SimpleFractureMaterial::getDampTangent(void)
 {
-    return theMaterial->getDampTangent ();
+    return theMaterial->getDampTangent();
 }
 
 
-double
-SimpleFractureMaterial::getStrain (void)
+double SimpleFractureMaterial::getStrain(void)
 {
     return Tstrain;
 }
 
-double
-SimpleFractureMaterial::getStrainRate (void)
+double SimpleFractureMaterial::getStrainRate(void)
 {
-    return theMaterial->getStrainRate ();
+    return theMaterial->getStrainRate();
 }
 
-int
-SimpleFractureMaterial::commitState (void)
+int SimpleFractureMaterial::commitState(void)
 {
     Cfailed = Tfailed;
     Cstress = Tstress;
@@ -270,11 +242,10 @@ SimpleFractureMaterial::commitState (void)
     Cstrain = Tstrain;
     CstartCompStrain = TstartCompStrain;
 
-    return theMaterial->commitState ();
+    return theMaterial->commitState();
 }
 
-int
-SimpleFractureMaterial::revertToLastCommit (void)
+int SimpleFractureMaterial::revertToLastCommit(void)
 {
     Tfailed = Cfailed;
     Tstress = Cstress;
@@ -282,148 +253,135 @@ SimpleFractureMaterial::revertToLastCommit (void)
     Tstrain = Cstrain;
     TstartCompStrain = CstartCompStrain;
 
-    return theMaterial->revertToLastCommit ();
+    return theMaterial->revertToLastCommit();
 }
 
-int
-SimpleFractureMaterial::revertToStart (void)
+int SimpleFractureMaterial::revertToStart(void)
 {
     Tfailed = false;
     Cstrain = 0;
-    theMaterial->revertToStart ();
-    Ctangent = theMaterial->getTangent ();
-    Cstress = theMaterial->getStress ();
+    theMaterial->revertToStart();
+    Ctangent = theMaterial->getTangent();
+    Cstress = theMaterial->getStress();
     return 0;
 }
 
-UniaxialMaterial *
-SimpleFractureMaterial::getCopy (void)
+UniaxialMaterial *SimpleFractureMaterial::getCopy(void)
 {
     SimpleFractureMaterial *theCopy =
-        new SimpleFractureMaterial (this->getTag (), *theMaterial, maxStrain);
+        new SimpleFractureMaterial(this->getTag(), *theMaterial,
+                                   maxStrain);
 
     return theCopy;
 }
 
-int
-SimpleFractureMaterial::sendSelf (int cTag, Channel & theChannel)
+int SimpleFractureMaterial::sendSelf(int cTag, Channel & theChannel)
 {
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    static ID dataID (3);
-    dataID (0) = this->getTag ();
-    dataID (1) = theMaterial->getClassTag ();
+    static ID dataID(3);
+    dataID(0) = this->getTag();
+    dataID(1) = theMaterial->getClassTag();
 
-    int matDbTag = theMaterial->getDbTag ();
-    if (matDbTag == 0)
-      {
-          matDbTag = theChannel.getDbTag ();
-          theMaterial->setDbTag (matDbTag);
-      }
-    dataID (2) = matDbTag;
-    if (theChannel.sendID (dbTag, cTag, dataID) < 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::sendSelf() - failed to send the ID\n";
-          return -1;
-      }
+    int matDbTag = theMaterial->getDbTag();
+    if (matDbTag == 0) {
+        matDbTag = theChannel.getDbTag();
+        theMaterial->setDbTag(matDbTag);
+    }
+    dataID(2) = matDbTag;
+    if (theChannel.sendID(dbTag, cTag, dataID) < 0) {
+        opserr <<
+            "SimpleFractureMaterial::sendSelf() - failed to send the ID\n";
+        return -1;
+    }
 
-    static Vector dataVec (6);
-    dataVec (0) = maxStrain;
+    static Vector dataVec(6);
+    dataVec(0) = maxStrain;
     if (Cfailed == true)
-        dataVec (1) = 1.0;
+        dataVec(1) = 1.0;
     else
-        dataVec (1) = 0.0;
+        dataVec(1) = 0.0;
 
-    dataVec (2) = Cstress;
-    dataVec (3) = Cstrain;
-    dataVec (4) = Ctangent;
-    dataVec (5) = CstartCompStrain;
+    dataVec(2) = Cstress;
+    dataVec(3) = Cstrain;
+    dataVec(4) = Ctangent;
+    dataVec(5) = CstartCompStrain;
 
 
-    if (theChannel.sendVector (dbTag, cTag, dataVec) < 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::sendSelf() - failed to send the Vector\n";
-          return -2;
-      }
+    if (theChannel.sendVector(dbTag, cTag, dataVec) < 0) {
+        opserr <<
+            "SimpleFractureMaterial::sendSelf() - failed to send the Vector\n";
+        return -2;
+    }
 
-    if (theMaterial->sendSelf (cTag, theChannel) < 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::sendSelf() - failed to send the Material\n";
-          return -3;
-      }
+    if (theMaterial->sendSelf(cTag, theChannel) < 0) {
+        opserr <<
+            "SimpleFractureMaterial::sendSelf() - failed to send the Material\n";
+        return -3;
+    }
 
     return 0;
 }
 
-int
-SimpleFractureMaterial::recvSelf (int cTag, Channel & theChannel,
-                                  FEM_ObjectBroker & theBroker)
+int SimpleFractureMaterial::recvSelf(int cTag, Channel & theChannel,
+                                     FEM_ObjectBroker & theBroker)
 {
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    static ID dataID (3);
-    if (theChannel.recvID (dbTag, cTag, dataID) < 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::recvSelf() - failed to get the ID\n";
-          return -1;
-      }
-    this->setTag (int (dataID (0)));
+    static ID dataID(3);
+    if (theChannel.recvID(dbTag, cTag, dataID) < 0) {
+        opserr <<
+            "SimpleFractureMaterial::recvSelf() - failed to get the ID\n";
+        return -1;
+    }
+    this->setTag(int (dataID(0)));
 
     // as no way to change material, don't have to check classTag of the material 
-    if (theMaterial == 0)
-      {
-          int matClassTag = int (dataID (1));
-          theMaterial = theBroker.getNewUniaxialMaterial (matClassTag);
-          if (theMaterial == 0)
-            {
-                opserr <<
-                    "SimpleFractureMaterial::recvSelf() - failed to create Material with classTag "
-                    << dataID (0) << endln;
-                return -2;
-            }
-      }
-    theMaterial->setDbTag (dataID (2));
+    if (theMaterial == 0) {
+        int matClassTag = int (dataID(1));
+        theMaterial = theBroker.getNewUniaxialMaterial(matClassTag);
+        if (theMaterial == 0) {
+            opserr <<
+                "SimpleFractureMaterial::recvSelf() - failed to create Material with classTag "
+                << dataID(0) << endln;
+            return -2;
+        }
+    }
+    theMaterial->setDbTag(dataID(2));
 
 
-    static Vector dataVec (6);
-    if (theChannel.recvVector (dbTag, cTag, dataVec) < 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::recvSelf() - failed to get the Vector\n";
-          return -3;
-      }
+    static Vector dataVec(6);
+    if (theChannel.recvVector(dbTag, cTag, dataVec) < 0) {
+        opserr <<
+            "SimpleFractureMaterial::recvSelf() - failed to get the Vector\n";
+        return -3;
+    }
 
-    maxStrain = dataVec (0);
+    maxStrain = dataVec(0);
 
-    if (dataVec (2) == 1.0)
+    if (dataVec(2) == 1.0)
         Cfailed = true;
     else
         Cfailed = false;
 
-    Cstress = dataVec (2);
-    Cstrain = dataVec (3);
-    Ctangent = dataVec (4);
-    CstartCompStrain = dataVec (5);
+    Cstress = dataVec(2);
+    Cstrain = dataVec(3);
+    Ctangent = dataVec(4);
+    CstartCompStrain = dataVec(5);
 
-    this->revertToLastCommit ();
+    this->revertToLastCommit();
 
-    if (theMaterial->recvSelf (cTag, theChannel, theBroker) < 0)
-      {
-          opserr <<
-              "SimpleFractureMaterial::recvSelf() - failed to get the Material\n";
-          return -4;
-      }
+    if (theMaterial->recvSelf(cTag, theChannel, theBroker) < 0) {
+        opserr <<
+            "SimpleFractureMaterial::recvSelf() - failed to get the Material\n";
+        return -4;
+    }
     return 0;
 }
 
-void
-SimpleFractureMaterial::Print (OPS_Stream & s, int flag)
+void SimpleFractureMaterial::Print(OPS_Stream & s, int flag)
 {
-    s << "SimpleFractureMaterial tag: " << this->getTag () << endln;
-    s << "\tMaterial: " << theMaterial->getTag () << endln;
+    s << "SimpleFractureMaterial tag: " << this->getTag() << endln;
+    s << "\tMaterial: " << theMaterial->getTag() << endln;
     s << "\tMax strain: " << maxStrain << endln;
 }

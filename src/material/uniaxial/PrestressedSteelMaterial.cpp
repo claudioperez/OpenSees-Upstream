@@ -34,33 +34,30 @@
 #include <math.h>
 #include <float.h>
 
-PrestressedSteelMaterial::PrestressedSteelMaterial (int tag, double e,
-                                                    double f, double epslp,
-                                                    double epsd):
-UniaxialMaterial (tag, MAT_TAG_PrestressedSteelMaterial),
-trialStrain (0.0),
-E (e),
-fy (f),
-elp (epslp),
-ed (epsd)
+PrestressedSteelMaterial::PrestressedSteelMaterial(int tag, double e,
+                                                   double f, double epslp,
+                                                   double
+                                                   epsd):UniaxialMaterial
+    (tag, MAT_TAG_PrestressedSteelMaterial), trialStrain(0.0), E(e), fy(f),
+elp(epslp), ed(epsd)
 {
 
 }
 
-PrestressedSteelMaterial::PrestressedSteelMaterial ():UniaxialMaterial (0, MAT_TAG_PrestressedSteelMaterial),
-trialStrain (0.0), E (0.0), fy (0.0), elp (0.0),
-ed (0.0)
+PrestressedSteelMaterial::PrestressedSteelMaterial():UniaxialMaterial(0, MAT_TAG_PrestressedSteelMaterial),
+trialStrain(0.0), E(0.0), fy(0.0), elp(0.0),
+ed(0.0)
 {
 
 }
 
-PrestressedSteelMaterial::~PrestressedSteelMaterial ()
+PrestressedSteelMaterial::~PrestressedSteelMaterial()
 {
 
 }
 
 int
-PrestressedSteelMaterial::setTrialStrain (double strain, double strainRate)
+ PrestressedSteelMaterial::setTrialStrain(double strain, double strainRate)
 {
     // set the trial strain
     trialStrain = strain;
@@ -68,89 +65,76 @@ PrestressedSteelMaterial::setTrialStrain (double strain, double strainRate)
     return 0;
 }
 
-double
-PrestressedSteelMaterial::getStress (void)
+double PrestressedSteelMaterial::getStress(void)
 {
     if (trialStrain <= elp)
         return E * trialStrain;
-    else
-      {
-          return fy - 0.04 / (trialStrain - ed);
-      }
+    else {
+        return fy - 0.04 / (trialStrain - ed);
+    }
 }
 
-double
-PrestressedSteelMaterial::getTangent (void)
+double PrestressedSteelMaterial::getTangent(void)
 {
     if (trialStrain <= elp)
         return E;
-    else
-      {
-          double tmp = (trialStrain - ed);
-          return 0.04 / (tmp * tmp);
-      }
+    else {
+        double tmp = (trialStrain - ed);
+        return 0.04 / (tmp * tmp);
+    }
 }
 
-double
-PrestressedSteelMaterial::getInitialTangent (void)
+double PrestressedSteelMaterial::getInitialTangent(void)
 {
     return E;
 }
 
-double
-PrestressedSteelMaterial::getStrain (void)
+double PrestressedSteelMaterial::getStrain(void)
 {
     return trialStrain;
 }
 
-int
-PrestressedSteelMaterial::commitState (void)
+int PrestressedSteelMaterial::commitState(void)
 {
     return 0;
 }
 
-int
-PrestressedSteelMaterial::revertToLastCommit (void)
+int PrestressedSteelMaterial::revertToLastCommit(void)
 {
     return 0;
 }
 
-int
-PrestressedSteelMaterial::revertToStart (void)
+int PrestressedSteelMaterial::revertToStart(void)
 {
     trialStrain = 0.0;
 
     return 0;
 }
 
-UniaxialMaterial *
-PrestressedSteelMaterial::getCopy (void)
+UniaxialMaterial *PrestressedSteelMaterial::getCopy(void)
 {
     PrestressedSteelMaterial *theCopy =
-        new PrestressedSteelMaterial (this->getTag (), E, fy, elp, ed);
+        new PrestressedSteelMaterial(this->getTag(), E, fy, elp, ed);
 
     theCopy->trialStrain = trialStrain;
 
     return theCopy;
 }
 
-int
-PrestressedSteelMaterial::sendSelf (int cTag, Channel & theChannel)
+int PrestressedSteelMaterial::sendSelf(int cTag, Channel & theChannel)
 {
     return -1;
 }
 
-int
-PrestressedSteelMaterial::recvSelf (int cTag, Channel & theChannel,
-                                    FEM_ObjectBroker & theBroker)
+int PrestressedSteelMaterial::recvSelf(int cTag, Channel & theChannel,
+                                       FEM_ObjectBroker & theBroker)
 {
     return -1;
 }
 
-void
-PrestressedSteelMaterial::Print (OPS_Stream & s, int flag)
+void PrestressedSteelMaterial::Print(OPS_Stream & s, int flag)
 {
-    s << "PrestressedSteelMaterial : " << this->getTag ();
+    s << "PrestressedSteelMaterial : " << this->getTag();
 
     return;
 }

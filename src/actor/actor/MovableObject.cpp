@@ -34,22 +34,19 @@
 #include <MovableObject.h>
 #include <OPS_Globals.h>
 
-MovableObject::MovableObject (int cTag, int dTag):
-classTag (cTag),
-dbTag (dTag)
+MovableObject::MovableObject(int cTag, int dTag):classTag(cTag),
+dbTag(dTag)
 {
 
 }
 
 
-MovableObject::MovableObject (int theTag):
-classTag (theTag),
-dbTag (0)
+MovableObject::MovableObject(int theTag):classTag(theTag), dbTag(0)
 {
 
 }
 
-MovableObject::~MovableObject ()
+MovableObject::~MovableObject()
 {
 
 }
@@ -58,58 +55,51 @@ MovableObject::~MovableObject ()
 
 
 int
-MovableObject::getClassTag (void) const
+ MovableObject::getClassTag(void) const
 {
     return classTag;
 }
 
 static char unknownClassType[] = { "UnknownMovableObject" };
 
-const char *
-MovableObject::getClassType (void) const
+const char *MovableObject::getClassType(void) const
 {
     return unknownClassType;
 }
 
 
-int
-MovableObject::getDbTag (void) const
+int MovableObject::getDbTag(void) const
 {
     return dbTag;
 }
 
-void
-MovableObject::setDbTag (int newTag)
+void MovableObject::setDbTag(int newTag)
 {
     dbTag = newTag;
 }
 
-int
-MovableObject::setParameter (const char **argv, int argc, Parameter & param)
+int MovableObject::setParameter(const char **argv, int argc,
+                                Parameter & param)
 {
     return -1;
 }
 
-int
-MovableObject::updateParameter (int parameterID, Information & info)
+int MovableObject::updateParameter(int parameterID, Information & info)
 {
     return 0;
 }
 
-int
-MovableObject::activateParameter (int parameterID)
+int MovableObject::activateParameter(int parameterID)
 {
     return 0;
 }
 
-int
-MovableObject::setVariable (const char *variable, Information & theInfo)
+int MovableObject::setVariable(const char *variable, Information & theInfo)
 {
     return -1;
 }
 
-int
-MovableObject::getVariable (const char *variable, Information & theInfo)
+int MovableObject::getVariable(const char *variable, Information & theInfo)
 {
     return -1;
 }

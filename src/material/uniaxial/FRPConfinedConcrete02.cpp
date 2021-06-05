@@ -37,8 +37,7 @@
 #define TAG_LOADING 1
 #define TAG_UNLOADING -1
 
-void *
-OPS_FRPConfinedConcrete02 ()
+void *OPS_FRPConfinedConcrete02()
 {
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
@@ -46,95 +45,93 @@ OPS_FRPConfinedConcrete02 ()
     int iData[1];
     int numData = 1;
 
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr <<
-              "WARNING invalid uniaxialMaterial FRPConfinedConcrete02 tag" <<
-              endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr <<
+            "WARNING invalid uniaxialMaterial FRPConfinedConcrete02 tag" <<
+            endln;
+        return 0;
+    }
 
-    numData = OPS_GetNumRemainingInputArgs ();  // get number of input args excluding the material tag
+    numData = OPS_GetNumRemainingInputArgs();   // get number of input args excluding the material tag
 
-    if (numData != 6 && numData != 9 && numData != 11)
-      {
-          opserr <<
-              "Incorrect # args, want: uniaxialMaterial FRPConfinedConcrete02 tag? fc0? ec0? Ec? ft? Ets? Unit?"
-              << endln;
-          opserr <<
-              "Or: uniaxialMaterial FRPConfinedConcrete02 tag? fc0? ec0? Ec? -Ultimate fcc? ecu? ft? Ets? Unit?"
-              << endln;
-          opserr <<
-              "Or: uniaxialMaterial FRPConfinedConcrete02 tag? fc0? ec0? Ec? -JacketC t? Efrp? eps_h_rup? R? ft? Ets? Unit?"
-              << endln;
-          return 0;
-      }
+    if (numData != 6 && numData != 9 && numData != 11) {
+        opserr <<
+            "Incorrect # args, want: uniaxialMaterial FRPConfinedConcrete02 tag? fc0? ec0? Ec? ft? Ets? Unit?"
+            << endln;
+        opserr <<
+            "Or: uniaxialMaterial FRPConfinedConcrete02 tag? fc0? ec0? Ec? -Ultimate fcc? ecu? ft? Ets? Unit?"
+            << endln;
+        opserr <<
+            "Or: uniaxialMaterial FRPConfinedConcrete02 tag? fc0? ec0? Ec? -JacketC t? Efrp? eps_h_rup? R? ft? Ets? Unit?"
+            << endln;
+        return 0;
+    }
 
-    if (numData == 6)
-      {                         // Input for unconfined concrete
-          int numData1 = 6;
-          double dData[6];
-          if (OPS_GetDoubleInput (&numData1, dData) != 0)
-            {
-                opserr <<
-                    "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
-                    << iData[0] << "fc0? ec0? Ec? ft? Ets? Unit?" << endln;
-                return 0;
-            }
-          theMaterial =
-              new FRPConfinedConcrete02 (iData[0], dData[0], dData[1],
-                                         dData[2], dData[3], dData[4],
-                                         (int) dData[5]);
+    if (numData == 6) {         // Input for unconfined concrete
+        int numData1 = 6;
+        double dData[6];
+        if (OPS_GetDoubleInput(&numData1, dData) != 0) {
+            opserr <<
+                "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
+                << iData[0] << "fc0? ec0? Ec? ft? Ets? Unit?" << endln;
+            return 0;
+        }
+        theMaterial =
+            new FRPConfinedConcrete02(iData[0], dData[0], dData[1],
+                                      dData[2], dData[3], dData[4],
+                                      (int) dData[5]);
 
-      }
-    else if (numData == 9)
-      {                         // Ultimate stress/strain input by users
-          double dData[8];
-          int numData1 = 3;
-          int numData2 = 5;
-          if (OPS_GetDoubleInput (&numData1, dData) != 0)
-            {
+    } else if (numData == 9) {  // Ultimate stress/strain input by users
+        double dData[8];
+        int numData1 = 3;
+        int numData2 = 5;
+        if (OPS_GetDoubleInput(&numData1, dData) != 0) {
+            opserr <<
+                "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
+                << iData[0] <<
+                "fc0? ec0? Ec? -Ultimate fcc? ecu? ft? Ets? Unit?" <<
+                endln;
+            return 0;
+        }
+
+        const char *str = OPS_GetString();
+        // OPS_GetStringCopy(&str);
+        if (strcmp(str, "-Ultimate") == 0) {
+            if (OPS_GetDoubleInput(&numData2, dData + 3) != 0) {
                 opserr <<
                     "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
                     << iData[0] <<
-                    "fc0? ec0? Ec? -Ultimate fcc? ecu? ft? Ets? Unit?" <<
-                    endln;
+                    "fc0? ec0? Ec? -Ultimate fcc? ecu? ft? Ets? Unit?"
+                    << endln;
                 return 0;
             }
+        } else {
+            opserr <<
+                "Invalid input parameter for uniaxialMaterial FRPConfinedConcrete02 with tag  "
+                << iData[0] << ", want: -Ultimate" << endln;
+            return 0;
+        }
+        theMaterial =
+            new FRPConfinedConcrete02(iData[0], dData[0], dData[1],
+                                      dData[2], dData[3], dData[4],
+                                      dData[5], dData[6], (int) dData[7]);
+    } else {                    // FRP-confined concrete in circular columns, FRP jacket properties input by users
+        double dData[10];
+        int numData1 = 3;
+        int numData2 = 7;
+        if (OPS_GetDoubleInput(&numData1, dData) != 0) {
+            opserr <<
+                "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
+                << iData[0] <<
+                "fc0? ec0? Ec? -JacketC tfrp? Efrp? erup? R? ft? Ets? Unit?"
+                << endln;
+            return 0;
+        }
 
-          const char *str = OPS_GetString ();
-          // OPS_GetStringCopy(&str);
-          if (strcmp (str, "-Ultimate") == 0)
-            {
-                if (OPS_GetDoubleInput (&numData2, dData + 3) != 0)
-                  {
-                      opserr <<
-                          "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
-                          << iData[0] <<
-                          "fc0? ec0? Ec? -Ultimate fcc? ecu? ft? Ets? Unit?"
-                          << endln;
-                      return 0;
-                  }
-            }
-          else
-            {
-                opserr <<
-                    "Invalid input parameter for uniaxialMaterial FRPConfinedConcrete02 with tag  "
-                    << iData[0] << ", want: -Ultimate" << endln;
-                return 0;
-            }
-          theMaterial =
-              new FRPConfinedConcrete02 (iData[0], dData[0], dData[1],
-                                         dData[2], dData[3], dData[4],
-                                         dData[5], dData[6], (int) dData[7]);
-      }
-    else
-      {                         // FRP-confined concrete in circular columns, FRP jacket properties input by users
-          double dData[10];
-          int numData1 = 3;
-          int numData2 = 7;
-          if (OPS_GetDoubleInput (&numData1, dData) != 0)
-            {
+        const char *str = OPS_GetString();
+        //OPS_GetStringCopy(&str);
+        if (strcmp(str, "-JacketC") == 0) {
+            if (OPS_GetDoubleInput(&numData2, dData + 3) != 0) {
                 opserr <<
                     "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
                     << iData[0] <<
@@ -142,57 +139,37 @@ OPS_FRPConfinedConcrete02 ()
                     << endln;
                 return 0;
             }
+        } else {
+            opserr <<
+                "Invalid input parameter for uniaxialMaterial FRPConfinedConcrete02 with tag "
+                << iData[0] << ", want: -JacketC" << endln;
+            return 0;
+        }
+        theMaterial =
+            new FRPConfinedConcrete02(iData[0], dData[0], dData[1],
+                                      dData[2], dData[3], dData[4],
+                                      dData[5], dData[6], dData[7],
+                                      dData[8], (int) dData[9]);
+    }
 
-          const char *str = OPS_GetString ();
-          //OPS_GetStringCopy(&str);
-          if (strcmp (str, "-JacketC") == 0)
-            {
-                if (OPS_GetDoubleInput (&numData2, dData + 3) != 0)
-                  {
-                      opserr <<
-                          "Invalid #args, want: uniaxialMaterial FRPConfinedConcrete02 "
-                          << iData[0] <<
-                          "fc0? ec0? Ec? -JacketC tfrp? Efrp? erup? R? ft? Ets? Unit?"
-                          << endln;
-                      return 0;
-                  }
-            }
-          else
-            {
-                opserr <<
-                    "Invalid input parameter for uniaxialMaterial FRPConfinedConcrete02 with tag "
-                    << iData[0] << ", want: -JacketC" << endln;
-                return 0;
-            }
-          theMaterial =
-              new FRPConfinedConcrete02 (iData[0], dData[0], dData[1],
-                                         dData[2], dData[3], dData[4],
-                                         dData[5], dData[6], dData[7],
-                                         dData[8], (int) dData[9]);
-      }
-
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial FRPConfinedConcrete02 "
-              << iData[0] << endln;
-          return 0;
-      }
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial FRPConfinedConcrete02 "
+            << iData[0] << endln;
+        return 0;
+    }
 
     return theMaterial;
 }
 
 // Constructor for unconfined concrete
-FRPConfinedConcrete02::FRPConfinedConcrete02 (int tag, double fc0, double Ec,
-                                              double ec0, double ft,
-                                              double Ets, int Unit):
-UniaxialMaterial (tag, MAT_TAG_FRPConfinedConcrete02),
-m_fc0 (-fc0),
-m_Ec (Ec),
-m_epsc0 (-ec0),
-m_Ets (Ets),
-m_ft (-ft),
-m_Unit (Unit)
+FRPConfinedConcrete02::FRPConfinedConcrete02(int tag, double fc0,
+                                             double Ec, double ec0,
+                                             double ft, double Ets,
+                                             int
+                                             Unit):UniaxialMaterial(tag,
+                                                                    MAT_TAG_FRPConfinedConcrete02),
+m_fc0(-fc0), m_Ec(Ec), m_epsc0(-ec0), m_Ets(Ets), m_ft(-ft), m_Unit(Unit)
 {
     m_Tstrain = 0.0;
     m_Tstress = 0.0;
@@ -239,11 +216,13 @@ m_Unit (Unit)
 }
 
 // Constructor for the case of <-Ultimate> (ultimate stress/strain input by users)
-FRPConfinedConcrete02::FRPConfinedConcrete02 (int tag, double fc0, double Ec,
-                                              double ec0, double fcc,
-                                              double ecu, double ft,
-                                              double Ets, int Unit):
-UniaxialMaterial (tag, MAT_TAG_FRPConfinedConcrete02)
+FRPConfinedConcrete02::FRPConfinedConcrete02(int tag, double fc0,
+                                             double Ec, double ec0,
+                                             double fcc, double ecu,
+                                             double ft, double Ets,
+                                             int
+                                             Unit):UniaxialMaterial(tag,
+                                                                    MAT_TAG_FRPConfinedConcrete02)
 {
     m_fc0 = -fc0;
     m_Ec = Ec;
@@ -296,12 +275,14 @@ UniaxialMaterial (tag, MAT_TAG_FRPConfinedConcrete02)
 }
 
 // Constructor for the case of <-JacketC> (FRP-confined concrete in circular columns, FRP jacket properties input by users)
-FRPConfinedConcrete02::FRPConfinedConcrete02 (int tag, double fc0, double Ec,
-                                              double ec0, double t,
-                                              double Efrp, double eps_h_rup,
-                                              double R, double ft, double Ets,
-                                              int Unit):
-UniaxialMaterial (tag, MAT_TAG_FRPConfinedConcrete02)
+FRPConfinedConcrete02::FRPConfinedConcrete02(int tag, double fc0,
+                                             double Ec, double ec0,
+                                             double t, double Efrp,
+                                             double eps_h_rup, double R,
+                                             double ft, double Ets,
+                                             int
+                                             Unit):UniaxialMaterial(tag,
+                                                                    MAT_TAG_FRPConfinedConcrete02)
 {
     m_fc0 = -fc0;
     m_Ec = Ec;
@@ -327,8 +308,8 @@ UniaxialMaterial (tag, MAT_TAG_FRPConfinedConcrete02)
         m_fc0 * (1.0 + 3.5 * m_fl / m_fc0 - 0.035 * m_eps_h_rup / m_epsc0);
     m_epscu =
         m_epsc0 * (1.75 +
-                   6.5 * pow (m_fl / m_fc0, 0.8) * pow (m_eps_h_rup / m_epsc0,
-                                                        0.65));
+                   6.5 * pow(m_fl / m_fc0,
+                             0.8) * pow(m_eps_h_rup / m_epsc0, 0.65));
     m_E2 = (m_fcc - m_fc0) / m_epscu;
     m_epst = 2.0 * m_fc0 / (m_Ec - m_E2);
 
@@ -363,9 +344,9 @@ UniaxialMaterial (tag, MAT_TAG_FRPConfinedConcrete02)
     // AddingSensitivity:END //////////////////////////////////////
 }
 
-FRPConfinedConcrete02::FRPConfinedConcrete02 ():UniaxialMaterial (0, MAT_TAG_FRPConfinedConcrete02),
-m_fc0 (0.0), m_Ec (0.0), m_fcc (0.0), m_epscu (0.0), m_Ets (0.0), m_ft (0.0),
-m_Unit (1), m_Tstrain (0.0), m_Tstress (0.0), m_trialTangent (0.0)
+FRPConfinedConcrete02::FRPConfinedConcrete02():UniaxialMaterial(0, MAT_TAG_FRPConfinedConcrete02),
+m_fc0(0.0), m_Ec(0.0), m_fcc(0.0), m_epscu(0.0), m_Ets(0.0), m_ft(0.0),
+m_Unit(1), m_Tstrain(0.0), m_Tstress(0.0), m_trialTangent(0.0)
 {
 
     // AddingSensitivity:BEGIN /////////////////////////////////////
@@ -374,189 +355,163 @@ m_Unit (1), m_Tstrain (0.0), m_Tstress (0.0), m_trialTangent (0.0)
     // AddingSensitivity:END //////////////////////////////////////
 }
 
-FRPConfinedConcrete02::~FRPConfinedConcrete02 ()
+FRPConfinedConcrete02::~FRPConfinedConcrete02()
 {
 }
 
 int
-FRPConfinedConcrete02::setTrialStrain (double strain, double strainRate)
+ FRPConfinedConcrete02::setTrialStrain(double strain, double strainRate)
 {
 
     m_Tstrain = -strain;
 
-    if (m_bUltimate)
-      {
-          m_Tstress = 0.0;
-          m_trialStrainlast = m_Tstrain;
-          m_trialStresslast = m_Tstress;
-          m_trialTangent = 1e-15;
-          return 0;
-      }
+    if (m_bUltimate) {
+        m_Tstress = 0.0;
+        m_trialStrainlast = m_Tstrain;
+        m_trialStresslast = m_Tstress;
+        m_trialTangent = 1e-15;
+        return 0;
+    }
 
-    if (m_Tstrain == m_trialStrainlast && m_trialStrainlast == 0.0)
-      {
-          m_Tstress = 0.0;
-          m_trialStrainlast = m_Tstrain;
-          m_trialStresslast = m_Tstress;
-          return 0;
-      }
-    if (fabs (m_Tstrain - m_trialStrainlast) <= 1e-15)  //Lu JY add  2009.06.06
-      {
-          m_Tstrain = m_trialStrainlast;
-          m_Tstress = m_trialStresslast;
-          m_trialTangent = m_trialTangentlast;
+    if (m_Tstrain == m_trialStrainlast && m_trialStrainlast == 0.0) {
+        m_Tstress = 0.0;
+        m_trialStrainlast = m_Tstrain;
+        m_trialStresslast = m_Tstress;
+        return 0;
+    }
+    if (fabs(m_Tstrain - m_trialStrainlast) <= 1e-15)   //Lu JY add  2009.06.06
+    {
+        m_Tstrain = m_trialStrainlast;
+        m_Tstress = m_trialStresslast;
+        m_trialTangent = m_trialTangentlast;
 
-          return 0;
-      }
+        return 0;
+    }
 
     if (m_Tstrain >= m_epspl)   // Compression part
-      {
-          if (m_Tstrain > m_epscu)
+    {
+        if (m_Tstrain > m_epscu) {
+            m_Tstress = 0.0;
+            m_trialStrainlast = m_Tstrain;
+            m_trialStresslast = m_Tstress;
+            m_trialTangent = 1e-15;
+            m_bUltimate = true;
+            return 0;
+        }
+        // Define loading types & parameters
+        if ((m_Tstrain - m_trialStrainlast) > 0)        // loading & reloading
+        {
+            if ((m_loadingflag == TAG_UNLOADING) || (m_trialStrainlast < m_epspl))      // Begin loading point: Show define Reloading curve parameters here
             {
-                m_Tstress = 0.0;
-                m_trialStrainlast = m_Tstrain;
-                m_trialStresslast = m_Tstress;
-                m_trialTangent = 1e-15;
-                m_bUltimate = true;
-                return 0;
-            }
-          // Define loading types & parameters
-          if ((m_Tstrain - m_trialStrainlast) > 0)      // loading & reloading
-            {
-                if ((m_loadingflag == TAG_UNLOADING) || (m_trialStrainlast < m_epspl))  // Begin loading point: Show define Reloading curve parameters here
-                  {
-                      // define reloading point
-                      m_epsre = m_trialStrainlast;
-                      m_sigre = m_trialStresslast;
-                      if (m_trialStrainlast < m_epspl)
-                        {
-                            m_epsre = m_epspl;
-                            m_sigre = 0.0;
-                        }
-                      if (m_n == 1 && m_sigunenv != 0)  // Eq.28 (Lam and Teng 2009)
-                          m_betaun = (m_sigunenv - m_sigre) / m_sigunenv;
-                      else if (m_n >= 2 && m_signew != 0)
-                          m_betaun = (m_sigun - m_sigre) / m_signew;    // m_signew: last step
-                      GetDeterioratedStress ();
+                // define reloading point
+                m_epsre = m_trialStrainlast;
+                m_sigre = m_trialStresslast;
+                if (m_trialStrainlast < m_epspl) {
+                    m_epsre = m_epspl;
+                    m_sigre = 0.0;
+                }
+                if (m_n == 1 && m_sigunenv != 0)        // Eq.28 (Lam and Teng 2009)
+                    m_betaun = (m_sigunenv - m_sigre) / m_sigunenv;
+                else if (m_n >= 2 && m_signew != 0)
+                    m_betaun = (m_sigun - m_sigre) / m_signew;  // m_signew: last step
+                GetDeterioratedStress();
 
-                  }
-                m_loadingflag = TAG_LOADING;    // Set current loading type
             }
-          else
+            m_loadingflag = TAG_LOADING;        // Set current loading type
+        } else {
+            if (m_loadingflag == TAG_LOADING)   // Begin unloading point: Show define Unloading curve parameters here
             {
-                if (m_loadingflag == TAG_LOADING)       // Begin unloading point: Show define Unloading curve parameters here
-                  {
-                      if (m_trialStresslast > m_sigunenv)
-                          m_n = 1;
-                      else if (m_trialStresslast <= m_sigunenv)
-                          m_n += 1;
-                      // define unloading point
-                      m_epsun = m_trialStrainlast;
-                      m_sigun = m_trialStresslast;
+                if (m_trialStresslast > m_sigunenv)
+                    m_n = 1;
+                else if (m_trialStresslast <= m_sigunenv)
+                    m_n += 1;
+                // define unloading point
+                m_epsun = m_trialStrainlast;
+                m_sigun = m_trialStresslast;
 
-                      if (m_n == 1)
-                        {
-                            m_epsunenv = m_epsun;
-                            m_sigunn1 = m_sigunenv = m_sigun;
-                        }
-                      // Calculate reference point
-                      GetRefPoint ();
-                      if (m_n >= 2 && (m_epsreflast - m_epspl) != 0)
-                        {
-                            m_gamare = (m_epsun - m_epspl) / (m_epsreflast - m_epspl);  // Eq.29 (Lam and Teng 2009)
-                            // Calculate effective cyclic loading num
-                            if (m_gamare > 0.7 && m_betaun > 0.7)       // Eq.30 (Lam and Teng 2009)
-                                m_ne += 1;
-                        }
-                      Compr_GetPlasticStrain ();        // calculate new m_epspl
-                  }
-                m_loadingflag = TAG_UNLOADING;  // Set current loading type
+                if (m_n == 1) {
+                    m_epsunenv = m_epsun;
+                    m_sigunn1 = m_sigunenv = m_sigun;
+                }
+                // Calculate reference point
+                GetRefPoint();
+                if (m_n >= 2 && (m_epsreflast - m_epspl) != 0) {
+                    m_gamare = (m_epsun - m_epspl) / (m_epsreflast - m_epspl);  // Eq.29 (Lam and Teng 2009)
+                    // Calculate effective cyclic loading num
+                    if (m_gamare > 0.7 && m_betaun > 0.7)       // Eq.30 (Lam and Teng 2009)
+                        m_ne += 1;
+                }
+                Compr_GetPlasticStrain();       // calculate new m_epspl
             }
+            m_loadingflag = TAG_UNLOADING;      // Set current loading type
+        }
 
-          if (m_loadingflag == TAG_LOADING)
+        if (m_loadingflag == TAG_LOADING) {
+            if (m_n == 0)       // Loading on the Envelop curve
+                Compr_Envlp(m_Tstrain, m_Tstress, m_trialTangent);
+            else if (m_n >= 1)  // Internal Reloading
+                Compr_ReloadingPath(m_Tstrain, m_Tstress, m_trialTangent);
+        } else if (m_loadingflag == TAG_UNLOADING) {
+            if (m_n == 1)       // Unloading from envelop
             {
-                if (m_n == 0)   // Loading on the Envelop curve
-                    Compr_Envlp (m_Tstrain, m_Tstress, m_trialTangent);
-                else if (m_n >= 1)      // Internal Reloading
-                    Compr_ReloadingPath (m_Tstrain, m_Tstress,
-                                         m_trialTangent);
-            }
-          else if (m_loadingflag == TAG_UNLOADING)
+                m_ne = 1;
+                Compr_UnloadingPath(m_Tstrain, m_Tstress, m_trialTangent);
+            } else if (m_n >= 2)        // Internal unloading 
+                Compr_UnloadingPath(m_Tstrain, m_Tstress, m_trialTangent);
+        }
+    } else                      // Tension part
+    {
+        if (m_Tstrain <= (m_epstu + m_epspl) || fabs(m_Etr2) < 1) {
+            m_Etr1 = m_Etr2 = 0.0;
+            m_Tstress = 0;
+            m_trialTangent = 1e-15;
+            return 0;
+        }
+        if ((m_Tstrain - m_trialStrainlast) > 0) {
+            if (m_loadingflag == TAG_UNLOADING) // Begin loading point: Show define Reloading curve parameters here
             {
-                if (m_n == 1)   // Unloading from envelop
-                  {
-                      m_ne = 1;
-                      Compr_UnloadingPath (m_Tstrain, m_Tstress,
-                                           m_trialTangent);
-                  }
-                else if (m_n >= 2)      // Internal unloading 
-                    Compr_UnloadingPath (m_Tstrain, m_Tstress,
-                                         m_trialTangent);
+                if (m_trialStrainlast <= (m_epstn + m_epspl)
+                    && (m_epspl != m_trialStrainlast))
+                    m_Etr2 =
+                        (0.0 - m_trialStresslast) / (m_epspl -
+                                                     m_trialStrainlast);
+                m_Etr1 = m_Etr2;
             }
-      }
-    else                        // Tension part
-      {
-          if (m_Tstrain <= (m_epstu + m_epspl) || fabs (m_Etr2) < 1)
-            {
-                m_Etr1 = m_Etr2 = 0.0;
-                m_Tstress = 0;
-                m_trialTangent = 1e-15;
-                return 0;
-            }
-          if ((m_Tstrain - m_trialStrainlast) > 0)
-            {
-                if (m_loadingflag == TAG_UNLOADING)     // Begin loading point: Show define Reloading curve parameters here
-                  {
-                      if (m_trialStrainlast <= (m_epstn + m_epspl)
-                          && (m_epspl != m_trialStrainlast))
-                          m_Etr2 =
-                              (0.0 - m_trialStresslast) / (m_epspl -
-                                                           m_trialStrainlast);
-                      m_Etr1 = m_Etr2;
-                  }
-                m_loadingflag = TAG_LOADING;    // Set current loading type
-            }
-          else
-              m_loadingflag = TAG_UNLOADING;    // Set current loading type
-          double epstemp;
-          epstemp = m_Tstrain - m_epspl;
+            m_loadingflag = TAG_LOADING;        // Set current loading type
+        } else
+            m_loadingflag = TAG_UNLOADING;      // Set current loading type
+        double epstemp;
+        epstemp = m_Tstrain - m_epspl;
 
-          if (m_loadingflag == TAG_LOADING)
-            {
-                m_Tstress = epstemp * m_Etr2;
-                m_trialTangent = m_Etr2;
-            }
-          else if (m_loadingflag == TAG_UNLOADING)
-            {
-                m_Etr1 = m_Etr1 < m_Eun0 ? m_Etr1 : m_Eun0;
-                m_epstn = m_epstu / (m_Etr1 / m_Ets + 1.0);
-                Tens_Envlp (epstemp, m_Tstress, m_trialTangent);
-            }
-      }
+        if (m_loadingflag == TAG_LOADING) {
+            m_Tstress = epstemp * m_Etr2;
+            m_trialTangent = m_Etr2;
+        } else if (m_loadingflag == TAG_UNLOADING) {
+            m_Etr1 = m_Etr1 < m_Eun0 ? m_Etr1 : m_Eun0;
+            m_epstn = m_epstu / (m_Etr1 / m_Ets + 1.0);
+            Tens_Envlp(epstemp, m_Tstress, m_trialTangent);
+        }
+    }
     return 0;
 }
 
-double
-FRPConfinedConcrete02::getStrain (void)
+double FRPConfinedConcrete02::getStrain(void)
 {
     return -m_Tstrain;
 }
 
-double
-FRPConfinedConcrete02::getStress (void)
+double FRPConfinedConcrete02::getStress(void)
 {
     return -m_Tstress;
 }
 
 
-double
-FRPConfinedConcrete02::getTangent (void)
+double FRPConfinedConcrete02::getTangent(void)
 {
     return m_trialTangent;
 }
 
-int
-FRPConfinedConcrete02::commitState (void)
+int FRPConfinedConcrete02::commitState(void)
 {
     m_epstnlast = m_epstn;
     m_epstulast = m_epstu;
@@ -603,8 +558,7 @@ FRPConfinedConcrete02::commitState (void)
 }
 
 
-int
-FRPConfinedConcrete02::revertToLastCommit (void)
+int FRPConfinedConcrete02::revertToLastCommit(void)
 {
     m_epstn = m_epstnlast;
     m_epstu = m_epstulast;
@@ -650,8 +604,7 @@ FRPConfinedConcrete02::revertToLastCommit (void)
 }
 
 
-int
-FRPConfinedConcrete02::revertToStart (void)
+int FRPConfinedConcrete02::revertToStart(void)
 {
     m_Eun0 = m_Ec;
     m_Etr1 = m_Ec;
@@ -736,12 +689,11 @@ FRPConfinedConcrete02::revertToStart (void)
 }
 
 
-UniaxialMaterial *
-FRPConfinedConcrete02::getCopy (void)
+UniaxialMaterial *FRPConfinedConcrete02::getCopy(void)
 {
     FRPConfinedConcrete02 *theCopy =
-        new FRPConfinedConcrete02 (this->getTag (), -m_fc0, m_Ec, -m_epsc0,
-                                   -m_fcc, -m_epscu, -m_ft, m_Ets, m_Unit);
+        new FRPConfinedConcrete02(this->getTag(), -m_fc0, m_Ec, -m_epsc0,
+                                  -m_fcc, -m_epscu, -m_ft, m_Ets, m_Unit);
 
     //////////////////////////////////////////////////////////////////////////
     theCopy->m_epstn = this->m_epstn;
@@ -824,225 +776,217 @@ FRPConfinedConcrete02::getCopy (void)
 }
 
 
-int
-FRPConfinedConcrete02::sendSelf (int cTag, Channel & theChannel)
+int FRPConfinedConcrete02::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (49);
-    data (0) = this->getTag ();
-    data (1) = m_fc0;
-    data (2) = m_Ec;
-    data (3) = m_t;
-    data (4) = m_Efrp;
-    data (5) = m_eps_h_rup;
-    data (6) = m_R;
-    data (7) = m_Ets;
-    data (8) = m_ft;
-    data (9) = m_fl;
-    data (10) = m_epsc0;
-    data (11) = m_fcc;
-    data (12) = m_epscu;
-    data (13) = m_E2;
-    data (14) = m_epst;
+    static Vector data(49);
+    data(0) = this->getTag();
+    data(1) = m_fc0;
+    data(2) = m_Ec;
+    data(3) = m_t;
+    data(4) = m_Efrp;
+    data(5) = m_eps_h_rup;
+    data(6) = m_R;
+    data(7) = m_Ets;
+    data(8) = m_ft;
+    data(9) = m_fl;
+    data(10) = m_epsc0;
+    data(11) = m_fcc;
+    data(12) = m_epscu;
+    data(13) = m_E2;
+    data(14) = m_epst;
 
-    data (15) = m_Unit;
-    data (16) = m_Unitscale;
+    data(15) = m_Unit;
+    data(16) = m_Unitscale;
     //////////////////////////////////////////////////////////////////////////
-    data (17) = m_epstnlast;
-    data (18) = m_epstulast;
-    data (19) = m_Etr1last;
-    data (20) = m_Etr2last;
+    data(17) = m_epstnlast;
+    data(18) = m_epstulast;
+    data(19) = m_Etr1last;
+    data(20) = m_Etr2last;
 
     // History
-    data (21) = m_nlast;
-    data (22) = m_nelast;
-    data (23) = m_loadingflaglast;
+    data(21) = m_nlast;
+    data(22) = m_nelast;
+    data(23) = m_loadingflaglast;
 
-    data (24) = m_Erelast;
-    data (25) = m_epsunenvlast;
-    data (26) = m_sigunenvlast;
-    data (27) = m_sigunn1last;
-    data (28) = m_epsretenvlast;
-    data (29) = m_epsunlast;
-    data (30) = m_sigunlast;
-    data (31) = m_epsrelast;
-    data (32) = m_sigrelast;
-    data (33) = m_epsreflast;
-    data (34) = m_sigreflast;
+    data(24) = m_Erelast;
+    data(25) = m_epsunenvlast;
+    data(26) = m_sigunenvlast;
+    data(27) = m_sigunn1last;
+    data(28) = m_epsretenvlast;
+    data(29) = m_epsunlast;
+    data(30) = m_sigunlast;
+    data(31) = m_epsrelast;
+    data(32) = m_sigrelast;
+    data(33) = m_epsreflast;
+    data(34) = m_sigreflast;
 
-    data (35) = m_betaunlast;
-    data (36) = m_filast;
-    data (37) = m_fifullast;
-    data (38) = m_signewlast;
+    data(35) = m_betaunlast;
+    data(36) = m_filast;
+    data(37) = m_fifullast;
+    data(38) = m_signewlast;
 
-    data (39) = m_gamarelast;
-    data (40) = m_omglast;
-    data (41) = m_omgfullast;
-    data (42) = m_epspllast;
+    data(39) = m_gamarelast;
+    data(40) = m_omglast;
+    data(41) = m_omgfullast;
+    data(42) = m_epspllast;
 
-    data (43) = m_bSmallStresslast;
-    data (44) = m_bUltimatelast;
+    data(43) = m_bSmallStresslast;
+    data(44) = m_bUltimatelast;
 
-    data (45) = m_trialStrainlast;
-    data (46) = m_trialStresslast;
+    data(45) = m_trialStrainlast;
+    data(46) = m_trialStresslast;
 
-    data (47) = m_trialTangentlast;
-    data (48) = m_Eun0last;
+    data(47) = m_trialTangentlast;
+    data(48) = m_Eun0last;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
-        opserr << "FRPConfinedConcrete02::sendSelf() - failed to send data\n";
+        opserr <<
+            "FRPConfinedConcrete02::sendSelf() - failed to send data\n";
 
     opserr << "sendSelf\n";
     return res;
 }
 
-int
-FRPConfinedConcrete02::recvSelf (int cTag, Channel & theChannel,
-                                 FEM_ObjectBroker & theBroker)
+int FRPConfinedConcrete02::recvSelf(int cTag, Channel & theChannel,
+                                    FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (49);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(49);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
     if (res < 0)
-        opserr << "FRPConfinedConcrete02::recvSelf() - failed to recv data\n";
-    else
-      {
-          this->setTag (data (0));
+        opserr <<
+            "FRPConfinedConcrete02::recvSelf() - failed to recv data\n";
+    else {
+        this->setTag(data(0));
 
-          m_fc0 = data (1);
-          m_Ec = data (2);
-          m_t = data (3);
-          m_Efrp = data (4);
-          m_eps_h_rup = data (5);
-          m_R = data (6);
-          m_Ets = data (7);
-          m_ft = data (8);
-          m_fl = data (9);
-          m_epsc0 = data (10);
-          m_fcc = data (11);
-          m_epscu = data (12);
-          m_E2 = data (13);
-          m_epst = data (14);
+        m_fc0 = data(1);
+        m_Ec = data(2);
+        m_t = data(3);
+        m_Efrp = data(4);
+        m_eps_h_rup = data(5);
+        m_R = data(6);
+        m_Ets = data(7);
+        m_ft = data(8);
+        m_fl = data(9);
+        m_epsc0 = data(10);
+        m_fcc = data(11);
+        m_epscu = data(12);
+        m_E2 = data(13);
+        m_epst = data(14);
 
-          m_Unit = data (15);
-          m_Unitscale = data (16);
-          //////////////////////////////////////////////////////////////////////////
-          m_epstnlast = data (17);
-          m_epstulast = data (18);
-          m_Etr1last = data (19);
-          m_Etr2last = data (20);
+        m_Unit = data(15);
+        m_Unitscale = data(16);
+        //////////////////////////////////////////////////////////////////////////
+        m_epstnlast = data(17);
+        m_epstulast = data(18);
+        m_Etr1last = data(19);
+        m_Etr2last = data(20);
 
-          // History
-          m_nlast = data (21);
-          m_nelast = data (22);
-          m_loadingflaglast = data (23);
+        // History
+        m_nlast = data(21);
+        m_nelast = data(22);
+        m_loadingflaglast = data(23);
 
-          m_Erelast = data (24);
-          m_epsunenvlast = data (25);
-          m_sigunenvlast = data (26);
-          m_sigunn1last = data (27);
-          m_epsretenvlast = data (28);
-          m_epsunlast = data (29);
-          m_sigunlast = data (30);
-          m_epsrelast = data (31);
-          m_sigrelast = data (32);
-          m_epsreflast = data (33);
-          m_sigreflast = data (34);
+        m_Erelast = data(24);
+        m_epsunenvlast = data(25);
+        m_sigunenvlast = data(26);
+        m_sigunn1last = data(27);
+        m_epsretenvlast = data(28);
+        m_epsunlast = data(29);
+        m_sigunlast = data(30);
+        m_epsrelast = data(31);
+        m_sigrelast = data(32);
+        m_epsreflast = data(33);
+        m_sigreflast = data(34);
 
-          m_betaunlast = data (35);
-          m_filast = data (36);
-          m_fifullast = data (37);
-          m_signewlast = data (38);
+        m_betaunlast = data(35);
+        m_filast = data(36);
+        m_fifullast = data(37);
+        m_signewlast = data(38);
 
-          m_gamarelast = data (39);
-          m_omglast = data (40);
-          m_omgfullast = data (41);
-          m_epspllast = data (42);
+        m_gamarelast = data(39);
+        m_omglast = data(40);
+        m_omgfullast = data(41);
+        m_epspllast = data(42);
 
-          m_bSmallStresslast = data (43);
-          m_bUltimatelast = data (44);
+        m_bSmallStresslast = data(43);
+        m_bUltimatelast = data(44);
 
-          m_trialStrainlast = data (45);
-          m_trialStresslast = data (46);
+        m_trialStrainlast = data(45);
+        m_trialStresslast = data(46);
 
-          m_trialTangentlast = data (47);
+        m_trialTangentlast = data(47);
 
-          m_Eun0last = data (48);
+        m_Eun0last = data(48);
 
-          m_Tstrain = m_trialStrainlast;
-          m_Tstress = m_trialStresslast;
+        m_Tstrain = m_trialStrainlast;
+        m_Tstress = m_trialStresslast;
 
-          m_trialTangent = m_trialTangentlast;
+        m_trialTangent = m_trialTangentlast;
 
-      }
+    }
     opserr << "recvSelf\n";
 
     return res;
 }
 
-void
-FRPConfinedConcrete02::Print (OPS_Stream & s, int flag)
+void FRPConfinedConcrete02::Print(OPS_Stream & s, int flag)
 {
-    s << "FRPConfinedConcrete02 tag: " << this->getTag () << endln;
+    s << "FRPConfinedConcrete02 tag: " << this->getTag() << endln;
     s << "  fc0: " << m_fc0 << endln;
     s << "  Ec: " << m_Ec << endln;
     s << "  ec0: " << m_epsc0 << endln;
     s << "  Ets: " << m_Ets << endln;
     s << "  ft: " << m_ft << endln;
 
-    s << "  stress: " << m_Tstress << " tangent: " << m_trialTangent << endln;
+    s << "  stress: " << m_Tstress << " tangent: " << m_trialTangent <<
+        endln;
 }
 
 
-void
-FRPConfinedConcrete02::Tens_Envlp (double epsc, double &sigc, double &Ect)
+void FRPConfinedConcrete02::Tens_Envlp(double epsc, double &sigc,
+                                       double &Ect)
 {
     if (epsc <= 0.0 && epsc >= m_epstn) //   linear ascending branch between 0 and m_epstn
-      {
-          sigc = m_Etr1 * epsc;
-          Ect = m_Etr1;
-      }
-    else if (epsc <= 0.0 && epsc > m_epstu)     //   linear descending branch between m_epstn and epstu
-      {
-          sigc = m_Etr1 * m_epstn - m_Ets * (epsc - m_epstn);
-          Ect = -m_Ets;
-      }
-    else if (epsc <= m_epstu)
-      {
-          sigc = 0.0;
-          Ect = 1e-15;
-      }
+    {
+        sigc = m_Etr1 * epsc;
+        Ect = m_Etr1;
+    } else if (epsc <= 0.0 && epsc > m_epstu)   //   linear descending branch between m_epstn and epstu
+    {
+        sigc = m_Etr1 * m_epstn - m_Ets * (epsc - m_epstn);
+        Ect = -m_Ets;
+    } else if (epsc <= m_epstu) {
+        sigc = 0.0;
+        Ect = 1e-15;
+    }
     return;
 }
 
-void
-FRPConfinedConcrete02::Compr_Envlp (double epsc, double &sigc, double &Ect)
+void FRPConfinedConcrete02::Compr_Envlp(double epsc, double &sigc,
+                                        double &Ect)
 {
     m_bSmallStress = false;
     if (epsc >= 0.0 && epsc <= m_epst)  // Eq.1 (Lam and Teng 2009)
-      {
-          sigc = m_Ec * epsc - pow ((m_Ec - m_E2) * epsc, 2) / 4.0 / m_fc0;
-          Ect = m_Ec - pow (m_Ec - m_E2, 2) * epsc / 2.0 / m_fc0;
-      }
-    else if (epsc > m_epst && epsc <= m_epscu)  // Eq.2 (Lam and Teng 2009)
-      {
-          //   linear ascending branch between epst and epscu
-          sigc = m_fc0 + m_E2 * epsc;
-          Ect = m_E2;
-      }
-    else if (epsc > m_epscu)
-      {
-          sigc = 0.0;
-          Ect = 1e-15;
-      }
+    {
+        sigc = m_Ec * epsc - pow((m_Ec - m_E2) * epsc, 2) / 4.0 / m_fc0;
+        Ect = m_Ec - pow(m_Ec - m_E2, 2) * epsc / 2.0 / m_fc0;
+    } else if (epsc > m_epst && epsc <= m_epscu)        // Eq.2 (Lam and Teng 2009)
+    {
+        //   linear ascending branch between epst and epscu
+        sigc = m_fc0 + m_E2 * epsc;
+        Ect = m_E2;
+    } else if (epsc > m_epscu) {
+        sigc = 0.0;
+        Ect = 1e-15;
+    }
 
     return;
 }
 
-void
-FRPConfinedConcrete02::Compr_UnloadingPath (double epsc, double &sigc,
-                                            double &Ect)
+void FRPConfinedConcrete02::Compr_UnloadingPath(double epsc, double &sigc,
+                                                double &Ect)
 {
     double eta;
     double Eun0, Eun01, Eun02;
@@ -1052,264 +996,232 @@ FRPConfinedConcrete02::Compr_UnloadingPath (double epsc, double &sigc,
 
     Eun01 = Eun02 = m_Ec;
 
-    if (m_epsun != 0)
-      {
-          Eun01 = 0.5 * m_fc0 / m_epsun;
-      }
-    if (m_epsun != m_epspl)
-      {
-          Eun02 = m_sigun / (m_epsun - m_epspl);
-      }
+    if (m_epsun != 0) {
+        Eun01 = 0.5 * m_fc0 / m_epsun;
+    }
+    if (m_epsun != m_epspl) {
+        Eun02 = m_sigun / (m_epsun - m_epspl);
+    }
 
     Eun0 = Eun01 < Eun02 ? Eun01 : Eun02;       // Eq.13 (Lam and Teng 2009)
 
-    a = (m_sigun - Eun0 * (m_epsun - m_epspl)) / (pow (m_epsun, eta) -
-                                                  pow (m_epspl,
-                                                       eta) -
-                                                  eta * pow (m_epspl,
-                                                             eta -
-                                                             1) * (m_epsun -
-                                                                   m_epspl));
-    b = Eun0 - eta * pow (m_epspl, eta - 1) * a;
-    c = -a * pow (m_epspl, eta) - b * m_epspl;
+    a = (m_sigun - Eun0 * (m_epsun - m_epspl)) / (pow(m_epsun, eta) -
+                                                  pow(m_epspl,
+                                                      eta) -
+                                                  eta * pow(m_epspl,
+                                                            eta -
+                                                            1) * (m_epsun -
+                                                                  m_epspl));
+    b = Eun0 - eta * pow(m_epspl, eta - 1) * a;
+    c = -a * pow(m_epspl, eta) - b * m_epspl;
 
-    sigc = a * pow (epsc, eta) + b * epsc + c;  // Eq.8-12 (Lam and Teng 2009)
+    sigc = a * pow(epsc, eta) + b * epsc + c;   // Eq.8-12 (Lam and Teng 2009)
 
-    Ect = a * eta * pow (epsc, eta - 1) + b;
+    Ect = a * eta * pow(epsc, eta - 1) + b;
     m_Eun0 = Eun0;
 }
 
-void
-FRPConfinedConcrete02::Compr_GetPlasticStrain ()
+void FRPConfinedConcrete02::Compr_GetPlasticStrain()
 {
 
     if (m_n == 1)               // epspl1 Eq.25 (Lam and Teng 2009)
-      {
-          if (m_epsunenv > 0 && m_epsunenv <= 0.001)
-              m_epspl = 0.0;
-          else if (m_epsunenv >= 0.001 && m_epsunenv < 0.0035)  //Lu JY Add m_epsunenv >= 0.001 && 2009.06.04
-              m_epspl =
-                  (1.4 * (0.87 - 0.004 * m_fc0 * m_Unitscale) -
-                   0.64) * (m_epsunenv - 0.001);
-          else if (m_epsunenv >= 0.0035 && m_epsunenv <= m_epscu)       //Lu JY Add m_epsunenv >= 0.0035 && 2009.06.04
-              m_epspl =
-                  (0.87 - 0.004 * m_fc0 * m_Unitscale) * m_epsunenv - 0.0016;
-      }
-    else if (m_n >= 2)          // Eq.34 (Lam and Teng 2009)
-      {
-          Compr_GetStrainRecoveryRatio ();
-          m_epspl = (1.0 - m_omg) * m_epsun + m_omg * m_epspl;
-      }
+    {
+        if (m_epsunenv > 0 && m_epsunenv <= 0.001)
+            m_epspl = 0.0;
+        else if (m_epsunenv >= 0.001 && m_epsunenv < 0.0035)    //Lu JY Add m_epsunenv >= 0.001 && 2009.06.04
+            m_epspl =
+                (1.4 * (0.87 - 0.004 * m_fc0 * m_Unitscale) -
+                 0.64) * (m_epsunenv - 0.001);
+        else if (m_epsunenv >= 0.0035 && m_epsunenv <= m_epscu) //Lu JY Add m_epsunenv >= 0.0035 && 2009.06.04
+            m_epspl =
+                (0.87 - 0.004 * m_fc0 * m_Unitscale) * m_epsunenv - 0.0016;
+    } else if (m_n >= 2)        // Eq.34 (Lam and Teng 2009)
+    {
+        Compr_GetStrainRecoveryRatio();
+        m_epspl = (1.0 - m_omg) * m_epsun + m_omg * m_epspl;
+    }
 }
 
-void
-FRPConfinedConcrete02::Compr_GetStrainRecoveryRatio ()
+void FRPConfinedConcrete02::Compr_GetStrainRecoveryRatio()
 {
-    if (m_n >= 2)
-      {
-          if (m_ne == 1)
-              m_omgful = 1.0;
-          if (m_ne >= 2 && m_ne <= 5)
-            {
-                if (m_epsunenv >= 0.0 && m_epsunenv <= 0.001)   // Get Omg_n,ful Eq.33 (Lam and Teng 2009)
-                    m_omgful = 1.0;
-                else if (m_epsunenv > 0.001 && m_epsunenv < 0.0035)
-                    m_omgful =
-                        1.0 + 400.0 * (0.0212 * m_ne - 0.12) * (m_epsunenv -
-                                                                0.001);
-                else if (m_epsunenv > 0.0035 && m_epsunenv <= m_epscu)  //Lu JY Add if (m_epsunenv > 0.0035) && m_epsunenv <= m_epscu 2009.06.04
+    if (m_n >= 2) {
+        if (m_ne == 1)
+            m_omgful = 1.0;
+        if (m_ne >= 2 && m_ne <= 5) {
+            if (m_epsunenv >= 0.0 && m_epsunenv <= 0.001)       // Get Omg_n,ful Eq.33 (Lam and Teng 2009)
+                m_omgful = 1.0;
+            else if (m_epsunenv > 0.001 && m_epsunenv < 0.0035)
+                m_omgful =
+                    1.0 + 400.0 * (0.0212 * m_ne - 0.12) * (m_epsunenv -
+                                                            0.001);
+            else if (m_epsunenv > 0.0035 && m_epsunenv <= m_epscu)      //Lu JY Add if (m_epsunenv > 0.0035) && m_epsunenv <= m_epscu 2009.06.04
 
-                    m_omgful = 0.0212 * m_ne + 0.88;
-            }
-          else if (m_ne >= 6)
-              m_omgful = 1.0;
+                m_omgful = 0.0212 * m_ne + 0.88;
+        } else if (m_ne >= 6)
+            m_omgful = 1.0;
 
-          double omgtemp;
-          omgtemp = m_omgful - 0.25 * (m_gamare - 1);
-          m_omg = 1.0 < omgtemp ? 1.0 : omgtemp;        // Get Omgn Eq.32 (Lam and Teng 2009)
-      }
+        double omgtemp;
+        omgtemp = m_omgful - 0.25 * (m_gamare - 1);
+        m_omg = 1.0 < omgtemp ? 1.0 : omgtemp;  // Get Omgn Eq.32 (Lam and Teng 2009)
+    }
 }
 
-void
-FRPConfinedConcrete02::Compr_ReloadingPath (double epsc, double &sigc,
-                                            double &Ect)
+void FRPConfinedConcrete02::Compr_ReloadingPath(double epsc, double &sigc,
+                                                double &Ect)
 {
     if (epsc >= m_epsre && epsc <= m_epsref)    // Linear part
-      {
-          if ((m_epsunenv != m_epsre) && ((m_epsunenv <= 0.001) || ((m_n == 1) && (m_epsunenv > 0.001) && (m_sigre > 0.85 * m_sigunenv)) || ((m_n > 1) && (m_epsunenv > 0.001) && (m_sigre > 0.85 * m_sigunenv) && (m_epsretenv == m_epsunenv))))       // Eq.17
-            {
-                m_epsretenv = m_epsunenv;       // return to the unloading point on the envelop
-                m_Ere = (m_sigunenv - m_sigre) / (m_epsunenv - m_epsre);
-                m_bSmallStress = true;
-            }
-          else if (m_epsref != m_epsre) // Eq.15-Eq.16 (Lam and Teng 2009)
-            {
-                m_Ere = (m_signew - m_sigre) / (m_epsref - m_epsre);
-                m_bSmallStress = false;
-            }
-          sigc = m_sigre + m_Ere * (epsc - m_epsre);
-          Ect = m_Ere;
-      }
-    else if (epsc > m_epsref && m_bSmallStress == false)        // Parabolic part Eq.18-Eq.24 (Lam and Teng 2009)
-      {
-          double A, B, C;
-          if (m_epsunenv < m_epst)
-            {
+    {
+        if ((m_epsunenv != m_epsre) && ((m_epsunenv <= 0.001) || ((m_n == 1) && (m_epsunenv > 0.001) && (m_sigre > 0.85 * m_sigunenv)) || ((m_n > 1) && (m_epsunenv > 0.001) && (m_sigre > 0.85 * m_sigunenv) && (m_epsretenv == m_epsunenv)))) // Eq.17
+        {
+            m_epsretenv = m_epsunenv;   // return to the unloading point on the envelop
+            m_Ere = (m_sigunenv - m_sigre) / (m_epsunenv - m_epsre);
+            m_bSmallStress = true;
+        } else if (m_epsref != m_epsre) // Eq.15-Eq.16 (Lam and Teng 2009)
+        {
+            m_Ere = (m_signew - m_sigre) / (m_epsref - m_epsre);
+            m_bSmallStress = false;
+        }
+        sigc = m_sigre + m_Ere * (epsc - m_epsre);
+        Ect = m_Ere;
+    } else if (epsc > m_epsref && m_bSmallStress == false)      // Parabolic part Eq.18-Eq.24 (Lam and Teng 2009)
+    {
+        double A, B, C;
+        if (m_epsunenv < m_epst) {
 
-                A = (pow (m_Ec - m_E2, 2) * (m_Ere * m_epsref - m_signew) +
-                     pow (m_Ec - m_Ere,
-                          2) * m_fc0) / (4.0 * (m_signew -
-                                                m_Ec * m_epsref) * m_fc0 +
-                                         pow ((m_Ec - m_E2) * m_epsref, 2));
+            A = (pow(m_Ec - m_E2, 2) * (m_Ere * m_epsref - m_signew) +
+                 pow(m_Ec - m_Ere,
+                     2) * m_fc0) / (4.0 * (m_signew -
+                                           m_Ec * m_epsref) * m_fc0 +
+                                    pow((m_Ec - m_E2) * m_epsref, 2));
+            B = m_Ere - 2.0 * A * m_epsref;
+            C = m_signew - A * pow(m_epsref, 2) - B * m_epsref;
+
+            m_epsretenv =
+                (m_Ec - B) / (2.0 * A + pow(m_Ec - m_E2, 2) / m_fc0 / 2.0);
+            if (m_epsretenv >= m_epst
+                && (m_signew - m_fc0 - m_E2 * m_epsref) != 0) {
+
+                A = pow(m_Ere - m_E2,
+                        2) / (4.0 * (m_signew - m_fc0 - m_E2 * m_epsref));
                 B = m_Ere - 2.0 * A * m_epsref;
-                C = m_signew - A * pow (m_epsref, 2) - B * m_epsref;
-
-                m_epsretenv =
-                    (m_Ec - B) / (2.0 * A +
-                                  pow (m_Ec - m_E2, 2) / m_fc0 / 2.0);
-                if (m_epsretenv >= m_epst
-                    && (m_signew - m_fc0 - m_E2 * m_epsref) != 0)
-                  {
-
-                      A = pow (m_Ere - m_E2,
-                               2) / (4.0 * (m_signew - m_fc0 -
-                                            m_E2 * m_epsref));
-                      B = m_Ere - 2.0 * A * m_epsref;
-                      C = m_signew - A * pow (m_epsref, 2) - B * m_epsref;
-
-                      m_epsretenv = (m_E2 - B) / (2.0 * A);
-                  }
-            }
-          else if ((m_signew - m_fc0 - m_E2 * m_epsref) != 0)
-            {
-                A = pow (m_Ere - m_E2,
-                         2) / (4.0 * (m_signew - m_fc0 - m_E2 * m_epsref));
-                B = m_Ere - 2.0 * A * m_epsref;
-                C = m_signew - A * pow (m_epsref, 2) - B * m_epsref;
+                C = m_signew - A * pow(m_epsref, 2) - B * m_epsref;
 
                 m_epsretenv = (m_E2 - B) / (2.0 * A);
             }
-          if (epsc > m_epsref && epsc <= m_epsretenv)
-            {
-                sigc = A * pow (epsc, 2) + B * epsc + C;
-                Ect = 2 * A * epsc + B;
-            }
-          else                  // return to envelope
-            {
-                m_n = 0;
-                Compr_Envlp (epsc, sigc, Ect);
-            }
-      }
-    else if (epsc > m_epsref && m_bSmallStress == true) // return to envelope
-      {
-          m_n = 0;
-          Compr_Envlp (epsc, sigc, Ect);
-      }
+        } else if ((m_signew - m_fc0 - m_E2 * m_epsref) != 0) {
+            A = pow(m_Ere - m_E2,
+                    2) / (4.0 * (m_signew - m_fc0 - m_E2 * m_epsref));
+            B = m_Ere - 2.0 * A * m_epsref;
+            C = m_signew - A * pow(m_epsref, 2) - B * m_epsref;
+
+            m_epsretenv = (m_E2 - B) / (2.0 * A);
+        }
+        if (epsc > m_epsref && epsc <= m_epsretenv) {
+            sigc = A * pow(epsc, 2) + B * epsc + C;
+            Ect = 2 * A * epsc + B;
+        } else                  // return to envelope
+        {
+            m_n = 0;
+            Compr_Envlp(epsc, sigc, Ect);
+        }
+    } else if (epsc > m_epsref && m_bSmallStress == true)       // return to envelope
+    {
+        m_n = 0;
+        Compr_Envlp(epsc, sigc, Ect);
+    }
 }
 
-void
-FRPConfinedConcrete02::GetRefPoint ()
+void FRPConfinedConcrete02::GetRefPoint()
 {
     if (m_n == 1)               // Eq.14 (Lam and Teng 2009)
-      {
-          m_epsref = m_epsunenv;
-          m_sigref = m_sigunenv;
+    {
+        m_epsref = m_epsunenv;
+        m_sigref = m_sigunenv;
 
-          m_epsreflast = m_epsref;
-          m_sigreflast = m_sigref;
-      }
-    else if (m_n >= 2)
-      {
-          if (m_epsun <= m_epsreflast)
-            {
-                m_epsref = m_epsreflast;
-                m_sigref = m_signew;
-            }
-          else
-            {
-                m_epsref = m_epsun;
-                m_sigref = m_sigun;
-            }
-          m_epsreflast = m_epsref;
-          m_sigreflast = m_sigref;
-      }
+        m_epsreflast = m_epsref;
+        m_sigreflast = m_sigref;
+    } else if (m_n >= 2) {
+        if (m_epsun <= m_epsreflast) {
+            m_epsref = m_epsreflast;
+            m_sigref = m_signew;
+        } else {
+            m_epsref = m_epsun;
+            m_sigref = m_sigun;
+        }
+        m_epsreflast = m_epsref;
+        m_sigreflast = m_sigref;
+    }
 }
 
-void
-FRPConfinedConcrete02::GetDeterioratedStress ()
+void FRPConfinedConcrete02::GetDeterioratedStress()
 {
-    GetStressDeteriorationRatio ();
+    GetStressDeteriorationRatio();
     m_signew = m_fi * m_sigref; // m_signew Eq.26 (Lam and Teng 2009)
 }
 
-void
-FRPConfinedConcrete02::GetStressDeteriorationRatio ()
+void FRPConfinedConcrete02::GetStressDeteriorationRatio()
 {
     if (m_n == 1)               // Get Fi_1 Eq.27 (Lam and Teng 2009)
-      {
-          if (m_epsunenv >= 0 && m_epsunenv <= 0.001)
-              m_fi = 1.0;
-          else if (m_epsunenv > 0.001 && m_epsunenv < 0.002)
-              m_fi = 1.0 - 80 * (m_epsunenv - 0.001);
-          else
-              m_fi = 0.92;
-      }
-    else if (m_n >= 2)          // Get Fi_n Eq.35 (Lam and Teng 2009)
-      {
-          if (m_ne == 1)
-              m_fiful = 1.0;
-          if (m_ne >= 2 && m_ne <= 5)
-            {
-                if (m_epsunenv <= 0.001)        // Get Fi_n,ful Eq.36 (Lam and Teng 2009)
-                    m_fiful = 1.0;
-                else if (m_epsunenv > 0.001 && m_epsunenv < 0.002)
-                    m_fiful =
-                        1.0 + 1000.0 * (0.013 * m_ne - 0.075) * (m_epsunenv -
-                                                                 0.001);
-                else
-                    m_fiful = 0.013 * m_ne + 0.925;
-            }
-          else if (m_ne >= 6)
-              m_fiful = 1.0;
+    {
+        if (m_epsunenv >= 0 && m_epsunenv <= 0.001)
+            m_fi = 1.0;
+        else if (m_epsunenv > 0.001 && m_epsunenv < 0.002)
+            m_fi = 1.0 - 80 * (m_epsunenv - 0.001);
+        else
+            m_fi = 0.92;
+    } else if (m_n >= 2)        // Get Fi_n Eq.35 (Lam and Teng 2009)
+    {
+        if (m_ne == 1)
+            m_fiful = 1.0;
+        if (m_ne >= 2 && m_ne <= 5) {
+            if (m_epsunenv <= 0.001)    // Get Fi_n,ful Eq.36 (Lam and Teng 2009)
+                m_fiful = 1.0;
+            else if (m_epsunenv > 0.001 && m_epsunenv < 0.002)
+                m_fiful =
+                    1.0 + 1000.0 * (0.013 * m_ne - 0.075) * (m_epsunenv -
+                                                             0.001);
+            else
+                m_fiful = 0.013 * m_ne + 0.925;
+        } else if (m_ne >= 6)
+            m_fiful = 1.0;
 
-          double fitemp;
-          fitemp = m_fiful - 0.2 * (m_betaun - 1);
+        double fitemp;
+        fitemp = m_fiful - 0.2 * (m_betaun - 1);
 
-          m_fi = 1.0 < fitemp ? 1.0 : fitemp;
-      }
+        m_fi = 1.0 < fitemp ? 1.0 : fitemp;
+    }
 }
 
 // AddingSensitivity:BEGIN ///////////////////////////////////
-int
-FRPConfinedConcrete02::setParameter (const char **argv, int argc,
-                                     Information & info)
+int FRPConfinedConcrete02::setParameter(const char **argv, int argc,
+                                        Information & info)
 {
     return -1;
 }
 
 
-int
-FRPConfinedConcrete02::updateParameter (int parameterID, Information & info)
+int FRPConfinedConcrete02::updateParameter(int parameterID,
+                                           Information & info)
 {
     return 0;
 }
 
 
-int
-FRPConfinedConcrete02::activateParameter (int passedParameterID)
+int FRPConfinedConcrete02::activateParameter(int passedParameterID)
 {
     return 0;
 }
 
 double
-FRPConfinedConcrete02::getStressSensitivity (int gradNumber, bool conditional)
+    FRPConfinedConcrete02::getStressSensitivity(int gradNumber,
+                                                bool conditional)
 {
     return 0;
 }
 
 
 int
-FRPConfinedConcrete02::commitSensitivity (double TstrainSensitivity,
+ FRPConfinedConcrete02::commitSensitivity(double TstrainSensitivity,
                                           int gradNumber, int numGrads)
 {
     return 0;

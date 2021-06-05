@@ -26,56 +26,49 @@
 #include <Vector.h>
 #include <iostream>
 #include <iomanip>
-using
-    std::cerr;
-using
-    std::ios;
-using
-    std::setiosflags;
+using std::cerr;
+using std::ios;
+using std::setiosflags;
 
-StandardStream::StandardStream (int indent, bool echo):
-OPS_Stream (OPS_STREAM_TAGS_FileStream),
-fileOpen (0),
-echoApplication (echo),
-indentSize (indent),
-numIndent (-1)
+StandardStream::StandardStream(int indent,
+                               bool
+                               echo):OPS_Stream
+    (OPS_STREAM_TAGS_FileStream), fileOpen(0), echoApplication(echo),
+indentSize(indent), numIndent(-1)
 {
     if (indentSize < 1)
         indentSize = 1;
     indentString = new char[indentSize + 1];
     for (int i = 0; i < indentSize; i++)
-        strcpy (indentString, " ");
+        strcpy(indentString, " ");
 
 }
 
-StandardStream::~StandardStream ()
+StandardStream::~StandardStream()
 {
     if (fileOpen == 1)
-        theFile.close ();
+        theFile.close();
 }
 
 int
-StandardStream::setFile (const char *fileName, openMode mode, bool echo)
+ StandardStream::setFile(const char *fileName, openMode mode, bool echo)
 {
-    if (fileOpen == 1)
-      {
-          theFile.close ();
-          fileOpen = 0;
-      }
+    if (fileOpen == 1) {
+        theFile.close();
+        fileOpen = 0;
+    }
 
     if (mode == OVERWRITE)
-        theFile.open (fileName, ios::out);
+        theFile.open(fileName, ios::out);
     else
-        theFile.open (fileName, ios::out | ios::app);
+        theFile.open(fileName, ios::out | ios::app);
 
-    if (theFile.bad ())
-      {
-          std::cerr << "WARNING - StandardStream::setFile()";
-          std::cerr << " - could not open file " << fileName << std::endl;
+    if (theFile.bad()) {
+        std::cerr << "WARNING - StandardStream::setFile()";
+        std::cerr << " - could not open file " << fileName << std::endl;
 
-          return -1;
-      }
-    else
+        return -1;
+    } else
         fileOpen = 1;
 
     echoApplication = echo;
@@ -84,43 +77,37 @@ StandardStream::setFile (const char *fileName, openMode mode, bool echo)
 }
 
 
-int
-StandardStream::setPrecision (int prec)
+int StandardStream::setPrecision(int prec)
 {
-    cerr << std::setprecision (prec);
+    cerr << std::setprecision(prec);
 
     if (fileOpen != 0)
-        theFile << std::setprecision (prec);
+        theFile << std::setprecision(prec);
 
     return 0;
 }
 
-int
-StandardStream::setFloatField (floatField field)
+int StandardStream::setFloatField(floatField field)
 {
 #ifndef _WIN32
-    if (field == FIXEDD)
-      {
-          cerr << setiosflags (ios::fixed);
-          if (fileOpen != 0)
-              theFile << setiosflags (ios::fixed);
-      }
-    else if (field == SCIENTIFIC)
-      {
-          cerr << setiosflags (ios::scientific);
-          if (fileOpen != 0)
-              theFile << setiosflags (ios::scientific);
-      }
+    if (field == FIXEDD) {
+        cerr << setiosflags(ios::fixed);
+        if (fileOpen != 0)
+            theFile << setiosflags(ios::fixed);
+    } else if (field == SCIENTIFIC) {
+        cerr << setiosflags(ios::scientific);
+        if (fileOpen != 0)
+            theFile << setiosflags(ios::scientific);
+    }
 #endif
     return 0;
 }
 
 
-int
-StandardStream::tag (const char *tagName)
+int StandardStream::tag(const char *tagName)
 {
     // output the xml for it to the file
-    this->indent ();
+    this->indent();
     (*this) << tagName << "\n";
 
     numIndent++;
@@ -128,11 +115,10 @@ StandardStream::tag (const char *tagName)
     return 0;
 }
 
-int
-StandardStream::tag (const char *tagName, const char *value)
+int StandardStream::tag(const char *tagName, const char *value)
 {
     // output the xml for it to the file
-    this->indent ();
+    this->indent();
     (*this) << tagName << " " << value << "\n";
 
 
@@ -141,107 +127,91 @@ StandardStream::tag (const char *tagName, const char *value)
     return 0;
 }
 
-int
-StandardStream::endTag ()
+int StandardStream::endTag()
 {
     numIndent--;
 
     return 0;
 }
 
-int
-StandardStream::attr (const char *name, int value)
+int StandardStream::attr(const char *name, int value)
 {
-    this->indent ();
+    this->indent();
     (*this) << name << " = " << value << "\n";
 
     return 0;
 }
 
-int
-StandardStream::attr (const char *name, double value)
+int StandardStream::attr(const char *name, double value)
 {
-    this->indent ();
+    this->indent();
     (*this) << name << " = " << value << "\n";
 
     return 0;
 }
 
-int
-StandardStream::attr (const char *name, const char *value)
+int StandardStream::attr(const char *name, const char *value)
 {
-    this->indent ();
+    this->indent();
     (*this) << name << " = " << value << "\n";
 
     return 0;
 }
 
-int
-StandardStream::write (Vector & data)
+int StandardStream::write(Vector & data)
 {
-    this->indent ();
+    this->indent();
     (*this) << data;
 
     return 0;
 }
 
 
-OPS_Stream & StandardStream::write (const char *s, int n)
+OPS_Stream & StandardStream::write(const char *s, int n)
 {
     if (echoApplication == true)
-        cerr.write (s, n);
+        cerr.write(s, n);
 
     if (fileOpen != 0)
-        theFile.write (s, n);
+        theFile.write(s, n);
 
     return *this;
 }
 
-OPS_Stream & StandardStream::write (const unsigned char *s, int n)
+OPS_Stream & StandardStream::write(const unsigned char *s, int n)
 {
     if (echoApplication == true)
-        cerr.write ((const char *) s, n);
+        cerr.write((const char *) s, n);
 
     if (fileOpen != 0)
-        theFile.write ((const char *) s, n);
+        theFile.write((const char *) s, n);
 
     return *this;
 }
 
-OPS_Stream & StandardStream::write (const signed char *s, int n)
+OPS_Stream & StandardStream::write(const signed char *s, int n)
 {
     if (echoApplication == true)
-        cerr.write ((const char *) s, n);
+        cerr.write((const char *) s, n);
 
     if (fileOpen != 0)
-        theFile.write ((const char *) s, n);
+        theFile.write((const char *) s, n);
 
     return *this;
 }
 
-OPS_Stream & StandardStream::write (const void *s, int n)
+OPS_Stream & StandardStream::write(const void *s, int n)
 {
     if (echoApplication == true)
-        cerr.write ((const char *) s, n);
+        cerr.write((const char *) s, n);
 
     if (fileOpen != 0)
-        theFile.write ((const char *) s, n);
+        theFile.write((const char *) s, n);
 
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (char c)
-{
-    if (echoApplication == true)
-        cerr << c;
-
-    if (fileOpen != 0)
-        theFile << c;
-
-    return *this;
-}
-
-OPS_Stream & StandardStream::operator<< (unsigned char c)
+OPS_Stream & StandardStream::operator<<(char c)
 {
     if (echoApplication == true)
         cerr << c;
@@ -252,7 +222,7 @@ OPS_Stream & StandardStream::operator<< (unsigned char c)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (signed char c)
+OPS_Stream & StandardStream::operator<<(unsigned char c)
 {
     if (echoApplication == true)
         cerr << c;
@@ -263,26 +233,35 @@ OPS_Stream & StandardStream::operator<< (signed char c)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (const char *s)
+OPS_Stream & StandardStream::operator<<(signed char c)
+{
+    if (echoApplication == true)
+        cerr << c;
+
+    if (fileOpen != 0)
+        theFile << c;
+
+    return *this;
+}
+
+OPS_Stream & StandardStream::operator<<(const char *s)
 {
     // note that we do the flush so that a "/n" before
     // a crash will cause a flush() - similar to what 
-    if (echoApplication == true)
-      {
-          cerr << s;
-          cerr.flush ();
-      }
+    if (echoApplication == true) {
+        cerr << s;
+        cerr.flush();
+    }
 
-    if (fileOpen != 0)
-      {
-          theFile << s;
-          theFile.flush ();
-      }
+    if (fileOpen != 0) {
+        theFile << s;
+        theFile.flush();
+    }
 
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (const unsigned char *s)
+OPS_Stream & StandardStream::operator<<(const unsigned char *s)
 {
     if (echoApplication == true)
         cerr << s;
@@ -293,7 +272,7 @@ OPS_Stream & StandardStream::operator<< (const unsigned char *s)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (const signed char *s)
+OPS_Stream & StandardStream::operator<<(const signed char *s)
 {
     if (echoApplication == true)
         cerr << s;
@@ -304,7 +283,7 @@ OPS_Stream & StandardStream::operator<< (const signed char *s)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (const void *p)
+OPS_Stream & StandardStream::operator<<(const void *p)
 {
 /*
 //  cerr << p;
@@ -315,7 +294,7 @@ OPS_Stream & StandardStream::operator<< (const void *p)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (int n)
+OPS_Stream & StandardStream::operator<<(int n)
 {
     if (echoApplication == true)
         cerr << n;
@@ -326,7 +305,7 @@ OPS_Stream & StandardStream::operator<< (int n)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (unsigned int n)
+OPS_Stream & StandardStream::operator<<(unsigned int n)
 {
     if (echoApplication == true)
         cerr << 1.0 * n;
@@ -337,7 +316,7 @@ OPS_Stream & StandardStream::operator<< (unsigned int n)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (long n)
+OPS_Stream & StandardStream::operator<<(long n)
 {
 /*
 cerr << n;
@@ -348,7 +327,7 @@ if (fileOpen != 0)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (unsigned long n)
+OPS_Stream & StandardStream::operator<<(unsigned long n)
 {
 /*
   cerr << n;
@@ -359,7 +338,7 @@ OPS_Stream & StandardStream::operator<< (unsigned long n)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (short n)
+OPS_Stream & StandardStream::operator<<(short n)
 {
 /*
   cerr << n;
@@ -370,7 +349,7 @@ OPS_Stream & StandardStream::operator<< (short n)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (unsigned short n)
+OPS_Stream & StandardStream::operator<<(unsigned short n)
 {
 /*
   cerr << n;
@@ -381,7 +360,7 @@ OPS_Stream & StandardStream::operator<< (unsigned short n)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (bool b)
+OPS_Stream & StandardStream::operator<<(bool b)
 {
 /*
   cerr << b;
@@ -392,7 +371,7 @@ OPS_Stream & StandardStream::operator<< (bool b)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (double n)
+OPS_Stream & StandardStream::operator<<(double n)
 {
     if (echoApplication == true)
         cerr << n;
@@ -403,7 +382,7 @@ OPS_Stream & StandardStream::operator<< (double n)
     return *this;
 }
 
-OPS_Stream & StandardStream::operator<< (float n)
+OPS_Stream & StandardStream::operator<<(float n)
 {
     if (echoApplication == true)
         cerr << n;
@@ -415,26 +394,22 @@ OPS_Stream & StandardStream::operator<< (float n)
 }
 
 
-void
-StandardStream::indent (void)
+void StandardStream::indent(void)
 {
-    for (int i = 0; i < numIndent; i++)
-      {
-          cerr << indentString;
-          if (fileOpen != 0)
-              theFile << indentString;
-      }
+    for (int i = 0; i < numIndent; i++) {
+        cerr << indentString;
+        if (fileOpen != 0)
+            theFile << indentString;
+    }
 }
 
-int
-StandardStream::sendSelf (int commitTag, Channel & theChannel)
+int StandardStream::sendSelf(int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
-int
-StandardStream::recvSelf (int commitTag, Channel & theChannel,
-                          FEM_ObjectBroker & theBroker)
+int StandardStream::recvSelf(int commitTag, Channel & theChannel,
+                             FEM_ObjectBroker & theBroker)
 {
 
     return 0;

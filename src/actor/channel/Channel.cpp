@@ -38,33 +38,31 @@
 #include <MovableObject.h>
 #include <FEM_ObjectBroker.h>
 int
-    Channel::numChannel = 0;
+ Channel::numChannel = 0;
 
-Channel::Channel ()
+Channel::Channel()
 {
     numChannel++;
     tag = numChannel;
 }
 
-Channel::~Channel ()
+Channel::~Channel()
 {
 
 }
 
 int
-Channel::isDatastore (void)
-{
-    return 0;
-}
-
-int
-Channel::getDbTag (void)
+ Channel::isDatastore(void)
 {
     return 0;
 }
 
-int
-Channel::getTag (void)
+int Channel::getDbTag(void)
+{
+    return 0;
+}
+
+int Channel::getTag(void)
 {
     return tag;
 }

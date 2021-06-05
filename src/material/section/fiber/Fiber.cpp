@@ -39,17 +39,14 @@
 #include <Matrix.h>
 
 // constructor:
-Fiber::Fiber (int tag, int classTag):
-TaggedObject (tag),
-MovableObject (classTag),
-sDefault (0),
-fDefault (0)
+Fiber::Fiber(int tag, int classTag):TaggedObject(tag),
+MovableObject(classTag), sDefault(0), fDefault(0)
 {
 
 }
 
 // destructor:
-Fiber::~Fiber ()
+Fiber::~Fiber()
 {
     if (sDefault != 0)
         delete sDefault;
@@ -57,29 +54,26 @@ Fiber::~Fiber ()
         delete fDefault;
 }
 
-Response *
-Fiber::setResponse (const char **argv, int argc, OPS_Stream & s)
+Response *Fiber::setResponse(const char **argv, int argc, OPS_Stream & s)
 {
     return 0;
 }
 
-int
-Fiber::getResponse (int responseID, Information & info)
+int Fiber::getResponse(int responseID, Information & info)
 {
     return -1;
 }
 
-const Vector &
-Fiber::getFiberSensitivity (int gradNumber, bool cond)
+const Vector & Fiber::getFiberSensitivity(int gradNumber, bool cond)
 {
     if (sDefault == 0)
-        sDefault = new Vector (this->getOrder ());
+        sDefault = new Vector(this->getOrder());
     return *sDefault;
 
 }
 
-int
-Fiber::commitSensitivity (const Vector & dedh, int gradNumber, int numGrads)
+int Fiber::commitSensitivity(const Vector & dedh, int gradNumber,
+                             int numGrads)
 {
     return -1;
 }

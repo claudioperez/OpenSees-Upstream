@@ -31,12 +31,12 @@
 #include <DrainHardeningMaterial.h>
 #include <Vector.h>
 
-DrainHardeningMaterial::DrainHardeningMaterial (int tag,
-                                                double E, double sigY,
-                                                double Hiso, double Hkin,
-                                                double b):
+DrainHardeningMaterial::DrainHardeningMaterial(int tag,
+                                               double E, double sigY,
+                                               double Hiso, double Hkin,
+                                               double b):
 // 3 history variables and 4 material parameters
-DrainMaterial (tag, MAT_TAG_DrainHardening, 3, 4, b)
+DrainMaterial(tag, MAT_TAG_DrainHardening, 3, 4, b)
 {
     data[0] = E;
     data[1] = sigY;
@@ -44,13 +44,14 @@ DrainMaterial (tag, MAT_TAG_DrainHardening, 3, 4, b)
     data[3] = Hkin;
 }
 
-DrainHardeningMaterial::DrainHardeningMaterial (void):
-DrainMaterial (0, MAT_TAG_DrainHardening, 3, 4)
+DrainHardeningMaterial::DrainHardeningMaterial(void):DrainMaterial(0,
+                                                                   MAT_TAG_DrainHardening,
+                                                                   3, 4)
 {
     // Does nothing
 }
 
-DrainHardeningMaterial::~DrainHardeningMaterial (void)
+DrainHardeningMaterial::~DrainHardeningMaterial(void)
 {
     // Does nothing
 }

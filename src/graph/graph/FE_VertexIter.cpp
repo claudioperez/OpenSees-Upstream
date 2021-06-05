@@ -41,26 +41,24 @@
 // FE_VertexIter(FE_Graph &theGraph):
 //      constructor that takes the graph, just the basic iter
 
-FE_VertexIter::FE_VertexIter (FE_Graph & theGraph):myGraph (theGraph), currIndex (0),
-numDone (0)
+FE_VertexIter::FE_VertexIter(FE_Graph & theGraph):myGraph(theGraph), currIndex(0),
+numDone(0)
 {
 }
 
 
-FE_VertexIter::~FE_VertexIter ()
+FE_VertexIter::~FE_VertexIter()
 {
 }
 
 void
-FE_VertexIter::reset (void)
+ FE_VertexIter::reset(void)
 {
     currIndex = 0;
     numDone = 0;
 }
 
-Vertex *
-FE_VertexIter::operator () (void)
-{
+Vertex *FE_VertexIter::operator () (void) {
     // check if we still have vertices in the Graph
     // if not return 0, indicating we are done
     if (numDone >= myGraph.numVertex)
@@ -72,12 +70,11 @@ FE_VertexIter::operator () (void)
         currIndex++;
 
     // if not at the end of the list return the element
-    if (currIndex < myGraph.sizeVertices)
-      {
-          Vertex *result = myGraph.theVertices[currIndex];
-          numDone++;
-          currIndex++;
-          return (result);
-      }
+    if (currIndex < myGraph.sizeVertices) {
+        Vertex *result = myGraph.theVertices[currIndex];
+        numDone++;
+        currIndex++;
+        return (result);
+    }
     return (0);
 }

@@ -62,39 +62,35 @@ const int QZmaxIterations = 20;
 const double QZtolerance = 1.0e-12;
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_QzSimple2 ()
+void *OPS_QzSimple2()
 {
-    int numdata = OPS_GetNumRemainingInputArgs ();
-    if (numdata < 4)
-      {
-          opserr << "WARNING insufficient arguments\n";
-          opserr <<
-              "Want: uniaxialMaterial QzSimple2 tag? qzType? qult? z50? suction? c?\n";
-          return 0;
-      }
+    int numdata = OPS_GetNumRemainingInputArgs();
+    if (numdata < 4) {
+        opserr << "WARNING insufficient arguments\n";
+        opserr <<
+            "Want: uniaxialMaterial QzSimple2 tag? qzType? qult? z50? suction? c?\n";
+        return 0;
+    }
 
     int idata[2];
     numdata = 2;
-    if (OPS_GetIntInput (&numdata, idata) < 0)
-      {
-          opserr << "WARNING invalid int inputs\n";
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, idata) < 0) {
+        opserr << "WARNING invalid int inputs\n";
+        return 0;
+    }
 
     double ddata[4] = { 0, 0, 0, 0 };
-    numdata = OPS_GetNumRemainingInputArgs ();
+    numdata = OPS_GetNumRemainingInputArgs();
     if (numdata > 4)
         numdata = 4;
-    if (OPS_GetDoubleInput (&numdata, ddata) < 0)
-      {
-          opserr << "WARNING invalid double inputs\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, ddata) < 0) {
+        opserr << "WARNING invalid double inputs\n";
+        return 0;
+    }
 
     UniaxialMaterial *theMaterial = 0;
-    theMaterial = new QzSimple2 (idata[0], idata[1], ddata[0], ddata[1],
-                                 ddata[2], ddata[3]);
+    theMaterial = new QzSimple2(idata[0], idata[1], ddata[0], ddata[1],
+                                ddata[2], ddata[3]);
 
     return theMaterial;
 }
@@ -103,27 +99,25 @@ OPS_QzSimple2 ()
 /////////////////////////////////////////////////////////////////////
 //      Constructor with data
 
-QzSimple2::QzSimple2 (int tag, int qzChoice, double Q_ult, double z_50,
-                      double suctionRatio, double dash_pot):
-UniaxialMaterial (tag, MAT_TAG_QzSimple2),
-QzType (qzChoice),
-Qult (Q_ult),
-z50 (z_50),
-suction (suctionRatio),
-dashpot (dash_pot)
+QzSimple2::QzSimple2(int tag, int qzChoice, double Q_ult, double z_50,
+                     double suctionRatio,
+                     double dash_pot):UniaxialMaterial(tag,
+                                                       MAT_TAG_QzSimple2),
+QzType(qzChoice), Qult(Q_ult), z50(z_50), suction(suctionRatio),
+dashpot(dash_pot)
 {
     // Initialize QzSimple variables and history variables
     //
-    this->revertToStart ();
+    this->revertToStart();
     initialTangent = Ttangent;
 }
 
 /////////////////////////////////////////////////////////////////////
 //      Default constructor
 
-QzSimple2::QzSimple2 ():UniaxialMaterial (0, MAT_TAG_QzSimple2),
-QzType (0), Qult (0.0), z50 (0.0), suction (0.0),
-dashpot (0.0)
+QzSimple2::QzSimple2():UniaxialMaterial(0, MAT_TAG_QzSimple2),
+QzType(0), Qult(0.0), z50(0.0), suction(0.0),
+dashpot(0.0)
 {
     // Initialize variables .. WILL NOT WORK AS NOTHING SET
     // this->revertToStart();
@@ -138,14 +132,14 @@ dashpot (0.0)
 
 /////////////////////////////////////////////////////////////////////
 //      Default destructor
-QzSimple2::~QzSimple2 ()
+QzSimple2::~QzSimple2()
 {
     // Does nothing
 }
 
 /////////////////////////////////////////////////////////////////////
 void
-QzSimple2::getGap (double zlast, double dz, double dz_old)
+ QzSimple2::getGap(double zlast, double dz, double dz_old)
 {
     // For stability in Closure spring, limit "dz" step size to avoid
     // overshooting on the "closing" or "opening" of the gap.
@@ -158,8 +152,8 @@ QzSimple2::getGap (double zlast, double dz, double dz_old)
 
     // Combine the Suction and Closure elements in parallel
     //
-    getClosure (zlast, dz);
-    getSuction (zlast, dz);
+    getClosure(zlast, dz);
+    getSuction(zlast, dz);
     TGap_Q = TSuction_Q + TClose_Q;
     TGap_tang = TSuction_tang + TClose_tang;
 
@@ -167,8 +161,7 @@ QzSimple2::getGap (double zlast, double dz, double dz_old)
 }
 
 /////////////////////////////////////////////////////////////////////
-void
-QzSimple2::getFarField (double z)
+void QzSimple2::getFarField(double z)
 {
     TFar_z = z;
     TFar_tang = TFar_tang;
@@ -178,33 +171,28 @@ QzSimple2::getFarField (double z)
 }
 
 /////////////////////////////////////////////////////////////////////
-void
-QzSimple2::getClosure (double zlast, double dz)
+void QzSimple2::getClosure(double zlast, double dz)
 {
     TClose_z = zlast + dz;
 
     // Loading on the stiff "closed gap"
     //
-    if (TClose_z <= 0.0)
-      {
-          TClose_tang = 1000.0 * Qult / z50;
-          TClose_Q = TClose_z * TClose_tang;
-      }
-
+    if (TClose_z <= 0.0) {
+        TClose_tang = 1000.0 * Qult / z50;
+        TClose_Q = TClose_z * TClose_tang;
+    }
     // Loading on the soft "open gap"
     //
-    if (TClose_z > 0.0)
-      {
-          TClose_tang = 0.001 * Qult / z50;
-          TClose_Q = TClose_z * TClose_tang;
-      }
+    if (TClose_z > 0.0) {
+        TClose_tang = 0.001 * Qult / z50;
+        TClose_Q = TClose_z * TClose_tang;
+    }
 
     return;
 }
 
 /////////////////////////////////////////////////////////////////////
-void
-QzSimple2::getSuction (double zlast, double dz)
+void QzSimple2::getSuction(double zlast, double dz)
 {
     TSuction_z = zlast + dz;
     double Qmax = suction * Qult;
@@ -212,66 +200,54 @@ QzSimple2::getSuction (double zlast, double dz)
 
     // Treat as elastic if dzTotal is below QZtolerance
     //
-    if (fabs (dzTotal * TSuction_tang / Qult) < 3.0 * QZtolerance)
-      {
-          TSuction_Q = TSuction_Q + dz * TSuction_tang;
-          if (fabs (TSuction_Q) >= Qmax)
-              TSuction_Q =
-                  (TSuction_Q / fabs (TSuction_Q)) * (1.0 - 1.0e-8) * Qmax;
-          return;
-      }
-
+    if (fabs(dzTotal * TSuction_tang / Qult) < 3.0 * QZtolerance) {
+        TSuction_Q = TSuction_Q + dz * TSuction_tang;
+        if (fabs(TSuction_Q) >= Qmax)
+            TSuction_Q =
+                (TSuction_Q / fabs(TSuction_Q)) * (1.0 - 1.0e-8) * Qmax;
+        return;
+    }
     // Reset the history terms to the last Committed values, and let them
     // reset if the reversal of loading persists in this step.
     //
-    if (TSuction_Qin != CSuction_Qin)
-      {
-          TSuction_Qin = CSuction_Qin;
-          TSuction_zin = CSuction_zin;
-      }
-
+    if (TSuction_Qin != CSuction_Qin) {
+        TSuction_Qin = CSuction_Qin;
+        TSuction_zin = CSuction_zin;
+    }
     // Change from positive to negative direction
     //
-    if (CSuction_z > CSuction_zin && dzTotal < 0.0)
-      {
-          TSuction_Qin = CSuction_Q;
-          TSuction_zin = CSuction_z;
-      }
+    if (CSuction_z > CSuction_zin && dzTotal < 0.0) {
+        TSuction_Qin = CSuction_Q;
+        TSuction_zin = CSuction_z;
+    }
     // Change from negative to positive direction
     //
-    if (CSuction_z < CSuction_zin && dzTotal > 0.0)
-      {
-          TSuction_Qin = CSuction_Q;
-          TSuction_zin = CSuction_z;
-      }
-
+    if (CSuction_z < CSuction_zin && dzTotal > 0.0) {
+        TSuction_Qin = CSuction_Q;
+        TSuction_zin = CSuction_z;
+    }
     // Positive loading
     //
-    if (dzTotal >= 0.0)
-      {
-          TSuction_Q = Qmax - (Qmax - TSuction_Qin) * pow (0.5 * z50, nd)
-              * pow (0.5 * z50 + TSuction_z - TSuction_zin, -nd);
-          TSuction_tang = nd * (Qmax - TSuction_Qin) * pow (0.5 * z50, nd)
-              * pow (0.5 * z50 + TSuction_z - TSuction_zin, -nd - 1.0);
-      }
-
+    if (dzTotal >= 0.0) {
+        TSuction_Q = Qmax - (Qmax - TSuction_Qin) * pow(0.5 * z50, nd)
+            * pow(0.5 * z50 + TSuction_z - TSuction_zin, -nd);
+        TSuction_tang = nd * (Qmax - TSuction_Qin) * pow(0.5 * z50, nd)
+            * pow(0.5 * z50 + TSuction_z - TSuction_zin, -nd - 1.0);
+    }
     // Negative loading
     //
-    if (dzTotal < 0.0)
-      {
-          TSuction_Q = -Qmax + (Qmax + TSuction_Qin) * pow (0.5 * z50, nd)
-              * pow (0.5 * z50 - TSuction_z + TSuction_zin, -nd);
-          TSuction_tang = nd * (Qmax + TSuction_Qin) * pow (0.5 * z50, nd)
-              * pow (0.5 * z50 - TSuction_z + TSuction_zin, -nd - 1.0);
-      }
-
+    if (dzTotal < 0.0) {
+        TSuction_Q = -Qmax + (Qmax + TSuction_Qin) * pow(0.5 * z50, nd)
+            * pow(0.5 * z50 - TSuction_z + TSuction_zin, -nd);
+        TSuction_tang = nd * (Qmax + TSuction_Qin) * pow(0.5 * z50, nd)
+            * pow(0.5 * z50 - TSuction_z + TSuction_zin, -nd - 1.0);
+    }
     // Ensure that |Q|<Qmax and tangent not zero or negative.
     //
-    if (fabs (TSuction_Q) >= (1.0 - QZtolerance) * Qmax)
-      {
-          TSuction_Q =
-              (TSuction_Q / fabs (TSuction_Q)) * (1.0 - QZtolerance) * Qmax;
-      }
+    if (fabs(TSuction_Q) >= (1.0 - QZtolerance) * Qmax) {
+        TSuction_Q =
+            (TSuction_Q / fabs(TSuction_Q)) * (1.0 - QZtolerance) * Qmax;
+    }
     if (TSuction_tang <= 1.0e-4 * Qult / z50)
         TSuction_tang = 1.0e-4 * Qult / z50;
 
@@ -279,21 +255,18 @@ QzSimple2::getSuction (double zlast, double dz)
 }
 
 /////////////////////////////////////////////////////////////////////
-void
-QzSimple2::getNearField (double zlast, double dz, double dz_old)
+void QzSimple2::getNearField(double zlast, double dz, double dz_old)
 {
     // Limit "dz" step size if it is oscillating in sign and not shrinking
     //
-    if (dz * dz_old < 0.0 && fabs (dz / dz_old) > 0.5)
+    if (dz * dz_old < 0.0 && fabs(dz / dz_old) > 0.5)
         dz = -dz_old / 2.0;
 
     // Set "dz" so "z" is at middle of elastic zone if oscillation is large.
     //
-    if (dz * dz_old < -z50 * z50)
-      {
-          dz = (TNF_zinr + TNF_zinl) / 2.0 - zlast;
-      }
-
+    if (dz * dz_old < -z50 * z50) {
+        dz = (TNF_zinr + TNF_zinl) / 2.0 - zlast;
+    }
     // Establish trial "z" and direction of loading (with NFdz) for entire step
     //
     TNF_z = zlast + dz;
@@ -301,118 +274,98 @@ QzSimple2::getNearField (double zlast, double dz, double dz_old)
 
     // Treat as elastic if NFdz is below QZtolerance
     //
-    if (fabs (NFdz * TNF_tang / Qult) < 3.0 * QZtolerance)
-      {
-          TNF_Q = TNF_Q + dz * TNF_tang;
-          if (fabs (TNF_Q) >= Qult)
-              TNF_Q = (TNF_Q / fabs (TNF_Q)) * (1.0 - QZtolerance) * Qult;
-          return;
-      }
-
+    if (fabs(NFdz * TNF_tang / Qult) < 3.0 * QZtolerance) {
+        TNF_Q = TNF_Q + dz * TNF_tang;
+        if (fabs(TNF_Q) >= Qult)
+            TNF_Q = (TNF_Q / fabs(TNF_Q)) * (1.0 - QZtolerance) * Qult;
+        return;
+    }
     // Reset the history terms to the last Committed values, and let them
     // reset if the reversal of loading persists in this step.
     //
-    if (TNF_Qinr != CNF_Qinr || TNF_Qinl != CNF_Qinl)
-      {
-          TNF_Qinr = CNF_Qinr;
-          TNF_Qinl = CNF_Qinl;
-          TNF_zinr = CNF_zinr;
-          TNF_zinl = CNF_zinl;
-      }
-
+    if (TNF_Qinr != CNF_Qinr || TNF_Qinl != CNF_Qinl) {
+        TNF_Qinr = CNF_Qinr;
+        TNF_Qinl = CNF_Qinl;
+        TNF_zinr = CNF_zinr;
+        TNF_zinl = CNF_zinl;
+    }
     // For stability, may have to limit "dz" step size if direction changed.
     //
     bool changeDirection = false;
 
     // Direction change from a yield point triggers new Elastic range
     //
-    if (CNF_Q > CNF_Qinr && NFdz < 0.0)
-      {                         // from pos to neg
-          changeDirection = true;
-          if ((CNF_Q - CNF_Qinl) > 2.0 * Qult * Elast)
-              Elast = (CNF_Q - CNF_Qinl) / (2.0 * Qult);
-          if (2.0 * Elast > maxElast)
-              Elast = maxElast / 2.0;
-          TNF_Qinr = CNF_Q;
-          TNF_Qinl = TNF_Qinr - 2.0 * Qult * Elast;
-          TNF_zinr = CNF_z;
-          TNF_zinl = TNF_zinr - (TNF_Qinr - TNF_Qinl) / NFkrig;
-      }
-    if (CNF_Q < CNF_Qinl && NFdz > 0.0)
-      {                         // from neg to pos
-          changeDirection = true;
-          if ((CNF_Qinr - CNF_Q) > 2.0 * Qult * Elast)
-              Elast = (CNF_Qinr - CNF_Q) / (2.0 * Qult);
-          if (2.0 * Elast > maxElast)
-              Elast = maxElast / 2.0;
-          TNF_Qinl = CNF_Q;
-          TNF_Qinr = TNF_Qinl + 2.0 * Qult * Elast;
-          TNF_zinl = CNF_z;
-          TNF_zinr = TNF_zinl + (TNF_Qinr - TNF_Qinl) / NFkrig;
-      }
-
+    if (CNF_Q > CNF_Qinr && NFdz < 0.0) {       // from pos to neg
+        changeDirection = true;
+        if ((CNF_Q - CNF_Qinl) > 2.0 * Qult * Elast)
+            Elast = (CNF_Q - CNF_Qinl) / (2.0 * Qult);
+        if (2.0 * Elast > maxElast)
+            Elast = maxElast / 2.0;
+        TNF_Qinr = CNF_Q;
+        TNF_Qinl = TNF_Qinr - 2.0 * Qult * Elast;
+        TNF_zinr = CNF_z;
+        TNF_zinl = TNF_zinr - (TNF_Qinr - TNF_Qinl) / NFkrig;
+    }
+    if (CNF_Q < CNF_Qinl && NFdz > 0.0) {       // from neg to pos
+        changeDirection = true;
+        if ((CNF_Qinr - CNF_Q) > 2.0 * Qult * Elast)
+            Elast = (CNF_Qinr - CNF_Q) / (2.0 * Qult);
+        if (2.0 * Elast > maxElast)
+            Elast = maxElast / 2.0;
+        TNF_Qinl = CNF_Q;
+        TNF_Qinr = TNF_Qinl + 2.0 * Qult * Elast;
+        TNF_zinl = CNF_z;
+        TNF_zinr = TNF_zinl + (TNF_Qinr - TNF_Qinl) / NFkrig;
+    }
     // Now if there was a change in direction, limit the step size "dz"
     //
-    if (changeDirection == true)
-      {
-          double maxdz = Elast * Qult / NFkrig;
-          if (fabs (dz) > maxdz)
-              dz = (dz / fabs (dz)) * maxdz;
-      }
-
+    if (changeDirection == true) {
+        double maxdz = Elast * Qult / NFkrig;
+        if (fabs(dz) > maxdz)
+            dz = (dz / fabs(dz)) * maxdz;
+    }
     // Now, establish the trial value of "z" for use in this function call.
     //
     TNF_z = zlast + dz;
 
     // Positive loading
     //
-    if (NFdz >= 0.0)
-      {
-          // Check if elastic using z < zinr
-          if (TNF_z <= TNF_zinr)
-            {                   // stays elastic
-                TNF_tang = NFkrig;
-                TNF_Q = TNF_Qinl + (TNF_z - TNF_zinl) * NFkrig;
-            }
-          else
-            {
-                TNF_tang = np * (Qult - TNF_Qinr) * pow (zref, np)
-                    * pow (zref - TNF_zinr + TNF_z, -np - 1.0);
-                TNF_Q =
-                    Qult - (Qult -
-                            TNF_Qinr) * pow (zref / (zref - TNF_zinr + TNF_z),
-                                             np);
-            }
-      }
-
+    if (NFdz >= 0.0) {
+        // Check if elastic using z < zinr
+        if (TNF_z <= TNF_zinr) {        // stays elastic
+            TNF_tang = NFkrig;
+            TNF_Q = TNF_Qinl + (TNF_z - TNF_zinl) * NFkrig;
+        } else {
+            TNF_tang = np * (Qult - TNF_Qinr) * pow(zref, np)
+                * pow(zref - TNF_zinr + TNF_z, -np - 1.0);
+            TNF_Q =
+                Qult - (Qult -
+                        TNF_Qinr) * pow(zref / (zref - TNF_zinr + TNF_z),
+                                        np);
+        }
+    }
     // Negative loading
     //
-    if (NFdz < 0.0)
-      {
-          // Check if elastic using z < zinl
-          if (TNF_z >= TNF_zinl)
-            {                   // stays elastic
-                TNF_tang = NFkrig;
-                TNF_Q = TNF_Qinr + (TNF_z - TNF_zinr) * NFkrig;
-            }
-          else
-            {
-                TNF_tang = np * (Qult + TNF_Qinl) * pow (zref, np)
-                    * pow (zref + TNF_zinl - TNF_z, -np - 1.0);
-                TNF_Q =
-                    -Qult + (Qult +
-                             TNF_Qinl) * pow (zref / (zref + TNF_zinl -
-                                                      TNF_z), np);
-            }
-      }
-
+    if (NFdz < 0.0) {
+        // Check if elastic using z < zinl
+        if (TNF_z >= TNF_zinl) {        // stays elastic
+            TNF_tang = NFkrig;
+            TNF_Q = TNF_Qinr + (TNF_z - TNF_zinr) * NFkrig;
+        } else {
+            TNF_tang = np * (Qult + TNF_Qinl) * pow(zref, np)
+                * pow(zref + TNF_zinl - TNF_z, -np - 1.0);
+            TNF_Q =
+                -Qult + (Qult +
+                         TNF_Qinl) * pow(zref / (zref + TNF_zinl -
+                                                 TNF_z), np);
+        }
+    }
     // Ensure that |Q|<Qult and tangent not zero or negative.
     //
-    if (fabs (TNF_Q) >= (1.0 - QZtolerance) * Qult)
-      {
-          TNF_Q = (TNF_Q / fabs (TNF_Q)) * (1.0 - QZtolerance) * Qult;
-          TNF_tang = 1.0e-4 * Qult / z50;
-      }
+    if (fabs(TNF_Q) >= (1.0 - QZtolerance) * Qult) {
+        TNF_Q = (TNF_Q / fabs(TNF_Q)) * (1.0 - QZtolerance) * Qult;
+        TNF_tang = 1.0e-4 * Qult / z50;
+    }
     if (TNF_tang <= 1.0e-4 * Qult / z50)
         TNF_tang = 1.0e-4 * Qult / z50;
 
@@ -420,8 +373,7 @@ QzSimple2::getNearField (double zlast, double dz, double dz_old)
 }
 
 /////////////////////////////////////////////////////////////////////
-int
-QzSimple2::setTrialStrain (double newz, double zRate)
+int QzSimple2::setTrialStrain(double newz, double zRate)
 {
     // Set trial values for displacement and load in the material
     // based on the last Tangent modulus.
@@ -436,10 +388,10 @@ QzSimple2::setTrialStrain (double newz, double zRate)
     //
     int numSteps = 1;
     double stepSize = 1.0;
-    if (fabs (dQ / Qult) > 0.5)
-        numSteps = 1 + int (fabs (dQ / (0.5 * Qult)));
-    if (fabs (dz / z50) > 1.0)
-        numSteps = 1 + int (fabs (dz / (1.0 * z50)));
+    if (fabs(dQ / Qult) > 0.5)
+        numSteps = 1 + int (fabs(dQ / (0.5 * Qult)));
+    if (fabs(dz / z50) > 1.0)
+        numSteps = 1 + int (fabs(dz / (1.0 * z50)));
     stepSize = 1.0 / float (numSteps);
     if (numSteps > 100)
         numSteps = 100;
@@ -448,80 +400,77 @@ QzSimple2::setTrialStrain (double newz, double zRate)
 
     // Main loop over the required number of substeps
     //
-    for (int istep = 1; istep <= numSteps; istep++)
-      {
-          Tz = Tz + dz;
-          dQ = Ttangent * dz;
+    for (int istep = 1; istep <= numSteps; istep++) {
+        Tz = Tz + dz;
+        dQ = Ttangent * dz;
 
-          // May substep within Gap or NearField element if oscillating, which can happen
-          // when they jump from soft to stiff. Initialize history terms here.
-          //
-          double dz_gap_old = ((TQ + dQ) - TGap_Q) / TGap_tang;
-          double dz_nf_old = ((TQ + dQ) - TNF_Q) / TNF_tang;
+        // May substep within Gap or NearField element if oscillating, which can happen
+        // when they jump from soft to stiff. Initialize history terms here.
+        //
+        double dz_gap_old = ((TQ + dQ) - TGap_Q) / TGap_tang;
+        double dz_nf_old = ((TQ + dQ) - TNF_Q) / TNF_tang;
 
-          // Iterate to distribute displacement among the series components.
-          // Use the incremental iterative strain & iterate at this strain.
-          //
-          for (int j = 1; j < QZmaxIterations; j++)
-            {
-                TQ = TQ + dQ;
-                if (fabs (TQ) > (1.0 - QZtolerance) * Qult)
-                    TQ = (1.0 - QZtolerance) * Qult * (TQ / fabs (TQ));
+        // Iterate to distribute displacement among the series components.
+        // Use the incremental iterative strain & iterate at this strain.
+        //
+        for (int j = 1; j < QZmaxIterations; j++) {
+            TQ = TQ + dQ;
+            if (fabs(TQ) > (1.0 - QZtolerance) * Qult)
+                TQ = (1.0 - QZtolerance) * Qult * (TQ / fabs(TQ));
 
-                // Stress & strain update in Near Field element
-                double dz_nf = (TQ - TNF_Q) / TNF_tang;
-                getNearField (TNF_z, dz_nf, dz_nf_old);
+            // Stress & strain update in Near Field element
+            double dz_nf = (TQ - TNF_Q) / TNF_tang;
+            getNearField(TNF_z, dz_nf, dz_nf_old);
 
-                // Residuals in Near Field element
-                double Q_unbalance = TQ - TNF_Q;
-                double zres_nf = (TQ - TNF_Q) / TNF_tang;
-                dz_nf_old = dz_nf;
+            // Residuals in Near Field element
+            double Q_unbalance = TQ - TNF_Q;
+            double zres_nf = (TQ - TNF_Q) / TNF_tang;
+            dz_nf_old = dz_nf;
 
-                // Stress & strain update in Gap element
-                double dz_gap = (TQ - TGap_Q) / TGap_tang;
-                getGap (TGap_z, dz_gap, dz_gap_old);
+            // Stress & strain update in Gap element
+            double dz_gap = (TQ - TGap_Q) / TGap_tang;
+            getGap(TGap_z, dz_gap, dz_gap_old);
 
-                // Residuals in Gap element
-                double Q_unbalance2 = TQ - TGap_Q;
-                double zres_gap = (TQ - TGap_Q) / TGap_tang;
-                dz_gap_old = dz_gap;
+            // Residuals in Gap element
+            double Q_unbalance2 = TQ - TGap_Q;
+            double zres_gap = (TQ - TGap_Q) / TGap_tang;
+            dz_gap_old = dz_gap;
 
-                // Stress & strain update in Far Field element
-                double dz_far = (TQ - TFar_Q) / TFar_tang;
-                TFar_z = TFar_z + dz_far;
-                getFarField (TFar_z);
+            // Stress & strain update in Far Field element
+            double dz_far = (TQ - TFar_Q) / TFar_tang;
+            TFar_z = TFar_z + dz_far;
+            getFarField(TFar_z);
 
-                // Residuals in Far Field element
-                double Q_unbalance3 = TQ - TFar_Q;
-                double zres_far = (TQ - TFar_Q) / TFar_tang;
+            // Residuals in Far Field element
+            double Q_unbalance3 = TQ - TFar_Q;
+            double zres_far = (TQ - TFar_Q) / TFar_tang;
 
-                // Update the combined tangent modulus
-                Ttangent =
-                    pow (1.0 / TGap_tang + 1.0 / TNF_tang + 1.0 / TFar_tang,
-                         -1.0);
+            // Update the combined tangent modulus
+            Ttangent =
+                pow(1.0 / TGap_tang + 1.0 / TNF_tang + 1.0 / TFar_tang,
+                    -1.0);
 
-                // Residual deformation across combined element
-                double dv = Tz - (TGap_z + zres_gap)
-                    - (TNF_z + zres_nf) - (TFar_z + zres_far);
+            // Residual deformation across combined element
+            double dv = Tz - (TGap_z + zres_gap)
+                - (TNF_z + zres_nf) - (TFar_z + zres_far);
 
-                // Residual "Q" increment 
-                dQ = Ttangent * dv;
+            // Residual "Q" increment 
+            dQ = Ttangent * dv;
 
-                // Test for convergence
-                double Qsum =
-                    (fabs (Q_unbalance) + fabs (Q_unbalance2) +
-                     fabs (Q_unbalance3)) / 3.0;
-                if (Qsum / Qult < QZtolerance)
-                    break;
-            }
-      }
+            // Test for convergence
+            double Qsum =
+                (fabs(Q_unbalance) + fabs(Q_unbalance2) +
+                 fabs(Q_unbalance3)) / 3.0;
+            if (Qsum / Qult < QZtolerance)
+                break;
+        }
+    }
 
     return 0;
 }
 
 /////////////////////////////////////////////////////////////////////
-double
-QzSimple2::getStress (void)
+double QzSimple2::getStress(void)
 {
     // Dashpot force is only due to velocity in the far field.
     // If converged, proportion by Tangents.
@@ -530,42 +479,38 @@ QzSimple2::getStress (void)
     double ratio_disp =
         (1.0 / TFar_tang) / (1.0 / TFar_tang + 1.0 / TNF_tang +
                              1.0 / TGap_tang);
-    if (Tz != Cz)
-      {
-          ratio_disp = (TFar_z - CFar_z) / (Tz - Cz);
-          if (ratio_disp > 1.0)
-              ratio_disp = 1.0;
-          if (ratio_disp < 0.0)
-              ratio_disp = 0.0;
-      }
+    if (Tz != Cz) {
+        ratio_disp = (TFar_z - CFar_z) / (Tz - Cz);
+        if (ratio_disp > 1.0)
+            ratio_disp = 1.0;
+        if (ratio_disp < 0.0)
+            ratio_disp = 0.0;
+    }
     double dashForce = dashpot * TzRate * ratio_disp;
 
     // Limit the combined force to Qult.
     //
-    if (fabs (TQ + dashForce) >= (1.0 - QZtolerance) * Qult)
-        return (1.0 - QZtolerance) * Qult * (TQ + dashForce) / fabs (TQ +
-                                                                     dashForce);
+    if (fabs(TQ + dashForce) >= (1.0 - QZtolerance) * Qult)
+        return (1.0 - QZtolerance) * Qult * (TQ + dashForce) / fabs(TQ +
+                                                                    dashForce);
     else
         return TQ + dashForce;
 }
 
 /////////////////////////////////////////////////////////////////////
-double
-QzSimple2::getTangent (void)
+double QzSimple2::getTangent(void)
 {
     return this->Ttangent;
 }
 
 /////////////////////////////////////////////////////////////////////
-double
-QzSimple2::getInitialTangent (void)
+double QzSimple2::getInitialTangent(void)
 {
     return this->initialTangent;
 }
 
 /////////////////////////////////////////////////////////////////////
-double
-QzSimple2::getDampTangent (void)
+double QzSimple2::getDampTangent(void)
 {
     // Damping tangent is produced only by the far field component.
     // If converged, proportion by Tangents.
@@ -574,14 +519,13 @@ QzSimple2::getDampTangent (void)
     double ratio_disp =
         (1.0 / TFar_tang) / (1.0 / TFar_tang + 1.0 / TNF_tang +
                              1.0 / TGap_tang);
-    if (Tz != Cz)
-      {
-          ratio_disp = (TFar_z - CFar_z) / (Tz - Cz);
-          if (ratio_disp > 1.0)
-              ratio_disp = 1.0;
-          if (ratio_disp < 0.0)
-              ratio_disp = 0.0;
-      }
+    if (Tz != Cz) {
+        ratio_disp = (TFar_z - CFar_z) / (Tz - Cz);
+        if (ratio_disp > 1.0)
+            ratio_disp = 1.0;
+        if (ratio_disp < 0.0)
+            ratio_disp = 0.0;
+    }
 
     double DampTangent = dashpot * ratio_disp;
 
@@ -594,22 +538,19 @@ QzSimple2::getDampTangent (void)
 }
 
 /////////////////////////////////////////////////////////////////////
-double
-QzSimple2::getStrain (void)
+double QzSimple2::getStrain(void)
 {
     return this->Tz;
 }
 
 /////////////////////////////////////////////////////////////////////
-double
-QzSimple2::getStrainRate (void)
+double QzSimple2::getStrainRate(void)
 {
     return this->TzRate;
 }
 
 /////////////////////////////////////////////////////////////////////
-int
-QzSimple2::commitState (void)
+int QzSimple2::commitState(void)
 {
     // Commit trial history variable -- Combined element
     Cz = Tz;
@@ -651,8 +592,7 @@ QzSimple2::commitState (void)
 }
 
 /////////////////////////////////////////////////////////////////////
-int
-QzSimple2::revertToLastCommit (void)
+int QzSimple2::revertToLastCommit(void)
 {
     // Nothing to do here -- WRONG -- have a look at setTrialStrain() .. everything
     // calculated based on trial values & trial values updated in method .. need to 
@@ -693,21 +633,18 @@ QzSimple2::revertToLastCommit (void)
 }
 
 /////////////////////////////////////////////////////////////////////
-int
-QzSimple2::revertToStart (void)
+int QzSimple2::revertToStart(void)
 {
 
     // Reset gap "suction" if zero (or negative) or exceeds max value of 0.1
     //
     if (suction <= QZtolerance)
         suction = QZtolerance;
-    if (suction > 0.1)
-      {
-          suction = 0.1;
-          opserr <<
-              "QzSimple2::QzSimple2 -- setting suction to max value of 0.1\n";
-      }
-
+    if (suction > 0.1) {
+        suction = 0.1;
+        opserr <<
+            "QzSimple2::QzSimple2 -- setting suction to max value of 0.1\n";
+    }
     // Only allow zero or positive dashpot values
     //
     if (dashpot < 0.0)
@@ -715,38 +652,32 @@ QzSimple2::revertToStart (void)
 
     // Do not allow zero or negative values for z50 or Qult.
     //
-    if (Qult <= 0.0 || z50 <= 0.0)
-      {
-          opserr <<
-              "QzSimple2::QzSimple2 -- only accepts positive nonzero Qult and z50\n";
-          exit (-1);
-      }
-
+    if (Qult <= 0.0 || z50 <= 0.0) {
+        opserr <<
+            "QzSimple2::QzSimple2 -- only accepts positive nonzero Qult and z50\n";
+        exit(-1);
+    }
     // Initialize variables for Near Field rigid-plastic spring
     //
-    if (QzType == 1)
-      {                         // Approx Reese & O'Neill (1987) drilled shafts on clay
-          zref = 0.5 * z50;
-          np = 1.2;
-          Elast = 0.22;
-          maxElast = 0.7;
-          nd = 1.0;
-          TFar_tang = 0.525 * Qult / z50;
-      }
-    else if (QzType == 2)
-      {
-          zref = 9.29 * z50;    //PRC
-          np = 5.5;
-          Elast = 0.36;         //PRC
-          maxElast = 0.7;
-          nd = 1.0;
-          TFar_tang = 1.39 * Qult / z50;
-      }
-    else
-      {
-          opserr << "QzSimple2::QzSimple2 -- only accepts QzType of 1 or 2\n";
-          exit (-1);
-      }
+    if (QzType == 1) {          // Approx Reese & O'Neill (1987) drilled shafts on clay
+        zref = 0.5 * z50;
+        np = 1.2;
+        Elast = 0.22;
+        maxElast = 0.7;
+        nd = 1.0;
+        TFar_tang = 0.525 * Qult / z50;
+    } else if (QzType == 2) {
+        zref = 9.29 * z50;      //PRC
+        np = 5.5;
+        Elast = 0.36;           //PRC
+        maxElast = 0.7;
+        nd = 1.0;
+        TFar_tang = 1.39 * Qult / z50;
+    } else {
+        opserr <<
+            "QzSimple2::QzSimple2 -- only accepts QzType of 1 or 2\n";
+        exit(-1);
+    }
 
     // Far Field components: TFar_tang was set under "soil type" statements.
     //
@@ -770,8 +701,8 @@ QzSimple2::revertToStart (void)
     TSuction_zin = 0.0;
     TSuction_Q = 0.0;
     TSuction_z = 0.0;
-    TSuction_tang = nd * (Qult * suction - TSuction_Q) * pow (z50 / 2.0, nd)
-        * pow (z50 / 2.0 - TSuction_z + TSuction_zin, -nd - 1.0);
+    TSuction_tang = nd * (Qult * suction - TSuction_Q) * pow(z50 / 2.0, nd)
+        * pow(z50 / 2.0 - TSuction_z + TSuction_zin, -nd - 1.0);
 
     // Closure components
     //
@@ -789,22 +720,22 @@ QzSimple2::revertToStart (void)
     //
     Tz = 0.0;
     TQ = 0.0;
-    Ttangent = pow (1.0 / TGap_tang + 1.0 / TNF_tang + 1.0 / TFar_tang, -1.0);
+    Ttangent =
+        pow(1.0 / TGap_tang + 1.0 / TNF_tang + 1.0 / TFar_tang, -1.0);
     TzRate = 0.0;
 
     // Now get all the committed variables initiated
     //
-    this->commitState ();
+    this->commitState();
 
     return 0;
 }
 
 /////////////////////////////////////////////////////////////////////
-UniaxialMaterial *
-QzSimple2::getCopy (void)
+UniaxialMaterial *QzSimple2::getCopy(void)
 {
     QzSimple2 *theCopy =
-        new QzSimple2 (this->getTag (), QzType, Qult, z50, suction, dashpot);
+        new QzSimple2(this->getTag(), QzType, Qult, z50, suction, dashpot);
 
     // Copy parameters
     theCopy->zref = zref;
@@ -893,60 +824,59 @@ QzSimple2::getCopy (void)
 }
 
 /////////////////////////////////////////////////////////////////////
-int
-QzSimple2::sendSelf (int cTag, Channel & theChannel)
+int QzSimple2::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
 
-    static Vector data (38);
+    static Vector data(38);
 
-    data (0) = this->getTag ();
-    data (1) = QzType;
-    data (2) = Qult;
-    data (3) = z50;
-    data (4) = suction;
-    data (5) = dashpot;
-    data (6) = zref;
-    data (7) = np;
-    data (8) = Elast;
-    data (9) = maxElast;
-    data (10) = nd;
-    data (11) = NFkrig;
+    data(0) = this->getTag();
+    data(1) = QzType;
+    data(2) = Qult;
+    data(3) = z50;
+    data(4) = suction;
+    data(5) = dashpot;
+    data(6) = zref;
+    data(7) = np;
+    data(8) = Elast;
+    data(9) = maxElast;
+    data(10) = nd;
+    data(11) = NFkrig;
 
-    data (12) = CNF_Qinr;
-    data (13) = CNF_Qinl;
-    data (14) = CNF_zinr;
-    data (15) = CNF_zinl;
-    data (16) = CNF_Q;
-    data (17) = CNF_z;
-    data (18) = CNF_tang;
+    data(12) = CNF_Qinr;
+    data(13) = CNF_Qinl;
+    data(14) = CNF_zinr;
+    data(15) = CNF_zinl;
+    data(16) = CNF_Q;
+    data(17) = CNF_z;
+    data(18) = CNF_tang;
 
-    data (19) = CSuction_Qin;
-    data (20) = CSuction_zin;
-    data (21) = CSuction_Q;
-    data (22) = CSuction_z;
-    data (23) = CSuction_tang;
+    data(19) = CSuction_Qin;
+    data(20) = CSuction_zin;
+    data(21) = CSuction_Q;
+    data(22) = CSuction_z;
+    data(23) = CSuction_tang;
 
-    data (24) = CClose_Q;
-    data (25) = CClose_z;
-    data (26) = CClose_tang;
+    data(24) = CClose_Q;
+    data(25) = CClose_z;
+    data(26) = CClose_tang;
 
-    data (27) = CGap_z;
-    data (28) = CGap_Q;
-    data (29) = CGap_tang;
+    data(27) = CGap_z;
+    data(28) = CGap_Q;
+    data(29) = CGap_tang;
 
-    data (30) = CFar_z;
-    data (31) = CFar_Q;
-    data (32) = CFar_tang;
+    data(30) = CFar_z;
+    data(31) = CFar_Q;
+    data(32) = CFar_tang;
 
-    data (33) = Cz;
-    data (34) = CQ;
-    data (35) = Ctangent;
-    data (36) = TzRate;
+    data(33) = Cz;
+    data(34) = CQ;
+    data(35) = Ctangent;
+    data(36) = TzRate;
 
-    data (37) = initialTangent;
+    data(37) = initialTangent;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "QzSimple2::sendSelf() - failed to send data\n";
 
@@ -954,81 +884,76 @@ QzSimple2::sendSelf (int cTag, Channel & theChannel)
 }
 
 /////////////////////////////////////////////////////////////////////
-int
-QzSimple2::recvSelf (int cTag, Channel & theChannel,
-                     FEM_ObjectBroker & theBroker)
+int QzSimple2::recvSelf(int cTag, Channel & theChannel,
+                        FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static Vector data (38);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(38);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
 
-    if (res < 0)
-      {
-          opserr << "QzSimple2::recvSelf() - failed to receive data\n";
-          CNF_tang = 0;
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag ((int) data (0));
-          QzType = (int) data (1);
-          Qult = data (2);
-          z50 = data (3);
-          suction = data (4);
-          dashpot = data (5);
-          zref = data (6);
-          np = data (7);
-          Elast = data (8);
-          maxElast = data (9);
-          nd = data (10);
-          NFkrig = data (11);
+    if (res < 0) {
+        opserr << "QzSimple2::recvSelf() - failed to receive data\n";
+        CNF_tang = 0;
+        this->setTag(0);
+    } else {
+        this->setTag((int) data(0));
+        QzType = (int) data(1);
+        Qult = data(2);
+        z50 = data(3);
+        suction = data(4);
+        dashpot = data(5);
+        zref = data(6);
+        np = data(7);
+        Elast = data(8);
+        maxElast = data(9);
+        nd = data(10);
+        NFkrig = data(11);
 
-          CNF_Qinr = data (12);
-          CNF_Qinl = data (13);
-          CNF_zinr = data (14);
-          CNF_zinl = data (15);
-          CNF_Q = data (16);
-          CNF_z = data (17);
-          CNF_tang = data (18);
+        CNF_Qinr = data(12);
+        CNF_Qinl = data(13);
+        CNF_zinr = data(14);
+        CNF_zinl = data(15);
+        CNF_Q = data(16);
+        CNF_z = data(17);
+        CNF_tang = data(18);
 
-          CSuction_Qin = data (19);
-          CSuction_zin = data (20);
-          CSuction_Q = data (21);
-          CSuction_z = data (22);
-          CSuction_tang = data (23);
+        CSuction_Qin = data(19);
+        CSuction_zin = data(20);
+        CSuction_Q = data(21);
+        CSuction_z = data(22);
+        CSuction_tang = data(23);
 
-          CClose_Q = data (24);
-          CClose_z = data (25);
-          CClose_tang = data (26);
+        CClose_Q = data(24);
+        CClose_z = data(25);
+        CClose_tang = data(26);
 
-          CGap_z = data (27);
-          CGap_Q = data (28);
-          CGap_tang = data (29);
+        CGap_z = data(27);
+        CGap_Q = data(28);
+        CGap_tang = data(29);
 
-          CFar_z = data (30);
-          CFar_Q = data (31);
-          CFar_tang = data (32);
+        CFar_z = data(30);
+        CFar_Q = data(31);
+        CFar_tang = data(32);
 
-          Cz = data (33);
-          CQ = data (34);
-          Ctangent = data (35);
-          TzRate = data (36);
+        Cz = data(33);
+        CQ = data(34);
+        Ctangent = data(35);
+        TzRate = data(36);
 
-          initialTangent = data (37);
+        initialTangent = data(37);
 
-          // set the trial quantities
-          this->revertToLastCommit ();
-      }
+        // set the trial quantities
+        this->revertToLastCommit();
+    }
 
     return res;
 }
 
 /////////////////////////////////////////////////////////////////////
-void
-QzSimple2::Print (OPS_Stream & s, int flag)
+void QzSimple2::Print(OPS_Stream & s, int flag)
 {
-    s << "QzSimple2, tag: " << this->getTag () << endln;
+    s << "QzSimple2, tag: " << this->getTag() << endln;
     s << "  QzType: " << QzType << endln;
     s << "  Qult: " << Qult << endln;
     s << "  z50: " << z50 << endln;

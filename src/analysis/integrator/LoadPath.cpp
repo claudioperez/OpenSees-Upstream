@@ -43,19 +43,18 @@
 #include <ID.h>
 #include <stdlib.h>
 
-LoadPath::LoadPath (Vector & theLoadPath):StaticIntegrator (INTEGRATOR_TAGS_LoadPath),
-loadPath (0), currentStep (0)
+LoadPath::LoadPath(Vector & theLoadPath):StaticIntegrator(INTEGRATOR_TAGS_LoadPath),
+loadPath(0), currentStep(0)
 {
-    loadPath = new Vector (theLoadPath);
-    if (loadPath == 0 || loadPath->Size () == 0)
-      {
-          opserr << "LoadPath::LoadPath() - ran out of memory\n";
-          exit (-1);
-      }
+    loadPath = new Vector(theLoadPath);
+    if (loadPath == 0 || loadPath->Size() == 0) {
+        opserr << "LoadPath::LoadPath() - ran out of memory\n";
+        exit(-1);
+    }
 }
 
-LoadPath::LoadPath ():StaticIntegrator (INTEGRATOR_TAGS_LoadPath),
-loadPath (0), currentStep (0)
+LoadPath::LoadPath():StaticIntegrator(INTEGRATOR_TAGS_LoadPath),
+loadPath(0), currentStep(0)
 {
 
 }
@@ -63,140 +62,121 @@ loadPath (0), currentStep (0)
 
 
 
-LoadPath::~LoadPath ()
+LoadPath::~LoadPath()
 {
     if (loadPath != 0)
         delete loadPath;
 }
 
 int
-LoadPath::newStep (void)
+ LoadPath::newStep(void)
 {
-    AnalysisModel *theModel = this->getAnalysisModel ();
-    if (theModel == 0)
-      {
-          opserr << "LoadPath::newStep() - no associated AnalysisModel\n";
-          return -1;
-      }
+    AnalysisModel *theModel = this->getAnalysisModel();
+    if (theModel == 0) {
+        opserr << "LoadPath::newStep() - no associated AnalysisModel\n";
+        return -1;
+    }
 
-    if (loadPath == 0)
-      {
-          opserr <<
-              "LoadPath::newStep() - no load path associated with object\n";
-          return -2;
-      }
+    if (loadPath == 0) {
+        opserr <<
+            "LoadPath::newStep() - no load path associated with object\n";
+        return -2;
+    }
 
 
-    double modelLambda = theModel->getCurrentDomainTime ();
+    double modelLambda = theModel->getCurrentDomainTime();
 
     double currentLambda;
-    if (currentStep < loadPath->Size ())
-      {
+    if (currentStep < loadPath->Size()) {
 
-          if (currentStep > 0)
-            {
-                if (modelLambda == (*loadPath) (currentStep - 1))
-                    currentLambda = (*loadPath) (currentStep);
-                else
-                    currentLambda = (*loadPath) (currentStep - 1);
-            }
-          else
-              currentLambda = (*loadPath) (currentStep);
-      }
-    else
-      {
-          currentLambda = 0.0;
-          opserr <<
-              "LoadPath::newStep() - reached end of specified load path";
-          opserr << " - setting lambda = 0.0 \n";
-      }
+        if (currentStep > 0) {
+            if (modelLambda == (*loadPath) (currentStep - 1))
+                currentLambda = (*loadPath) (currentStep);
+            else
+                currentLambda = (*loadPath) (currentStep - 1);
+        } else
+            currentLambda = (*loadPath) (currentStep);
+    } else {
+        currentLambda = 0.0;
+        opserr <<
+            "LoadPath::newStep() - reached end of specified load path";
+        opserr << " - setting lambda = 0.0 \n";
+    }
 
     currentStep++;
-    theModel->applyLoadDomain (currentLambda);
+    theModel->applyLoadDomain(currentLambda);
 
     return 0;
 }
 
-int
-LoadPath::update (const Vector & deltaU)
+int LoadPath::update(const Vector & deltaU)
 {
-    AnalysisModel *myModel = this->getAnalysisModel ();
-    if (myModel == 0)
-      {
-          opserr << "WARNING LoadPath::update() ";
-          opserr << "No AnalysisModel has been set\n";
-          return -1;
-      }
+    AnalysisModel *myModel = this->getAnalysisModel();
+    if (myModel == 0) {
+        opserr << "WARNING LoadPath::update() ";
+        opserr << "No AnalysisModel has been set\n";
+        return -1;
+    }
 
-    myModel->incrDisp (deltaU);
-    myModel->updateDomain ();
+    myModel->incrDisp(deltaU);
+    myModel->updateDomain();
     return 0;
 }
 
 
-int
-LoadPath::sendSelf (int cTag, Channel & theChannel)
+int LoadPath::sendSelf(int cTag, Channel & theChannel)
 {
-    ID data (2);
-    data (0) = loadPath->Size ();
-    data (1) = currentStep;
-    if (theChannel.sendID (this->getDbTag (), cTag, data) < 0)
-      {
-          opserr << "LoadPath::sendSelf() - failed to send the ID\n";
-          return -1;
-      }
+    ID data(2);
+    data(0) = loadPath->Size();
+    data(1) = currentStep;
+    if (theChannel.sendID(this->getDbTag(), cTag, data) < 0) {
+        opserr << "LoadPath::sendSelf() - failed to send the ID\n";
+        return -1;
+    }
 
-    if (theChannel.sendVector (this->getDbTag (), cTag, *loadPath) < 0)
-      {
-          opserr << "LoadPath::sendSelf() - failed to send the Vector\n";
-          return -1;
-      }
+    if (theChannel.sendVector(this->getDbTag(), cTag, *loadPath) < 0) {
+        opserr << "LoadPath::sendSelf() - failed to send the Vector\n";
+        return -1;
+    }
 
     return 0;
 }
 
 
-int
-LoadPath::recvSelf (int cTag,
-                    Channel & theChannel, FEM_ObjectBroker & theBroker)
+int LoadPath::recvSelf(int cTag,
+                       Channel & theChannel, FEM_ObjectBroker & theBroker)
 {
-    ID data (2);
-    if (theChannel.recvID (this->getDbTag (), cTag, data) < 0)
-      {
-          opserr << "LoadPath::sendSelf() - failed to send the ID\n";
-          return -1;
-      }
-    int size = data (0);
-    currentStep = data (1);
+    ID data(2);
+    if (theChannel.recvID(this->getDbTag(), cTag, data) < 0) {
+        opserr << "LoadPath::sendSelf() - failed to send the ID\n";
+        return -1;
+    }
+    int size = data(0);
+    currentStep = data(1);
 
-    loadPath = new Vector (size);
-    if (loadPath == 0 || loadPath->Size () == 0)
-      {
-          opserr << "FATAL - LoadPath::recvSelf() - ran out of memory\n";
-          exit (-1);
-      }
+    loadPath = new Vector(size);
+    if (loadPath == 0 || loadPath->Size() == 0) {
+        opserr << "FATAL - LoadPath::recvSelf() - ran out of memory\n";
+        exit(-1);
+    }
 
-    if (theChannel.recvVector (this->getDbTag (), cTag, *loadPath) < 0)
-      {
-          opserr << "LoadPath::sendSelf() - failed to send the Vector\n";
-          return -1;
-      }
+    if (theChannel.recvVector(this->getDbTag(), cTag, *loadPath) < 0) {
+        opserr << "LoadPath::sendSelf() - failed to send the Vector\n";
+        return -1;
+    }
 
     return 0;
 }
 
 
 
-void
-LoadPath::Print (OPS_Stream & s, int flag)
+void LoadPath::Print(OPS_Stream & s, int flag)
 {
-    AnalysisModel *theModel = this->getAnalysisModel ();
-    if (theModel != 0)
-      {
-          double currentLambda = theModel->getCurrentDomainTime ();
-          s << "\t LoadPath - currentLambda: " << currentLambda << endln;
-      }
-    else
+    AnalysisModel *theModel = this->getAnalysisModel();
+    if (theModel != 0) {
+        double currentLambda = theModel->getCurrentDomainTime();
+        s << "\t LoadPath - currentLambda: " << currentLambda << endln;
+    } else
         s << "\t LoadPath - no associated AnalysisModel\n";
 
 }

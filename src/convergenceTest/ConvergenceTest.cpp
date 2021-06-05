@@ -35,13 +35,12 @@
 
 #include <ConvergenceTest.h>
 
-ConvergenceTest::ConvergenceTest (int clasTag):
-MovableObject (clasTag)
+ConvergenceTest::ConvergenceTest(int clasTag):MovableObject(clasTag)
 {
 
 }
 
-ConvergenceTest::~ConvergenceTest ()
+ConvergenceTest::~ConvergenceTest()
 {
 
 }

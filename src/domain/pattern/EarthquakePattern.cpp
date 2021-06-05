@@ -43,20 +43,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-EarthquakePattern::EarthquakePattern (int tag, int _classTag):
-LoadPattern (tag, _classTag),
-theMotions (0),
-numMotions (0),
-uDotG (0),
-uDotDotG (0),
-currentTime (0.0),
-parameterID (0)
+EarthquakePattern::EarthquakePattern(int tag,
+                                     int _classTag):LoadPattern(tag,
+                                                                _classTag),
+theMotions(0), numMotions(0), uDotG(0), uDotDotG(0), currentTime(0.0),
+parameterID(0)
 {
 
 }
 
 
-EarthquakePattern::~EarthquakePattern ()
+EarthquakePattern::~EarthquakePattern()
 {
     // invoke the destructor on all ground motions supplied
     for (int i = 0; i < numMotions; i++)
@@ -76,7 +73,7 @@ EarthquakePattern::~EarthquakePattern ()
 
 
 void
-EarthquakePattern::applyLoad (double time)
+ EarthquakePattern::applyLoad(double time)
 {
     // see if quick return, i.e. no Ground Motions or domain set
     if (numMotions == 0)
@@ -86,90 +83,80 @@ EarthquakePattern::applyLoad (double time)
     if (isConstant != 0)
         currentTime = time;
 
-    Domain *theDomain = this->getDomain ();
+    Domain *theDomain = this->getDomain();
     if (theDomain == 0)
         return;
 
 
     // set the vel and accel vector
-    for (int i = 0; i < numMotions; i++)
-      {
-          //    (*uDotG)(i) = theMotions[i]->getVel(currentTime);
-          (*uDotDotG) (i) = theMotions[i]->getAccel (currentTime);
-      }
+    for (int i = 0; i < numMotions; i++) {
+        //    (*uDotG)(i) = theMotions[i]->getVel(currentTime);
+        (*uDotDotG) (i) = theMotions[i]->getAccel(currentTime);
+    }
 
-    NodeIter & theNodes = theDomain->getNodes ();
+    NodeIter & theNodes = theDomain->getNodes();
     Node *theNode;
-    while ((theNode = theNodes ()) != 0)
-        theNode->addInertiaLoadToUnbalance (*uDotDotG, 1.0);
+    while ((theNode = theNodes()) != 0)
+        theNode->addInertiaLoadToUnbalance(*uDotDotG, 1.0);
 
 
-    ElementIter & theElements = theDomain->getElements ();
+    ElementIter & theElements = theDomain->getElements();
     Element *theElement;
-    while ((theElement = theElements ()) != 0)
-        theElement->addInertiaLoadToUnbalance (*uDotDotG);
+    while ((theElement = theElements()) != 0)
+        theElement->addInertiaLoadToUnbalance(*uDotDotG);
 }
 
-void
-EarthquakePattern::applyLoadSensitivity (double time)
+void EarthquakePattern::applyLoadSensitivity(double time)
 {
     // see if quick return, i.e. no Ground Motions or domain set
     if (numMotions == 0)
         return;
 
-    Domain *theDomain = this->getDomain ();
+    Domain *theDomain = this->getDomain();
     if (theDomain == 0)
         return;
 
 
     // set the vel and accel vector
-    for (int i = 0; i < numMotions; i++)
-      {
-          (*uDotG) (i) = theMotions[i]->getVel (time);
-          if (parameterID != 0)
-            {                   // Something is random in the motions
-                (*uDotDotG) (i) = theMotions[i]->getAccelSensitivity (time);
-            }
-          else
-            {
-                (*uDotDotG) (i) = theMotions[i]->getAccel (time);
-            }
-      }
+    for (int i = 0; i < numMotions; i++) {
+        (*uDotG) (i) = theMotions[i]->getVel(time);
+        if (parameterID != 0) { // Something is random in the motions
+            (*uDotDotG) (i) = theMotions[i]->getAccelSensitivity(time);
+        } else {
+            (*uDotDotG) (i) = theMotions[i]->getAccel(time);
+        }
+    }
 
     bool somethingRandomInMotions = false;
-    if (parameterID != 0)
-      {
-          somethingRandomInMotions = true;
-      }
+    if (parameterID != 0) {
+        somethingRandomInMotions = true;
+    }
 
 
-    NodeIter & theNodes = theDomain->getNodes ();
+    NodeIter & theNodes = theDomain->getNodes();
     Node *theNode;
-    while ((theNode = theNodes ()) != 0)
-        theNode->addInertiaLoadSensitivityToUnbalance (*uDotDotG, 1.0,
-                                                       somethingRandomInMotions);
+    while ((theNode = theNodes()) != 0)
+        theNode->addInertiaLoadSensitivityToUnbalance(*uDotDotG, 1.0,
+                                                      somethingRandomInMotions);
 
 
-    ElementIter & theElements = theDomain->getElements ();
+    ElementIter & theElements = theDomain->getElements();
     Element *theElement;
-    while ((theElement = theElements ()) != 0)
-        theElement->addInertiaLoadSensitivityToUnbalance (*uDotDotG,
-                                                          somethingRandomInMotions);
+    while ((theElement = theElements()) != 0)
+        theElement->addInertiaLoadSensitivityToUnbalance(*uDotDotG,
+                                                         somethingRandomInMotions);
 }
 
-int
-EarthquakePattern::addMotion (GroundMotion & theMotion)
+int EarthquakePattern::addMotion(GroundMotion & theMotion)
 {
     // make space for new
     GroundMotion **newMotions = new GroundMotion *[numMotions + 1];
     //  GroundMotion **newMotions = (GroundMotion **)malloc(sizeof(GroundMotion *)*(numMotions+1));
-    if (newMotions == 0)
-      {
-          opserr <<
-              "EarthquakePattern::addMotion - could not add new, out of mem\n";
-          return -1;
-      }
-
+    if (newMotions == 0) {
+        opserr <<
+            "EarthquakePattern::addMotion - could not add new, out of mem\n";
+        return -1;
+    }
     // copy old
     for (int i = 0; i < numMotions; i++)
         newMotions[i] = theMotions[i];
@@ -188,42 +175,38 @@ EarthquakePattern::addMotion (GroundMotion & theMotion)
     // delete old vectors and create new ones
     if (uDotG != 0)
         delete uDotG;
-    uDotG = new Vector (numMotions);
+    uDotG = new Vector(numMotions);
 
     if (uDotDotG != 0)
         delete uDotDotG;
-    uDotDotG = new Vector (numMotions);
+    uDotDotG = new Vector(numMotions);
 
-    if (uDotDotG == 0 || uDotDotG->Size () == 0 || uDotG == 0
-        || uDotG->Size () == 0)
-      {
-          opserr <<
-              "EarthquakePattern::addMotion - ran out of memory creating vectors\n";
-          numMotions = 0;
-          return -2;
-      }
+    if (uDotDotG == 0 || uDotDotG->Size() == 0 || uDotG == 0
+        || uDotG->Size() == 0) {
+        opserr <<
+            "EarthquakePattern::addMotion - ran out of memory creating vectors\n";
+        numMotions = 0;
+        return -2;
+    }
     return 0;
 }
 
 
-bool
-EarthquakePattern::addSP_Constraint (SP_Constraint *)
+bool EarthquakePattern::addSP_Constraint(SP_Constraint *)
 {
     opserr <<
         "EarthquakePattern::addSP_Constraint() - cannot add SP_Constraint to EQ pattern\n";
     return false;
 }
 
-bool
-EarthquakePattern::addNodalLoad (NodalLoad *)
+bool EarthquakePattern::addNodalLoad(NodalLoad *)
 {
     opserr <<
         "EarthquakePattern::addNodalLoad() - cannot add NodalLoad to EQ pattern\n";
     return false;
 }
 
-bool
-EarthquakePattern::addElementalLoad (ElementalLoad *)
+bool EarthquakePattern::addElementalLoad(ElementalLoad *)
 {
     opserr <<
         "EarthquakePattern::addElementalLoad() - cannot add ElementalLoad to EQ pattern\n";
@@ -370,8 +353,7 @@ EarthquakePattern::recvSelf(int commitTag, Channel &theChannel,
 
 ***************************************************************************************** */
 
-void
-EarthquakePattern::Print (OPS_Stream & s, int flag)
+void EarthquakePattern::Print(OPS_Stream & s, int flag)
 {
     opserr << "EarthquakePattern::Print() - not yet implemented\n";
 }
@@ -394,36 +376,32 @@ EarthquakePattern::getCopy(void)
 
 
 // AddingSensitivity:BEGIN ////////////////////////////////////
-int
-EarthquakePattern::setParameter (const char **argv, int argc,
-                                 Parameter & param)
+int EarthquakePattern::setParameter(const char **argv, int argc,
+                                    Parameter & param)
 {
     if (argc < 2)
         return -1;
 
     // This is not general, yet
 
-    if (strstr (argv[0], "randomProcessDiscretizer") != 0)
-      {
-          return theMotions[0]->setParameter (&argv[1], argc - 1, param);
-      }
-    else
+    if (strstr(argv[0], "randomProcessDiscretizer") != 0) {
+        return theMotions[0]->setParameter(&argv[1], argc - 1, param);
+    } else
         return 0;
 
 }
 
-int
-EarthquakePattern::updateParameter (int pparameterID, Information & info)
+int EarthquakePattern::updateParameter(int pparameterID,
+                                       Information & info)
 {
-    return theMotions[0]->updateParameter (pparameterID, info);
+    return theMotions[0]->updateParameter(pparameterID, info);
 }
 
-int
-EarthquakePattern::activateParameter (int pparameterID)
+int EarthquakePattern::activateParameter(int pparameterID)
 {
     parameterID = pparameterID;
 
-    return theMotions[0]->activateParameter (pparameterID);
+    return theMotions[0]->activateParameter(pparameterID);
 }
 
 // AddingSensitivity:END ////////////////////////////////////

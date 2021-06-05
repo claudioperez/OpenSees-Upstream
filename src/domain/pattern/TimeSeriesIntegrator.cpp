@@ -72,13 +72,14 @@ void* OPS_TimeSeriesIntegrator()
 #endif
 */
 
-TimeSeriesIntegrator::TimeSeriesIntegrator (int classTag):
-MovableObject (classTag)
+TimeSeriesIntegrator::TimeSeriesIntegrator(int
+                                           classTag):MovableObject
+    (classTag)
 {
 
 }
 
-TimeSeriesIntegrator::~TimeSeriesIntegrator ()
+TimeSeriesIntegrator::~TimeSeriesIntegrator()
 {
 
 }

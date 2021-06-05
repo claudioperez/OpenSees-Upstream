@@ -31,18 +31,18 @@
 #include <DrainPinch1Material.h>
 #include <Vector.h>
 
-DrainPinch1Material::DrainPinch1Material (int tag,
-                                          double E, double fyp, double fyn,
-                                          double alpha, double ecaps,
-                                          double ecapk, double ecapa,
-                                          double ecapd, double cs, double ck,
-                                          double ca, double cd,
-                                          double capSlope, double capDispP,
-                                          double capDispN, double fpp,
-                                          double fpn, double pinch,
-                                          double res, double b):
+DrainPinch1Material::DrainPinch1Material(int tag,
+                                         double E, double fyp, double fyn,
+                                         double alpha, double ecaps,
+                                         double ecapk, double ecapa,
+                                         double ecapd, double cs,
+                                         double ck, double ca, double cd,
+                                         double capSlope, double capDispP,
+                                         double capDispN, double fpp,
+                                         double fpn, double pinch,
+                                         double res, double b):
 // 15 history variables and 19 material parameters
-DrainMaterial (tag, MAT_TAG_DrainPinch1, 15, 19, b)
+DrainMaterial(tag, MAT_TAG_DrainPinch1, 15, 19, b)
 {
     data[0] = E;
     data[1] = fyp;
@@ -65,34 +65,35 @@ DrainMaterial (tag, MAT_TAG_DrainPinch1, 15, 19, b)
     data[18] = res;
 
     // Initialize history variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-DrainPinch1Material::DrainPinch1Material (int tag, const Vector & input,
-                                          double b):
+DrainPinch1Material::DrainPinch1Material(int tag, const Vector & input,
+                                         double b):
 // 15 history variables and 19 material parameters
-DrainMaterial (tag, MAT_TAG_DrainPinch1, 15, 19, b)
+DrainMaterial(tag, MAT_TAG_DrainPinch1, 15, 19, b)
 {
     for (int i = 0; i < 19; i++)
-        data[i] = input (i);
+        data[i] = input(i);
 
     // Initialize history variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-DrainPinch1Material::DrainPinch1Material (void):
-DrainMaterial (0, MAT_TAG_DrainPinch1, 15, 19)
+DrainPinch1Material::DrainPinch1Material(void):DrainMaterial(0,
+                                                             MAT_TAG_DrainPinch1,
+                                                             15, 19)
 {
     // Does nothing
 }
 
-DrainPinch1Material::~DrainPinch1Material (void)
+DrainPinch1Material::~DrainPinch1Material(void)
 {
     // Does nothing
 }
 
 int
-DrainPinch1Material::revertToStart (void)
+ DrainPinch1Material::revertToStart(void)
 {
     double dyp = data[1] / data[0];     // fyp/E
     double dyn = data[2] / data[0];     // fyn/E
@@ -120,13 +121,12 @@ DrainPinch1Material::revertToStart (void)
     return 0;
 }
 
-UniaxialMaterial *
-DrainPinch1Material::getCopy (void)
+UniaxialMaterial *DrainPinch1Material::getCopy(void)
 {
-    Vector input (data, 19);
+    Vector input(data, 19);
 
     DrainPinch1Material *theCopy =
-        new DrainPinch1Material (this->getTag (), input, beto);
+        new DrainPinch1Material(this->getTag(), input, beto);
 
     return theCopy;
 }

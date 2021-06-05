@@ -31,92 +31,84 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 
-Vector
-Beam3dPointLoad::data (4);
+Vector Beam3dPointLoad::data(4);
 
-Beam3dPointLoad::Beam3dPointLoad (int tag, double py, double pz, double dist,
-                                  int theElementTag, double px):
-ElementalLoad (tag, LOAD_TAG_Beam3dPointLoad, theElementTag),
-Py (py),
-Pz (pz),
-Px (px),
-x (dist)
+Beam3dPointLoad::Beam3dPointLoad(int tag, double py, double pz,
+                                 double dist, int theElementTag,
+                                 double px):ElementalLoad(tag,
+                                                          LOAD_TAG_Beam3dPointLoad,
+                                                          theElementTag),
+Py(py), Pz(pz), Px(px), x(dist)
 {
 
 }
 
-Beam3dPointLoad::Beam3dPointLoad ():ElementalLoad (LOAD_TAG_Beam3dPointLoad),
-Py (0.0), Pz (0.0), Px (0.0), x (0.0)
+Beam3dPointLoad::Beam3dPointLoad():ElementalLoad(LOAD_TAG_Beam3dPointLoad),
+Py(0.0), Pz(0.0), Px(0.0), x(0.0)
 {
 
 }
 
-Beam3dPointLoad::~Beam3dPointLoad ()
+Beam3dPointLoad::~Beam3dPointLoad()
 {
 
 }
 
-const Vector &
-Beam3dPointLoad::getData (int &type, double loadFactor)
+const Vector & Beam3dPointLoad::getData(int &type, double loadFactor)
 {
     type = LOAD_TAG_Beam3dPointLoad;
-    data (0) = Py;
-    data (1) = Pz;
-    data (2) = Px;
-    data (3) = x;
+    data(0) = Py;
+    data(1) = Pz;
+    data(2) = Px;
+    data(3) = x;
     return data;
 }
 
-int
-Beam3dPointLoad::sendSelf (int commitTag, Channel & theChannel)
+int Beam3dPointLoad::sendSelf(int commitTag, Channel & theChannel)
 {
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    static Vector vectData (6);
-    vectData (0) = Px;
-    vectData (1) = Py;
-    vectData (2) = Pz;
-    vectData (3) = x;
-    vectData (4) = eleTag;
-    vectData (5) = this->getTag ();
+    static Vector vectData(6);
+    vectData(0) = Px;
+    vectData(1) = Py;
+    vectData(2) = Pz;
+    vectData(3) = x;
+    vectData(4) = eleTag;
+    vectData(5) = this->getTag();
 
-    int result = theChannel.sendVector (dbTag, commitTag, vectData);
-    if (result < 0)
-      {
-          opserr << "Beam3dPointLoad::sendSelf - failed to send data\n";
-          return result;
-      }
+    int result = theChannel.sendVector(dbTag, commitTag, vectData);
+    if (result < 0) {
+        opserr << "Beam3dPointLoad::sendSelf - failed to send data\n";
+        return result;
+    }
 
     return 0;
 }
 
-int
-Beam3dPointLoad::recvSelf (int commitTag, Channel & theChannel,
-                           FEM_ObjectBroker & theBroker)
+int Beam3dPointLoad::recvSelf(int commitTag, Channel & theChannel,
+                              FEM_ObjectBroker & theBroker)
 {
-    int dbTag = this->getDbTag ();
+    int dbTag = this->getDbTag();
 
-    static Vector vectData (6);
+    static Vector vectData(6);
 
-    int result = theChannel.recvVector (dbTag, commitTag, vectData);
-    if (result < 0)
-      {
-          opserr << "Beam3dPointLoad::recvSelf - failed to recv data\n";
-          return result;
+    int result = theChannel.recvVector(dbTag, commitTag, vectData);
+    if (result < 0) {
+        opserr << "Beam3dPointLoad::recvSelf - failed to recv data\n";
+        return result;
 
-      }
-    this->setTag ((int) vectData (5));
-    Px = vectData (0);;
-    Py = vectData (1);;
-    Pz = vectData (2);;
-    x = vectData (3);
-    eleTag = (int) vectData (4);
+    }
+    this->setTag((int) vectData(5));
+    Px = vectData(0);;
+    Py = vectData(1);;
+    Pz = vectData(2);;
+    x = vectData(3);
+    eleTag = (int) vectData(4);
 
     return 0;
 }
 
-void
-Beam3dPointLoad::Print (OPS_Stream & s, int flag)
+void Beam3dPointLoad::Print(OPS_Stream & s, int flag)
 {
     s << "Beam3dPointLoad - Reference load" << endln;
     s << "  Transverse (y): " << Py << endln;

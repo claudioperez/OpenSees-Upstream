@@ -43,35 +43,31 @@
 // ElementalLoadIter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-ElementalLoadIter::ElementalLoadIter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+ElementalLoadIter::ElementalLoadIter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
 
-ElementalLoadIter::~ElementalLoadIter ()
+ElementalLoadIter::~ElementalLoadIter()
 {
 }
 
 void
-ElementalLoadIter::reset (void)
+ ElementalLoadIter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-ElementalLoad *
-ElementalLoadIter::operator () (void)
-{
+ElementalLoad *ElementalLoadIter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          ElementalLoad *result = (ElementalLoad *) theComponent;
-          return result;
-      }
+    else {
+        ElementalLoad *result = (ElementalLoad *) theComponent;
+        return result;
+    }
 }

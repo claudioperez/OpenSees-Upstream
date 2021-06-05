@@ -34,38 +34,33 @@
 
 static MapOfTaggedObjects theSectionRepresObjects;
 
-bool
-OPS_addSectionRepres (SectionRepres * newComponent)
+bool OPS_addSectionRepres(SectionRepres * newComponent)
 {
-    return theSectionRepresObjects.addComponent (newComponent);
+    return theSectionRepresObjects.addComponent(newComponent);
 }
 
-SectionRepres *
-OPS_getSectionRepres (int tag)
+SectionRepres *OPS_getSectionRepres(int tag)
 {
-    TaggedObject *theResult = theSectionRepresObjects.getComponentPtr (tag);
-    if (theResult == 0)
-      {
-          return 0;
-      }
+    TaggedObject *theResult = theSectionRepresObjects.getComponentPtr(tag);
+    if (theResult == 0) {
+        return 0;
+    }
     SectionRepres *theRep = (SectionRepres *) theResult;
 
     return theRep;
 }
 
-void
-OPS_clearAllSectionRepres (void)
+void OPS_clearAllSectionRepres(void)
 {
-    theSectionRepresObjects.clearAll ();
+    theSectionRepresObjects.clearAll();
 }
 
-SectionRepres::SectionRepres (int tag):
-TaggedObject (tag)
+SectionRepres::SectionRepres(int tag):TaggedObject(tag)
 {
 
 }
 
-SectionRepres::~SectionRepres (void)
+SectionRepres::~SectionRepres(void)
 {
 
 }

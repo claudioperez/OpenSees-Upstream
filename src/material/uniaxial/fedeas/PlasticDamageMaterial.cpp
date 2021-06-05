@@ -32,12 +32,12 @@
 #include <stdlib.h>
 #include <PlasticDamageMaterial.h>
 
-PlasticDamageMaterial::PlasticDamageMaterial (int tag, double E, double Ft,
-                                              double Fc, double ft_max,
-                                              double fcy, double fc_max,
-                                              double kt_crit, double Relax):
+PlasticDamageMaterial::PlasticDamageMaterial(int tag, double E, double Ft,
+                                             double Fc, double ft_max,
+                                             double fcy, double fc_max,
+                                             double kt_crit, double Relax):
   // 11 history variables and 8 material parameters
-FedeasMaterial (tag, MAT_TAG_PlasticDamage, 11, 8)
+FedeasMaterial(tag, MAT_TAG_PlasticDamage, 11, 8)
 {
     // Fill in material parameters
     data[0] = E;
@@ -53,42 +53,41 @@ FedeasMaterial (tag, MAT_TAG_PlasticDamage, 11, 8)
     tangent = tangentP;
 }
 
-PlasticDamageMaterial::PlasticDamageMaterial (int tag, const Vector & d):
+PlasticDamageMaterial::PlasticDamageMaterial(int tag, const Vector & d):
   // 11 history variables and 8 material parameters
-FedeasMaterial (tag, MAT_TAG_PlasticDamage, 11, 8)
+FedeasMaterial(tag, MAT_TAG_PlasticDamage, 11, 8)
 {
-    if (d.Size () != numData)
-      {
-          opserr <<
-              "PlasticDamageMaterial::PlasticDamageMaterial -- not enough input arguments\n";
-          exit (-1);
-      }
+    if (d.Size() != numData) {
+        opserr <<
+            "PlasticDamageMaterial::PlasticDamageMaterial -- not enough input arguments\n";
+        exit(-1);
+    }
 
     for (int i = 0; i < numData; i++)
-        data[i] = d (i);
+        data[i] = d(i);
 
     tangentP = data[0];
     tangent = tangentP;
 }
 
-PlasticDamageMaterial::PlasticDamageMaterial (void):
-FedeasMaterial (0, MAT_TAG_PlasticDamage, 11, 8)
+PlasticDamageMaterial::PlasticDamageMaterial(void):FedeasMaterial(0,
+                                                                  MAT_TAG_PlasticDamage,
+                                                                  11, 8)
 {
     // Does nothing
 }
 
-PlasticDamageMaterial::~PlasticDamageMaterial (void)
+PlasticDamageMaterial::~PlasticDamageMaterial(void)
 {
     // Does nothing
 }
 
-UniaxialMaterial *
-PlasticDamageMaterial::getCopy (void)
+UniaxialMaterial *PlasticDamageMaterial::getCopy(void)
 {
-    Vector d (data, numData);
+    Vector d(data, numData);
 
     PlasticDamageMaterial *theCopy =
-        new PlasticDamageMaterial (this->getTag (), d);
+        new PlasticDamageMaterial(this->getTag(), d);
 
     // Copy history variables
     for (int i = 0; i < 2 * numHstv; i++)
@@ -105,8 +104,7 @@ PlasticDamageMaterial::getCopy (void)
     return theCopy;
 }
 
-double
-PlasticDamageMaterial::getInitialTangent (void)
+double PlasticDamageMaterial::getInitialTangent(void)
 {
     //return E;
     return data[0];
@@ -115,9 +113,9 @@ PlasticDamageMaterial::getInitialTangent (void)
 
 #ifdef _WIN32
 
-extern "C" int pd_ (double *matpar, double *hstvP, double *hstv,
-                    double *strainP, double *stressP, double *dStrain,
-                    double *tangent, double *stress, int *ist);
+extern "C" int pd_(double *matpar, double *hstvP, double *hstv,
+                   double *strainP, double *stressP, double *dStrain,
+                   double *tangent, double *stress, int *ist);
 
 // Add more declarations as needed
 
@@ -125,23 +123,22 @@ extern "C" int pd_ (double *matpar, double *hstvP, double *hstv,
 
 #else
 
-extern "C" int pd_ (double *matpar, double *hstvP, double *hstv,
-                    double *strainP, double *stressP, double *dStrain,
-                    double *tangent, double *stress, int *ist);
+extern "C" int pd_(double *matpar, double *hstvP, double *hstv,
+                   double *strainP, double *stressP, double *dStrain,
+                   double *tangent, double *stress, int *ist);
 
 // Add more declarations as needed
 
 #endif
 
 
-int
-PlasticDamageMaterial::invokeSubroutine (int ist)
+int PlasticDamageMaterial::invokeSubroutine(int ist)
 {
     // Compute strain increment
     double dEpsilon = epsilon - epsilonP;
 
-    pd_ (data, hstv, &hstv[numHstv], &epsilonP, &sigmaP, &dEpsilon, &sigma,
-         &tangent, &ist);
+    pd_(data, hstv, &hstv[numHstv], &epsilonP, &sigmaP, &dEpsilon, &sigma,
+        &tangent, &ist);
 
 
     return 0;

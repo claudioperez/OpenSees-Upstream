@@ -44,36 +44,32 @@
 // PartitionedDomainSubIter(PartitionedDomainain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-PartitionedDomainSubIter::PartitionedDomainSubIter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+PartitionedDomainSubIter::PartitionedDomainSubIter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 
 }
 
 
-PartitionedDomainSubIter::~PartitionedDomainSubIter ()
+PartitionedDomainSubIter::~PartitionedDomainSubIter()
 {
 }
 
 void
-PartitionedDomainSubIter::reset (void)
+ PartitionedDomainSubIter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-Subdomain *
-PartitionedDomainSubIter::operator () (void)
-{
+Subdomain *PartitionedDomainSubIter::operator () (void) {
     // check if we still have Subdomains in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          Subdomain *result = (Subdomain *) theComponent;
-          return result;
-      }
+    else {
+        Subdomain *result = (Subdomain *) theComponent;
+        return result;
+    }
 }

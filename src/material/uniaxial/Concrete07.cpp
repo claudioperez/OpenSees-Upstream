@@ -40,95 +40,83 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_Concrete07 ()
+void *OPS_Concrete07()
 {
-    int numdata = OPS_GetNumRemainingInputArgs ();
-    if (numdata < 9)
-      {
-          opserr << "WARNING: Insufficient arguments\n";
-          opserr << "Want: uniaxialMaterial Concrete07 tag? ";
-          opserr << "fpc? epsc0? Ec? fpt? epst0? xcrp? xcrn? r?\n";
-          return 0;
-      }
+    int numdata = OPS_GetNumRemainingInputArgs();
+    if (numdata < 9) {
+        opserr << "WARNING: Insufficient arguments\n";
+        opserr << "Want: uniaxialMaterial Concrete07 tag? ";
+        opserr << "fpc? epsc0? Ec? fpt? epst0? xcrp? xcrn? r?\n";
+        return 0;
+    }
 
     int tag;
     numdata = 1;
-    if (OPS_GetIntInput (&numdata, &tag) < 0)
-      {
-          opserr << "WARNING invalid tag\n";
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, &tag) < 0) {
+        opserr << "WARNING invalid tag\n";
+        return 0;
+    }
 
     double data[8];
     numdata = 8;
-    if (OPS_GetDoubleInput (&numdata, data))
-      {
-          opserr << "WARNING invalid double data\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data)) {
+        opserr << "WARNING invalid double data\n";
+        return 0;
+    }
 
     UniaxialMaterial *mat =
-        new Concrete07 (tag, data[0], data[1], data[2], data[3], data[4],
-                        data[5], data[6], data[7]);
-    if (mat == 0)
-      {
-          opserr << "WARNING: failed to create Concrete07 material\n";
-          return 0;
-      }
+        new Concrete07(tag, data[0], data[1], data[2], data[3], data[4],
+                       data[5], data[6], data[7]);
+    if (mat == 0) {
+        opserr << "WARNING: failed to create Concrete07 material\n";
+        return 0;
+    }
 
     return mat;
 }
 #endif
 
-Concrete07::Concrete07 (int tag, double FPC, double EPSC0, double EC,
-                        double FPT, double EPST0, double XCRP, double XCRN,
-                        double R):
-UniaxialMaterial (tag, MAT_TAG_Concrete07),
-fpc (FPC),
-epsc0 (EPSC0),
-Ec (EC),
-fpt (FPT),
-epst0 (EPST0),
-xcrp (XCRP),
-xcrn (XCRN),
-r (R)
+Concrete07::Concrete07(int tag, double FPC, double EPSC0, double EC,
+                       double FPT, double EPST0, double XCRP, double XCRN,
+                       double R):UniaxialMaterial(tag, MAT_TAG_Concrete07),
+fpc(FPC),
+epsc0(EPSC0), Ec(EC), fpt(FPT), epst0(EPST0), xcrp(XCRP), xcrn(XCRN), r(R)
 {
 
     // Calculate the variables that are needed to define the envelopw
     nn = (Ec * epsc0) / fpc;
     np = (Ec * epst0) / fpt;
 
-    double y (0), z (0);
+    double y(0), z(0);
 
-    calculateYandZ (xcrn, y, z, nn);
+    calculateYandZ(xcrn, y, z, nn);
 
     xsp = xcrn - y / (nn * z);
 
-    calculateYandZ (xcrp, y, z, np);
+    calculateYandZ(xcrp, y, z, np);
 
     xcrk = xcrp - y / (np * z);
 
     e0 = 0;
 
     // Set all history and state variables to initial values
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-Concrete07::Concrete07 ():UniaxialMaterial (0, MAT_TAG_Concrete07)
+Concrete07::Concrete07():UniaxialMaterial(0, MAT_TAG_Concrete07)
 {
     opserr <<
         "WARNING: Reguire input of tag, fpc, epsc0, Ec, fpt, epst0, xcrp, xcrn, deltaFcu, r\n";
 }
 
-Concrete07::~Concrete07 ()
+Concrete07::~Concrete07()
 {
     // No dynamic variables are used so a destructor is not required.
 }
 
 
 int
-Concrete07::setTrialStrain (double strain, double strainRate)
+ Concrete07::setTrialStrain(double strain, double strainRate)
 {
     // Reset History variables to last converged state
     TminStrain = CminStrain;
@@ -151,14 +139,13 @@ Concrete07::setTrialStrain (double strain, double strainRate)
     double dStrain = strain - Cstrain;
 
     // Calculate the trial state given the trial strain
-    determineTrialState (dStrain);
+    determineTrialState(dStrain);
 
     return 0;
 }
 
-int
-Concrete07::setTrial (double strain, double &stress, double &tangent,
-                      double strainRate)
+int Concrete07::setTrial(double strain, double &stress, double &tangent,
+                         double strainRate)
 {
     // Reset History variables to last converged state
     TminStrain = CminStrain;
@@ -182,7 +169,7 @@ Concrete07::setTrial (double strain, double &stress, double &tangent,
     double dStrain = strain - Cstrain;
 
     // Calculate the trial state given the trial strain
-    determineTrialState (dStrain);
+    determineTrialState(dStrain);
 
     stress = Tstress;
     tangent = Ttangent;
@@ -190,27 +177,25 @@ Concrete07::setTrial (double strain, double &stress, double &tangent,
     return 0;
 }
 
-void
-Concrete07::calculateYandZ (double x, double &y, double &z, double n)
+void Concrete07::calculateYandZ(double x, double &y, double &z, double n)
 {
     double D;
     if (r == 1)
-        D = 1 + (n - 1 + log (x)) * x;
+        D = 1 + (n - 1 + log(x)) * x;
     else
-        D = 1 + (n - r / (r - 1)) * x + pow (x, r) / (r - 1);
+        D = 1 + (n - r / (r - 1)) * x + pow(x, r) / (r - 1);
 
     y = n * x / D;
-    z = (1 - pow (x, r)) / (pow (D, 2));
+    z = (1 - pow(x, r)) / (pow(D, 2));
 
     return;
 }
 
 
-void
-Concrete07::calculateStressTransition (double &fc, double &Et, double ec,
-                                       double eI, double fI, double EI,
-                                       double eF, double fF, double EF,
-                                       int rule)
+void Concrete07::calculateStressTransition(double &fc, double &Et,
+                                           double ec, double eI, double fI,
+                                           double EI, double eF, double fF,
+                                           double EF, int rule)
 {
     double er, ea, eb, fa, fb;
     int dir;
@@ -227,88 +212,77 @@ Concrete07::calculateStressTransition (double &fc, double &Et, double ec,
 
     // Determine if the strain is above or below the breakpoint and calculate the stress and stiffness accordingly
 
-    if (eI < eF)
-      {
-          dir = 1;
+    if (eI < eF) {
+        dir = 1;
 
-          // Check to ensure that point R is between our two strains.
-          if (er >= eF)
-            {
-                Et = fabs ((fF - fI) / (eF - eI));
-                fc = Et * (ec - eI) + fI;
+        // Check to ensure that point R is between our two strains.
+        if (er >= eF) {
+            Et = fabs((fF - fI) / (eF - eI));
+            fc = Et * (ec - eI) + fI;
 
-                return;
-            }
-      }
+            return;
+        }
+    }
 
-    else
-      {
-          dir = 2;
-          // Check to ensure that point R is between our two strains.
-          if (eF >= er)
-            {
-                Et = fabs ((fF - fI) / (eF - eI));
-                fc = Et * (ec - eI) + fI;
+    else {
+        dir = 2;
+        // Check to ensure that point R is between our two strains.
+        if (eF >= er) {
+            Et = fabs((fF - fI) / (eF - eI));
+            fc = Et * (ec - eI) + fI;
 
-                return;
-            }
-      }
+            return;
+        }
+    }
 
-    switch (dir)
-      {
-      case 1:
-          if (ec <= ea)
-            {
-                fc = EI * (ec - eI) + fI;
-                Et = EI;
-            }
+    switch (dir) {
+    case 1:
+        if (ec <= ea) {
+            fc = EI * (ec - eI) + fI;
+            Et = EI;
+        }
 
-          else if (ec <= eb)
-            {
-                Et = (fb - fa) / (eb - ea);
-                fc = Et * (ec - ea) + fa;
-            }
+        else if (ec <= eb) {
+            Et = (fb - fa) / (eb - ea);
+            fc = Et * (ec - ea) + fa;
+        }
 
-          else
-            {
-                fc = EF * (ec - eF) + fF;
-                Et = EF;
-            }
+        else {
+            fc = EF * (ec - eF) + fF;
+            Et = EF;
+        }
 
-          break;
+        break;
 
-      case 2:
-          if (ec >= ea)
-            {
-                fc = EI * (ec - eI) + fI;
-                Et = EI;
-            }
+    case 2:
+        if (ec >= ea) {
+            fc = EI * (ec - eI) + fI;
+            Et = EI;
+        }
 
-          else if (ec >= eb)
-            {
-                Et = (fb - fa) / (eb - ea);
-                fc = Et * (ec - ea) + fa;
-            }
+        else if (ec >= eb) {
+            Et = (fb - fa) / (eb - ea);
+            fc = Et * (ec - ea) + fa;
+        }
 
-          else
-            {
-                fc = EF * (ec - eF) + fF;
-                Et = EF;
-            }
+        else {
+            fc = EF * (ec - eF) + fF;
+            Et = EF;
+        }
 
-          break;
-      }
+        break;
+    }
 
     return;
 }
 
 
-void
-Concrete07::calculate13Stress (double &fc, double &Et, double ec, double eI,
-                               double eF, double fF, double EF)
+void Concrete07::calculate13Stress(double &fc, double &Et, double ec,
+                                   double eI, double eF, double fF,
+                                   double EF)
 {
     double A;                   // Equation parameter
-    double R (0);               // Equation Parameter
+    double R(0);                // Equation Parameter
     double ESEC;                // Secant Modulus
     double fI = 0;              // Initial Stress
     double EI = 0;              // Youngs Modulus
@@ -318,102 +292,90 @@ Concrete07::calculate13Stress (double &fc, double &Et, double ec, double eI,
     if (EI / ESEC >= 0.985 && EI / ESEC < 1.015)
         R = 0;
     else
-        R = fabs ((EF - ESEC) / (ESEC - EI));
-    if (R > 100)
-      {
-          calculateStressTransition (fc, Et, ec, eI, 0.0, 0.25 * ESEC, eF, fF,
-                                     EF, 666);
+        R = fabs((EF - ESEC) / (ESEC - EI));
+    if (R > 100) {
+        calculateStressTransition(fc, Et, ec, eI, 0.0, 0.25 * ESEC, eF, fF,
+                                  EF, 666);
 
-          return;
-      }
+        return;
+    }
 
     if (eF / eI > 0.9999 && eF / eI < 1.0001)
         R = 0;
 
-    A = (ESEC - EI) / pow (fabs (eF - eI), R);
+    A = (ESEC - EI) / pow(fabs(eF - eI), R);
 
-    if (A > pow (10.0, 300.0))
-      {
-          calculateStressTransition (fc, Et, ec, eI, 0.0, 0.25 * ESEC, eF, fF,
-                                     EF, 666);
+    if (A > pow(10.0, 300.0)) {
+        calculateStressTransition(fc, Et, ec, eI, 0.0, 0.25 * ESEC, eF, fF,
+                                  EF, 666);
 
-          return;
-      }
+        return;
+    }
 
 
-    fc = fI + (ec - eI) * (EI + A * (pow (fabs (ec - eI), R)));
-    Et = EI + A * (R + 1) * pow (fabs (ec - eI), R);
+    fc = fI + (ec - eI) * (EI + A * (pow(fabs(ec - eI), R)));
+    Et = EI + A * (R + 1) * pow(fabs(ec - eI), R);
 
     return;
 }
 
-void
-Concrete07::envelope (double x, double &fc, double &Et, int flag)
+void Concrete07::envelope(double x, double &fc, double &Et, int flag)
 {
     double y, z;
 
-    if (flag >= 0)
-      {
+    if (flag >= 0) {
 
-          if (x < xcrp)
-            {
-                calculateYandZ (x, y, z, np);
+        if (x < xcrp) {
+            calculateYandZ(x, y, z, np);
 
-                fc = fpt * y;
-                Et = Ec * z;
-                Trule = 2;
-            }
+            fc = fpt * y;
+            Et = Ec * z;
+            Trule = 2;
+        }
 
-          else if (x <= xcrk)
-            {
-                calculateYandZ (xcrp, y, z, np);
+        else if (x <= xcrk) {
+            calculateYandZ(xcrp, y, z, np);
 
-                fc = fpt * (y + np * z * (x - xcrp));
-                Et = Ec * z;
-                Trule = 2;
-            }
+            fc = fpt * (y + np * z * (x - xcrp));
+            Et = Ec * z;
+            Trule = 2;
+        }
 
-          else
-            {
-                fc = 0.0;
-                Et = 0.0;
-                Trule = 6;
-            }
-      }
+        else {
+            fc = 0.0;
+            Et = 0.0;
+            Trule = 6;
+        }
+    }
 
-    else
-      {
-          if (x < xcrn)
-            {
-                calculateYandZ (x, y, z, nn);
+    else {
+        if (x < xcrn) {
+            calculateYandZ(x, y, z, nn);
 
-                fc = fpc * y;
-                Et = Ec * z;
-                Trule = 1;
-            }
+            fc = fpc * y;
+            Et = Ec * z;
+            Trule = 1;
+        }
 
-          else if (x <= xsp)
-            {
-                calculateYandZ (xcrn, y, z, nn);
+        else if (x <= xsp) {
+            calculateYandZ(xcrn, y, z, nn);
 
-                fc = fpc * (y + nn * z * (x - xcrn));
-                Et = Ec * z;
-                Trule = 1;
-            }
+            fc = fpc * (y + nn * z * (x - xcrn));
+            Et = Ec * z;
+            Trule = 1;
+        }
 
-          else
-            {
-                fc = 0.0;
-                Et = 0.0;
-                Trule = 5;
-            }
-      }
+        else {
+            fc = 0.0;
+            Et = 0.0;
+            Trule = 5;
+        }
+    }
 
     return;
 }
 
-void
-Concrete07::determineTrialState (double dStrain)
+void Concrete07::determineTrialState(double dStrain)
 {
     double eunn;                // unloading strain from the compression envelope
     double funn;                // unloading stress from the compression envelope 
@@ -436,22 +398,19 @@ Concrete07::determineTrialState (double dStrain)
     e0 = 0.0;
 
     //if (fabs((eunp-e0)/epst0)<(eunn/epsc0))
-    if (eunp == 0 && eunn / epsc0 <= xsp)
-      {
-          int ruleStore = Trule;
-          double Edum;
-          eunp = eunn / epsc0 * epst0;
-          envelope (eunp / epst0, funp, Edum, 1);
-          Trule = ruleStore;
-          TmaxStrain = eunp;
-          TmaxStress = funp;
-      }
-    else if (eunn / epsc0 > xsp)
+    if (eunp == 0 && eunn / epsc0 <= xsp) {
+        int ruleStore = Trule;
+        double Edum;
+        eunp = eunn / epsc0 * epst0;
+        envelope(eunp / epst0, funp, Edum, 1);
+        Trule = ruleStore;
+        TmaxStrain = eunp;
+        TmaxStress = funp;
+    } else if (eunn / epsc0 > xsp)
         Tcracked = true;
-    else
-      {
-          funp = TmaxStress;
-      }
+    else {
+        funp = TmaxStress;
+    }
 
     Esecp =
         Ec * ((funp / (Ec * epst0) + 0.67) / ((eunp - e0) / epst0 + 0.67));
@@ -461,1298 +420,1206 @@ Concrete07::determineTrialState (double dStrain)
 
     // Calculate x for the given strain;
 
-    if (Tstrain >= 0.0)
-      {
-          x = fabs ((Tstrain - e0) / epst0);
-          if (x > xcrk)
-              Tcracked = true;
-      }
+    if (Tstrain >= 0.0) {
+        x = fabs((Tstrain - e0) / epst0);
+        if (x > xcrk)
+            Tcracked = true;
+    }
 
-    else
-      {
-          x = Tstrain / epsc0;
-      }
+    else {
+        x = Tstrain / epsc0;
+    }
 
-    if (fabs (dStrain) <= DBL_EPSILON)  // ignore trivial strain change
-      {
-          Tstress = Cstress;
-          return;
-      }
+    if (fabs(dStrain) <= DBL_EPSILON)   // ignore trivial strain change
+    {
+        Tstress = Cstress;
+        return;
+    }
 
-    if (Tloading == 0)
-      {
-          if (Tstrain >= 0)
-            {
+    if (Tloading == 0) {
+        if (Tstrain >= 0) {
 
-                envelope (x, Tstress, Ttangent, 1);
+            envelope(x, Tstress, Ttangent, 1);
 
-                Tloading = -1;
+            Tloading = -1;
 
-                TmaxStrain = Tstrain;
-                TmaxStress = Tstress;
+            TmaxStrain = Tstrain;
+            TmaxStress = Tstress;
 
-            }
+        }
 
-          else
-            {
-                envelope (x, Tstress, Ttangent, -1);
+        else {
+            envelope(x, Tstress, Ttangent, -1);
 
-                Tloading = 1;
+            Tloading = 1;
+
+            TminStrain = Tstrain;
+            TminStress = Tstress;
+
+        }
+
+        return;
+    }
+
+    if (Tloading > 0)           // Previously loading the concrete fibers
+    {
+        if (dStrain < 0.0)      // Continue loading the concrete (compression)
+        {
+            if (Tstrain <= eunn) {
+
+                envelope(x, Tstress, Ttangent, -1);
 
                 TminStrain = Tstrain;
                 TminStress = Tstress;
 
+                return;
             }
 
-          return;
-      }
+            else if (Tstrain < eplp && !Tcracked) {
+                if (Trule == 71)        // we are on the transition curve for reloading from a partial unloading in compression
+                {
+                    double eron;        // strain at which reversal occurred in a partial unloading
+                    double fron;        // stress at which reversal occurred in a partial unloading
 
-    if (Tloading > 0)           // Previously loading the concrete fibers
-      {
-          if (dStrain < 0.0)    // Continue loading the concrete (compression)
+                    eron = TReloadStrain;
+                    fron = TReloadStress;
+
+                    Ttangent = (funn - fron) / (eunn - eron);
+                    Tstress = Ttangent * (Tstrain - eron) + fron;
+
+                    Trule = 71;
+
+                    return;
+                }
+
+                else if (Trule == 11)   // we are on the transition curve for parital reloading after a partial unloading
+                {
+                    double er = TReloadStrain;  // strain when reversal occurred.
+                    double fr = TReloadStress;  // stress when reversal occurred.
+                    double Eplp;        // Modulus at plastic point in tension
+                    double fb;  // target stress on rule 10
+                    double eb;  // target strain on rule 10;
+                    double Eb;  // slope at target point (eb,fb)
+                    double Enewn;       // reloading stiffness in compression;
+
+                    Eplp =
+                        Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                    Enewn = funn / (eunn - epln);;
+                    eb = eunn - (er - epln) / (eunp - epln) * (eunn -
+                                                               eplp);
+
+                    if (Tstrain > eb)   // are we still on the transition curve
+                    {
+
+                        calculateStressTransition(fb, Eb, eb, eplp,
+                                                  0.0, Eplp, eunn,
+                                                  funn, Enewn, 10);
+
+                        Ttangent = (fb - fr) / (eb - er);
+                        Tstress = Ttangent * (Tstrain - er) + fr;
+
+                        Trule = 11;
+
+                        return;
+                    }
+
+                    else        // we are back on the connecting curve;
+                    {
+                        calculateStressTransition(Tstress,
+                                                  Ttangent,
+                                                  Tstrain, eplp,
+                                                  0.0, Eplp, eunn,
+                                                  funn, Enewn, 10);
+
+                        Trule = 10;
+
+                        return;
+                    }
+                }
+
+
+                else            // we are reloading from a complete unloading
+                {
+                    double Enewn;       // reloading stiffness in compression;
+                    double Eplp;        // Modulus at plastic point in tension
+
+                    if (eunn == 0 && funn == 0) {
+                        double Edum;
+                        eunn = -0.00002;
+                        envelope(eunn / epsc0, funn, Edum, -1);
+                        TminStrain = eunn;
+                        TminStress = funn;
+                        Esecn =
+                            Ec * ((funn / (Ec * epsc0) + 0.57) /
+                                  (eunn / epsc0 + 0.57));
+                        epln = eunn - funn / Esecn;
+                    }
+
+                    Enewn = funn / (eunn - epln);
+                    Eplp =
+                        Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eplp, 0.0,
+                                              Eplp, eunn, funn, Enewn, 10);
+
+                    Trule = 10;
+
+                    return;
+                }
+            }
+
+            else if (!Tcracked) // We are reloading in the tension side
             {
-                if (Tstrain <= eunn)
-                  {
-
-                      envelope (x, Tstress, Ttangent, -1);
-
-                      TminStrain = Tstrain;
-                      TminStress = Tstress;
-
-                      return;
-                  }
-
-                else if (Tstrain < eplp && !Tcracked)
-                  {
-                      if (Trule == 71)  // we are on the transition curve for reloading from a partial unloading in compression
-                        {
-                            double eron;        // strain at which reversal occurred in a partial unloading
-                            double fron;        // stress at which reversal occurred in a partial unloading
-
-                            eron = TReloadStrain;
-                            fron = TReloadStress;
-
-                            Ttangent = (funn - fron) / (eunn - eron);
-                            Tstress = Ttangent * (Tstrain - eron) + fron;
-
-                            Trule = 71;
-
-                            return;
-                        }
-
-                      else if (Trule == 11)     // we are on the transition curve for parital reloading after a partial unloading
-                        {
-                            double er = TReloadStrain;  // strain when reversal occurred.
-                            double fr = TReloadStress;  // stress when reversal occurred.
-                            double Eplp;        // Modulus at plastic point in tension
-                            double fb;  // target stress on rule 10
-                            double eb;  // target strain on rule 10;
-                            double Eb;  // slope at target point (eb,fb)
-                            double Enewn;       // reloading stiffness in compression;
-
-                            Eplp =
-                                Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) +
-                                      1.00);
-                            Enewn = funn / (eunn - epln);;
-                            eb = eunn - (er - epln) / (eunp - epln) * (eunn -
-                                                                       eplp);
-
-                            if (Tstrain > eb)   // are we still on the transition curve
-                              {
-
-                                  calculateStressTransition (fb, Eb, eb, eplp,
-                                                             0.0, Eplp, eunn,
-                                                             funn, Enewn, 10);
-
-                                  Ttangent = (fb - fr) / (eb - er);
-                                  Tstress = Ttangent * (Tstrain - er) + fr;
-
-                                  Trule = 11;
-
-                                  return;
-                              }
-
-                            else        // we are back on the connecting curve;
-                              {
-                                  calculateStressTransition (Tstress,
-                                                             Ttangent,
-                                                             Tstrain, eplp,
-                                                             0.0, Eplp, eunn,
-                                                             funn, Enewn, 10);
-
-                                  Trule = 10;
-
-                                  return;
-                              }
-                        }
-
-
-                      else      // we are reloading from a complete unloading
-                        {
-                            double Enewn;       // reloading stiffness in compression;
-                            double Eplp;        // Modulus at plastic point in tension
-
-                            if (eunn == 0 && funn == 0)
-                              {
-                                  double Edum;
-                                  eunn = -0.00002;
-                                  envelope (eunn / epsc0, funn, Edum, -1);
-                                  TminStrain = eunn;
-                                  TminStress = funn;
-                                  Esecn =
-                                      Ec * ((funn / (Ec * epsc0) + 0.57) /
-                                            (eunn / epsc0 + 0.57));
-                                  epln = eunn - funn / Esecn;
-                              }
-
-                            Enewn = funn / (eunn - epln);
-                            Eplp =
-                                Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) +
-                                      1.00);
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eplp, 0.0,
-                                                       Eplp, eunn, funn,
-                                                       Enewn, 10);
-
-                            Trule = 10;
-
-                            return;
-                        }
-                  }
+                if (Trule == 4) {
+                    double Eplp;        // Modulus at plastic point in tension
 
-                else if (!Tcracked)     // We are reloading in the tension side
-                  {
-                      if (Trule == 4)
-                        {
-                            double Eplp;        // Modulus at plastic point in tension
-
-                            Eplp =
-                                Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) +
-                                      1.00);
-
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eunp, funp,
-                                                       Ec, eplp, 0.0, Eplp,
-                                                       4);
-
-                            Trule = 4;
-
-                            return;
-                        }
+                    Eplp =
+                        Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
 
-                      else if (Trule == 811 && Tstrain > TUnloadStrain)
-                        {
-                            double Enewps;      // stiffness at strain reloading from tension envelope after unloading
-                            double erop;        // strain at last reversal;
-                            double frop;        // stress at last reversal;
-
-                            erop = TUnloadStrain;
-                            frop = TUnloadStress;
-                            Enewps = (funp - frop) / (eunp - erop);
-
-                            Ttangent = Enewps;
-                            Tstress = Ttangent * (Tstrain - erop) + frop;
-
-                            Trule = 811;
-
-                            return;
-                        }
-
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eunp, funp,
+                                              Ec, eplp, 0.0, Eplp, 4);
 
-                      else if (Trule == 11)
-                        {
-                            double er = TReloadStrain;  // strain when reversal occurred.
-                            double fr = TReloadStress;  // stress when reversal occurred.
-                            double Eplp;        // Modulus at plastic point in tension
-                            double fb;  // target stress on rule 10
-                            double eb;  // target strain on rule 10;
-                            double Eb;  // slope at target point (eb,fb)
-                            double Enewn;       // reloading stiffness in compression;
-
-                            Eplp =
-                                Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) +
-                                      1.00);
-                            Enewn = funn / (eunn - epln);;
-                            eb = eunn - (er - epln) / (eunp - epln) * (eunn -
-                                                                       eplp);
+                    Trule = 4;
 
-                            if (Tstrain > eb)   // are we still on the transition curve
-                              {
+                    return;
+                }
 
-                                  calculateStressTransition (fb, Eb, eb, eplp,
-                                                             0.0, Eplp, eunn,
-                                                             funn, Enewn, 10);
-
-                                  Ttangent = (fb - fr) / (eb - er);
-                                  Tstress = Ttangent * (Tstrain - er) + fr;
-
-                                  Trule = 11;
+                else if (Trule == 811 && Tstrain > TUnloadStrain) {
+                    double Enewps;      // stiffness at strain reloading from tension envelope after unloading
+                    double erop;        // strain at last reversal;
+                    double frop;        // stress at last reversal;
 
-                                  return;
-                              }
-
-                            else        // we are back on the connecting curve;
-                              {
-                                  calculateStressTransition (Tstress,
-                                                             Ttangent,
-                                                             Tstrain, eplp,
-                                                             0.0, Eplp, eunn,
-                                                             funn, Enewn, 10);
+                    erop = TUnloadStrain;
+                    frop = TUnloadStress;
+                    Enewps = (funp - frop) / (eunp - erop);
 
-                                  Trule = 10;
+                    Ttangent = Enewps;
+                    Tstress = Ttangent * (Tstrain - erop) + frop;
 
-                                  return;
-                              }
-                        }
-                      else
-                        {
-                            double Eplp;        // Modulus at plastic point in tension
+                    Trule = 811;
 
-                            Eplp =
-                                Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) +
-                                      1.00);
+                    return;
+                }
 
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eunp, funp,
-                                                       Ec, eplp, 0.0, Eplp,
-                                                       4);
 
-                            Trule = 4;
+                else if (Trule == 11) {
+                    double er = TReloadStrain;  // strain when reversal occurred.
+                    double fr = TReloadStress;  // stress when reversal occurred.
+                    double Eplp;        // Modulus at plastic point in tension
+                    double fb;  // target stress on rule 10
+                    double eb;  // target strain on rule 10;
+                    double Eb;  // slope at target point (eb,fb)
+                    double Enewn;       // reloading stiffness in compression;
 
-                            return;
-                        }
-                  }
+                    Eplp =
+                        Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                    Enewn = funn / (eunn - epln);;
+                    eb = eunn - (er - epln) / (eunp - epln) * (eunn -
+                                                               eplp);
 
-                else if (Trule == 71)   // we are on the transition curve for reloading from a partial unloading in compression
-                  {
-                      double eron;      // strain at which reversal occurred in a partial unloading
-                      double fron;      // stress at which reversal occurred in a partial unloading
-                      double Enewns;    // stiffness at strain unloading from compression envelope after reloading
+                    if (Tstrain > eb)   // are we still on the transition curve
+                    {
 
-                      eron = TReloadStrain;
-                      fron = TReloadStress;
-                      Enewns = (funn - fron) / (eunn - eron);
+                        calculateStressTransition(fb, Eb, eb, eplp,
+                                                  0.0, Eplp, eunn,
+                                                  funn, Enewn, 10);
 
-                      Ttangent = Enewns;
-                      Tstress = Ttangent * (Tstrain - eron) + fron;
+                        Ttangent = (fb - fr) / (eb - er);
+                        Tstress = Ttangent * (Tstrain - er) + fr;
 
-                      Trule = 71;
+                        Trule = 11;
 
-                      return;
-                  }
+                        return;
+                    }
 
-                else if (Trule == 15)
-                  {
-                      double ea = T13Strain;    // Strain at unloading on rule 13
-                      double fa = T13Stress;    // Stress at unloading on rule 13
-                      double er = TReloadStrain;        // Strain at last reloading
-                      double fr = TReloadStress;        // Stress at last reloading
+                    else        // we are back on the connecting curve;
+                    {
+                        calculateStressTransition(Tstress,
+                                                  Ttangent,
+                                                  Tstrain, eplp,
+                                                  0.0, Eplp, eunn,
+                                                  funn, Enewn, 10);
 
-                      if (Tstrain > ea)
-                        {
-                            Ttangent = (fa - fr) / (ea - er);
-                            Tstress = Ttangent * (Tstrain - er) + fr;
+                        Trule = 10;
 
-                            Trule = 15;
+                        return;
+                    }
+                } else {
+                    double Eplp;        // Modulus at plastic point in tension
 
-                            return;
-                        }
+                    Eplp =
+                        Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
 
-                      else
-                        {
-                            double Enewn;       // reloading stiffness in compression;
-                            double Edum;
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eunp, funp,
+                                              Ec, eplp, 0.0, Eplp, 4);
 
-                            Enewn = funn / (eunn - epln);
+                    Trule = 4;
 
-                            Edum = (funn) / (eunn - T13Zero);
-                            calculate13Stress (Tstress, Ttangent, Tstrain,
-                                               T13Zero, eunn, funn, Enewn);
-
-                            Trule = 13;
-
-                            return;
-                        }
-                  }
-
-                else            // we are reloading after cracking, require gradual crack closure
-                  {
-                      if (eunn / epsc0 >= xsp)  // See if we have spalled and make a quick return
-                        {
-                            Tstress = 0.0;
-                            Ttangent = 0.0;
-                            Trule = 5;
-                            Tcracked = true;
-
-                            return;
-                        }
-
-                      double er;        // strain at which reloading begins after cracking
-                      double Enewn;     // reloading stiffness in compression;
-                      double Edum;
-
-                      er = T13Zero;
-                      Enewn = funn / (eunn - epln);
-
-                      Edum = (funn) / (eunn - er);
-
-                      calculate13Stress (Tstress, Ttangent, Tstrain, er, eunn,
-                                         funn, Enewn);
-
-                      Trule = 13;
-
-                      return;
-                  }
+                    return;
+                }
             }
 
-          else if (dStrain > 0.0)
+            else if (Trule == 71)       // we are on the transition curve for reloading from a partial unloading in compression
             {
-                // Previously Loading, now unloading, strain has reversed.  Need to determine what rule we are on.
+                double eron;    // strain at which reversal occurred in a partial unloading
+                double fron;    // stress at which reversal occurred in a partial unloading
+                double Enewns;  // stiffness at strain unloading from compression envelope after reloading
 
-                if (Trule == 1)
-                  {
-                      // Reversing from the compression envelop envelope.  We use rule 3
-                      Tloading = -1;    // We are now unloading the concrete
-                      TminStress = Cstress;
-                      TminStrain = Cstrain;
-                      eunn = Cstrain;
-                      funn = Cstress;
+                eron = TReloadStrain;
+                fron = TReloadStress;
+                Enewns = (funn - fron) / (eunn - eron);
 
-                      double Epln;      // Modulus at plastic point in compression
-                      double Enewp;     // reloading stiffness in tension;
+                Ttangent = Enewns;
+                Tstress = Ttangent * (Tstrain - eron) + fron;
 
-                      Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-                      Enewp = funp / (eunp - eplp);
+                Trule = 71;
 
-                      if (Tstrain <= epln)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eunn, funn,
-                                                       Ec, epln, 0.0, Epln,
-                                                       3);
+                return;
+            }
 
-                            Trule = 3;
+            else if (Trule == 15) {
+                double ea = T13Strain;  // Strain at unloading on rule 13
+                double fa = T13Stress;  // Stress at unloading on rule 13
+                double er = TReloadStrain;      // Strain at last reloading
+                double fr = TReloadStress;      // Stress at last reloading
 
-                            return;
-                        }
+                if (Tstrain > ea) {
+                    Ttangent = (fa - fr) / (ea - er);
+                    Tstress = Ttangent * (Tstrain - er) + fr;
 
-                      else if (Tstrain < eunp && !Tcracked)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, epln, 0.0,
-                                                       Epln, eunp, funp,
-                                                       Enewp, 9);
+                    Trule = 15;
 
-                            Trule = 9;
+                    return;
+                }
 
-                            return;
-                        }
+                else {
+                    double Enewn;       // reloading stiffness in compression;
+                    double Edum;
 
-                      else if (!Tcracked)
-                        {
-                            envelope (x, Tstress, Ttangent, 1);
+                    Enewn = funn / (eunn - epln);
 
-                            TmaxStrain = Tstrain;
-                            TmaxStress = Tstress;
+                    Edum = (funn) / (eunn - T13Zero);
+                    calculate13Stress(Tstress, Ttangent, Tstrain,
+                                      T13Zero, eunn, funn, Enewn);
 
-                            return;
-                        }
+                    Trule = 13;
 
-                      else      // The concrete has cracked
-                        {
-                            Tstress = 0.0;
-                            Tstrain = 0.0;
+                    return;
+                }
+            }
 
-                            Trule = 6;
+            else                // we are reloading after cracking, require gradual crack closure
+            {
+                if (eunn / epsc0 >= xsp)        // See if we have spalled and make a quick return
+                {
+                    Tstress = 0.0;
+                    Ttangent = 0.0;
+                    Trule = 5;
+                    Tcracked = true;
 
-                            return;
-                        }
-                  }
+                    return;
+                }
 
-                else if (Trule == 4)
-                  {
-                      // Partial reloading in tension zone
-                      Tloading = -1;
+                double er;      // strain at which reloading begins after cracking
+                double Enewn;   // reloading stiffness in compression;
+                double Edum;
 
-                      double erop = Cstrain;
-                      double frop = Cstress;
+                er = T13Zero;
+                Enewn = funn / (eunn - epln);
 
-                      TUnloadStrain = erop;
-                      TUnloadStress = frop;
+                Edum = (funn) / (eunn - er);
 
-                      if (Tstrain < eunp)       // Are in the transition curve for unloading from partial reloading
-                        {
-                            Ttangent = (funp - frop) / (eunp - erop);
-                            Tstress = Ttangent * (Tstrain - erop) + frop;
+                calculate13Stress(Tstress, Ttangent, Tstrain, er, eunn,
+                                  funn, Enewn);
 
-                            Trule = 81;
+                Trule = 13;
 
-                            return;
-                        }
+                return;
+            }
+        }
 
-                      else      // Back on the tension envelope
-                        {
-                            envelope (x, Tstress, Ttangent, 1);
+        else if (dStrain > 0.0) {
+            // Previously Loading, now unloading, strain has reversed.  Need to determine what rule we are on.
 
-                            TmaxStrain = Tstrain;
-                            TmaxStress = Tstress;
+            if (Trule == 1) {
+                // Reversing from the compression envelop envelope.  We use rule 3
+                Tloading = -1;  // We are now unloading the concrete
+                TminStress = Cstress;
+                TminStrain = Cstrain;
+                eunn = Cstrain;
+                funn = Cstress;
 
-                            return;
-                        }
-                  }
+                double Epln;    // Modulus at plastic point in compression
+                double Enewp;   // reloading stiffness in tension;
 
-                else if (Trule == 811)
-                  {
-                      // Partial reloading in tension zone
-                      Tloading = -1;
+                Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+                Enewp = funp / (eunp - eplp);
 
-                      double erop = TUnloadStrain;
-                      double frop = TUnloadStress;
+                if (Tstrain <= epln) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eunn, funn,
+                                              Ec, epln, 0.0, Epln, 3);
 
-                      if (Tstrain < eunp)       // Are in the transition curve for unloading from partial reloading
-                        {
-                            Ttangent = (funp - frop) / (eunp - erop);
-                            Tstress = Ttangent * (Tstrain - erop) + frop;
+                    Trule = 3;
 
-                            Trule = 81;
+                    return;
+                }
 
-                            return;
-                        }
+                else if (Tstrain < eunp && !Tcracked) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, epln, 0.0,
+                                              Epln, eunp, funp, Enewp, 9);
 
-                      else      // Back on the tension envelope
-                        {
-                            envelope (x, Tstress, Ttangent, 1);
+                    Trule = 9;
 
-                            TmaxStrain = Tstrain;
-                            TmaxStress = Tstress;
+                    return;
+                }
 
-                            return;
-                        }
-                  }
+                else if (!Tcracked) {
+                    envelope(x, Tstress, Ttangent, 1);
 
-                else if (Trule == 71)
-                  {
-                      Tloading = -1;
+                    TmaxStrain = Tstrain;
+                    TmaxStress = Tstress;
 
-                      double er = Cstrain;      // strain when reversal occurred.
-                      double fr = Cstress;      // stress when reversal occurred.
-                      double eron;      // strain at which reversal occurred in a partial unloading
-                      double fron;      // stress at which reversal occurred in a partial unloading
+                    return;
+                }
 
-                      eron = TReloadStrain;
-                      fron = TReloadStress;
+                else            // The concrete has cracked
+                {
+                    Tstress = 0.0;
+                    Tstrain = 0.0;
 
-                      if (Tstrain < eron)
-                        {
-                            Ttangent = (funn - fron) / (eunn - eron);
-                            Tstress = Ttangent * (Tstrain - eron) + fron;
+                    Trule = 6;
 
-                            Trule = 711;
+                    return;
+                }
+            }
 
-                            return;
-                        }
+            else if (Trule == 4) {
+                // Partial reloading in tension zone
+                Tloading = -1;
 
+                double erop = Cstrain;
+                double frop = Cstress;
 
-                      double Epln;      // Modulus at plastic point in compression
-                      double Enewp;     // reloading stiffness in tension;
+                TUnloadStrain = erop;
+                TUnloadStress = frop;
 
-                      Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-                      Enewp = funp / (eunp - eplp);
+                if (Tstrain < eunp)     // Are in the transition curve for unloading from partial reloading
+                {
+                    Ttangent = (funp - frop) / (eunp - erop);
+                    Tstress = Ttangent * (Tstrain - erop) + frop;
 
-                      if (Tstrain <= epln)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eunn, funn,
-                                                       Ec, epln, 0.0, Epln,
-                                                       3);
+                    Trule = 81;
 
-                            Trule = 3;
+                    return;
+                }
 
-                            return;
-                        }
+                else            // Back on the tension envelope
+                {
+                    envelope(x, Tstress, Ttangent, 1);
 
-                      else if (Tstrain < eunp && !Tcracked)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, epln, 0.0,
-                                                       Epln, eunp, funp,
-                                                       Enewp, 9);
+                    TmaxStrain = Tstrain;
+                    TmaxStress = Tstress;
 
-                            Trule = 9;
+                    return;
+                }
+            }
 
-                            return;
-                        }
+            else if (Trule == 811) {
+                // Partial reloading in tension zone
+                Tloading = -1;
 
-                      else if (!Tcracked)
-                        {
-                            envelope (x, Tstress, Ttangent, 1);
+                double erop = TUnloadStrain;
+                double frop = TUnloadStress;
 
-                            TmaxStrain = Tstrain;
-                            TmaxStress = Tstress;
+                if (Tstrain < eunp)     // Are in the transition curve for unloading from partial reloading
+                {
+                    Ttangent = (funp - frop) / (eunp - erop);
+                    Tstress = Ttangent * (Tstrain - erop) + frop;
 
-                            return;
-                        }
+                    Trule = 81;
 
-                      else      // The concrete has cracked
-                        {
-                            Tstress = 0.0;
-                            Tstrain = 0.0;
+                    return;
+                }
 
-                            Trule = 6;
+                else            // Back on the tension envelope
+                {
+                    envelope(x, Tstress, Ttangent, 1);
 
-                            return;
-                        }
-                  }
+                    TmaxStrain = Tstrain;
+                    TmaxStress = Tstress;
 
-                else if (Trule == 10 || Trule == 11)
-                  {
-                      // Partial reloading in compression zone
-                      Tloading = -1;
+                    return;
+                }
+            }
 
-                      double er = Cstrain;      // strain when reversal occurred.
-                      double fr = Cstress;      // stress when reversal occurred.
-                      double Eplp;      // Modulus at plastic point in tension
-                      double Epln;      // Modulus at plastic point in compression
-                      double fa;        // target stress on rule 9
-                      double ea;        // target strain on rule 9;
-                      double Ea;        // slope at target point (ea,fa)
-                      double Enewp;     // reloading stiffness in tension;
+            else if (Trule == 71) {
+                Tloading = -1;
 
-                      TUnloadStrain = er;
-                      TUnloadStress = fr;
-                      TUnloadStiffness = Ctangent;
-                      Eplp =
-                          Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) + 1.00);
-                      Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-                      Enewp = funp / (eunp - eplp);
-                      ea = (eunn - er) / (eunn - eplp) * (eunp - epln) + epln;
+                double er = Cstrain;    // strain when reversal occurred.
+                double fr = Cstress;    // stress when reversal occurred.
+                double eron;    // strain at which reversal occurred in a partial unloading
+                double fron;    // stress at which reversal occurred in a partial unloading
 
-                      if (Tstrain < ea) // On the transition curve 
-                        {
-                            calculateStressTransition (fa, Ea, ea, epln, 0.0,
-                                                       Epln, eunp, funp,
-                                                       Enewp, 9);
+                eron = TReloadStrain;
+                fron = TReloadStress;
 
-                            //calculateStressTransition(Tstress, Ttangent, Tstrain, er, fr, Ec, ea, fa, Ea);
+                if (Tstrain < eron) {
+                    Ttangent = (funn - fron) / (eunn - eron);
+                    Tstress = Ttangent * (Tstrain - eron) + fron;
 
-                            Ttangent = (fa - fr) / (ea - er);
-                            Tstress = Ttangent * (Tstrain - er) + fr;
+                    Trule = 711;
 
-                            Trule = 12;
+                    return;
+                }
 
-                            return;
-                        }
 
-                      else if (Tstrain < eunp)  // On the connecting curve for unloadinf
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, epln, 0.0,
-                                                       Epln, eunp, funp,
-                                                       Enewp, 9);
+                double Epln;    // Modulus at plastic point in compression
+                double Enewp;   // reloading stiffness in tension;
 
-                            Trule = 9;
+                Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+                Enewp = funp / (eunp - eplp);
 
-                            return;
-                        }
+                if (Tstrain <= epln) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eunn, funn,
+                                              Ec, epln, 0.0, Epln, 3);
 
-                      else      // On the tension envelope
-                        {
-                            envelope (x, Tstress, Ttangent, 1);
+                    Trule = 3;
 
-                            TmaxStrain = Tstrain;
-                            TmaxStress = Tstress;
+                    return;
+                }
 
-                            return;
-                        }
+                else if (Tstrain < eunp && !Tcracked) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, epln, 0.0,
+                                              Epln, eunp, funp, Enewp, 9);
 
-                  }
+                    Trule = 9;
 
-                else            // Unloading after cracking of the concrete has occurred.
-                  {
+                    return;
+                }
 
-                      Tloading = -1;
+                else if (!Tcracked) {
+                    envelope(x, Tstress, Ttangent, 1);
 
-                      if (Trule == 5)
-                        {
-                            Tstress = 0.0;
-                            Ttangent = 0.0;
-                            Tcracked = true;
+                    TmaxStrain = Tstrain;
+                    TmaxStress = Tstress;
 
-                            Trule = 6;
+                    return;
+                }
 
-                            return;
-                        }
+                else            // The concrete has cracked
+                {
+                    Tstress = 0.0;
+                    Tstrain = 0.0;
 
+                    Trule = 6;
 
-                      double er = Cstrain;      // strain when reversal occurred.
-                      double fr = Cstress;      // stress when reversal occurred.
-                      TUnloadStiffness = Ctangent;
-                      TUnloadStrain = er;
-                      TUnloadStress = fr;
-                      double eb = er - fr / Esecn;
+                    return;
+                }
+            }
 
-                      if (Tstrain < eb) // Going down to rule 6;
-                        {
-                            if (Trule == 13)
-                              {
-                                  T13Strain = er;
-                                  T13Stress = fr;
-                              }
+            else if (Trule == 10 || Trule == 11) {
+                // Partial reloading in compression zone
+                Tloading = -1;
 
-                            Ttangent = (0.0 - fr) / (eb - er);
-                            Tstress = Ttangent * (Tstrain - er) + fr;
+                double er = Cstrain;    // strain when reversal occurred.
+                double fr = Cstress;    // stress when reversal occurred.
+                double Eplp;    // Modulus at plastic point in tension
+                double Epln;    // Modulus at plastic point in compression
+                double fa;      // target stress on rule 9
+                double ea;      // target strain on rule 9;
+                double Ea;      // slope at target point (ea,fa)
+                double Enewp;   // reloading stiffness in tension;
 
-                            Trule = 14;
+                TUnloadStrain = er;
+                TUnloadStress = fr;
+                TUnloadStiffness = Ctangent;
+                Eplp = Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+                Enewp = funp / (eunp - eplp);
+                ea = (eunn - er) / (eunn - eplp) * (eunp - epln) + epln;
 
-                            return;
-                        }
+                if (Tstrain < ea)       // On the transition curve 
+                {
+                    calculateStressTransition(fa, Ea, ea, epln, 0.0,
+                                              Epln, eunp, funp, Enewp, 9);
 
-                      // We are on the ordinate acis, follow rule six
+                    //calculateStressTransition(Tstress, Ttangent, Tstrain, er, fr, Ec, ea, fa, Ea);
 
-                      Tstress = 0.0;
-                      Ttangent = 0.0;
+                    Ttangent = (fa - fr) / (ea - er);
+                    Tstress = Ttangent * (Tstrain - er) + fr;
 
-                      Trule = 6;
+                    Trule = 12;
 
-                      return;
-                  }
+                    return;
+                }
+
+                else if (Tstrain < eunp)        // On the connecting curve for unloadinf
+                {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, epln, 0.0,
+                                              Epln, eunp, funp, Enewp, 9);
+
+                    Trule = 9;
+
+                    return;
+                }
+
+                else            // On the tension envelope
+                {
+                    envelope(x, Tstress, Ttangent, 1);
+
+                    TmaxStrain = Tstrain;
+                    TmaxStress = Tstress;
+
+                    return;
+                }
 
             }
-      }
+
+            else                // Unloading after cracking of the concrete has occurred.
+            {
+
+                Tloading = -1;
+
+                if (Trule == 5) {
+                    Tstress = 0.0;
+                    Ttangent = 0.0;
+                    Tcracked = true;
+
+                    Trule = 6;
+
+                    return;
+                }
+
+
+                double er = Cstrain;    // strain when reversal occurred.
+                double fr = Cstress;    // stress when reversal occurred.
+                TUnloadStiffness = Ctangent;
+                TUnloadStrain = er;
+                TUnloadStress = fr;
+                double eb = er - fr / Esecn;
+
+                if (Tstrain < eb)       // Going down to rule 6;
+                {
+                    if (Trule == 13) {
+                        T13Strain = er;
+                        T13Stress = fr;
+                    }
+
+                    Ttangent = (0.0 - fr) / (eb - er);
+                    Tstress = Ttangent * (Tstrain - er) + fr;
+
+                    Trule = 14;
+
+                    return;
+                }
+                // We are on the ordinate acis, follow rule six
+
+                Tstress = 0.0;
+                Ttangent = 0.0;
+
+                Trule = 6;
+
+                return;
+            }
+
+        }
+    }
 
     if (Tloading < 0)           // Previously where unloading the concrete
-      {
-          if (dStrain > 0.0)    // We are continuing to unload the concrete
-            {
-                if (Tstrain > eunp && !Tcracked)
-                  {
+    {
+        if (dStrain > 0.0)      // We are continuing to unload the concrete
+        {
+            if (Tstrain > eunp && !Tcracked) {
 
-                      envelope (x, Tstress, Ttangent, 1);
+                envelope(x, Tstress, Ttangent, 1);
 
-                      TmaxStrain = Tstrain;
-                      TmaxStress = Tstress;
+                TmaxStrain = Tstrain;
+                TmaxStress = Tstress;
 
-                      return;
-                  }
-
-                else if (Tstrain > epln && !Tcracked)
-                  {
-                      if (Trule == 81)
-                        {
-                            double Enewps;      // stiffness at strain reloading from tension envelope after unloading
-                            double erop;        // strain at last reversal;
-                            double frop;        // stress at last reversal;
-
-                            erop = TUnloadStrain;
-                            frop = TUnloadStress;
-                            Enewps = (funp - frop) / (eunp - erop);
-
-                            Ttangent = Enewps;
-                            Tstress = Ttangent * (Tstrain - erop) + frop;
-
-                            Trule = 81;
-
-                            return;
-                        }
-
-                      else if (Trule == 12)
-                        {
-                            double er = TUnloadStrain;  // strain when unloading began
-                            double fr = TUnloadStress;  // stress when unloading began
-                            double Epln;        // Modulus at plastic point from compression side
-                            double fa;  // target stress on rule 9
-                            double ea;  // target strain on rule 9
-                            double Ea;  // slope at targeet point (ea, fa)
-                            double Enewp;       // reloading stiffness in tension;
-
-                            Enewp = funp / (eunp - eplp);
-                            Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-                            ea = (eunn - er) / (eunn - eplp) * (eunp - epln) +
-                                epln;
-
-                            if (Tstrain < ea)   // we are still on the transition curve
-                              {
-                                  calculateStressTransition (fa, Ea, ea, epln,
-                                                             0.0, Epln, eunp,
-                                                             funp, Enewp, 9);
-
-                                  Ttangent = (fa - fr) / (ea - er);
-                                  Tstress = Ttangent * (Tstrain - er) + fr;
-
-                                  Trule = 12;
-
-                                  return;
-                              }
-
-                            else        // we are back on the connecting curve
-                              {
-                                  calculateStressTransition (Tstress,
-                                                             Ttangent,
-                                                             Tstrain, epln,
-                                                             0.0, Epln, eunp,
-                                                             funp, Enewp, 9);
-
-                                  Trule = 9;
-
-                                  return;
-                              }
-                        }
-
-                      else      // we are unloading from a complete reloading
-                        {
-                            double Enewp;       // reloading stiffness in tension;
-                            double Epln;        // Modulus at plastic point from compression side
-
-                            Enewp = funp / (eunp - eplp);
-                            Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, epln, 0.0,
-                                                       Epln, eunp, funp,
-                                                       Enewp, 9);
-
-                            Trule = 9;
-
-                            return;
-                        }
-                  }
-
-                else if (Tstrain < epln)        // we are unloading off of the compression envelope
-                  {
-                      if (Trule == 12)
-                        {
-                            double er = TUnloadStrain;  // strain when unloading began
-                            double fr = TUnloadStress;  // stress when unloading began
-                            double Epln;        // Modulus at plastic point from compression side
-                            double fa;  // target stress on rule 9
-                            double ea;  // target strain on rule 9
-                            double Ea;  // slope at targeet point (ea, fa)
-                            double Enewp;       // reloading stiffness in tension;
-
-                            Enewp = funp / (eunp - eplp);
-                            Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-                            ea = (eunn - er) / (eunn - eplp) * (eunp - epln) +
-                                epln;
-
-                            if (Tstrain < ea)   // we are still on the transition curve
-                              {
-                                  calculateStressTransition (fa, Ea, ea, epln,
-                                                             0.0, Epln, eunp,
-                                                             funp, Enewp, 9);
-
-                                  Ttangent = (fa - fr) / (ea - er);
-                                  Tstress = Ttangent * (Tstrain - er) + fr;
-
-                                  Trule = 12;
-
-                                  return;
-                              }
-
-                            else        // we are back on the connecting curve
-                              {
-                                  calculateStressTransition (Tstress,
-                                                             Ttangent,
-                                                             Tstrain, epln,
-                                                             0.0, Epln, eunp,
-                                                             funp, Enewp, 9);
-
-                                  Trule = 9;
-
-                                  return;
-                              }
-                        }
-
-                      if (Trule == 14)
-                        {
-                            double er, fr;
-                            er = TUnloadStrain;
-                            fr = TUnloadStress;
-                            double eb = er - fr / Esecn;
-
-                            if (Tstrain < eb)   // Going down to rule 6;
-                              {
-                                  Ttangent = (0.0 - fr) / (eb - er);
-                                  Tstress = Ttangent * (Tstrain - er) + fr;
-
-                                  Trule = 14;
-
-                                  return;
-                              }
-
-                            else
-                              {
-                                  Tstress = 0.0;
-                                  Ttangent = 0.0;
-
-                                  Trule = 6;
-
-                                  return;
-                              }
-                        }
-
-                      if (Trule == 711 && Tstrain < TReloadStrain)
-                        {
-                            double eron;        // strain at which reversal occurred in a partial unloading
-                            double fron;        // stress at which reversal occurred in a partial unloading
-
-                            eron = TReloadStrain;
-                            fron = TReloadStress;
-
-                            Ttangent = (funn - fron) / (eunn - eron);
-                            Tstress = Ttangent * (Tstrain - eron) + fron;
-
-                            Trule = 711;
-
-                            return;
-                        }
-
-                      double Epln;      // Modulus at plastic point in compression
-
-                      Epln = 0.1 * Ec * exp (-2 * (eunn / epsc0));
-
-                      calculateStressTransition (Tstress, Ttangent, Tstrain,
-                                                 eunn, funn, Ec, epln, 0.0,
-                                                 Epln, 3);
-
-                      Trule = 3;
-
-                      return;
-                  }
-
-                else
-                  {
-                      if (Trule == 14)
-                        {
-                            double er, fr;
-                            er = TUnloadStrain;
-                            fr = TUnloadStress;
-                            double eb = er - fr / Esecn;
-
-                            if (Tstrain < eb)   // Going down to rule 6;
-                              {
-                                  Ttangent = (0.0 - fr) / (eb - er);
-                                  Tstress = Ttangent * (Tstrain - er) + fr;
-                                  Trule = 14;
-
-                                  return;
-                              }
-                        }
-
-                      Tstress = 0.0;
-                      Ttangent = 0.0;
-
-                      Trule = 6;
-
-                      return;
-                  }
+                return;
             }
 
-          if (dStrain < 0.0)    // Previously unloading, now reloading
-            {
-                // We need to determine what rule we are on
-
-                if (Trule == 2)
-                  {
-                      Tloading = 1;
-
-                      TmaxStress = Cstress;
-                      TmaxStrain = Cstrain;
-                      eunp = Cstrain;
-                      funp = Cstress;
-
-                      double Eplp;      // Modulus at plastic point in tension
-                      double Enewn;     // reloading stiffness in compression;
-
-                      if (eunn == 0 && funn == 0)
-                        {
-                            double Edum;
-                            eunn = -0.00002;
-                            envelope (eunn / epsc0, funn, Edum, -1);
-                            TminStrain = eunn;
-                            TminStress = funn;
-                            Esecn =
-                                Ec * ((funn / (Ec * epsc0) + 0.57) /
-                                      (eunn / epsc0 + 0.57));
-                            epln = eunn - funn / Esecn;
-                        }
-
-                      Eplp =
-                          Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) + 1.00);
-                      Enewn = funn / (eunn - epln);
-
-                      if (Tstrain >= eplp)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eunp, funp,
-                                                       Ec, eplp, 0.0, Eplp,
-                                                       4);
-
-                            Trule = 4;
-
-                            return;
-                        }
-
-                      else if (Tstrain >= eunn)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eplp, 0.0,
-                                                       Eplp, eunn, funn,
-                                                       Enewn, 10);
-
-                            Trule = 10;
-
-                            return;
-                        }
-
-                      else
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStress = Tstress;
-                            TminStrain = Tstrain;
-
-                            return;
-                        }
-                  }
-
-                else if (Trule == 3)
-                  {
-                      // Partial unloading in compression region
-
-                      Tloading = 1;
-
-                      double eron = Cstrain;
-                      double fron = Cstress;
-                      double Enewns;    // stiffness at strain unloading from compression envelope after reloading
-
-                      TReloadStrain = eron;
-                      TReloadStress = fron;
-                      Enewns = (funn - fron) / (eunn - eron);
-
-                      if (Tstrain > eunn)       // On transition due to partial unloading
-                        {
-                            Ttangent = Enewns;
-                            Tstress = Ttangent * (Tstrain - eron) + fron;
-
-                            Trule = 71;
-
-                            return;
-                        }
-
-                      else      // Back on the compression envelope
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStress = Tstress;
-                            TminStrain = Tstrain;
-
-                            return;
-                        }
-                  }
-
-                else if (Trule == 711)
-                  {
-                      Tloading = 1;
-
-                      double eron;      // strain at which reversal occurred in a partial unloading
-                      double fron;      // stress at which reversal occurred in a partial unloading
-
-                      eron = TReloadStrain;
-                      fron = TReloadStress;
-
-                      if (Tstrain > eunn)
-                        {
-
-                            Ttangent = (funn - fron) / (eunn - eron);
-                            Tstress = Ttangent * (Tstrain - eron) + fron;
-
-                            Trule = 71;
-
-                            return;
-                        }
-
-                      else      // Back on the compression envelope
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStress = Tstress;
-                            TminStrain = Tstrain;
-
-                            return;
-                        }
-                  }
-
-                else if (Trule == 81)
-                  {
-                      Tloading = 1;
-
-                      double Enewps;    // stiffness at strain reloading from tension envelope after unloading
-                      double erop;      // strain at last reversal;
-                      double frop;      // stress at last reversal;
-                      double Eplp;      // Modulus at plastic point in tension
-                      double Enewn;     // reloading stiffness in compression;
-
-                      if (eunn == 0 && funn == 0)
-                        {
-                            double Edum;
-                            eunn = -0.00002;
-                            envelope (eunn / epsc0, funn, Edum, -1);
-                            TminStrain = eunn;
-                            TminStress = funn;
-                            Esecn =
-                                Ec * ((funn / (Ec * epsc0) + 0.57) /
-                                      (eunn / epsc0 + 0.57));
-                            epln = eunn - funn / Esecn;
-                        }
-
-                      Eplp =
-                          Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) + 1.00);
-                      Enewn = funn / (eunn - epln);
-                      erop = TUnloadStrain;
-                      frop = TUnloadStress;
-                      Enewps = (funp - frop) / (eunp - erop);
-
-                      if (Tstrain > erop)
-                        {
-                            Ttangent = Enewps;
-                            Tstress = Ttangent * (Tstrain - erop) + frop;
-
-                            Trule = 811;
-
-                            return;
-                        }
-
-                      else if (Tstrain >= eplp)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eunp, funp,
-                                                       Ec, eplp, 0.0, Eplp,
-                                                       4);
-
-                            Trule = 4;
-
-                            return;
-                        }
-
-                      else if (Tstrain >= eunn)
-                        {
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eplp, 0.0,
-                                                       Eplp, eunn, funn,
-                                                       Enewn, 10);
-
-                            Trule = 10;
-
-                            return;
-                        }
-
-                      else
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStress = Tstress;
-                            TminStrain = Tstrain;
-
-                            return;
-                        }
-                  }
-
-                else if (Trule == 9 || Trule == 12)
-                  {
-
-                      // Reloading after partial unloading
-
-                      Tloading = 1;
-
-                      double er = Cstrain;      // strain when reversal occurred.
-                      double fr = Cstress;      // stress when reversal occurred.
-                      double Eplp;      // Modulus at plastic point in tension
-                      double fb;        // target stress on rule 10
-                      double eb;        // target strain on rule 10;
-                      double Eb;        // slope at target point (eb,fb)
-                      double Enewn;     // reloading stiffness in tension;
-
-                      TReloadStrain = er;
-                      TReloadStress = fr;
-                      Eplp =
-                          Ec / (pow (fabs ((eunp - e0) / epst0), 1.1) + 1.00);
-                      Enewn = funn / (eunn - epln);
-                      eb = eunn - (er - epln) / (eunp - epln) * (eunn - eplp);
-
-                      if (Tstrain > eb)
-                        {
-                            calculateStressTransition (fb, Eb, eb, eplp, 0.0,
-                                                       Eplp, eunn, funn,
-                                                       Enewn, 10);
-
-                            Ttangent = (fb - fr) / (eb - er);
-                            Tstress = Ttangent * (Tstrain - er) + fr;
-
-                            Trule = 11;
-
-                            return;
-                        }
-
-                      else if (Tstrain > eunn)  // On the connecting curve
-                        {
-
-                            calculateStressTransition (Tstress, Ttangent,
-                                                       Tstrain, eplp, 0.0,
-                                                       Eplp, eunn, funn,
-                                                       Enewn, 10);
-
-                            Trule = 10;
-
-                            return;
-                        }
-
-                      else      // on the compression envelope
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStress = Tstress;
-                            TminStrain = Tstrain;
-
-                            return;
-                        }
-                  }
-
-                else if (Trule == 14)
-                  {
-                      Tloading = 1;
-
-                      double er = Cstrain;      // Strain at reversal
-                      double fr = Cstress;      // stress at reversal
-                      double ea;        // strain where we rejoin rule 13
-                      double fa;        // stress where we rejoin rule 13
-                      double Enewn;     // reloading stiffness in tension;
-
-                      TReloadStrain = er;
-                      TReloadStress = fr;
-                      ea = T13Strain;
-                      fa = T13Stress;
-
-                      Enewn = funn / (eunn - epln);
-
-                      if (Tstrain > ea)
-                        {
-                            Ttangent = (fa - fr) / (ea - er);
-                            Tstress = Ttangent * (Tstrain - er) + fr;
-
-                            Trule = 15;
-
-                            return;
-                        }
-
-                      else if (Tstrain > eunn)  // Back on Rule 13
-                        {
-                            double Edum;
-
-                            Edum = (funn) / (eunn - T13Zero);
-
-                            calculate13Stress (Tstress, Ttangent, Tstrain,
-                                               T13Zero, eunn, funn, Enewn);
-
-                            Trule = 13;
-                            return;
-                        }
-
-                      else      // Back on the compression envelope
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStrain = Tstrain;
-                            TminStress = Tstress;
-
-                            return;
-                        }
-                  }
-
-                else            // We are reversing post cracking
-                  {
-                      Tloading = 1;
-
-                      double er = Cstrain;      // Strain at reversal
-                      double fr = Cstress;      // stress at reversal
-                      double Enewn;     // reloading stiffness in tension;
-                      double Edum;
-
-                      if (eunn == 0 && funn == 0)
-                        {
-                            eunn = .05 * epsc0;
-                            envelope (eunn / epsc0, funn, Edum, -1);
-                            TminStrain = eunn;
-                            TminStress = funn;
-                            Esecn =
-                                Ec * ((funn / (Ec * epsc0) + 0.57) /
-                                      (eunn / epsc0 + 0.57));
-                            epln = eunn - funn / Esecn;
-                        }
-
-                      TReloadStrain = er;
-                      TReloadStress = fr;
-                      Enewn = funn / (eunn - epln);
-
-                      if (eunn / epsc0 >= xsp)
-                        {
-                            Tstress = 0.0;
-                            Ttangent = 0.0;
-                            Trule = 5;
-                            Tcracked = true;
-
-                            return;
-                        }
-
-
-                      if (Tstrain > eunn)
-                        {
-
-                            Edum = (funn) / (eunn - er);
-
-                            T13Zero = er;
-
-                            calculate13Stress (Tstress, Ttangent, Tstrain, er,
-                                               eunn, funn, Enewn);
-
-                            Trule = 13;
-
-                            return;
-                        }
-
-                      else      // Back on the compression envelope
-                        {
-                            envelope (x, Tstress, Ttangent, -1);
-
-                            TminStrain = Tstrain;
-                            TminStress = Tstress;
-
-                            return;
-                        }
-                  }
+            else if (Tstrain > epln && !Tcracked) {
+                if (Trule == 81) {
+                    double Enewps;      // stiffness at strain reloading from tension envelope after unloading
+                    double erop;        // strain at last reversal;
+                    double frop;        // stress at last reversal;
+
+                    erop = TUnloadStrain;
+                    frop = TUnloadStress;
+                    Enewps = (funp - frop) / (eunp - erop);
+
+                    Ttangent = Enewps;
+                    Tstress = Ttangent * (Tstrain - erop) + frop;
+
+                    Trule = 81;
+
+                    return;
+                }
+
+                else if (Trule == 12) {
+                    double er = TUnloadStrain;  // strain when unloading began
+                    double fr = TUnloadStress;  // stress when unloading began
+                    double Epln;        // Modulus at plastic point from compression side
+                    double fa;  // target stress on rule 9
+                    double ea;  // target strain on rule 9
+                    double Ea;  // slope at targeet point (ea, fa)
+                    double Enewp;       // reloading stiffness in tension;
+
+                    Enewp = funp / (eunp - eplp);
+                    Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+                    ea = (eunn - er) / (eunn - eplp) * (eunp - epln) +
+                        epln;
+
+                    if (Tstrain < ea)   // we are still on the transition curve
+                    {
+                        calculateStressTransition(fa, Ea, ea, epln,
+                                                  0.0, Epln, eunp,
+                                                  funp, Enewp, 9);
+
+                        Ttangent = (fa - fr) / (ea - er);
+                        Tstress = Ttangent * (Tstrain - er) + fr;
+
+                        Trule = 12;
+
+                        return;
+                    }
+
+                    else        // we are back on the connecting curve
+                    {
+                        calculateStressTransition(Tstress,
+                                                  Ttangent,
+                                                  Tstrain, epln,
+                                                  0.0, Epln, eunp,
+                                                  funp, Enewp, 9);
+
+                        Trule = 9;
+
+                        return;
+                    }
+                }
+
+                else            // we are unloading from a complete reloading
+                {
+                    double Enewp;       // reloading stiffness in tension;
+                    double Epln;        // Modulus at plastic point from compression side
+
+                    Enewp = funp / (eunp - eplp);
+                    Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, epln, 0.0,
+                                              Epln, eunp, funp, Enewp, 9);
+
+                    Trule = 9;
+
+                    return;
+                }
             }
-      }
+
+            else if (Tstrain < epln)    // we are unloading off of the compression envelope
+            {
+                if (Trule == 12) {
+                    double er = TUnloadStrain;  // strain when unloading began
+                    double fr = TUnloadStress;  // stress when unloading began
+                    double Epln;        // Modulus at plastic point from compression side
+                    double fa;  // target stress on rule 9
+                    double ea;  // target strain on rule 9
+                    double Ea;  // slope at targeet point (ea, fa)
+                    double Enewp;       // reloading stiffness in tension;
+
+                    Enewp = funp / (eunp - eplp);
+                    Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+                    ea = (eunn - er) / (eunn - eplp) * (eunp - epln) +
+                        epln;
+
+                    if (Tstrain < ea)   // we are still on the transition curve
+                    {
+                        calculateStressTransition(fa, Ea, ea, epln,
+                                                  0.0, Epln, eunp,
+                                                  funp, Enewp, 9);
+
+                        Ttangent = (fa - fr) / (ea - er);
+                        Tstress = Ttangent * (Tstrain - er) + fr;
+
+                        Trule = 12;
+
+                        return;
+                    }
+
+                    else        // we are back on the connecting curve
+                    {
+                        calculateStressTransition(Tstress,
+                                                  Ttangent,
+                                                  Tstrain, epln,
+                                                  0.0, Epln, eunp,
+                                                  funp, Enewp, 9);
+
+                        Trule = 9;
+
+                        return;
+                    }
+                }
+
+                if (Trule == 14) {
+                    double er, fr;
+                    er = TUnloadStrain;
+                    fr = TUnloadStress;
+                    double eb = er - fr / Esecn;
+
+                    if (Tstrain < eb)   // Going down to rule 6;
+                    {
+                        Ttangent = (0.0 - fr) / (eb - er);
+                        Tstress = Ttangent * (Tstrain - er) + fr;
+
+                        Trule = 14;
+
+                        return;
+                    }
+
+                    else {
+                        Tstress = 0.0;
+                        Ttangent = 0.0;
+
+                        Trule = 6;
+
+                        return;
+                    }
+                }
+
+                if (Trule == 711 && Tstrain < TReloadStrain) {
+                    double eron;        // strain at which reversal occurred in a partial unloading
+                    double fron;        // stress at which reversal occurred in a partial unloading
+
+                    eron = TReloadStrain;
+                    fron = TReloadStress;
+
+                    Ttangent = (funn - fron) / (eunn - eron);
+                    Tstress = Ttangent * (Tstrain - eron) + fron;
+
+                    Trule = 711;
+
+                    return;
+                }
+
+                double Epln;    // Modulus at plastic point in compression
+
+                Epln = 0.1 * Ec * exp(-2 * (eunn / epsc0));
+
+                calculateStressTransition(Tstress, Ttangent, Tstrain,
+                                          eunn, funn, Ec, epln, 0.0,
+                                          Epln, 3);
+
+                Trule = 3;
+
+                return;
+            }
+
+            else {
+                if (Trule == 14) {
+                    double er, fr;
+                    er = TUnloadStrain;
+                    fr = TUnloadStress;
+                    double eb = er - fr / Esecn;
+
+                    if (Tstrain < eb)   // Going down to rule 6;
+                    {
+                        Ttangent = (0.0 - fr) / (eb - er);
+                        Tstress = Ttangent * (Tstrain - er) + fr;
+                        Trule = 14;
+
+                        return;
+                    }
+                }
+
+                Tstress = 0.0;
+                Ttangent = 0.0;
+
+                Trule = 6;
+
+                return;
+            }
+        }
+
+        if (dStrain < 0.0)      // Previously unloading, now reloading
+        {
+            // We need to determine what rule we are on
+
+            if (Trule == 2) {
+                Tloading = 1;
+
+                TmaxStress = Cstress;
+                TmaxStrain = Cstrain;
+                eunp = Cstrain;
+                funp = Cstress;
+
+                double Eplp;    // Modulus at plastic point in tension
+                double Enewn;   // reloading stiffness in compression;
+
+                if (eunn == 0 && funn == 0) {
+                    double Edum;
+                    eunn = -0.00002;
+                    envelope(eunn / epsc0, funn, Edum, -1);
+                    TminStrain = eunn;
+                    TminStress = funn;
+                    Esecn =
+                        Ec * ((funn / (Ec * epsc0) + 0.57) /
+                              (eunn / epsc0 + 0.57));
+                    epln = eunn - funn / Esecn;
+                }
+
+                Eplp = Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                Enewn = funn / (eunn - epln);
+
+                if (Tstrain >= eplp) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eunp, funp,
+                                              Ec, eplp, 0.0, Eplp, 4);
+
+                    Trule = 4;
+
+                    return;
+                }
+
+                else if (Tstrain >= eunn) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eplp, 0.0,
+                                              Eplp, eunn, funn, Enewn, 10);
+
+                    Trule = 10;
+
+                    return;
+                }
+
+                else {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStress = Tstress;
+                    TminStrain = Tstrain;
+
+                    return;
+                }
+            }
+
+            else if (Trule == 3) {
+                // Partial unloading in compression region
+
+                Tloading = 1;
+
+                double eron = Cstrain;
+                double fron = Cstress;
+                double Enewns;  // stiffness at strain unloading from compression envelope after reloading
+
+                TReloadStrain = eron;
+                TReloadStress = fron;
+                Enewns = (funn - fron) / (eunn - eron);
+
+                if (Tstrain > eunn)     // On transition due to partial unloading
+                {
+                    Ttangent = Enewns;
+                    Tstress = Ttangent * (Tstrain - eron) + fron;
+
+                    Trule = 71;
+
+                    return;
+                }
+
+                else            // Back on the compression envelope
+                {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStress = Tstress;
+                    TminStrain = Tstrain;
+
+                    return;
+                }
+            }
+
+            else if (Trule == 711) {
+                Tloading = 1;
+
+                double eron;    // strain at which reversal occurred in a partial unloading
+                double fron;    // stress at which reversal occurred in a partial unloading
+
+                eron = TReloadStrain;
+                fron = TReloadStress;
+
+                if (Tstrain > eunn) {
+
+                    Ttangent = (funn - fron) / (eunn - eron);
+                    Tstress = Ttangent * (Tstrain - eron) + fron;
+
+                    Trule = 71;
+
+                    return;
+                }
+
+                else            // Back on the compression envelope
+                {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStress = Tstress;
+                    TminStrain = Tstrain;
+
+                    return;
+                }
+            }
+
+            else if (Trule == 81) {
+                Tloading = 1;
+
+                double Enewps;  // stiffness at strain reloading from tension envelope after unloading
+                double erop;    // strain at last reversal;
+                double frop;    // stress at last reversal;
+                double Eplp;    // Modulus at plastic point in tension
+                double Enewn;   // reloading stiffness in compression;
+
+                if (eunn == 0 && funn == 0) {
+                    double Edum;
+                    eunn = -0.00002;
+                    envelope(eunn / epsc0, funn, Edum, -1);
+                    TminStrain = eunn;
+                    TminStress = funn;
+                    Esecn =
+                        Ec * ((funn / (Ec * epsc0) + 0.57) /
+                              (eunn / epsc0 + 0.57));
+                    epln = eunn - funn / Esecn;
+                }
+
+                Eplp = Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                Enewn = funn / (eunn - epln);
+                erop = TUnloadStrain;
+                frop = TUnloadStress;
+                Enewps = (funp - frop) / (eunp - erop);
+
+                if (Tstrain > erop) {
+                    Ttangent = Enewps;
+                    Tstress = Ttangent * (Tstrain - erop) + frop;
+
+                    Trule = 811;
+
+                    return;
+                }
+
+                else if (Tstrain >= eplp) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eunp, funp,
+                                              Ec, eplp, 0.0, Eplp, 4);
+
+                    Trule = 4;
+
+                    return;
+                }
+
+                else if (Tstrain >= eunn) {
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eplp, 0.0,
+                                              Eplp, eunn, funn, Enewn, 10);
+
+                    Trule = 10;
+
+                    return;
+                }
+
+                else {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStress = Tstress;
+                    TminStrain = Tstrain;
+
+                    return;
+                }
+            }
+
+            else if (Trule == 9 || Trule == 12) {
+
+                // Reloading after partial unloading
+
+                Tloading = 1;
+
+                double er = Cstrain;    // strain when reversal occurred.
+                double fr = Cstress;    // stress when reversal occurred.
+                double Eplp;    // Modulus at plastic point in tension
+                double fb;      // target stress on rule 10
+                double eb;      // target strain on rule 10;
+                double Eb;      // slope at target point (eb,fb)
+                double Enewn;   // reloading stiffness in tension;
+
+                TReloadStrain = er;
+                TReloadStress = fr;
+                Eplp = Ec / (pow(fabs((eunp - e0) / epst0), 1.1) + 1.00);
+                Enewn = funn / (eunn - epln);
+                eb = eunn - (er - epln) / (eunp - epln) * (eunn - eplp);
+
+                if (Tstrain > eb) {
+                    calculateStressTransition(fb, Eb, eb, eplp, 0.0,
+                                              Eplp, eunn, funn, Enewn, 10);
+
+                    Ttangent = (fb - fr) / (eb - er);
+                    Tstress = Ttangent * (Tstrain - er) + fr;
+
+                    Trule = 11;
+
+                    return;
+                }
+
+                else if (Tstrain > eunn)        // On the connecting curve
+                {
+
+                    calculateStressTransition(Tstress, Ttangent,
+                                              Tstrain, eplp, 0.0,
+                                              Eplp, eunn, funn, Enewn, 10);
+
+                    Trule = 10;
+
+                    return;
+                }
+
+                else            // on the compression envelope
+                {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStress = Tstress;
+                    TminStrain = Tstrain;
+
+                    return;
+                }
+            }
+
+            else if (Trule == 14) {
+                Tloading = 1;
+
+                double er = Cstrain;    // Strain at reversal
+                double fr = Cstress;    // stress at reversal
+                double ea;      // strain where we rejoin rule 13
+                double fa;      // stress where we rejoin rule 13
+                double Enewn;   // reloading stiffness in tension;
+
+                TReloadStrain = er;
+                TReloadStress = fr;
+                ea = T13Strain;
+                fa = T13Stress;
+
+                Enewn = funn / (eunn - epln);
+
+                if (Tstrain > ea) {
+                    Ttangent = (fa - fr) / (ea - er);
+                    Tstress = Ttangent * (Tstrain - er) + fr;
+
+                    Trule = 15;
+
+                    return;
+                }
+
+                else if (Tstrain > eunn)        // Back on Rule 13
+                {
+                    double Edum;
+
+                    Edum = (funn) / (eunn - T13Zero);
+
+                    calculate13Stress(Tstress, Ttangent, Tstrain,
+                                      T13Zero, eunn, funn, Enewn);
+
+                    Trule = 13;
+                    return;
+                }
+
+                else            // Back on the compression envelope
+                {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStrain = Tstrain;
+                    TminStress = Tstress;
+
+                    return;
+                }
+            }
+
+            else                // We are reversing post cracking
+            {
+                Tloading = 1;
+
+                double er = Cstrain;    // Strain at reversal
+                double fr = Cstress;    // stress at reversal
+                double Enewn;   // reloading stiffness in tension;
+                double Edum;
+
+                if (eunn == 0 && funn == 0) {
+                    eunn = .05 * epsc0;
+                    envelope(eunn / epsc0, funn, Edum, -1);
+                    TminStrain = eunn;
+                    TminStress = funn;
+                    Esecn =
+                        Ec * ((funn / (Ec * epsc0) + 0.57) /
+                              (eunn / epsc0 + 0.57));
+                    epln = eunn - funn / Esecn;
+                }
+
+                TReloadStrain = er;
+                TReloadStress = fr;
+                Enewn = funn / (eunn - epln);
+
+                if (eunn / epsc0 >= xsp) {
+                    Tstress = 0.0;
+                    Ttangent = 0.0;
+                    Trule = 5;
+                    Tcracked = true;
+
+                    return;
+                }
+
+
+                if (Tstrain > eunn) {
+
+                    Edum = (funn) / (eunn - er);
+
+                    T13Zero = er;
+
+                    calculate13Stress(Tstress, Ttangent, Tstrain, er,
+                                      eunn, funn, Enewn);
+
+                    Trule = 13;
+
+                    return;
+                }
+
+                else            // Back on the compression envelope
+                {
+                    envelope(x, Tstress, Ttangent, -1);
+
+                    TminStrain = Tstrain;
+                    TminStress = Tstress;
+
+                    return;
+                }
+            }
+        }
+    }
 }
 
-double
-Concrete07::getStrain ()
+double Concrete07::getStrain()
 {
     return Tstrain;
 }
 
-double
-Concrete07::getStress ()
+double Concrete07::getStress()
 {
     return Tstress;
 }
 
-double
-Concrete07::getTangent ()
+double Concrete07::getTangent()
 {
     return Ttangent;
 }
 
-int
-Concrete07::commitState ()
+int Concrete07::commitState()
 {
     // History Variables
     CminStrain = TminStrain;
@@ -1780,8 +1647,7 @@ Concrete07::commitState ()
     return 0;
 }
 
-int
-Concrete07::revertToLastCommit ()
+int Concrete07::revertToLastCommit()
 {
     // Reset History Variables to last committed state
     TminStrain = CminStrain;
@@ -1809,8 +1675,7 @@ Concrete07::revertToLastCommit ()
     return 0;
 }
 
-int
-Concrete07::revertToStart ()
+int Concrete07::revertToStart()
 {
 
     // History Variables
@@ -1860,12 +1725,11 @@ Concrete07::revertToStart ()
     return 0;
 }
 
-UniaxialMaterial *
-Concrete07::getCopy ()
+UniaxialMaterial *Concrete07::getCopy()
 {
     Concrete07 *theCopy =
-        new Concrete07 (this->getTag (), fpc, epsc0, Ec, fpt, epst0, xcrp,
-                        xcrn, r);
+        new Concrete07(this->getTag(), fpc, epsc0, Ec, fpt, epst0, xcrp,
+                       xcrn, r);
 
     // Converged history variables
     theCopy->CminStrain = CminStrain;
@@ -1914,137 +1778,132 @@ Concrete07::getCopy ()
     return theCopy;
 }
 
-int
-Concrete07::sendSelf (int commitTag, Channel & theChannel)
+int Concrete07::sendSelf(int commitTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (32);
-    data (0) = this->getTag ();
+    static Vector data(32);
+    data(0) = this->getTag();
 
     // Material Properties
-    data (1) = fpc;
-    data (2) = epsc0;
-    data (3) = Ec;
-    data (4) = fpt;
-    data (5) = epst0;
+    data(1) = fpc;
+    data(2) = epsc0;
+    data(3) = Ec;
+    data(4) = fpt;
+    data(5) = epst0;
 
     // Model Variables
-    data (6) = xcrn;
-    data (7) = xsp;
-    data (8) = xcrp;
-    data (9) = xcrk;
-    data (10) = nn;
-    data (11) = np;
-    data (12) = r;
+    data(6) = xcrn;
+    data(7) = xsp;
+    data(8) = xcrp;
+    data(9) = xcrk;
+    data(10) = nn;
+    data(11) = np;
+    data(12) = r;
 
     // History Variables
-    data (13) = CminStrain;
-    data (14) = CminStress;
-    data (15) = CUnloadStrain;
-    data (16) = CUnloadStress;
-    data (17) = CUnloadStiffness;
-    data (18) = CmaxStrain;
-    data (19) = CmaxStress;
-    data (20) = CReloadStrain;
-    data (21) = CReloadStress;
-    data (22) = CReloadStiffness;
-    data (23) = Cloading;
+    data(13) = CminStrain;
+    data(14) = CminStress;
+    data(15) = CUnloadStrain;
+    data(16) = CUnloadStress;
+    data(17) = CUnloadStiffness;
+    data(18) = CmaxStrain;
+    data(19) = CmaxStress;
+    data(20) = CReloadStrain;
+    data(21) = CReloadStress;
+    data(22) = CReloadStiffness;
+    data(23) = Cloading;
     if (Ccracked)
-        data (24) = 1;
+        data(24) = 1;
     else
-        data (24) = 0;
-    data (25) = Crule;
+        data(24) = 0;
+    data(25) = Crule;
 
     // State Variables
-    data (26) = Cstrain;
-    data (27) = Cstress;
-    data (28) = Ctangent;
-    data (29) = C13Zero;
-    data (30) = C13Strain;
-    data (31) = C13Stress;
+    data(26) = Cstrain;
+    data(27) = Cstress;
+    data(28) = Ctangent;
+    data(29) = C13Zero;
+    data(30) = C13Strain;
+    data(31) = C13Stress;
 
     // Data is only sent after convergence, so no trial variables
     // need to be sent through the data vector
 
-    res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+    res = theChannel.sendVector(this->getDbTag(), commitTag, data);
     if (res < 0)
         opserr << "Concrete07::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-Concrete07::recvSelf (int commitTag, Channel & theChannel,
-                      FEM_ObjectBroker & theBroker)
+int Concrete07::recvSelf(int commitTag, Channel & theChannel,
+                         FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (32);
-    res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+    static Vector data(32);
+    res = theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-    if (res < 0)
-      {
-          opserr << "Concrete07::recvSelf() - failed to receive data\n";
-          this->setTag (0);
-      }
+    if (res < 0) {
+        opserr << "Concrete07::recvSelf() - failed to receive data\n";
+        this->setTag(0);
+    }
 
-    else
-      {
-          this->setTag (int (data (0)));
+    else {
+        this->setTag(int (data(0)));
 
-          // Material properties
-          fpc = data (1);
-          epsc0 = data (2);
-          Ec = data (3);
-          fpt = data (4);
-          epst0 = data (5);
+        // Material properties
+        fpc = data(1);
+        epsc0 = data(2);
+        Ec = data(3);
+        fpt = data(4);
+        epst0 = data(5);
 
-          // Model Variables
-          xcrn = data (6);
-          xsp = data (7);
-          xcrp = data (8);
-          xcrk = data (9);
-          nn = data (10);
-          np = data (11);
-          r = data (12);
+        // Model Variables
+        xcrn = data(6);
+        xsp = data(7);
+        xcrp = data(8);
+        xcrk = data(9);
+        nn = data(10);
+        np = data(11);
+        r = data(12);
 
-          // History Variables
-          CminStrain = data (13);
-          CminStress = data (14);
-          CUnloadStrain = data (15);
-          CUnloadStress = data (16);
-          CUnloadStiffness = data (17);
-          CmaxStrain = data (18);
-          CmaxStress = data (19);
-          CReloadStrain = data (20);
-          CReloadStress = data (21);
-          CReloadStiffness = data (22);
-          Cloading = data (23);
-          if (data (24) == 1)
-              Ccracked = true;
-          else
-              Ccracked = false;
-          Crule = data (25);
+        // History Variables
+        CminStrain = data(13);
+        CminStress = data(14);
+        CUnloadStrain = data(15);
+        CUnloadStress = data(16);
+        CUnloadStiffness = data(17);
+        CmaxStrain = data(18);
+        CmaxStress = data(19);
+        CReloadStrain = data(20);
+        CReloadStress = data(21);
+        CReloadStiffness = data(22);
+        Cloading = data(23);
+        if (data(24) == 1)
+            Ccracked = true;
+        else
+            Ccracked = false;
+        Crule = data(25);
 
-          // State Variables
-          Cstrain = data (26);
-          Cstress = data (27);
-          Ctangent = data (28);
-          C13Zero = data (29);
-          C13Strain = data (30);
-          C13Stress = data (31);
+        // State Variables
+        Cstrain = data(26);
+        Cstress = data(27);
+        Ctangent = data(28);
+        C13Zero = data(29);
+        C13Strain = data(30);
+        C13Stress = data(31);
 
-          Tstrain = Cstrain;
-          Tstress = Cstress;
-          Ttangent = Ctangent;
-      }
+        Tstrain = Cstrain;
+        Tstress = Cstress;
+        Ttangent = Ctangent;
+    }
 
     return res;
 }
 
-void
-Concrete07::Print (OPS_Stream & s, int flag)
+void Concrete07::Print(OPS_Stream & s, int flag)
 {
-    s << "Concrete07, tag: " << this->getTag () << endln;
+    s << "Concrete07, tag: " << this->getTag() << endln;
     s << "  fpc: " << fpc << endln;
     s << "  epsc0: " << epsc0 << endln;
     s << "  fpt: " << fpt << endln;

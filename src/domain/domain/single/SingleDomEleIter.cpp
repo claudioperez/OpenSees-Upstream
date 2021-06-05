@@ -43,35 +43,31 @@
 // SingleDomEleIter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-SingleDomEleIter::SingleDomEleIter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+SingleDomEleIter::SingleDomEleIter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
 
-SingleDomEleIter::~SingleDomEleIter ()
+SingleDomEleIter::~SingleDomEleIter()
 {
 }
 
 void
-SingleDomEleIter::reset (void)
+ SingleDomEleIter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
 
-Element *
-SingleDomEleIter::operator () (void)
-{
+Element *SingleDomEleIter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          Element *result = (Element *) theComponent;
-          return result;
-      }
+    else {
+        Element *result = (Element *) theComponent;
+        return result;
+    }
 }

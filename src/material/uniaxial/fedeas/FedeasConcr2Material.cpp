@@ -31,12 +31,12 @@
 #include <stdlib.h>
 #include <FedeasConcr2Material.h>
 
-FedeasConcr2Material::FedeasConcr2Material (int tag,
-                                            double fc, double ec, double fu,
-                                            double eu, double ratio,
-                                            double ft, double Ets):
+FedeasConcr2Material::FedeasConcr2Material(int tag,
+                                           double fc, double ec, double fu,
+                                           double eu, double ratio,
+                                           double ft, double Ets):
 // 2 history variables and 7 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasConcrete2, 2, 7)
+FedeasMaterial(tag, MAT_TAG_FedeasConcrete2, 2, 7)
 {
     data[0] = fc;
     data[1] = ec;
@@ -50,42 +50,41 @@ FedeasMaterial (tag, MAT_TAG_FedeasConcrete2, 2, 7)
     tangentP = tangent;
 }
 
-FedeasConcr2Material::FedeasConcr2Material (int tag, const Vector & d):
+FedeasConcr2Material::FedeasConcr2Material(int tag, const Vector & d):
 // 2 history variables and 7 material parameters
-FedeasMaterial (tag, MAT_TAG_FedeasConcrete2, 2, 7)
+FedeasMaterial(tag, MAT_TAG_FedeasConcrete2, 2, 7)
 {
-    if (d.Size () != numData)
-      {
-          opserr <<
-              "FedeasConcr2Material::FedeasConcr2Material -- not enough input arguments\n";
-          exit (-1);
-      }
+    if (d.Size() != numData) {
+        opserr <<
+            "FedeasConcr2Material::FedeasConcr2Material -- not enough input arguments\n";
+        exit(-1);
+    }
 
     for (int i = 0; i < numData; i++)
-        data[i] = d (i);
+        data[i] = d(i);
 
     tangent = 2.0 * data[0] / data[1];
     tangentP = tangent;
 }
 
-FedeasConcr2Material::FedeasConcr2Material (void):
-FedeasMaterial (0, MAT_TAG_FedeasConcrete2, 2, 7)
+FedeasConcr2Material::FedeasConcr2Material(void):FedeasMaterial(0,
+                                                                MAT_TAG_FedeasConcrete2,
+                                                                2, 7)
 {
     // Does nothing
 }
 
-FedeasConcr2Material::~FedeasConcr2Material (void)
+FedeasConcr2Material::~FedeasConcr2Material(void)
 {
     // Does nothing
 }
 
-UniaxialMaterial *
-FedeasConcr2Material::getCopy (void)
+UniaxialMaterial *FedeasConcr2Material::getCopy(void)
 {
-    Vector d (data, numData);
+    Vector d(data, numData);
 
     FedeasConcr2Material *theCopy =
-        new FedeasConcr2Material (this->getTag (), d);
+        new FedeasConcr2Material(this->getTag(), d);
 
     // Copy history variables
     for (int i = 0; i < 2 * numHstv; i++)
@@ -102,8 +101,7 @@ FedeasConcr2Material::getCopy (void)
     return theCopy;
 }
 
-double
-FedeasConcr2Material::getInitialTangent (void)
+double FedeasConcr2Material::getInitialTangent(void)
 {
     //return 2.0*fc/ec;
     return 2.0 * data[0] / data[1];

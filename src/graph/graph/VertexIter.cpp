@@ -42,34 +42,30 @@
 
 // VertexIter():
 //      constructor that takes the model, just the basic iter
-VertexIter::VertexIter (TaggedObjectStorage * theStorage):myIter (theStorage->
-        getComponents
-        ())
+VertexIter::VertexIter(TaggedObjectStorage * theStorage):myIter(theStorage->getComponents
+       ())
 {
 }
 
 
-VertexIter::~VertexIter ()
+VertexIter::~VertexIter()
 {
 }
 
 void
-VertexIter::reset (void)
+ VertexIter::reset(void)
 {
-    myIter.reset ();
+    myIter.reset();
 }
 
-Vertex *
-VertexIter::operator () (void)
-{
+Vertex *VertexIter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject * theComponent = myIter ();
+    TaggedObject * theComponent = myIter();
     if (theComponent == 0)
         return 0;
-    else
-      {
-          Vertex *result = (Vertex *) theComponent;
-          return result;
-      }
+    else {
+        Vertex *result = (Vertex *) theComponent;
+        return result;
+    }
 }

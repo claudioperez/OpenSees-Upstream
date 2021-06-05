@@ -43,27 +43,26 @@
 #endif
 
 extern "C" DllExport int
-TclCommand_BerkeleyDB (ClientData clientData,
-                       Tcl_Interp * interp,
-                       int argc,
-                       TCL_Char ** argv,
-                       Domain * theDomain,
-                       FEM_ObjectBroker * theBroker,
-                       FE_Datastore ** theDatabase)
+TclCommand_BerkeleyDB(ClientData clientData,
+                      Tcl_Interp * interp,
+                      int argc,
+                      TCL_Char ** argv,
+                      Domain * theDomain,
+                      FEM_ObjectBroker * theBroker,
+                      FE_Datastore ** theDatabase)
 {
 
     // delete the old database
     if (*theDatabase != 0)
-        delete (*theDatabase);
+        delete(*theDatabase);
 
     (*theDatabase) =
-        new BerkeleyDbDatastore (argv[2], *theDomain, *theBroker);
+        new BerkeleyDbDatastore(argv[2], *theDomain, *theBroker);
 
-    if (*theDatabase == 0)
-      {
-          opserr << "WARNING database MySql dabaseName? - out of memory\n";
-          return TCL_ERROR;
-      }
+    if (*theDatabase == 0) {
+        opserr << "WARNING database MySql dabaseName? - out of memory\n";
+        return TCL_ERROR;
+    }
 
     return TCL_OK;
 }

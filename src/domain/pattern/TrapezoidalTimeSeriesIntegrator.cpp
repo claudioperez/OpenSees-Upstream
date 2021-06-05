@@ -41,62 +41,56 @@
 #include <PathSeries.h>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_TrapezoidalTimeSeriesIntegrator ()
+void *OPS_TrapezoidalTimeSeriesIntegrator()
 {
-    return new TrapezoidalTimeSeriesIntegrator ();
+    return new TrapezoidalTimeSeriesIntegrator();
 }
 #endif
 
-TrapezoidalTimeSeriesIntegrator::TrapezoidalTimeSeriesIntegrator ():TimeSeriesIntegrator
+TrapezoidalTimeSeriesIntegrator::TrapezoidalTimeSeriesIntegrator():TimeSeriesIntegrator
     (TIMESERIES_INTEGRATOR_TAG_Trapezoidal)
 {
 
 }
 
-TrapezoidalTimeSeriesIntegrator::~TrapezoidalTimeSeriesIntegrator ()
+TrapezoidalTimeSeriesIntegrator::~TrapezoidalTimeSeriesIntegrator()
 {
 
 }
 
-TimeSeries *
-TrapezoidalTimeSeriesIntegrator::integrate (TimeSeries * theSeries,
-                                            double delta)
+TimeSeries *TrapezoidalTimeSeriesIntegrator::integrate(TimeSeries *
+                                                       theSeries,
+                                                       double delta)
 {
     // Check for zero time step, before dividing to get number of steps
-    if (delta <= 0.0)
-      {
-          opserr <<
-              "TrapezoidalTimeSeriesIntegrator::integrate() Attempting to integrate time step"
-              << delta << "<= 0\n";
-          return 0;
-      }
-
+    if (delta <= 0.0) {
+        opserr <<
+            "TrapezoidalTimeSeriesIntegrator::integrate() Attempting to integrate time step"
+            << delta << "<= 0\n";
+        return 0;
+    }
     // check a TimeSeries object was passed
-    if (theSeries == 0)
-      {
-          opserr <<
-              "TrapezoidalTimeSeriesIntegrator::integrate() - - no TimeSeries passed\n";
-          return 0;
-      }
-
+    if (theSeries == 0) {
+        opserr <<
+            "TrapezoidalTimeSeriesIntegrator::integrate() - - no TimeSeries passed\n";
+        return 0;
+    }
     // Add one to get ceiling out of type cast
-    int numSteps = (int) (theSeries->getDuration () / delta + 1.0);
+    int numSteps = (int) (theSeries->getDuration() / delta + 1.0);
 
-    Vector *theIntegratedValues = new Vector (numSteps);
+    Vector *theIntegratedValues = new Vector(numSteps);
 
     // Check that the Vector was allocated properly
-    if (theIntegratedValues == 0 || theIntegratedValues->Size () == 0)
-      {
-          opserr <<
-              "TrapezoidalTimeSeriesIntegrator::integrate() Ran out of memory allocating Vector of size "
-              << numSteps << endln;
+    if (theIntegratedValues == 0 || theIntegratedValues->Size() == 0) {
+        opserr <<
+            "TrapezoidalTimeSeriesIntegrator::integrate() Ran out of memory allocating Vector of size "
+            << numSteps << endln;
 
-          if (theIntegratedValues != 0)
-              delete theIntegratedValues;
+        if (theIntegratedValues != 0)
+            delete theIntegratedValues;
 
-          return 0;
-      }
+        return 0;
+    }
 
     int i;                      // Counter for indexing
     double dummyTime;           // Dummy variable for integrating
@@ -108,22 +102,21 @@ TrapezoidalTimeSeriesIntegrator::integrate (TimeSeries * theSeries,
     // Assuming initial condition is zero, i.e. F(0) = 0
 
 
-    (*theIntegratedValues)[0] = theSeries->getFactor (0.0) * delta * 0.5;
+    (*theIntegratedValues)[0] = theSeries->getFactor(0.0) * delta * 0.5;
 
     previousValue = (*theIntegratedValues)[0];
 
     dummyTime = delta;
 
-    for (i = 1; i < numSteps; i++, dummyTime += delta)
-      {
-          currentValue = theSeries->getFactor (dummyTime);
+    for (i = 1; i < numSteps; i++, dummyTime += delta) {
+        currentValue = theSeries->getFactor(dummyTime);
 
-          // Apply the trapezoidal rule to update the integrated value
-          (*theIntegratedValues)[i] = (*theIntegratedValues)[i - 1] +
-              delta * 0.5 * (currentValue + previousValue);
+        // Apply the trapezoidal rule to update the integrated value
+        (*theIntegratedValues)[i] = (*theIntegratedValues)[i - 1] +
+            delta * 0.5 * (currentValue + previousValue);
 
-          previousValue = currentValue;
-      }
+        previousValue = currentValue;
+    }
 
     /*
        // Set the last point
@@ -133,36 +126,32 @@ TrapezoidalTimeSeriesIntegrator::integrate (TimeSeries * theSeries,
 
     // Set the method return value
     PathSeries *returnSeries =
-        new PathSeries (0, *theIntegratedValues, delta, true);
+        new PathSeries(0, *theIntegratedValues, delta, true);
 
-    if (returnSeries == 0)
-      {
-          opserr <<
-              "TrapezoidalTimeSeriesIntegrator::integrate() Ran out of memory creating PathSeries\n";
+    if (returnSeries == 0) {
+        opserr <<
+            "TrapezoidalTimeSeriesIntegrator::integrate() Ran out of memory creating PathSeries\n";
 
-          return 0;
-      }
+        return 0;
+    }
 
     return returnSeries;
 }
 
-int
-TrapezoidalTimeSeriesIntegrator::sendSelf (int commitTag,
-                                           Channel & theChannel)
+int TrapezoidalTimeSeriesIntegrator::sendSelf(int commitTag,
+                                              Channel & theChannel)
 {
     return 0;
 }
 
-int
-TrapezoidalTimeSeriesIntegrator::recvSelf (int commitTag,
-                                           Channel & theChannel,
-                                           FEM_ObjectBroker & theBroker)
+int TrapezoidalTimeSeriesIntegrator::recvSelf(int commitTag,
+                                              Channel & theChannel,
+                                              FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
-void
-TrapezoidalTimeSeriesIntegrator::Print (OPS_Stream & s, int flag)
+void TrapezoidalTimeSeriesIntegrator::Print(OPS_Stream & s, int flag)
 {
     // Need to implement, return for now
     return;

@@ -31,18 +31,19 @@
 #include <DrainBilinearMaterial.h>
 #include <Vector.h>
 
-DrainBilinearMaterial::DrainBilinearMaterial (int tag,
-                                              double E, double fyp,
-                                              double fyn, double alpha,
-                                              double ecaps, double ecapk,
-                                              double ecapa, double ecapd,
-                                              double cs, double ck, double ca,
-                                              double cd, double capSlope,
-                                              double capDispP,
-                                              double capDispN, double res,
-                                              double b):
+DrainBilinearMaterial::DrainBilinearMaterial(int tag,
+                                             double E, double fyp,
+                                             double fyn, double alpha,
+                                             double ecaps, double ecapk,
+                                             double ecapa, double ecapd,
+                                             double cs, double ck,
+                                             double ca, double cd,
+                                             double capSlope,
+                                             double capDispP,
+                                             double capDispN, double res,
+                                             double b):
 // 17 history variables and 16 material parameters
-DrainMaterial (tag, MAT_TAG_DrainBilinear, 17, 16, b)
+DrainMaterial(tag, MAT_TAG_DrainBilinear, 17, 16, b)
 {
     data[0] = E;
     data[1] = fyp;
@@ -62,34 +63,35 @@ DrainMaterial (tag, MAT_TAG_DrainBilinear, 17, 16, b)
     data[15] = res;
 
     // Initialize history variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-DrainBilinearMaterial::DrainBilinearMaterial (int tag, const Vector & input,
-                                              double b):
+DrainBilinearMaterial::DrainBilinearMaterial(int tag, const Vector & input,
+                                             double b):
 // 17 history variables and 16 material parameters
-DrainMaterial (tag, MAT_TAG_DrainBilinear, 17, 16, b)
+DrainMaterial(tag, MAT_TAG_DrainBilinear, 17, 16, b)
 {
     for (int i = 0; i < 16; i++)
-        data[i] = input (i);
+        data[i] = input(i);
 
     // Initialize history variables
-    this->revertToStart ();
+    this->revertToStart();
 }
 
-DrainBilinearMaterial::DrainBilinearMaterial (void):
-DrainMaterial (0, MAT_TAG_DrainBilinear, 17, 16)
+DrainBilinearMaterial::DrainBilinearMaterial(void):DrainMaterial(0,
+                                                                 MAT_TAG_DrainBilinear,
+                                                                 17, 16)
 {
     // Does nothing
 }
 
-DrainBilinearMaterial::~DrainBilinearMaterial (void)
+DrainBilinearMaterial::~DrainBilinearMaterial(void)
 {
     // Does nothing
 }
 
 int
-DrainBilinearMaterial::revertToStart (void)
+ DrainBilinearMaterial::revertToStart(void)
 {
     hstv[0] = 0.0;
     hstv[1] = 0.0;
@@ -116,13 +118,12 @@ DrainBilinearMaterial::revertToStart (void)
     return 0;
 }
 
-UniaxialMaterial *
-DrainBilinearMaterial::getCopy (void)
+UniaxialMaterial *DrainBilinearMaterial::getCopy(void)
 {
-    Vector input (data, 16);
+    Vector input(data, 16);
 
     DrainBilinearMaterial *theCopy =
-        new DrainBilinearMaterial (this->getTag (), input, beto);
+        new DrainBilinearMaterial(this->getTag(), input, beto);
 
     return theCopy;
 }

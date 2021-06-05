@@ -40,27 +40,25 @@
 // SimpleDOF_Iter(AnalysisModel *theModel):
 //      constructor that takes the model, just the basic iter
 
-SimpleDOF_Iter::SimpleDOF_Iter (AnalysisModel & theModel):myModel (theModel), currIndex (0),
-numDone (0)
+SimpleDOF_Iter::SimpleDOF_Iter(AnalysisModel & theModel):myModel(theModel), currIndex(0),
+numDone(0)
 {
 }
 
 
-SimpleDOF_Iter::~SimpleDOF_Iter ()
+SimpleDOF_Iter::~SimpleDOF_Iter()
 {
 }
 
 void
-SimpleDOF_Iter::reset (void)
+ SimpleDOF_Iter::reset(void)
 {
     currIndex = 0;
     numDone = 0;
 }
 
 
-DOF_Group *
-SimpleDOF_Iter::operator () (void)
-{
+DOF_Group *SimpleDOF_Iter::operator () (void) {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
 
@@ -68,16 +66,16 @@ SimpleDOF_Iter::operator () (void)
         return 0;
 
     // search through domains ele list till we find the next element
-    while ((currIndex < myModel.sizeDOF) && (myModel.theDOFs[currIndex] == 0))
+    while ((currIndex < myModel.sizeDOF)
+           && (myModel.theDOFs[currIndex] == 0))
         currIndex++;
 
     // if not at the end of the list return the element
-    if (currIndex < myModel.sizeDOF)
-      {
-          DOF_Group *result = myModel.theDOFs[currIndex];
-          numDone++;
-          currIndex++;
-          return (result);
-      }
+    if (currIndex < myModel.sizeDOF) {
+        DOF_Group *result = myModel.theDOFs[currIndex];
+        numDone++;
+        currIndex++;
+        return (result);
+    }
     return (0);
 }

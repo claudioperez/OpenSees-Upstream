@@ -48,78 +48,71 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_CableMaterial (void)
+void *OPS_CableMaterial(void)
 {
     // Pointer to a uniaxial material that will be returned
     UniaxialMaterial *theMaterial = 0;
 
-    int numArgs = OPS_GetNumRemainingInputArgs ();
-    if (numArgs != 5)
-      {
-          opserr <<
-              "Invalid # args, want: uniaxialMaterial Cable tag? $presetress $E $effUnitWeight $Lelement \n";
-          return 0;
-      }
+    int numArgs = OPS_GetNumRemainingInputArgs();
+    if (numArgs != 5) {
+        opserr <<
+            "Invalid # args, want: uniaxialMaterial Cable tag? $presetress $E $effUnitWeight $Lelement \n";
+        return 0;
+    }
 
     int iData[1];
     double dData[4];
 
     int numData = 1;
-    if (OPS_GetIntInput (&numData, iData) != 0)
-      {
-          opserr << "WARNING invalid tag for uniaxialMaterial Cable" << endln;
-          return 0;
-      }
+    if (OPS_GetIntInput(&numData, iData) != 0) {
+        opserr << "WARNING invalid tag for uniaxialMaterial Cable" <<
+            endln;
+        return 0;
+    }
 
     numData = 4;
-    if (OPS_GetDoubleInput (&numData, dData) != 0)
-      {
-          opserr << "Invalid data for uniaxial Cable " << iData[0] << endln;
-          return 0;
-      }
-
+    if (OPS_GetDoubleInput(&numData, dData) != 0) {
+        opserr << "Invalid data for uniaxial Cable " << iData[0] << endln;
+        return 0;
+    }
     // Parsing was successful, allocate the material
     theMaterial =
-        new CableMaterial (iData[0], dData[0], dData[1], dData[2], dData[3]);
-    if (theMaterial == 0)
-      {
-          opserr <<
-              "WARNING could not create uniaxialMaterial of type Cable\n";
-          return 0;
-      }
+        new CableMaterial(iData[0], dData[0], dData[1], dData[2],
+                          dData[3]);
+    if (theMaterial == 0) {
+        opserr <<
+            "WARNING could not create uniaxialMaterial of type Cable\n";
+        return 0;
+    }
 
     return theMaterial;
 }
 #endif
 
 
-CableMaterial::CableMaterial (int tag, double PRESTRESS, double e,
-                              double UNIT_WEIGHT_EFF, double L_Element):
-UniaxialMaterial (tag, MAT_TAG_CableMaterial),
-Ps (PRESTRESS),
-E (e),
-Mue (UNIT_WEIGHT_EFF),
-L (L_Element),
-trialStrain (0.0)
+CableMaterial::CableMaterial(int tag, double PRESTRESS, double e,
+                             double UNIT_WEIGHT_EFF,
+                             double L_Element):UniaxialMaterial(tag,
+                                                                MAT_TAG_CableMaterial),
+Ps(PRESTRESS), E(e), Mue(UNIT_WEIGHT_EFF), L(L_Element), trialStrain(0.0)
 {
 
 }
 
-CableMaterial::CableMaterial ():UniaxialMaterial (0, MAT_TAG_CableMaterial),
-Ps (0.0), E (0.0), Mue (0.0),
-L (0.0), trialStrain (0.0)
+CableMaterial::CableMaterial():UniaxialMaterial(0, MAT_TAG_CableMaterial),
+Ps(0.0), E(0.0), Mue(0.0),
+L(0.0), trialStrain(0.0)
 {
 
 }
 
-CableMaterial::~CableMaterial ()
+CableMaterial::~CableMaterial()
 {
     // does nothing
 }
 
 int
-CableMaterial::setTrialStrain (double strain, double strainRate)
+ CableMaterial::setTrialStrain(double strain, double strainRate)
 {
     trialStrain = strain;
 
@@ -135,16 +128,15 @@ CableMaterial::setTrialStrain (double strain, double strainRate)
 
     if (trialStrain < 0)
         U_bound = Ps;
-    else
-      {
-          U_bound = E * trialStrain + Ps;
-          testStress = U_bound;
-      }
+    else {
+        U_bound = E * trialStrain + Ps;
+        testStress = U_bound;
+    }
 
     // Check if slack in cable has been taken out and it is a bar
     e0 = Mue * Mue * L * L / (24 * Ps * Ps) - Ps / E;
     if (trialStrain > 0
-        && abs (trialStrain - evalStress ((trialStrain - e0) * E)) < 10e-9)
+        && abs(trialStrain - evalStress((trialStrain - e0) * E)) < 10e-9)
         trialStress = (trialStrain - e0) * E;
 
     // Check if all slack
@@ -154,23 +146,19 @@ CableMaterial::setTrialStrain (double strain, double strainRate)
     // if stress is in between then do iterations -- Bisection
     dP = U_bound - L_bound;
 
-    while (abs (dP) / U_bound > 0.00000001 && i < 100)
-      {
+    while (abs(dP) / U_bound > 0.00000001 && i < 100) {
 
-          middle = .5 * (U_bound + L_bound);
-          curstrain = evalStress (middle);
+        middle = .5 * (U_bound + L_bound);
+        curstrain = evalStress(middle);
 
-          if (curstrain <= trialStrain)
-            {
-                L_bound = middle;
-            }
-          else
-            {
-                U_bound = middle;
-            }
-          dP = U_bound - L_bound;
-          i++;
-      }
+        if (curstrain <= trialStrain) {
+            L_bound = middle;
+        } else {
+            U_bound = middle;
+        }
+        dP = U_bound - L_bound;
+        i++;
+    }
 
     // if it did not converge - return near zero stress
     if (i == 100)
@@ -184,10 +172,8 @@ CableMaterial::setTrialStrain (double strain, double strainRate)
     // Elastic Part
     derivE =
         1 / E * (1. -
-                 Mue * Mue * L * L / (24. * trialStress * trialStress) * (1. -
-                                                                          2. *
-                                                                          Ps /
-                                                                          trialStress));
+                 Mue * Mue * L * L / (24. * trialStress * trialStress) *
+                 (1. - 2. * Ps / trialStress));
     // Geometric Part
     derivG =
         1 / 12. * Mue * Mue * L * L / (trialStress * trialStress *
@@ -202,11 +188,10 @@ CableMaterial::setTrialStrain (double strain, double strainRate)
 }
 
 
-int
-CableMaterial::setTrial (double strain, double &stress, double &tangent,
-                         double strainRate)
+int CableMaterial::setTrial(double strain, double &stress, double &tangent,
+                            double strainRate)
 {
-    this->setTrialStrain (strain, strainRate);
+    this->setTrialStrain(strain, strainRate);
 
     // set the return values
     stress = trialStress;
@@ -215,119 +200,108 @@ CableMaterial::setTrial (double strain, double &stress, double &tangent,
     return 0;
 }
 
-double
-CableMaterial::getStress (void)
+double CableMaterial::getStress(void)
 {
     return trialStress;
 
 }
 
-double
-CableMaterial::evalStress (double stress)
+double CableMaterial::evalStress(double stress)
 {
     double strainG, strainE;
 
     // Should never be zero or less than zero
-    if (stress <= 0)
-      {
-          return -10;
-      }
-
+    if (stress <= 0) {
+        return -10;
+    }
     // Elastic Part
-    strainE = 1 / E * (stress - Ps) * (1 + Mue * Mue * L * L / (24 * stress));
+    strainE =
+        1 / E * (stress - Ps) * (1 + Mue * Mue * L * L / (24 * stress));
 
     // Geometric Part
     strainG =
-        1 / 24 * Mue * Mue * L * L * (1 / (Ps * Ps) - 1 / (stress * stress));
+        1 / 24 * Mue * Mue * L * L * (1 / (Ps * Ps) -
+                                      1 / (stress * stress));
 
     return strainE + strainG;
 }
 
 
-double
-CableMaterial::getTangent (void)
+double CableMaterial::getTangent(void)
 {
 
     return trialTangent;
 
 };
 
-int
-CableMaterial::commitState (void)
+int CableMaterial::commitState(void)
 {
     return 0;
 }
 
-int
-CableMaterial::revertToLastCommit (void)
+int CableMaterial::revertToLastCommit(void)
 {
     return 0;
 }
 
-int
-CableMaterial::revertToStart (void)
+int CableMaterial::revertToStart(void)
 {
     trialStrain = 0.0;
 
     return 0;
 }
 
-UniaxialMaterial *
-CableMaterial::getCopy (void)
+UniaxialMaterial *CableMaterial::getCopy(void)
 {
     CableMaterial *theCopy =
-        new CableMaterial (this->getTag (), Ps, E, Mue, L);
+        new CableMaterial(this->getTag(), Ps, E, Mue, L);
     theCopy->trialStrain = trialStrain;
     return theCopy;
 }
 
-int
-CableMaterial::sendSelf (int cTag, Channel & theChannel)
+int CableMaterial::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (5);
-    data (0) = this->getTag ();
-    data (1) = Ps;
-    data (2) = E;
-    data (3) = Mue;
-    data (4) = L;
+    static Vector data(5);
+    data(0) = this->getTag();
+    data(1) = Ps;
+    data(2) = E;
+    data(3) = Mue;
+    data(4) = L;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "CableMaterial::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-CableMaterial::recvSelf (int cTag, Channel & theChannel,
-                         FEM_ObjectBroker & theBroker)
+int CableMaterial::recvSelf(int cTag, Channel & theChannel,
+                            FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (5);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(5);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
 
-    if (res < 0)
-      {
-          opserr << "CableMaterial::recvSelf() - failed to receive data\n";
-          E = 0;
-          this->setTag (0);
-          return res;
-      }
+    if (res < 0) {
+        opserr << "CableMaterial::recvSelf() - failed to receive data\n";
+        E = 0;
+        this->setTag(0);
+        return res;
+    }
 
-    this->setTag (data (0));
-    Ps = data (1);
-    E = data (2);
-    Mue = data (3);
-    L = data (4);
+    this->setTag(data(0));
+    Ps = data(1);
+    E = data(2);
+    Mue = data(3);
+    L = data(4);
 
     return res;
 }
 
-void
-CableMaterial::Print (OPS_Stream & s, int flag)
+void CableMaterial::Print(OPS_Stream & s, int flag)
 {
-    s << "CableMaterial tag: " << this->getTag () << endln;
+    s << "CableMaterial tag: " << this->getTag() << endln;
     s << "  E: " << E << " Prestress: " << Ps << endln;
 }
 
@@ -364,8 +338,7 @@ CableMaterial::Print (OPS_Stream & s, int flag)
 //}
 
 
-double
-CableMaterial::abs (double value)
+double CableMaterial::abs(double value)
 {
     if (value < 0)
         return -value;

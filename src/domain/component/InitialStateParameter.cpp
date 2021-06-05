@@ -27,9 +27,9 @@
 #include <ElementIter.h>
 #include <Channel.h>
 
-InitialStateParameter::InitialStateParameter (bool stateFlag):
-Parameter (0, PARAMETER_TAG_InitialStateParameter),
-theDomain (0)
+InitialStateParameter::InitialStateParameter(bool stateFlag):Parameter(0,
+                                                                       PARAMETER_TAG_InitialStateParameter),
+theDomain(0)
 {
     if (stateFlag == true)
         flag = 1;
@@ -37,25 +37,24 @@ theDomain (0)
         flag = 0;
 }
 
-InitialStateParameter::InitialStateParameter ():Parameter (0, PARAMETER_TAG_InitialStateParameter),
-flag (0)
+InitialStateParameter::InitialStateParameter():Parameter(0, PARAMETER_TAG_InitialStateParameter),
+flag(0)
 {
 
 }
 
-InitialStateParameter::~InitialStateParameter ()
-{
-
-}
-
-void
-InitialStateParameter::Print (OPS_Stream & s, int flag)
+InitialStateParameter::~InitialStateParameter()
 {
 
 }
 
 void
-InitialStateParameter::setDomain (Domain * theDomain)
+ InitialStateParameter::Print(OPS_Stream & s, int flag)
+{
+
+}
+
+void InitialStateParameter::setDomain(Domain * theDomain)
 {
     if (flag == 1)
         ops_InitialStateAnalysis = true;
@@ -65,26 +64,24 @@ InitialStateParameter::setDomain (Domain * theDomain)
     return;
 }
 
-int
-InitialStateParameter::sendSelf (int commitTag, Channel & theChannel)
+int InitialStateParameter::sendSelf(int commitTag, Channel & theChannel)
 {
-    static ID theData (2);
-    theData[0] = this->getTag ();
+    static ID theData(2);
+    theData[0] = this->getTag();
     theData[1] = flag;
-    theChannel.sendID (commitTag, 0, theData);
+    theChannel.sendID(commitTag, 0, theData);
 
     return 0;
 }
 
-int
-InitialStateParameter::recvSelf (int commitTag,
-                                 Channel & theChannel,
-                                 FEM_ObjectBroker & theBroker)
+int InitialStateParameter::recvSelf(int commitTag,
+                                    Channel & theChannel,
+                                    FEM_ObjectBroker & theBroker)
 {
-    static ID theData (2);
-    theChannel.recvID (commitTag, 0, theData);
+    static ID theData(2);
+    theChannel.recvID(commitTag, 0, theData);
 
-    this->setTag (theData[0]);
+    this->setTag(theData[0]);
     flag = theData[1];
 
     theData[0] = -1;

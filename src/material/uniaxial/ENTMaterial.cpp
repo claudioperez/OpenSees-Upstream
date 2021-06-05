@@ -42,25 +42,23 @@
 #include <math.h>
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_ENTMaterial ()
+void *OPS_ENTMaterial()
 {
-    if (OPS_GetNumRemainingInputArgs () < 2)
-      {
-          opserr << "WARNING: invalid #args: ENT matTag E\n";
-          return 0;
-      }
+    if (OPS_GetNumRemainingInputArgs() < 2) {
+        opserr << "WARNING: invalid #args: ENT matTag E\n";
+        return 0;
+    }
 
     int tag;
     int num = 1;
-    if (OPS_GetIntInput (&num, &tag) < 0)
+    if (OPS_GetIntInput(&num, &tag) < 0)
         return 0;
 
     double E;
-    if (OPS_GetDoubleInput (&num, &E) < 0)
+    if (OPS_GetDoubleInput(&num, &E) < 0)
         return 0;
 
-    UniaxialMaterial *mat = new ENTMaterial (tag, E);
+    UniaxialMaterial *mat = new ENTMaterial(tag, E);
     if (mat == 0)
         return 0;
 
@@ -73,182 +71,158 @@ OPS_ENTMaterial ()
 }
 #endif
 
-ENTMaterial::ENTMaterial (int tag, double e, double A, double B):
-UniaxialMaterial (tag, MAT_TAG_ENTMaterial),
-E (e),
-trialStrain (0.0),
-parameterID (0),
-a (A),
-b (B)
+ENTMaterial::ENTMaterial(int tag, double e, double A,
+                         double B):UniaxialMaterial(tag,
+                                                    MAT_TAG_ENTMaterial),
+E(e), trialStrain(0.0), parameterID(0), a(A), b(B)
 {
 
 }
 
-ENTMaterial::ENTMaterial ():UniaxialMaterial (0, MAT_TAG_ENTMaterial),
-E (0.0), trialStrain (0.0), parameterID (0)
+ENTMaterial::ENTMaterial():UniaxialMaterial(0, MAT_TAG_ENTMaterial),
+E(0.0), trialStrain(0.0), parameterID(0)
 {
 
 }
 
-ENTMaterial::~ENTMaterial ()
+ENTMaterial::~ENTMaterial()
 {
     // does nothing
 }
 
 int
-ENTMaterial::setTrialStrain (double strain, double strainRate)
+ ENTMaterial::setTrialStrain(double strain, double strainRate)
 {
     trialStrain = strain;
     return 0;
 }
 
-double
-ENTMaterial::getStrain (void)
+double ENTMaterial::getStrain(void)
 {
     return trialStrain;
 }
 
-double
-ENTMaterial::getStress (void)
+double ENTMaterial::getStress(void)
 {
     if (trialStrain < 0.0)
         return E * trialStrain;
     else if (a == 0.0)
         return 0.0;
     else
-        return a * E * tanh (trialStrain * b);
+        return a * E * tanh(trialStrain * b);
 }
 
-double
-ENTMaterial::getTangent (void)
+double ENTMaterial::getTangent(void)
 {
     if (trialStrain <= 0.0)
         return E;
     else if (a == 0.0)
         return 0;
-    else
-      {
-          double tanhB = tanh (trialStrain * b);
-          return a * E * (1.0 - tanhB * tanhB);
-      }
+    else {
+        double tanhB = tanh(trialStrain * b);
+        return a * E * (1.0 - tanhB * tanhB);
+    }
 }
 
-int
-ENTMaterial::commitState (void)
+int ENTMaterial::commitState(void)
 {
     return 0;
 }
 
-int
-ENTMaterial::revertToLastCommit (void)
+int ENTMaterial::revertToLastCommit(void)
 {
     return 0;
 }
 
-int
-ENTMaterial::revertToStart (void)
+int ENTMaterial::revertToStart(void)
 {
     return 0;
 }
 
-UniaxialMaterial *
-ENTMaterial::getCopy (void)
+UniaxialMaterial *ENTMaterial::getCopy(void)
 {
-    ENTMaterial *theCopy = new ENTMaterial (this->getTag (), E);
+    ENTMaterial *theCopy = new ENTMaterial(this->getTag(), E);
     theCopy->trialStrain = trialStrain;
     theCopy->parameterID = parameterID;
     return theCopy;
 }
 
-int
-ENTMaterial::sendSelf (int cTag, Channel & theChannel)
+int ENTMaterial::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
-    static Vector data (2);
-    data (0) = this->getTag ();
-    data (1) = E;
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    static Vector data(2);
+    data(0) = this->getTag();
+    data(1) = E;
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "ENTMaterial::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-ENTMaterial::recvSelf (int cTag, Channel & theChannel,
-                       FEM_ObjectBroker & theBroker)
+int ENTMaterial::recvSelf(int cTag, Channel & theChannel,
+                          FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static Vector data (2);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(2);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
 
-    if (res < 0)
-      {
-          opserr << "ENTMaterial::recvSelf() - failed to receive data\n";
-          E = 0;
-          this->setTag (0);
-      }
-    else
-      {
-          this->setTag ((int) data (0));
-          E = data (1);
-      }
+    if (res < 0) {
+        opserr << "ENTMaterial::recvSelf() - failed to receive data\n";
+        E = 0;
+        this->setTag(0);
+    } else {
+        this->setTag((int) data(0));
+        E = data(1);
+    }
 
     return res;
 }
 
-void
-ENTMaterial::Print (OPS_Stream & s, int flag)
+void ENTMaterial::Print(OPS_Stream & s, int flag)
 {
-    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL)
-      {
-          s << "ENTMaterial, tag: " << this->getTag () << endln;
-          s << "  E: " << E << endln;
-      }
+    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL) {
+        s << "ENTMaterial, tag: " << this->getTag() << endln;
+        s << "  E: " << E << endln;
+    }
 
-    if (flag == OPS_PRINT_PRINTMODEL_JSON)
-      {
-          s << "\t\t\t{";
-          s << "\"name\": \"" << this->getTag () << "\", ";
-          s << "\"type\": \"ENTMaterial\", ";
-          s << "\"E\": " << E << "}";
-      }
+    if (flag == OPS_PRINT_PRINTMODEL_JSON) {
+        s << "\t\t\t{";
+        s << "\"name\": \"" << this->getTag() << "\", ";
+        s << "\"type\": \"ENTMaterial\", ";
+        s << "\"E\": " << E << "}";
+    }
 }
 
-int
-ENTMaterial::setParameter (const char **argv, int argc, Parameter & param)
+int ENTMaterial::setParameter(const char **argv, int argc,
+                              Parameter & param)
 {
-    if (strcmp (argv[0], "E") == 0)
-      {
-          param.setValue (E);
-          return param.addObject (1, this);
-      }
+    if (strcmp(argv[0], "E") == 0) {
+        param.setValue(E);
+        return param.addObject(1, this);
+    }
     return -1;
 }
 
-int
-ENTMaterial::updateParameter (int parameterID, Information & info)
+int ENTMaterial::updateParameter(int parameterID, Information & info)
 {
-    switch (parameterID)
-      {
-      case 1:
-          E = info.theDouble;
-          return 0;
-      default:
-          return -1;
-      }
+    switch (parameterID) {
+    case 1:
+        E = info.theDouble;
+        return 0;
+    default:
+        return -1;
+    }
 }
 
-int
-ENTMaterial::activateParameter (int paramID)
+int ENTMaterial::activateParameter(int paramID)
 {
     parameterID = paramID;
 
     return 0;
 }
 
-double
-ENTMaterial::getStressSensitivity (int gradIndex, bool conditional)
+double ENTMaterial::getStressSensitivity(int gradIndex, bool conditional)
 {
     if (parameterID == 1 && trialStrain < 0.0)
         return trialStrain;
@@ -256,15 +230,13 @@ ENTMaterial::getStressSensitivity (int gradIndex, bool conditional)
         return 0.0;
 }
 
-double
-ENTMaterial::getInitialTangentSensitivity (int gradIndex)
+double ENTMaterial::getInitialTangentSensitivity(int gradIndex)
 {
     return 0.0;
 }
 
-int
-ENTMaterial::commitSensitivity (double strainGradient,
-                                int gradIndex, int numGrads)
+int ENTMaterial::commitSensitivity(double strainGradient,
+                                   int gradIndex, int numGrads)
 {
     // Nothing to commit ... path independent
     return 0;

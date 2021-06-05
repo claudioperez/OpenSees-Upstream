@@ -26,19 +26,16 @@
 #include <Vector.h>
 #include <iostream>
 #include <iomanip>
-using
-    std::cerr;
-using
-    std::ios;
-using
-    std::setiosflags;
+using std::cerr;
+using std::ios;
+using std::setiosflags;
 
-DummyStream::DummyStream ():OPS_Stream (OPS_STREAM_TAGS_DummyStream)
+DummyStream::DummyStream():OPS_Stream(OPS_STREAM_TAGS_DummyStream)
 {
 
 }
 
-DummyStream::~DummyStream ()
+DummyStream::~DummyStream()
 {
 
 }

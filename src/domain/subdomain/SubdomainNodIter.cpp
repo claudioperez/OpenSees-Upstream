@@ -47,37 +47,33 @@
 // SubdomainNodIter(SingleDomain &theDomain):
 //      constructor that takes the model, just the basic iter
 
-SubdomainNodIter::SubdomainNodIter (Subdomain & theSub):currentIter (0), theSubdomain (&theSub),
-external (true)
+SubdomainNodIter::SubdomainNodIter(Subdomain & theSub):currentIter(0), theSubdomain(&theSub),
+external(true)
 {
 }
 
 
-SubdomainNodIter::~SubdomainNodIter ()
+SubdomainNodIter::~SubdomainNodIter()
 {
 }
 
 void
-SubdomainNodIter::reset (void)
+ SubdomainNodIter::reset(void)
 {
-    currentIter = &(theSubdomain->getExternalNodeIter ());
+    currentIter = &(theSubdomain->getExternalNodeIter());
     external = true;
 }
 
-Node *
-SubdomainNodIter::operator () (void)
-{
+Node *SubdomainNodIter::operator () (void) {
     Node * theNod;
 
     theNod = (*currentIter) ();
     if (theNod != 0)
         return theNod;
-    else if (external == true)
-      {
-          currentIter = &(theSubdomain->getInternalNodeIter ());
-          external = false;
-          return (*currentIter) ();
-      }
-    else
+    else if (external == true) {
+        currentIter = &(theSubdomain->getInternalNodeIter());
+        external = false;
+        return (*currentIter) ();
+    } else
         return 0;
 }

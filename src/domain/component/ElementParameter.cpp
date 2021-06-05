@@ -30,53 +30,49 @@
 #include <Channel.h>
 #include <Message.h>
 
-ElementParameter::ElementParameter (int passedTag,
-                                    int eleTag,
-                                    const char **theArgv, int theArgc):
-Parameter (passedTag, PARAMETER_TAG_ElementParameter),
-eleTags (1),
-numChannels (0),
-theChannels (0)
+ElementParameter::ElementParameter(int passedTag,
+                                   int eleTag,
+                                   const char **theArgv,
+                                   int theArgc):Parameter(passedTag,
+                                                          PARAMETER_TAG_ElementParameter),
+eleTags(1), numChannels(0), theChannels(0)
 {
     argc = theArgc;
     argv = 0;
     argvSize = 0;
 
-    if (argc != 0)
-      {
-          argv = new char *[argc];
-          for (int i = 0; i < argc; i++)
-            {
-                int lengthArgvI = strlen (theArgv[i]);
-                argvSize += lengthArgvI + 1;
-            }
+    if (argc != 0) {
+        argv = new char *[argc];
+        for (int i = 0; i < argc; i++) {
+            int lengthArgvI = strlen(theArgv[i]);
+            argvSize += lengthArgvI + 1;
+        }
 
-          argv[0] = new char[argvSize];
-          strcpy (argv[0], theArgv[0]);
-          argvSize = strlen (theArgv[0]) + 1;
+        argv[0] = new char[argvSize];
+        strcpy(argv[0], theArgv[0]);
+        argvSize = strlen(theArgv[0]) + 1;
 
-          for (int i = 1; i < argc; i++)
-            {
-                int lengthArgvI = strlen (theArgv[i - 1]);
-                argv[i] = argv[i - 1] + lengthArgvI + 1;
-                strcpy (argv[i], theArgv[i]);
-                argvSize += lengthArgvI + 1;
-            }
-      }
+        for (int i = 1; i < argc; i++) {
+            int lengthArgvI = strlen(theArgv[i - 1]);
+            argv[i] = argv[i - 1] + lengthArgvI + 1;
+            strcpy(argv[i], theArgv[i]);
+            argvSize += lengthArgvI + 1;
+        }
+    }
 
     eleTags[0] = eleTag;
 }
 
 
-ElementParameter::ElementParameter ():Parameter (-1, PARAMETER_TAG_ElementParameter),
-numChannels (0), theChannels (0)
+ElementParameter::ElementParameter():Parameter(-1, PARAMETER_TAG_ElementParameter),
+numChannels(0), theChannels(0)
 {
     argc = 0;
     argv = 0;
     argvSize = 0;
 }
 
-ElementParameter::~ElementParameter ()
+ElementParameter::~ElementParameter()
 {
     if (argv != 0)
         delete[]argv[0];        // stored in 1 array
@@ -89,13 +85,12 @@ ElementParameter::~ElementParameter ()
 
 
 int
-ElementParameter::update (int newValue)
+ ElementParameter::update(int newValue)
 {
-    return this->Parameter::update (newValue);
+    return this->Parameter::update(newValue);
 }
 
-int
-ElementParameter::update (double newValue)
+int ElementParameter::update(double newValue)
 {
     /* THIS DOES NOT WORK, NOT ALL PARAMETERS ARE WORKING THE SAME WAY!
        if (numChannels != 0) {
@@ -122,78 +117,68 @@ ElementParameter::update (double newValue)
        }
        }
      */
-    return this->Parameter::update (newValue);
+    return this->Parameter::update(newValue);
 }
 
-int
-ElementParameter::addComponent (int eleTag, const char **theArgv, int theArgc)
+int ElementParameter::addComponent(int eleTag, const char **theArgv,
+                                   int theArgc)
 {
     opserr << "elementParameter::addComponent - hopefully not called\n";
-    int numEle = eleTags.Size ();
+    int numEle = eleTags.Size();
     eleTags[numEle] = eleTag;
 
-    if (theDomain != 0)
-      {
-          Element *theEle = theDomain->getElement (eleTag);
-          if (theEle != 0)
-              return this->Parameter::addComponent (theEle, theArgv, theArgc);
-      }
+    if (theDomain != 0) {
+        Element *theEle = theDomain->getElement(eleTag);
+        if (theEle != 0)
+            return this->Parameter::addComponent(theEle, theArgv, theArgc);
+    }
 
-    if (argc != theArgc)
-      {
-          opserr << "ElementParameter::addComponent(int eleTag) " << eleTag <<
-              " argc passed differ from stored, won't work in SP\n";
-          return 0;
-      }
-    for (int i = 0; i < argc; i++)
-      {
-          if (strcmp (argv[i], theArgv[i]) != 0)
-            {
-                opserr << "ElementParameter::addComponent(int eleTag) " <<
-                    eleTag <<
-                    " argc passed differ from stored, won't work in SP\n";
-            }
-      }
+    if (argc != theArgc) {
+        opserr << "ElementParameter::addComponent(int eleTag) " << eleTag
+            << " argc passed differ from stored, won't work in SP\n";
+        return 0;
+    }
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], theArgv[i]) != 0) {
+            opserr << "ElementParameter::addComponent(int eleTag) " <<
+                eleTag <<
+                " argc passed differ from stored, won't work in SP\n";
+        }
+    }
     return 0;
 }
 
-void
-ElementParameter::setDomain (Domain * aDomain)
+void ElementParameter::setDomain(Domain * aDomain)
 {
     theDomain = aDomain;
-    this->Parameter::clean ();
+    this->Parameter::clean();
 
     const char **theArgv = (const char **) argv;
-    int numEle = eleTags.Size ();
-    for (int i = 0; i < numEle; i++)
-      {
-          int eleTag = eleTags[i];
-          Element *theEle = theDomain->getElement (eleTag);
-          if (theEle != 0)
-            {
-                this->Parameter::addComponent (theEle, theArgv, argc);
-            }
-      }
+    int numEle = eleTags.Size();
+    for (int i = 0; i < numEle; i++) {
+        int eleTag = eleTags[i];
+        Element *theEle = theDomain->getElement(eleTag);
+        if (theEle != 0) {
+            this->Parameter::addComponent(theEle, theArgv, argc);
+        }
+    }
 }
 
-int
-ElementParameter::sendSelf (int commitTag, Channel & theChannel)
+int ElementParameter::sendSelf(int commitTag, Channel & theChannel)
 {
-    ID idData (4);
-    idData (0) = this->getTag ();
-    idData (1) = eleTags.Size ();
-    idData (2) = argvSize;
-    idData (3) = argc;
+    ID idData(4);
+    idData(0) = this->getTag();
+    idData(1) = eleTags.Size();
+    idData(2) = argvSize;
+    idData(3) = argc;
 
-    if (theChannel.sendID (0, commitTag, idData) < 0)
-      {
+    if (theChannel.sendID(0, commitTag, idData) < 0) {
 
-      }
+    }
 
-    if (theChannel.sendID (0, commitTag, eleTags) < 0)
-      {
+    if (theChannel.sendID(0, commitTag, eleTags) < 0) {
 
-      }
+    }
     /*
        ID argData(argc-1);
 
@@ -205,13 +190,10 @@ ElementParameter::sendSelf (int commitTag, Channel & theChannel)
 
        }
      */
-    Message msgData (argv[0], argvSize);
-    if (theChannel.sendMsg (0, commitTag, msgData) < 0)
-      {
+    Message msgData(argv[0], argvSize);
+    if (theChannel.sendMsg(0, commitTag, msgData) < 0) {
 
-      }
-
-
+    }
     //
     // add the channel to theChanels array
     //
@@ -229,36 +211,32 @@ ElementParameter::sendSelf (int commitTag, Channel & theChannel)
     return 0;
 }
 
-int
-ElementParameter::recvSelf (int commitTag, Channel & theChannel,
-                            FEM_ObjectBroker & theBroker)
+int ElementParameter::recvSelf(int commitTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
 {
-    ID idData (4);
+    ID idData(4);
 
-    if (theChannel.recvID (0, commitTag, idData) < 0)
-      {
+    if (theChannel.recvID(0, commitTag, idData) < 0) {
 
-      }
+    }
 
-    this->setTag (idData (0));
+    this->setTag(idData(0));
 
-    eleTags.resize (idData (1));
+    eleTags.resize(idData(1));
 
-    if (theChannel.recvID (0, commitTag, eleTags) < 0)
-      {
+    if (theChannel.recvID(0, commitTag, eleTags) < 0) {
 
-      }
+    }
 
-    if (argv != 0)
-      {
-          if (argv[0] != 0)
-              delete[]argv[0];
+    if (argv != 0) {
+        if (argv[0] != 0)
+            delete[]argv[0];
 
-          delete[]argv;
-      }
+        delete[]argv;
+    }
 
-    argc = idData (3);
-    argvSize = idData (2);
+    argc = idData(3);
+    argvSize = idData(2);
 
     /*
        ID argData(argc-1);
@@ -269,14 +247,13 @@ ElementParameter::recvSelf (int commitTag, Channel & theChannel,
 
     argv = new char *[argc];
     argv[0] = new char[argvSize];
-    Message msgData (argv[0], argvSize);
-    if (theChannel.recvMsg (0, commitTag, msgData) < 0)
-      {
+    Message msgData(argv[0], argvSize);
+    if (theChannel.recvMsg(0, commitTag, msgData) < 0) {
 
-      }
+    }
 
     for (int i = 0; i < argc - 1; i++)
-        argv[i + 1] = argv[i] + strlen (argv[i]) + 1;
+        argv[i + 1] = argv[i] + strlen(argv[i]) + 1;
 
     if (theChannels != 0)
         delete[]theChannels;

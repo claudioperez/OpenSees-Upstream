@@ -36,32 +36,31 @@
 #include "ConsoleErrorHandler.h"
 #include <stdlib.h>
 
-ConsoleErrorHandler::ConsoleErrorHandler ():ErrorHandler ()
+ConsoleErrorHandler::ConsoleErrorHandler():ErrorHandler()
 {
 
 }
 
-ConsoleErrorHandler::~ConsoleErrorHandler ()
+ConsoleErrorHandler::~ConsoleErrorHandler()
 {
     // does nothing
 }
 
 
 void
-ConsoleErrorHandler::warning (const char *msg, ...)
+ ConsoleErrorHandler::warning(const char *msg, ...)
 {
     va_list args;
-    va_start (args, msg);
-    this->outputMessage (std::cerr, msg, args);
-    va_end (args);
+    va_start(args, msg);
+    this->outputMessage(std::cerr, msg, args);
+    va_end(args);
 }
 
-void
-ConsoleErrorHandler::fatal (const char *msg, ...)
+void ConsoleErrorHandler::fatal(const char *msg, ...)
 {
     va_list args;
-    va_start (args, msg);
-    this->outputMessage (std::cerr, msg, args);
-    va_end (args);
-    exit (-1);
+    va_start(args, msg);
+    this->outputMessage(std::cerr, msg, args);
+    va_end(args);
+    exit(-1);
 }

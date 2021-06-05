@@ -38,18 +38,17 @@
 #include <Analysis.h>
 #include <Domain.h>
 
-Analysis::Analysis (Domain & theDom):theDomain (&theDom)
+Analysis::Analysis(Domain & theDom):theDomain(&theDom)
 {
 
 }
 
-Analysis::~Analysis ()
+Analysis::~Analysis()
 {
 
 }
 
-Domain *
-Analysis::getDomainPtr (void)
+Domain *Analysis::getDomainPtr(void)
 {
     return theDomain;
 }

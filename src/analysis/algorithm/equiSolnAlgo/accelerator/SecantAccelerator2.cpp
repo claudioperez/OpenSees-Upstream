@@ -34,38 +34,26 @@
 #include <LinearSOE.h>
 #include <IncrementalIntegrator.h>
 
-SecantAccelerator2::SecantAccelerator2 (int maxIter, int tangent):
-Accelerator (ACCELERATOR_TAGS_Secant),
-iteration (0),
-numEqns (0),
-R1 (3.5),
-R2 (0.3),
-vOld (0),
-rOld (0),
-maxIterations (maxIter),
-theTangent (tangent),
-cutOut (true)
+SecantAccelerator2::SecantAccelerator2(int maxIter,
+                                       int
+                                       tangent):Accelerator
+    (ACCELERATOR_TAGS_Secant), iteration(0), numEqns(0), R1(3.5), R2(0.3),
+vOld(0), rOld(0), maxIterations(maxIter), theTangent(tangent), cutOut(true)
 {
 
 }
 
-SecantAccelerator2::SecantAccelerator2 (int maxIter, int tangent,
-                                        double r1, double r2):
-Accelerator (ACCELERATOR_TAGS_Secant),
-iteration (0),
-numEqns (0),
-R1 (r1),
-R2 (r2),
-vOld (0),
-rOld (0),
-maxIterations (maxIter),
-theTangent (tangent),
-cutOut (true)
+SecantAccelerator2::SecantAccelerator2(int maxIter, int tangent,
+                                       double r1,
+                                       double
+                                       r2):Accelerator
+    (ACCELERATOR_TAGS_Secant), iteration(0), numEqns(0), R1(r1), R2(r2),
+vOld(0), rOld(0), maxIterations(maxIter), theTangent(tangent), cutOut(true)
 {
 
 }
 
-SecantAccelerator2::~SecantAccelerator2 ()
+SecantAccelerator2::~SecantAccelerator2()
 {
     if (vOld != 0)
         delete vOld;
@@ -75,29 +63,27 @@ SecantAccelerator2::~SecantAccelerator2 ()
 }
 
 int
-SecantAccelerator2::newStep (LinearSOE & theSOE)
+ SecantAccelerator2::newStep(LinearSOE & theSOE)
 {
-    int newNumEqns = theSOE.getNumEqn ();
+    int newNumEqns = theSOE.getNumEqn();
 
-    if (vOld != 0 && vOld->Size () != newNumEqns)
-      {
-          delete vOld;
-          vOld = 0;
-      }
+    if (vOld != 0 && vOld->Size() != newNumEqns) {
+        delete vOld;
+        vOld = 0;
+    }
 
-    if (rOld != 0 && rOld->Size () != newNumEqns)
-      {
-          delete rOld;
-          rOld = 0;
-      }
+    if (rOld != 0 && rOld->Size() != newNumEqns) {
+        delete rOld;
+        rOld = 0;
+    }
 
     numEqns = newNumEqns;
 
     if (vOld == 0)
-        vOld = new Vector (numEqns);
+        vOld = new Vector(numEqns);
 
     if (rOld == 0)
-        rOld = new Vector (numEqns);
+        rOld = new Vector(numEqns);
 
     // Reset iteration counter
     iteration = 0;
@@ -105,44 +91,38 @@ SecantAccelerator2::newStep (LinearSOE & theSOE)
     return 0;
 }
 
-int
-SecantAccelerator2::accelerate (Vector & vStar, LinearSOE & theSOE,
-                                IncrementalIntegrator & theIntegrator)
+int SecantAccelerator2::accelerate(Vector & vStar, LinearSOE & theSOE,
+                                   IncrementalIntegrator & theIntegrator)
 {
     // Current right hand side
-    const Vector & rNew = theSOE.getB ();
+    const Vector & rNew = theSOE.getB();
 
     // No acceleration on first iteration
-    if (iteration == 0)
-      {
-          // do nothing
-      }
-    else
-      {
-          // Store gamma in rOld ... \gamma = R_i - R_{i-1}
-          rOld->addVector (-1.0, rNew, 1.0);
+    if (iteration == 0) {
+        // do nothing
+    } else {
+        // Store gamma in rOld ... \gamma = R_i - R_{i-1}
+        rOld->addVector(-1.0, rNew, 1.0);
 
-          double den = 1.0 / ((*vOld) ^ (*rOld));
-          double C = ((*vOld) ^ rNew) * den;
-          double A = 1.0 - C;
-          double D = -C - A * (vStar ^ (*rOld)) * den;
-          //D = -C - (vStar^(*rOld))*den;
-          double DA = D / A;
+        double den = 1.0 / ((*vOld) ^ (*rOld));
+        double C = ((*vOld) ^ rNew) * den;
+        double A = 1.0 - C;
+        double D = -C - A * (vStar ^ (*rOld)) * den;
+        //D = -C - (vStar^(*rOld))*den;
+        double DA = D / A;
 
-          // Check "cut-out" criteria
-          if (cutOut && (A > R1 || A < 1.0 / R1 || DA > R2 || DA < -0.5 * R2))
-            {
-                // do nothing
-                //opserr << "SecantAccelerator2::accelerate() -- cut out, A = " << A
-                //           << ", D/A = " << DA << endln;
-            }
-          else
-            {
-                //vStar.addVector(A, *vOld, D);
-                vStar *= A;
-                vStar.addVector (1.0, *vOld, D);
-            }
-      }
+        // Check "cut-out" criteria
+        if (cutOut
+            && (A > R1 || A < 1.0 / R1 || DA > R2 || DA < -0.5 * R2)) {
+            // do nothing
+            //opserr << "SecantAccelerator2::accelerate() -- cut out, A = " << A
+            //           << ", D/A = " << DA << endln;
+        } else {
+            //vStar.addVector(A, *vOld, D);
+            vStar *= A;
+            vStar.addVector(1.0, *vOld, D);
+        }
+    }
 
     // Store old values for next iteration
     *rOld = rNew;
@@ -153,31 +133,30 @@ SecantAccelerator2::accelerate (Vector & vStar, LinearSOE & theSOE,
     return 0;
 }
 
-int
-SecantAccelerator2::updateTangent (IncrementalIntegrator & theIntegrator)
+int SecantAccelerator2::
+updateTangent(IncrementalIntegrator & theIntegrator)
 {
     if (iteration < maxIterations)
         return 0;
 
-    switch (theTangent)
-      {
-      case CURRENT_TANGENT:
-          iteration = 0;
-          theIntegrator.formTangent (CURRENT_TANGENT);
-          return 1;
-          break;
-      case INITIAL_TANGENT:
-          iteration = 0;
-          theIntegrator.formTangent (INITIAL_TANGENT);
-          return 0;
-          break;
-      case NO_TANGENT:
-          //iteration = 0;
-          return 0;
-          break;
-      default:
-          return 0;
-      }
+    switch (theTangent) {
+    case CURRENT_TANGENT:
+        iteration = 0;
+        theIntegrator.formTangent(CURRENT_TANGENT);
+        return 1;
+        break;
+    case INITIAL_TANGENT:
+        iteration = 0;
+        theIntegrator.formTangent(INITIAL_TANGENT);
+        return 0;
+        break;
+    case NO_TANGENT:
+        //iteration = 0;
+        return 0;
+        break;
+    default:
+        return 0;
+    }
 
 
     /*
@@ -199,8 +178,7 @@ SecantAccelerator2::updateTangent (IncrementalIntegrator & theIntegrator)
      */
 }
 
-void
-SecantAccelerator2::Print (OPS_Stream & s, int flag)
+void SecantAccelerator2::Print(OPS_Stream & s, int flag)
 {
     s << "SecantAccelerator2" << endln;
     s << "\tIterations till reform tangent: " << maxIterations << endln;
@@ -210,15 +188,13 @@ SecantAccelerator2::Print (OPS_Stream & s, int flag)
         s << "\tNo cut-outs" << endln;
 }
 
-int
-SecantAccelerator2::sendSelf (int commitTag, Channel & theChannel)
+int SecantAccelerator2::sendSelf(int commitTag, Channel & theChannel)
 {
     return -1;
 }
 
-int
-SecantAccelerator2::recvSelf (int commitTag, Channel & theChannel,
-                              FEM_ObjectBroker & theBroker)
+int SecantAccelerator2::recvSelf(int commitTag, Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
 {
     return -1;
 }

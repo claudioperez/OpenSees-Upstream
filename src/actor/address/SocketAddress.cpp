@@ -36,18 +36,18 @@
 
 
 
-SocketAddress::SocketAddress ():ChannelAddress (SOCKET_TYPE)
+SocketAddress::SocketAddress():ChannelAddress(SOCKET_TYPE)
 {
 
 }
 
-SocketAddress::SocketAddress (char *, unsigned int):
-ChannelAddress (SOCKET_TYPE)
+SocketAddress::SocketAddress(char *,
+                             unsigned int):ChannelAddress(SOCKET_TYPE)
 {
 
 }
 
-SocketAddress::~SocketAddress ()
+SocketAddress::~SocketAddress()
 {
 
 }

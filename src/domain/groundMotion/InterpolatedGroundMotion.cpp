@@ -41,29 +41,26 @@
 #include <Vector.h>
 #include <Channel.h>
 
-InterpolatedGroundMotion::InterpolatedGroundMotion ():GroundMotion (GROUND_MOTION_TAG_InterpolatedGroundMotion),
-theMotions (0), factors (0),
-destroyMotions (0), data (3), deltaPeak (0.0)
+InterpolatedGroundMotion::InterpolatedGroundMotion():GroundMotion(GROUND_MOTION_TAG_InterpolatedGroundMotion),
+theMotions(0), factors(0),
+destroyMotions(0), data(3), deltaPeak(0.0)
 {
 
 }
 
-InterpolatedGroundMotion::InterpolatedGroundMotion (GroundMotion **
-                                                    groundMotions,
-                                                    const Vector & fact,
-                                                    bool destroyMotions,
-                                                    double dT):
-GroundMotion (GROUND_MOTION_TAG_InterpolatedGroundMotion),
-theMotions (0),
-factors (0),
-destroyMotions (0),
-data (3),
-deltaPeak (dT)
+InterpolatedGroundMotion::InterpolatedGroundMotion(GroundMotion **
+                                                   groundMotions,
+                                                   const Vector & fact,
+                                                   bool destroyMotions,
+                                                   double
+                                                   dT):GroundMotion
+    (GROUND_MOTION_TAG_InterpolatedGroundMotion), theMotions(0),
+factors(0), destroyMotions(0), data(3), deltaPeak(dT)
 {
-    factors = new Vector (fact);
-    theMotions = new GroundMotion *[fact.Size ()];
+    factors = new Vector(fact);
+    theMotions = new GroundMotion *[fact.Size()];
 
-    for (int i = 0; i < fact.Size (); i++)
+    for (int i = 0; i < fact.Size(); i++)
         theMotions[i] = groundMotions[i];
 
     if (destroyMotions == true)
@@ -73,170 +70,152 @@ deltaPeak (dT)
 }
 
 
-InterpolatedGroundMotion::~InterpolatedGroundMotion ()
+InterpolatedGroundMotion::~InterpolatedGroundMotion()
 {
-    if (destroyMotions == 1)
-      {
-          for (int i = 0; i < factors->Size (); i++)
-              delete theMotions[i];
-      }
+    if (destroyMotions == 1) {
+        for (int i = 0; i < factors->Size(); i++)
+            delete theMotions[i];
+    }
 
     delete[]theMotions;
     delete factors;
 }
 
 double
-InterpolatedGroundMotion::getDuration (void)
+ InterpolatedGroundMotion::getDuration(void)
 {
     double value = 0.0;
-    int numMotions = factors->Size ();
-    for (int i = 0; i < numMotions; i++)
-      {
-          double motionValue = theMotions[i]->getDuration ();
-          if (motionValue > value)
-              value = motionValue;
-      }
+    int numMotions = factors->Size();
+    for (int i = 0; i < numMotions; i++) {
+        double motionValue = theMotions[i]->getDuration();
+        if (motionValue > value)
+            value = motionValue;
+    }
     return value;
 }
 
-double
-InterpolatedGroundMotion::getPeakAccel (void)
+double InterpolatedGroundMotion::getPeakAccel(void)
 {
     double value = 0.0;
-    double duration = this->getDuration ();
+    double duration = this->getDuration();
     double time = 0.0;
-    while (time < duration)
-      {
-          double accel = this->getAccel (time);
-          if (accel > value)
-              value = accel;
-          time += deltaPeak;
-      }
+    while (time < duration) {
+        double accel = this->getAccel(time);
+        if (accel > value)
+            value = accel;
+        time += deltaPeak;
+    }
     return value;
 }
 
-double
-InterpolatedGroundMotion::getPeakVel (void)
+double InterpolatedGroundMotion::getPeakVel(void)
 {
     double value = 0.0;
-    double duration = this->getDuration ();
+    double duration = this->getDuration();
     double time = 0.0;
-    while (time < duration)
-      {
-          double accel = this->getVel (time);
-          if (accel > value)
-              value = accel;
-          time += deltaPeak;
-      }
+    while (time < duration) {
+        double accel = this->getVel(time);
+        if (accel > value)
+            value = accel;
+        time += deltaPeak;
+    }
     return value;
 }
 
-double
-InterpolatedGroundMotion::getPeakDisp (void)
+double InterpolatedGroundMotion::getPeakDisp(void)
 {
     double value = 0.0;
-    double duration = this->getDuration ();
+    double duration = this->getDuration();
     double time = 0.0;
-    while (time < duration)
-      {
-          double accel = this->getDisp (time);
-          if (accel > value)
-              value = accel;
-          time += deltaPeak;
-      }
+    while (time < duration) {
+        double accel = this->getDisp(time);
+        if (accel > value)
+            value = accel;
+        time += deltaPeak;
+    }
     return value;
 }
 
-double
-InterpolatedGroundMotion::getAccel (double time)
+double InterpolatedGroundMotion::getAccel(double time)
 {
     if (time < 0.0)
         return 0.0;
 
     double value = 0.0;
-    int numMotions = factors->Size ();
-    for (int i = 0; i < numMotions; i++)
-      {
-          value += (*factors) (i) * theMotions[i]->getAccel (time);
-      }
+    int numMotions = factors->Size();
+    for (int i = 0; i < numMotions; i++) {
+        value += (*factors) (i) * theMotions[i]->getAccel(time);
+    }
 
     return value;
 
 }
 
-double
-InterpolatedGroundMotion::getVel (double time)
+double InterpolatedGroundMotion::getVel(double time)
 {
     if (time < 0.0)
         return 0.0;
 
     double value = 0.0;
-    int numMotions = factors->Size ();
-    for (int i = 0; i < numMotions; i++)
-      {
-          value += (*factors) (i) * theMotions[i]->getVel (time);
-      }
+    int numMotions = factors->Size();
+    for (int i = 0; i < numMotions; i++) {
+        value += (*factors) (i) * theMotions[i]->getVel(time);
+    }
 
 
     return value;
 }
 
-double
-InterpolatedGroundMotion::getDisp (double time)
+double InterpolatedGroundMotion::getDisp(double time)
 {
     if (time < 0.0)
         return 0.0;
 
     double value = 0.0;
-    int numMotions = factors->Size ();
-    for (int i = 0; i < numMotions; i++)
-      {
-          value += (*factors) (i) * theMotions[i]->getDisp (time);
-      }
+    int numMotions = factors->Size();
+    for (int i = 0; i < numMotions; i++) {
+        value += (*factors) (i) * theMotions[i]->getDisp(time);
+    }
 
     return value;
 }
 
-const Vector &
-InterpolatedGroundMotion::getDispVelAccel (double time)
+const Vector & InterpolatedGroundMotion::getDispVelAccel(double time)
 {
-    if (time < 0.0)
-      {
-          data (0) = 0.0;
-          data (1) = 0.0;
-          data (2) = 0.0;
-          return data;
-      }
+    if (time < 0.0) {
+        data(0) = 0.0;
+        data(1) = 0.0;
+        data(2) = 0.0;
+        return data;
+    }
 
-    data.Zero ();
-    static Vector motionData (3);
+    data.Zero();
+    static Vector motionData(3);
 
-    int numMotions = factors->Size ();
-    for (int i = 0; i < numMotions; i++)
-      {
-          motionData = theMotions[i]->getDispVelAccel (time);
-          motionData *= (*factors) (i);
-          data += motionData;
-      }
+    int numMotions = factors->Size();
+    for (int i = 0; i < numMotions; i++) {
+        motionData = theMotions[i]->getDispVelAccel(time);
+        motionData *= (*factors) (i);
+        data += motionData;
+    }
 
     return data;
 }
 
 
-int
-InterpolatedGroundMotion::sendSelf (int commitTag, Channel & theChannel)
+int InterpolatedGroundMotion::sendSelf(int commitTag, Channel & theChannel)
 {
-    opserr << "InterpolatedGroundMotion::sendSelf() -- not yet implemented" <<
-        endln;
+    opserr << "InterpolatedGroundMotion::sendSelf() -- not yet implemented"
+        << endln;
     return -1;
 }
 
 
-int
-InterpolatedGroundMotion::recvSelf (int commitTag, Channel & theChannel,
-                                    FEM_ObjectBroker & theBroker)
+int InterpolatedGroundMotion::recvSelf(int commitTag, Channel & theChannel,
+                                       FEM_ObjectBroker & theBroker)
 {
-    opserr << "InterpolatedGroundMotion::recvSelf() -- not yet impelemented"
-        << endln;
+    opserr <<
+        "InterpolatedGroundMotion::recvSelf() -- not yet impelemented" <<
+        endln;
     return -1;
 }

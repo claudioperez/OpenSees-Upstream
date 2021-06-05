@@ -45,23 +45,19 @@
 #include <LinearSOE.h>
 #include <ConvergenceTest.h>
 
-EquiSolnAlgo::EquiSolnAlgo (int clasTag):
-SolutionAlgorithm (clasTag),
-theModel (0),
-theIntegrator (0),
-theSysOfEqn (0),
-theTest (0)
+EquiSolnAlgo::EquiSolnAlgo(int clasTag):SolutionAlgorithm(clasTag),
+theModel(0), theIntegrator(0), theSysOfEqn(0), theTest(0)
 {
 
 }
 
-EquiSolnAlgo::~EquiSolnAlgo ()
+EquiSolnAlgo::~EquiSolnAlgo()
 {
 
 }
 
 void
-EquiSolnAlgo::setLinks (AnalysisModel & theNewModel,
+ EquiSolnAlgo::setLinks(AnalysisModel & theNewModel,
                         IncrementalIntegrator & theNewIntegrator,
                         LinearSOE & theSOE,
                         ConvergenceTest * theConvergenceTest)
@@ -71,19 +67,17 @@ EquiSolnAlgo::setLinks (AnalysisModel & theNewModel,
     theSysOfEqn = &theSOE;
     theTest = theConvergenceTest;
 
-    this->setConvergenceTest (theConvergenceTest);
+    this->setConvergenceTest(theConvergenceTest);
 }
 
 
-int
-EquiSolnAlgo::setConvergenceTest (ConvergenceTest * theConvergenceTest)
+int EquiSolnAlgo::setConvergenceTest(ConvergenceTest * theConvergenceTest)
 {
     theTest = theConvergenceTest;
     return 0;
 }
 
-ConvergenceTest *
-EquiSolnAlgo::getConvergenceTest (void)
+ConvergenceTest *EquiSolnAlgo::getConvergenceTest(void)
 {
     return theTest;
 }
@@ -91,24 +85,21 @@ EquiSolnAlgo::getConvergenceTest (void)
 
 
 
-AnalysisModel *
-EquiSolnAlgo::getAnalysisModelPtr (void) const
+AnalysisModel *EquiSolnAlgo::getAnalysisModelPtr(void) const
 {
     return theModel;
 }
 
 
 
-IncrementalIntegrator *
-EquiSolnAlgo::getIncrementalIntegratorPtr (void) const
+IncrementalIntegrator *EquiSolnAlgo::getIncrementalIntegratorPtr(void) const
 {
     return theIntegrator;
 }
 
 
 
-LinearSOE *
-EquiSolnAlgo::getLinearSOEptr (void) const
+LinearSOE *EquiSolnAlgo::getLinearSOEptr(void) const
 {
     return theSysOfEqn;
 }

@@ -64,40 +64,38 @@ timer UncrsTmr;                 /* Times the file input time */
 #endif
 
 extern "C"
-    int PMETIS (int *, int *, int *, int *, int *, int *, int *, int *, int *,
-                int *, int *);
+    int PMETIS(int *, int *, int *, int *, int *, int *, int *, int *,
+               int *, int *, int *);
 
 extern "C"
-    int KMETIS (int *, int *, int *, int *, int *, int *, int *, int *, int *,
-                int *, int *);
+    int KMETIS(int *, int *, int *, int *, int *, int *, int *, int *,
+               int *, int *, int *);
 
 
-Metis::Metis ():myPtype (0), myMtype (0), myCoarsenTo (0), myRtype (0), myIPtype (0),
-defaultOptions (true)
+Metis::Metis():myPtype(0), myMtype(0), myCoarsenTo(0), myRtype(0), myIPtype(0),
+defaultOptions(true)
 {
 
 }
 
-Metis::Metis (int Ptype, int Mtype, int coarsenTo, int Rtype, int IPtype):
-myPtype (Ptype),
-myMtype (Mtype),
-myCoarsenTo (coarsenTo),
-myRtype (Rtype),
-myIPtype (IPtype),
-defaultOptions (false)
+Metis::Metis(int Ptype, int Mtype, int coarsenTo, int Rtype,
+             int IPtype):myPtype(Ptype), myMtype(Mtype),
+myCoarsenTo(coarsenTo), myRtype(Rtype), myIPtype(IPtype),
+defaultOptions(false)
 {
     // check the options are valid
-    checkOptions ();
+    checkOptions();
 }
 
 
-Metis::~Metis ()
+Metis::~Metis()
 {
 
 }
 
 bool
-Metis::setOptions (int Ptype, int Mtype, int coarsenTo, int Rtype, int IPtype)
+ Metis::setOptions(int Ptype, int Mtype, int coarsenTo, int Rtype,
+                   int IPtype)
 {
     myPtype = Ptype;
     myMtype = Mtype;
@@ -107,7 +105,7 @@ Metis::setOptions (int Ptype, int Mtype, int coarsenTo, int Rtype, int IPtype)
 
     defaultOptions = false;
 
-    return checkOptions ();
+    return checkOptions();
 
 }
 
@@ -115,8 +113,7 @@ Metis::setOptions (int Ptype, int Mtype, int coarsenTo, int Rtype, int IPtype)
 // bool checkOptions(void) const
 //      returns true if options are o.k., false otherwise
 
-bool
-Metis::checkOptions (void)
+bool Metis::checkOptions(void)
 {
 
     // check default not set
@@ -128,55 +125,48 @@ Metis::checkOptions (void)
     // otherwise check all options for valid value
     bool okFlag = true;
 
-    if ((myPtype != 1) || (myPtype != 2))
-      {
-          okFlag = false;
-          opserr << "WARNING: Metis::partition ";
-          opserr << " - Illegal Ptype " << myPtype << endln;
-      }
+    if ((myPtype != 1) || (myPtype != 2)) {
+        okFlag = false;
+        opserr << "WARNING: Metis::partition ";
+        opserr << " - Illegal Ptype " << myPtype << endln;
+    }
 
     if ((myMtype != 1) || (myMtype != 2) || (myMtype != 3) ||
         ((myMtype != 4) || (myMtype != 5) || myMtype != 11) ||
-        (myMtype != 21) || (myMtype != 51))
-      {
-          okFlag = false;
-          opserr << "WARNING: Metis::partition ";
-          opserr << " - Illegal Mtype " << myMtype << endln;
-      }
+        (myMtype != 21) || (myMtype != 51)) {
+        okFlag = false;
+        opserr << "WARNING: Metis::partition ";
+        opserr << " - Illegal Mtype " << myMtype << endln;
+    }
 
     if (myPtype == 1)
         if ((myRtype != 1) || (myRtype != 2) || (myRtype != 3) ||
             (myRtype != 11) || (myRtype != 12) || (myRtype != 13) ||
-            (myRtype != 20))
-          {
-              okFlag = false;
-              opserr << "WARNING: Metis::partition ";
-              opserr << " - Illegal Rtype " << myRtype << endln;
-              opserr << " for Ptype " << myPtype << endln;
-          }
-        else if (myPtype == 2)
-            if ((myRtype != 11) || (myRtype != 12) || (myRtype != 20))
-              {
-                  okFlag = false;
-                  opserr << "WARNING: Metis::partition ";
-                  opserr << " - Illegal Rtype " << myRtype << endln;
-                  opserr << " for Ptype " << myPtype << endln;
-              }
+            (myRtype != 20)) {
+            okFlag = false;
+            opserr << "WARNING: Metis::partition ";
+            opserr << " - Illegal Rtype " << myRtype << endln;
+            opserr << " for Ptype " << myPtype << endln;
+        } else if (myPtype == 2)
+            if ((myRtype != 11) || (myRtype != 12) || (myRtype != 20)) {
+                okFlag = false;
+                opserr << "WARNING: Metis::partition ";
+                opserr << " - Illegal Rtype " << myRtype << endln;
+                opserr << " for Ptype " << myPtype << endln;
+            }
 
     if ((myIPtype != 1) || (myIPtype != 2) || (myIPtype != 3) ||
-        (myIPtype != 4))
-      {
-          okFlag = false;
-          opserr << "WARNING: Metis::partition ";
-          opserr << " - Illegal IPtype " << myIPtype << endln;
-      }
+        (myIPtype != 4)) {
+        okFlag = false;
+        opserr << "WARNING: Metis::partition ";
+        opserr << " - Illegal IPtype " << myIPtype << endln;
+    }
 
-    if (myCoarsenTo < 0)
-      {
-          okFlag = false;
-          opserr << "WARNING: Metis::partition ";
-          opserr << " - Illegal coarsen To " << myCoarsenTo << endln;
-      }
+    if (myCoarsenTo < 0) {
+        okFlag = false;
+        opserr << "WARNING: Metis::partition ";
+        opserr << " - Illegal coarsen To " << myCoarsenTo << endln;
+    }
 
     if (okFlag == false)
         defaultOptions = true;
@@ -186,8 +176,7 @@ Metis::checkOptions (void)
 }
 
 
-bool
-Metis::setDefaultOptions (void)
+bool Metis::setDefaultOptions(void)
 {
     defaultOptions = true;
     return true;
@@ -201,17 +190,16 @@ Metis::setDefaultOptions (void)
 //      set to colors 0 through numPart-1 to indicate which partition the
 //      vrtices are in. Returns -1 if options are not set, -2 if metis failed.
 
-int
-Metis::partition (Graph & theGraph, int numPart)
+int Metis::partition(Graph & theGraph, int numPart)
 {
     // first we check that the options are valid
-    if (checkOptions () == false)
+    if (checkOptions() == false)
         return -1;
 
     // now we get room for the data structures metis needs
 
-    int numVertex = theGraph.getNumVertex ();
-    int numEdge = theGraph.getNumEdge ();
+    int numVertex = theGraph.getNumVertex();
+    int numEdge = theGraph.getNumEdge();
 
     int *options = new int[5];
     int *partition = new int[numVertex + 1];
@@ -226,21 +214,18 @@ Metis::partition (Graph & theGraph, int numPart)
         numbering = 0;
     else if (START_VERTEX_NUM == 1)
         numbering = 1;
-    else
-      {
-          opserr << "WARNING Metis::partition - No partitioning done";
-          opserr << " vertex numbering must start at 0 or 1\n";
-          return (-2);
-      }
+    else {
+        opserr << "WARNING Metis::partition - No partitioning done";
+        opserr << " vertex numbering must start at 0 or 1\n";
+        return (-2);
+    }
     int edgecut;
 
-    if ((options == 0) || (partition == 0) || (xadj == 0) || (adjncy == 0))
-      {
-          opserr << "WARNING Metis::partition - No partitioning done";
-          opserr << " as ran out of memory\n";
-          return (-2);
-      }
-
+    if ((options == 0) || (partition == 0) || (xadj == 0) || (adjncy == 0)) {
+        opserr << "WARNING Metis::partition - No partitioning done";
+        opserr << " as ran out of memory\n";
+        return (-2);
+    }
 
     // we build these data structures
 
@@ -248,47 +233,43 @@ Metis::partition (Graph & theGraph, int numPart)
     xadj[0] = 0;
 
     Vertex *vertexPtr;
-    for (int vertex = 0; vertex < numVertex; vertex++)
-      {
-          vertexPtr = theGraph.getVertexPtr (vertex + START_VERTEX_NUM);
+    for (int vertex = 0; vertex < numVertex; vertex++) {
+        vertexPtr = theGraph.getVertexPtr(vertex + START_VERTEX_NUM);
 
-          // check we don't have an invalid vertex numbering scheme
-          // if so WARNING message, clean up and return -2
+        // check we don't have an invalid vertex numbering scheme
+        // if so WARNING message, clean up and return -2
 
-          if (vertexPtr == 0)
-            {
-                opserr << "WARNING Metis::partition - No partitioning done";
-                opserr << " Metis requires consequtive Vertex Numbering\n";
+        if (vertexPtr == 0) {
+            opserr << "WARNING Metis::partition - No partitioning done";
+            opserr << " Metis requires consequtive Vertex Numbering\n";
 
-                delete[]options;
-                delete[]partition;
-                delete[]xadj;
-                delete[]adjncy;
+            delete[]options;
+            delete[]partition;
+            delete[]xadj;
+            delete[]adjncy;
 
-                return -2;
-            }
+            return -2;
+        }
 
-          const ID & adjacency = vertexPtr->getAdjacency ();
-          int degree = adjacency.Size ();
-          for (int i = 0; i < degree; i++)
-            {
-                adjncy[indexEdge++] = adjacency (i) - START_VERTEX_NUM;
-            }
+        const ID & adjacency = vertexPtr->getAdjacency();
+        int degree = adjacency.Size();
+        for (int i = 0; i < degree; i++) {
+            adjncy[indexEdge++] = adjacency(i) - START_VERTEX_NUM;
+        }
 
-          xadj[vertex + 1] = indexEdge;
-      }
+        xadj[vertex + 1] = indexEdge;
+    }
 
 
     if (defaultOptions == true)
         options[0] = 0;
-    else
-      {
-          options[0] = 1;
-          options[1] = myCoarsenTo;
-          options[2] = myMtype;
-          options[3] = myIPtype;
-          options[4] = myRtype;
-      }
+    else {
+        options[0] = 1;
+        options[1] = myCoarsenTo;
+        options[2] = myMtype;
+        options[3] = myIPtype;
+        options[4] = myRtype;
+    }
 
 
     int j;
@@ -296,19 +277,18 @@ Metis::partition (Graph & theGraph, int numPart)
     // we now the metis routines
 
     if (myPtype == 1)
-        PMETIS (&numVertex, xadj, adjncy, vwgts, ewgts, &weightflag, &numPart,
-                options, &numbering, &edgecut, partition);
+        PMETIS(&numVertex, xadj, adjncy, vwgts, ewgts, &weightflag,
+               &numPart, options, &numbering, &edgecut, partition);
     else
-        KMETIS (&numVertex, xadj, adjncy, vwgts, ewgts, &weightflag, &numPart,
-                options, &numbering, &edgecut, partition);
+        KMETIS(&numVertex, xadj, adjncy, vwgts, ewgts, &weightflag,
+               &numPart, options, &numbering, &edgecut, partition);
 
 
     // we set the vertex colors to correspond to the partitioned scheme
-    for (int vert = 0; vert < numVertex; vert++)
-      {
-          vertexPtr = theGraph.getVertexPtr (vert + START_VERTEX_NUM);
-          vertexPtr->setColor (partition[vert] + 1);    // start colors at 1
-      }
+    for (int vert = 0; vert < numVertex; vert++) {
+        vertexPtr = theGraph.getVertexPtr(vert + START_VERTEX_NUM);
+        vertexPtr->setColor(partition[vert] + 1);       // start colors at 1
+    }
 
     // clean up the space and return
 

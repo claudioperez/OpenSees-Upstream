@@ -30,12 +30,12 @@
 
 #include <Patch.h>
 
-Patch::Patch (void)
+Patch::Patch(void)
 {
 
 }
 
-Patch::~Patch (void)
+Patch::~Patch(void)
 {
 
 }

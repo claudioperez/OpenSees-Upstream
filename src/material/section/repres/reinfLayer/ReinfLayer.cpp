@@ -31,13 +31,13 @@
 #include <ReinfLayer.h>
 
 
-ReinfLayer::ReinfLayer (void)
+ReinfLayer::ReinfLayer(void)
 {
 
 }
 
 
-ReinfLayer::~ReinfLayer (void)
+ReinfLayer::~ReinfLayer(void)
 {
 
 }

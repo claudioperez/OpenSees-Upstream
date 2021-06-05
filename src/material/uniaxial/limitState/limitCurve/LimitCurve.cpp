@@ -43,47 +43,42 @@
 static MapOfTaggedObjects theLimitCurveObjects;
 
 
-bool
-OPS_addLimitCurve (LimitCurve * newComponent)
+bool OPS_addLimitCurve(LimitCurve * newComponent)
 {
-    return theLimitCurveObjects.addComponent (newComponent);
+    return theLimitCurveObjects.addComponent(newComponent);
 }
 
-LimitCurve *
-OPS_getLimitCurve (int tag)
+LimitCurve *OPS_getLimitCurve(int tag)
 {
 
-    TaggedObject *theResult = theLimitCurveObjects.getComponentPtr (tag);
-    if (theResult == 0)
-      {
-          opserr <<
-              "LimitCurve *getLimitCurve(int tag) - none found with tag: " <<
-              tag << endln;
-          return 0;
-      }
+    TaggedObject *theResult = theLimitCurveObjects.getComponentPtr(tag);
+    if (theResult == 0) {
+        opserr <<
+            "LimitCurve *getLimitCurve(int tag) - none found with tag: " <<
+            tag << endln;
+        return 0;
+    }
     LimitCurve *theMat = (LimitCurve *) theResult;
 
     return theMat;
 }
 
-void
-OPS_clearAllLimitCurve (void)
+void OPS_clearAllLimitCurve(void)
 {
-    theLimitCurveObjects.clearAll ();
+    theLimitCurveObjects.clearAll();
 }
 
 
 
 
 
-LimitCurve::LimitCurve (int tag, int clasTag):
-TaggedObject (tag),
-MovableObject (clasTag)
+LimitCurve::LimitCurve(int tag, int clasTag):TaggedObject(tag),
+MovableObject(clasTag)
 {
 
 }
 
-LimitCurve::~LimitCurve ()
+LimitCurve::~LimitCurve()
 {
     // does nothing
 }

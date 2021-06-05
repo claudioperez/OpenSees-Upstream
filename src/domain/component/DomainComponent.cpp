@@ -36,39 +36,36 @@
 #include <Domain.h>
 #include <DomainComponent.h>
 
-DomainComponent::DomainComponent (int tag, int clasTag):
-TaggedObject (tag),
-MovableObject (clasTag),
-theDomain (0)
+DomainComponent::DomainComponent(int tag, int clasTag):TaggedObject(tag),
+MovableObject(clasTag), theDomain(0)
 {
     // does nothing else
 }
 
 
-DomainComponent::~DomainComponent ()
+DomainComponent::~DomainComponent()
 {
     // does nothing
 }
 
 
 void
-DomainComponent::setDomain (Domain * model)
+ DomainComponent::setDomain(Domain * model)
 {
     // sets the pointer 
     theDomain = model;
 }
 
 
-Domain *
-DomainComponent::getDomain (void) const
+Domain *DomainComponent::getDomain(void) const
 {
     // returns the current pointer
     return theDomain;
 }
 
-int
-DomainComponent::displaySelf (Renderer & theViewer, int mode, float fact,
-                              const char **displayModes, int numModes)
+int DomainComponent::displaySelf(Renderer & theViewer, int mode,
+                                 float fact, const char **displayModes,
+                                 int numModes)
 {
     return 0;
 }

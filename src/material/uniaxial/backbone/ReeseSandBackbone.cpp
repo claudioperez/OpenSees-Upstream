@@ -34,33 +34,30 @@
 
 #include <math.h>
 
-ReeseSandBackbone::ReeseSandBackbone (int tag, double KX,
-                                      double YM, double PM,
-                                      double YU, double PU):
-HystereticBackbone (tag, BACKBONE_TAG_ReeseSand),
-kx (KX),
-ym (YM),
-pm (PM),
-yu (YU),
-pu (PU)
+ReeseSandBackbone::ReeseSandBackbone(int tag, double KX,
+                                     double YM, double PM,
+                                     double YU,
+                                     double PU):HystereticBackbone(tag,
+                                                                   BACKBONE_TAG_ReeseSand),
+kx(KX), ym(YM), pm(PM), yu(YU), pu(PU)
 {
 
 }
 
-ReeseSandBackbone::ReeseSandBackbone ():
-HystereticBackbone (0, BACKBONE_TAG_ReeseSand),
-kx (0.0), ym (0.0), pm (0.0), yu (0.0), pu (0.0)
+ReeseSandBackbone::ReeseSandBackbone():
+HystereticBackbone(0, BACKBONE_TAG_ReeseSand),
+kx(0.0), ym(0.0), pm(0.0), yu(0.0), pu(0.0)
 {
 
 }
 
-ReeseSandBackbone::~ReeseSandBackbone ()
+ReeseSandBackbone::~ReeseSandBackbone()
 {
 
 }
 
 double
-ReeseSandBackbone::getTangent (double strain)
+ ReeseSandBackbone::getTangent(double strain)
 {
     int signStrain = (strain > 0.0) ? 1 : -1;
     strain = signStrain * strain;
@@ -69,14 +66,14 @@ ReeseSandBackbone::getTangent (double strain)
 
     double m = (pu - pm) / (yu - ym);
     double n = pm / (m * ym);
-    double C = pm / pow (ym, 1 / n);
+    double C = pm / pow(ym, 1 / n);
 
-    double yk = pow (C / kx, n / (n - 1));
+    double yk = pow(C / kx, n / (n - 1));
 
     if (strain <= yk)
         tangent = kx;
     else if (strain <= ym)
-        tangent = C / n * pow (strain, 1 / n - 1);
+        tangent = C / n * pow(strain, 1 / n - 1);
     else if (strain <= yu)
         tangent = m;
     else
@@ -85,8 +82,7 @@ ReeseSandBackbone::getTangent (double strain)
     return tangent;
 }
 
-double
-ReeseSandBackbone::getStress (double strain)
+double ReeseSandBackbone::getStress(double strain)
 {
     int signStrain = (strain > 0.0) ? 1 : -1;
     strain = signStrain * strain;
@@ -95,14 +91,14 @@ ReeseSandBackbone::getStress (double strain)
 
     double m = (pu - pm) / (yu - ym);
     double n = pm / (m * ym);
-    double C = pm / pow (ym, 1 / n);
+    double C = pm / pow(ym, 1 / n);
 
-    double yk = pow (C / kx, n / (n - 1));
+    double yk = pow(C / kx, n / (n - 1));
 
     if (strain <= yk)
         stress = kx * strain;
     else if (strain <= ym)
-        stress = C * pow (strain, 1 / n);
+        stress = C * pow(strain, 1 / n);
     else if (strain <= yu)
         stress = pm + m * (strain - ym);
     else
@@ -111,31 +107,27 @@ ReeseSandBackbone::getStress (double strain)
     return signStrain * stress;
 }
 
-double
-ReeseSandBackbone::getEnergy (double strain)
+double ReeseSandBackbone::getEnergy(double strain)
 {
     return 0.0;
 }
 
-double
-ReeseSandBackbone::getYieldStrain (void)
+double ReeseSandBackbone::getYieldStrain(void)
 {
     return 0.0;
 }
 
-HystereticBackbone *
-ReeseSandBackbone::getCopy (void)
+HystereticBackbone *ReeseSandBackbone::getCopy(void)
 {
     ReeseSandBackbone *theCopy =
-        new ReeseSandBackbone (this->getTag (), kx, ym, pm, yu, pu);
+        new ReeseSandBackbone(this->getTag(), kx, ym, pm, yu, pu);
 
     return theCopy;
 }
 
-void
-ReeseSandBackbone::Print (OPS_Stream & s, int flag)
+void ReeseSandBackbone::Print(OPS_Stream & s, int flag)
 {
-    s << "ReeseSandBackbone, tag: " << this->getTag () << endln;
+    s << "ReeseSandBackbone, tag: " << this->getTag() << endln;
     s << "\tkx: " << kx << endln;
     s << "\tym: " << ym << endln;
     s << "\tpm: " << pm << endln;
@@ -143,67 +135,61 @@ ReeseSandBackbone::Print (OPS_Stream & s, int flag)
     s << "\tpu: " << pu << endln;
 }
 
-int
-ReeseSandBackbone::setVariable (char *argv)
+int ReeseSandBackbone::setVariable(char *argv)
 {
     return -1;
 }
 
-int
-ReeseSandBackbone::getVariable (int varID, double &theValue)
+int ReeseSandBackbone::getVariable(int varID, double &theValue)
 {
     return -1;
 }
 
-int
-ReeseSandBackbone::sendSelf (int commitTag, Channel & theChannel)
+int ReeseSandBackbone::sendSelf(int commitTag, Channel & theChannel)
 {
     int res = 0;
 
-    static Vector data (6);
+    static Vector data(6);
 
-    data (0) = this->getTag ();
-    data (1) = kx;
-    data (2) = ym;
-    data (3) = pm;
-    data (4) = yu;
-    data (5) = pu;
+    data(0) = this->getTag();
+    data(1) = kx;
+    data(2) = ym;
+    data(3) = pm;
+    data(4) = yu;
+    data(5) = pu;
 
-    res += theChannel.sendVector (this->getDbTag (), commitTag, data);
-    if (res < 0)
-      {
-          opserr << "ReeseSandBackbone::sendSelf -- could not send Vector" <<
-              endln;
+    res += theChannel.sendVector(this->getDbTag(), commitTag, data);
+    if (res < 0) {
+        opserr << "ReeseSandBackbone::sendSelf -- could not send Vector" <<
+            endln;
 
-          return res;
-      }
+        return res;
+    }
 
     return res;
 }
 
-int
-ReeseSandBackbone::recvSelf (int commitTag, Channel & theChannel,
-                             FEM_ObjectBroker & theBroker)
+int ReeseSandBackbone::recvSelf(int commitTag, Channel & theChannel,
+                                FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static Vector data (6);
+    static Vector data(6);
 
-    res += theChannel.recvVector (this->getDbTag (), commitTag, data);
-    if (res < 0)
-      {
-          opserr << "ReeseSandBackbone::recvSelf -- could not receive Vector"
-              << endln;
+    res += theChannel.recvVector(this->getDbTag(), commitTag, data);
+    if (res < 0) {
+        opserr << "ReeseSandBackbone::recvSelf -- could not receive Vector"
+            << endln;
 
-          return res;
-      }
+        return res;
+    }
 
-    this->setTag (int (data (0)));
-    kx = data (1);
-    ym = data (2);
-    pm = data (3);
-    yu = data (4);
-    pu = data (5);
+    this->setTag(int (data(0)));
+    kx = data(1);
+    ym = data(2);
+    pm = data(3);
+    yu = data(4);
+    pu = data(5);
 
     return res;
 }

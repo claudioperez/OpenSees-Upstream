@@ -48,120 +48,99 @@
 // #include <elementAPI.h> // cmp
 
 #ifdef OPS_API_COMMANDLINE
-void *
-OPS_AxialSpHD ()
+void *OPS_AxialSpHD()
 {
-    int numdata = OPS_GetNumRemainingInputArgs ();
-    if (numdata < 4)
-      {
-          opserr << "WARNING invalid number of arguments\n";
-          return 0;
-      }
+    int numdata = OPS_GetNumRemainingInputArgs();
+    if (numdata < 4) {
+        opserr << "WARNING invalid number of arguments\n";
+        return 0;
+    }
 
     int tag;
     numdata = 1;
-    if (OPS_GetIntInput (&numdata, &tag) < 0)
-      {
-          opserr << "WARNING invalid AxialSp tag\n";
-          return 0;
-      }
+    if (OPS_GetIntInput(&numdata, &tag) < 0) {
+        opserr << "WARNING invalid AxialSp tag\n";
+        return 0;
+    }
 
     double data[3];
     numdata = 3;
-    if (OPS_GetDoubleInput (&numdata, data) < 0)
-      {
-          opserr << "WARNING invalid double inputs\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, data) < 0) {
+        opserr << "WARNING invalid double inputs\n";
+        return 0;
+    }
 
     double opt[6] = { 1, 1, 1, 1, 0, 1 };
-    numdata = OPS_GetNumRemainingInputArgs ();
+    numdata = OPS_GetNumRemainingInputArgs();
     if (numdata > 6)
         numdata = 6;
-    if (OPS_GetDoubleInput (&numdata, opt) < 0)
-      {
-          opserr << "WARNING invalid double inputs\n";
-          return 0;
-      }
+    if (OPS_GetDoubleInput(&numdata, opt) < 0) {
+        opserr << "WARNING invalid double inputs\n";
+        return 0;
+    }
 
-    return new AxialSpHD (tag, data[0], data[1], data[2], opt[0], opt[1],
-                          opt[2], opt[3], opt[4], opt[5]);
+    return new AxialSpHD(tag, data[0], data[1], data[2], opt[0], opt[1],
+                         opt[2], opt[3], opt[4], opt[5]);
 }
 #endif
 
 
 
-AxialSpHD::AxialSpHD (int tag, double sce, double fty, double fcy, double bte,
-                      double bty, double bth, double bcy, double fcr,
-                      double ath):
-UniaxialMaterial (tag, MAT_TAG_AxialSpHD),
-sce (sce),
-fty (fty),
-fcy (fcy),
-bte (bte),
-bty (bty),
-bth (bth),
-bcy (bcy),
-fcr (fcr),
-ath (ath)
+AxialSpHD::AxialSpHD(int tag, double sce, double fty, double fcy,
+                     double bte, double bty, double bth, double bcy,
+                     double fcr, double ath):UniaxialMaterial(tag,
+                                                              MAT_TAG_AxialSpHD),
+sce(sce), fty(fty), fcy(fcy), bte(bte), bty(bty), bth(bth), bcy(bcy),
+fcr(fcr), ath(ath)
 {
 
-    if (fty < 0.0)
-      {
-          opserr << "WARNING invalid fty\n";
-          opserr << "fty>=0\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (fty < 0.0) {
+        opserr << "WARNING invalid fty\n";
+        opserr << "fty>=0\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (fcy > 0.0)
-      {
-          opserr << "WARNING invalid fcy\n";
-          opserr << "fcy<=0\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (fcy > 0.0) {
+        opserr << "WARNING invalid fcy\n";
+        opserr << "fcy<=0\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (!(bte >= 0.0 && bte <= 1.0))
-      {
-          opserr << "WARNING invalid bte\n";
-          opserr << "0<=bte<=1\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (!(bte >= 0.0 && bte <= 1.0)) {
+        opserr << "WARNING invalid bte\n";
+        opserr << "0<=bte<=1\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (!(bty >= 0.0 && bty <= 1.0))
-      {
-          opserr << "WARNING invalid bty\n";
-          opserr << "0<=bty<=1\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (!(bty >= 0.0 && bty <= 1.0)) {
+        opserr << "WARNING invalid bty\n";
+        opserr << "0<=bty<=1\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (!(bth >= 0.0 && bth <= 1.0 && bth > bty && bth < bte))
-      {
-          opserr << "WARNING invalid bth\n";
-          opserr << "0<=bth<=1 and bty<bth<bte\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (!(bth >= 0.0 && bth <= 1.0 && bth > bty && bth < bte)) {
+        opserr << "WARNING invalid bth\n";
+        opserr << "0<=bth<=1 and bty<bth<bte\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (!(bcy >= 0.0 && bcy <= 1.0))
-      {
-          opserr << "WARNING invalid bcy\n";
-          opserr << "0<=bcy<=1\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (!(bcy >= 0.0 && bcy <= 1.0)) {
+        opserr << "WARNING invalid bcy\n";
+        opserr << "0<=bcy<=1\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (!(fcr <= 0.0 && fcr >= fcy))
-      {
-          opserr << "WARNING invalid fcr\n";
-          opserr << "0<=fcr<=fcy\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
+    if (!(fcr <= 0.0 && fcr >= fcy)) {
+        opserr << "WARNING invalid fcr\n";
+        opserr << "0<=fcr<=fcy\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
 
-    if (ath < 1.0)
-      {
-          opserr << "WARNING invalid ath\n";
-          opserr << "ath>=1\n";
-          opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
-      }
-
+    if (ath < 1.0) {
+        opserr << "WARNING invalid ath\n";
+        opserr << "ath>=1\n";
+        opserr << "uniaxialMaterial AxialSpHD: " << tag << endln;
+    }
     //initialize
     trialDeformation = 0.0;
     trialForce = 0.0;
@@ -200,7 +179,7 @@ ath (ath)
     fr7 = 0.0;
 }
 
-AxialSpHD::AxialSpHD ():UniaxialMaterial (0, MAT_TAG_AxialSpHD)
+AxialSpHD::AxialSpHD():UniaxialMaterial(0, MAT_TAG_AxialSpHD)
 {
     trialDeformation = 0.0;
     trialForce = 0.0;
@@ -210,525 +189,498 @@ AxialSpHD::AxialSpHD ():UniaxialMaterial (0, MAT_TAG_AxialSpHD)
     commitStiffness = 0.0;
 }
 
-AxialSpHD::~AxialSpHD ()
+AxialSpHD::~AxialSpHD()
 {
 
 }
 
 int
-AxialSpHD::setTrialStrain (double strain, double strainRate)
+ AxialSpHD::setTrialStrain(double strain, double strainRate)
 {
     //
     trialDeformation = strain;
 
     // Stg index
-    switch (trialStg)
-      {
+    switch (trialStg) {
 
-          // 1: compression, elastic
-      case 1:
+        // 1: compression, elastic
+    case 1:
 
-          // after compressive yield point
-          if (trialDeformation < ucy)
-              trialStg = 5;
+        // after compressive yield point
+        if (trialDeformation < ucy)
+            trialStg = 5;
 
-          // compression, elastic
-          else if (trialDeformation >= ucy && trialDeformation <= 0.0)
-              trialStg = 1;
+        // compression, elastic
+        else if (trialDeformation >= ucy && trialDeformation <= 0.0)
+            trialStg = 1;
 
-          // tension, elastic
-          else if (trialDeformation > 0.0 && trialDeformation <= uty)
-              trialStg = 2;
+        // tension, elastic
+        else if (trialDeformation > 0.0 && trialDeformation <= uty)
+            trialStg = 2;
 
-          // after tensile yield point
-          else if (trialDeformation > uty && trialDeformation <= uth)
-              trialStg = 3;
+        // after tensile yield point
+        else if (trialDeformation > uty && trialDeformation <= uth)
+            trialStg = 3;
 
-          // after tensile hardening point
-          else if (trialDeformation > uth)
-              trialStg = 4;
+        // after tensile hardening point
+        else if (trialDeformation > uth)
+            trialStg = 4;
 
-          break;
+        break;
 
-          // 2: tension, elastic
-      case 2:
+        // 2: tension, elastic
+    case 2:
 
-          // after compressive yield point
-          if (trialDeformation < ucy)
-              trialStg = 5;
+        // after compressive yield point
+        if (trialDeformation < ucy)
+            trialStg = 5;
 
-          // compression, elastic
-          else if (trialDeformation >= ucy && trialDeformation <= 0.0)
-              trialStg = 1;
+        // compression, elastic
+        else if (trialDeformation >= ucy && trialDeformation <= 0.0)
+            trialStg = 1;
 
-          // tension, elastic
-          else if (trialDeformation > 0.0 && trialDeformation <= uty)
-              trialStg = 2;
+        // tension, elastic
+        else if (trialDeformation > 0.0 && trialDeformation <= uty)
+            trialStg = 2;
 
-          // after tensile yield point
-          else if (trialDeformation > uty && trialDeformation <= uth)
-              trialStg = 3;
+        // after tensile yield point
+        else if (trialDeformation > uty && trialDeformation <= uth)
+            trialStg = 3;
 
-          // after tensile hardening point
-          else if (trialDeformation > uth)
-              trialStg = 4;
+        // after tensile hardening point
+        else if (trialDeformation > uth)
+            trialStg = 4;
 
-          break;
+        break;
 
-          // 3:  after tensile yield point (skeleton curve)
-      case 3:
+        // 3:  after tensile yield point (skeleton curve)
+    case 3:
 
-          // tension
-          if (trialDeformation >= commitDeformation)
-            {
-                if (trialDeformation <= uty)
-                    trialStg = 2;       //  tension, elastic
-                else if (trialDeformation > uty && trialDeformation <= uth)
-                    trialStg = 3;       // after tensile yield point
-                else if (trialDeformation > uth)
-                    trialStg = 4;       // after tensile hardening point
+        // tension
+        if (trialDeformation >= commitDeformation) {
+            if (trialDeformation <= uty)
+                trialStg = 2;   //  tension, elastic
+            else if (trialDeformation > uty && trialDeformation <= uth)
+                trialStg = 3;   // after tensile yield point
+            else if (trialDeformation > uth)
+                trialStg = 4;   // after tensile hardening point
+        }
+        // compression (unload)
+        else {
+            ur1 = commitDeformation;    // strain of unload point
+            fr1 = commitForce;  // stress of unload point
+
+            // trialStg=8
+            if (ur1 <= utr) {
+                ur7 = (-ste * ur1 + fr1) / (sce - ste);
+                fr7 = sce * ur7;
+
+                if (trialDeformation >= ur7)
+                    trialStg = 8;
+                else if (trialDeformation >= ucy && trialDeformation < ur7)
+                    trialStg = 1;
+                else if (trialDeformation < ucy)
+                    trialStg = 5;
             }
+            // trialStg=6
+            else {
+                ur2 = (ste * ur1 - fr1) / (ste - sty);
+                fr2 = sty * ur2;
 
-          // compression (unload)
-          else
-            {
-                ur1 = commitDeformation;        // strain of unload point
-                fr1 = commitForce;      // stress of unload point
-
-                // trialStg=8
-                if (ur1 <= utr)
-                  {
-                      ur7 = (-ste * ur1 + fr1) / (sce - ste);
-                      fr7 = sce * ur7;
-
-                      if (trialDeformation >= ur7)
-                          trialStg = 8;
-                      else if (trialDeformation >= ucy
-                               && trialDeformation < ur7)
-                          trialStg = 1;
-                      else if (trialDeformation < ucy)
-                          trialStg = 5;
-                  }
-
-                // trialStg=6
-                else
-                  {
-                      ur2 = (ste * ur1 - fr1) / (ste - sty);
-                      fr2 = sty * ur2;
-
-                      if (trialDeformation >= ur2)
-                          trialStg = 6;
-                      else if (trialDeformation >= ucr
-                               && trialDeformation < ur2)
-                          trialStg = 7;
-                      else if (trialDeformation >= ucy
-                               && trialDeformation < ucr)
-                          trialStg = 1;
-                      else if (trialDeformation < ucy)
-                          trialStg = 5;
-                  }
-            }
-
-          break;
-
-          // 4: after tensile hardening point (skeleton curve)
-      case 4:
-
-          // tension
-          if (trialDeformation >= commitDeformation)
-              trialStg = 4;
-
-          // unload
-          else
-            {
-                ur3 = commitDeformation;        // strain of unload point
-                fr3 = commitForce;      // stress of unload point
-
-                ur4 = (ste * ur3 - fr3) / (ste - sty);
-                fr4 = sty * ur4;
-
-                stp = (fcr - fr4) / (ucr - ur4);
-                uch = (fth - fcr - ste * uth + stp * ucr) / (stp - ste);
-                fch = fcr + stp * (uch - ucr);
-                ur2 = uch;
-                fr2 = fch;
-
-                if (trialDeformation > ur4)
-                    trialStg = 9;
-                else if (trialDeformation > uch && trialDeformation <= ur4)
-                    trialStg = 13;
-                else if (trialDeformation > ucr && trialDeformation <= uch)
+                if (trialDeformation >= ur2)
+                    trialStg = 6;
+                else if (trialDeformation >= ucr && trialDeformation < ur2)
                     trialStg = 7;
                 else if (trialDeformation >= ucy && trialDeformation < ucr)
                     trialStg = 1;
                 else if (trialDeformation < ucy)
                     trialStg = 5;
             }
+        }
 
-          break;
+        break;
 
+        // 4: after tensile hardening point (skeleton curve)
+    case 4:
 
-          // 5: after compressive yield point (skeleton curve)
-      case 5:
+        // tension
+        if (trialDeformation >= commitDeformation)
+            trialStg = 4;
 
-          // compression
-          if (trialDeformation <= commitDeformation)
-              trialStg = 5;
+        // unload
+        else {
+            ur3 = commitDeformation;    // strain of unload point
+            fr3 = commitForce;  // stress of unload point
 
-          // tension (unload)
-          else
-            {
-                ur5 = commitDeformation;        // strain of unload point
-                fr5 = commitForce;      // stress of unload point
+            ur4 = (ste * ur3 - fr3) / (ste - sty);
+            fr4 = sty * ur4;
 
-                uc0 = -fr5 / sce + ur5;
-                ur6 = (ste * uc0 - sty * uty + fty) / (ste - sty);
-                fr6 = ste * (ur6 - uc0);
+            stp = (fcr - fr4) / (ucr - ur4);
+            uch = (fth - fcr - ste * uth + stp * ucr) / (stp - ste);
+            fch = fcr + stp * (uch - ucr);
+            ur2 = uch;
+            fr2 = fch;
 
-                if (trialDeformation <= uc0)
-                    trialStg = 10;
-                else if (trialDeformation > uc0 && trialDeformation <= ur6)
-                    trialStg = 11;
-                else if (trialDeformation > ur6 && trialDeformation <= uty)
-                    trialStg = 12;
-                else if (trialDeformation > uty && trialDeformation <= uth)
-                    trialStg = 3;
-                else if (trialDeformation > uth)
-                    trialStg = 4;
-            }
+            if (trialDeformation > ur4)
+                trialStg = 9;
+            else if (trialDeformation > uch && trialDeformation <= ur4)
+                trialStg = 13;
+            else if (trialDeformation > ucr && trialDeformation <= uch)
+                trialStg = 7;
+            else if (trialDeformation >= ucy && trialDeformation < ucr)
+                trialStg = 1;
+            else if (trialDeformation < ucy)
+                trialStg = 5;
+        }
 
-          break;
-
-
-          // 6: after tensile yield point (unload)
-      case 6:
-
-          if (trialDeformation > uth)
-              trialStg = 4;
-          else if (trialDeformation > ur1 && trialDeformation <= uth)
-              trialStg = 3;
-          else if (trialDeformation > ur2 && trialDeformation <= ur1)
-              trialStg = 6;
-          else if (trialDeformation > ucr && trialDeformation <= ur2)
-              trialStg = 7;
-          else if (trialDeformation > ucy && trialDeformation <= ucr)
-              trialStg = 1;
-          else if (trialDeformation <= ucy)
-              trialStg = 5;
-
-          break;
+        break;
 
 
-          // 7: after tensile yield point (unload, approach reversal point)
-      case 7:
+        // 5: after compressive yield point (skeleton curve)
+    case 5:
 
-          // compression
-          if (trialDeformation <= commitDeformation)
-            {
-                if (trialDeformation > ucr)
-                    trialStg = 7;
-                else if (trialDeformation > ucy && trialDeformation <= ucr)
-                    trialStg = 1;
-                else if (trialDeformation <= ucy)
-                    trialStg = 5;
-            }
+        // compression
+        if (trialDeformation <= commitDeformation)
+            trialStg = 5;
 
-          // tension（unload）
-          else
-            {
-                ur2 = commitDeformation;        // strain of unload point
-                fr2 = commitForce;      // stress of unload point
-                ur1 = (ste * ur2 - sty * uty + fty - fr2) / (ste - sty);
-                fr1 = sty * (ur1 - uty) + fty;
+        // tension (unload)
+        else {
+            ur5 = commitDeformation;    // strain of unload point
+            fr5 = commitForce;  // stress of unload point
 
-                if (trialDeformation > uth)
-                    trialStg = 4;
-                else if (trialDeformation > ur1 && trialDeformation <= uth)
-                    trialStg = 3;
-                else if (trialDeformation <= ur1)
-                    trialStg = 6;
-            }
+            uc0 = -fr5 / sce + ur5;
+            ur6 = (ste * uc0 - sty * uty + fty) / (ste - sty);
+            fr6 = ste * (ur6 - uc0);
 
-          break;
+            if (trialDeformation <= uc0)
+                trialStg = 10;
+            else if (trialDeformation > uc0 && trialDeformation <= ur6)
+                trialStg = 11;
+            else if (trialDeformation > ur6 && trialDeformation <= uty)
+                trialStg = 12;
+            else if (trialDeformation > uty && trialDeformation <= uth)
+                trialStg = 3;
+            else if (trialDeformation > uth)
+                trialStg = 4;
+        }
+
+        break;
 
 
-          // 8: after tensile yield point (unload, strain<=utr)
-      case 8:
-          if (trialDeformation > uth)
-              trialStg = 4;
-          else if (trialDeformation > ur1 && trialDeformation <= uth)
-              trialStg = 3;
-          else if (trialDeformation > ur7 && trialDeformation <= ur1)
-              trialStg = 8;
-          else if (trialDeformation > ucy && trialDeformation <= ur7)
-              trialStg = 1;
-          else if (trialDeformation <= ucy)
-              trialStg = 5;
+        // 6: after tensile yield point (unload)
+    case 6:
 
-          break;
+        if (trialDeformation > uth)
+            trialStg = 4;
+        else if (trialDeformation > ur1 && trialDeformation <= uth)
+            trialStg = 3;
+        else if (trialDeformation > ur2 && trialDeformation <= ur1)
+            trialStg = 6;
+        else if (trialDeformation > ucr && trialDeformation <= ur2)
+            trialStg = 7;
+        else if (trialDeformation > ucy && trialDeformation <= ucr)
+            trialStg = 1;
+        else if (trialDeformation <= ucy)
+            trialStg = 5;
 
-
-          // 9: after tensile hardening point (unload)
-      case 9:
-          if (trialDeformation > ur3)
-              trialStg = 4;
-          else if (trialDeformation > ur4 && trialDeformation <= ur3)
-              trialStg = 9;
-          else if (trialDeformation > uch && trialDeformation <= ur4)
-              trialStg = 13;
-          else if (trialDeformation > ucr && trialDeformation <= uch)
-              trialStg = 7;
-          else if (trialDeformation > ucy && trialDeformation <= ucr)
-              trialStg = 1;
-          else if (trialDeformation <= ucy)
-              trialStg = 5;
-
-          break;
+        break;
 
 
-          // 10: after compressive yield point (unload)
-      case 10:
+        // 7: after tensile yield point (unload, approach reversal point)
+    case 7:
 
-          if (trialDeformation <= ur5)
-              trialStg = 5;
-          else if (trialDeformation > ur5 && trialDeformation <= uc0)
-              trialStg = 10;
-          else if (trialDeformation > uc0 && trialDeformation <= ur6)
-              trialStg = 11;
-          else if (trialDeformation > ur6 && trialDeformation <= uty)
-              trialStg = 12;
-          else if (trialDeformation > uty && trialDeformation <= uth)
-              trialStg = 3;
-          else if (trialDeformation > uth)
-              trialStg = 4;
+        // compression
+        if (trialDeformation <= commitDeformation) {
+            if (trialDeformation > ucr)
+                trialStg = 7;
+            else if (trialDeformation > ucy && trialDeformation <= ucr)
+                trialStg = 1;
+            else if (trialDeformation <= ucy)
+                trialStg = 5;
+        }
+        // tension（unload）
+        else {
+            ur2 = commitDeformation;    // strain of unload point
+            fr2 = commitForce;  // stress of unload point
+            ur1 = (ste * ur2 - sty * uty + fty - fr2) / (ste - sty);
+            fr1 = sty * (ur1 - uty) + fty;
 
-          break;
+            if (trialDeformation > uth)
+                trialStg = 4;
+            else if (trialDeformation > ur1 && trialDeformation <= uth)
+                trialStg = 3;
+            else if (trialDeformation <= ur1)
+                trialStg = 6;
+        }
 
-          // 11: after compressive yield point (unload, turn into tensile stress)
-      case 11:
-
-          if (trialDeformation <= ur5)
-              trialStg = 5;
-          else if (trialDeformation > ur5 && trialDeformation <= uc0)
-              trialStg = 10;
-          else if (trialDeformation > uc0 && trialDeformation <= ur6)
-              trialStg = 11;
-          else if (trialDeformation > ur6 && trialDeformation <= uty)
-              trialStg = 12;
-          else if (trialDeformation > uty && trialDeformation <= uth)
-              trialStg = 3;
-          else if (trialDeformation > uty)
-              trialStg = 4;
-
-          break;
-
-          // 12: after compressive yield point (unload, turn into tensile stress, ur6<=strain)
-      case 12:
-
-          // tension
-          if (trialDeformation >= commitDeformation)
-            {
-                if (trialDeformation <= uty)
-                    trialStg = 12;
-                else if (trialDeformation > uty && trialDeformation <= uth)
-                    trialStg = 3;
-                else if (trialDeformation > uth)
-                    trialStg = 4;
-            }
-
-          // compression (unload)
-          else
-            {
-                ur6 = commitDeformation;        // strain of unload point
-                fr6 = commitForce;      // stress of unload point
-                uc0 = -fr6 / ste + ur6;
-                ur5 = (sce * uc0 - scy * ucy + fcy) / (sce - scy);
-                fr5 = sce * (ur5 - uc0);
-
-                if (trialDeformation <= ur5)
-                    trialStg = 5;
-                else if (trialDeformation > ur5 && trialDeformation <= uc0)
-                    trialStg = 10;
-                else if (trialDeformation > uc0)
-                    trialStg = 11;
-            }
-
-          break;
+        break;
 
 
-          // 13: after tensile hardening point (unload, turn into compressive stress)
-      case 13:
-          // compression
-          if (trialDeformation <= commitDeformation)
-            {
-                if (trialDeformation > uch)
-                    trialStg = 13;
-                else if (trialDeformation > ucr && trialDeformation <= uch)
-                    trialStg = 7;
-                else if (trialDeformation > ucy && trialDeformation <= ucr)
-                    trialStg = 1;
-                else if (trialDeformation <= ucy)
-                    trialStg = 5;
-            }
+        // 8: after tensile yield point (unload, strain<=utr)
+    case 8:
+        if (trialDeformation > uth)
+            trialStg = 4;
+        else if (trialDeformation > ur1 && trialDeformation <= uth)
+            trialStg = 3;
+        else if (trialDeformation > ur7 && trialDeformation <= ur1)
+            trialStg = 8;
+        else if (trialDeformation > ucy && trialDeformation <= ur7)
+            trialStg = 1;
+        else if (trialDeformation <= ucy)
+            trialStg = 5;
 
-          // tension (unload)
-          else
-            {
-                ur4 = commitDeformation;        // strain of unload point
-                fr4 = commitForce;      // stress of unload point
-                ur3 = (ste * ur4 - sth * uth + fth - fr4) / (ste - sth);
-                fr3 = sth * (ur3 - uth) + fth;
+        break;
 
-                if (trialDeformation > ur3)
-                    trialStg = 4;
-                else
-                    trialStg = 9;
-            }
 
-          break;
+        // 9: after tensile hardening point (unload)
+    case 9:
+        if (trialDeformation > ur3)
+            trialStg = 4;
+        else if (trialDeformation > ur4 && trialDeformation <= ur3)
+            trialStg = 9;
+        else if (trialDeformation > uch && trialDeformation <= ur4)
+            trialStg = 13;
+        else if (trialDeformation > ucr && trialDeformation <= uch)
+            trialStg = 7;
+        else if (trialDeformation > ucy && trialDeformation <= ucr)
+            trialStg = 1;
+        else if (trialDeformation <= ucy)
+            trialStg = 5;
 
-      }
+        break;
+
+
+        // 10: after compressive yield point (unload)
+    case 10:
+
+        if (trialDeformation <= ur5)
+            trialStg = 5;
+        else if (trialDeformation > ur5 && trialDeformation <= uc0)
+            trialStg = 10;
+        else if (trialDeformation > uc0 && trialDeformation <= ur6)
+            trialStg = 11;
+        else if (trialDeformation > ur6 && trialDeformation <= uty)
+            trialStg = 12;
+        else if (trialDeformation > uty && trialDeformation <= uth)
+            trialStg = 3;
+        else if (trialDeformation > uth)
+            trialStg = 4;
+
+        break;
+
+        // 11: after compressive yield point (unload, turn into tensile stress)
+    case 11:
+
+        if (trialDeformation <= ur5)
+            trialStg = 5;
+        else if (trialDeformation > ur5 && trialDeformation <= uc0)
+            trialStg = 10;
+        else if (trialDeformation > uc0 && trialDeformation <= ur6)
+            trialStg = 11;
+        else if (trialDeformation > ur6 && trialDeformation <= uty)
+            trialStg = 12;
+        else if (trialDeformation > uty && trialDeformation <= uth)
+            trialStg = 3;
+        else if (trialDeformation > uty)
+            trialStg = 4;
+
+        break;
+
+        // 12: after compressive yield point (unload, turn into tensile stress, ur6<=strain)
+    case 12:
+
+        // tension
+        if (trialDeformation >= commitDeformation) {
+            if (trialDeformation <= uty)
+                trialStg = 12;
+            else if (trialDeformation > uty && trialDeformation <= uth)
+                trialStg = 3;
+            else if (trialDeformation > uth)
+                trialStg = 4;
+        }
+        // compression (unload)
+        else {
+            ur6 = commitDeformation;    // strain of unload point
+            fr6 = commitForce;  // stress of unload point
+            uc0 = -fr6 / ste + ur6;
+            ur5 = (sce * uc0 - scy * ucy + fcy) / (sce - scy);
+            fr5 = sce * (ur5 - uc0);
+
+            if (trialDeformation <= ur5)
+                trialStg = 5;
+            else if (trialDeformation > ur5 && trialDeformation <= uc0)
+                trialStg = 10;
+            else if (trialDeformation > uc0)
+                trialStg = 11;
+        }
+
+        break;
+
+
+        // 13: after tensile hardening point (unload, turn into compressive stress)
+    case 13:
+        // compression
+        if (trialDeformation <= commitDeformation) {
+            if (trialDeformation > uch)
+                trialStg = 13;
+            else if (trialDeformation > ucr && trialDeformation <= uch)
+                trialStg = 7;
+            else if (trialDeformation > ucy && trialDeformation <= ucr)
+                trialStg = 1;
+            else if (trialDeformation <= ucy)
+                trialStg = 5;
+        }
+        // tension (unload)
+        else {
+            ur4 = commitDeformation;    // strain of unload point
+            fr4 = commitForce;  // stress of unload point
+            ur3 = (ste * ur4 - sth * uth + fth - fr4) / (ste - sth);
+            fr3 = sth * (ur3 - uth) + fth;
+
+            if (trialDeformation > ur3)
+                trialStg = 4;
+            else
+                trialStg = 9;
+        }
+
+        break;
+
+    }
 
 
     // stiffness,force
-    switch (trialStg)
-      {
+    switch (trialStg) {
 
-          // 1: compression, elastic
-      case 1:
+        // 1: compression, elastic
+    case 1:
 
-          trialStiffness = sce;
-          trialForce = sce * trialDeformation;
+        trialStiffness = sce;
+        trialForce = sce * trialDeformation;
 
-          break;
+        break;
 
-          // 2: tension, elastic
-      case 2:
+        // 2: tension, elastic
+    case 2:
 
-          trialStiffness = ste;
-          trialForce = ste * trialDeformation;
+        trialStiffness = ste;
+        trialForce = ste * trialDeformation;
 
-          break;
+        break;
 
-          // 3:  after tensile yield point (skeleton curve)
-      case 3:
+        // 3:  after tensile yield point (skeleton curve)
+    case 3:
 
-          trialStiffness = sty;
-          trialForce = sty * (trialDeformation - uty) + fty;
+        trialStiffness = sty;
+        trialForce = sty * (trialDeformation - uty) + fty;
 
-          break;
+        break;
 
-          // 4: after tensile hardening point (skeleton curve)
-      case 4:
+        // 4: after tensile hardening point (skeleton curve)
+    case 4:
 
-          trialStiffness = sth;
-          trialForce = sth * (trialDeformation - uth) + fth;
+        trialStiffness = sth;
+        trialForce = sth * (trialDeformation - uth) + fth;
 
-          break;
+        break;
 
-          // 5: after compressive yield point (skeleton curve)
-      case 5:
+        // 5: after compressive yield point (skeleton curve)
+    case 5:
 
-          trialStiffness = scy;
-          trialForce = scy * (trialDeformation - ucy) + fcy;
+        trialStiffness = scy;
+        trialForce = scy * (trialDeformation - ucy) + fcy;
 
-          break;
+        break;
 
-          // 6: after tensile yield point (unload)
-      case 6:
+        // 6: after tensile yield point (unload)
+    case 6:
 
-          trialStiffness = ste;
-          trialForce = ste * (trialDeformation - ur1) + fr1;
+        trialStiffness = ste;
+        trialForce = ste * (trialDeformation - ur1) + fr1;
 
-          break;
+        break;
 
-          // 7: after tensile yield point (unload, approach reversal point)
-      case 7:
+        // 7: after tensile yield point (unload, approach reversal point)
+    case 7:
 
-          trialStiffness = (fcr - fr2) / (ucr - ur2);
-          trialForce = trialStiffness * (trialDeformation - ucr) + fcr;
+        trialStiffness = (fcr - fr2) / (ucr - ur2);
+        trialForce = trialStiffness * (trialDeformation - ucr) + fcr;
 
-          break;
+        break;
 
-          // 8: after tensile yield point (unload, strain<=utr)
-      case 8:
+        // 8: after tensile yield point (unload, strain<=utr)
+    case 8:
 
-          trialStiffness = ste;
-          trialForce = ste * (trialDeformation - ur7) + fr7;
+        trialStiffness = ste;
+        trialForce = ste * (trialDeformation - ur7) + fr7;
 
-          break;
+        break;
 
-          // 9: after tensile hardening point (unload)
-      case 9:
+        // 9: after tensile hardening point (unload)
+    case 9:
 
-          trialStiffness = ste;
-          trialForce = ste * (trialDeformation - ur3) + fr3;
+        trialStiffness = ste;
+        trialForce = ste * (trialDeformation - ur3) + fr3;
 
-          break;
+        break;
 
-          // 10: after compressive yield point (unload)
-      case 10:
+        // 10: after compressive yield point (unload)
+    case 10:
 
-          trialStiffness = sce;
-          trialForce = sce * (trialDeformation - ur5) + fr5;
+        trialStiffness = sce;
+        trialForce = sce * (trialDeformation - ur5) + fr5;
 
-          break;
+        break;
 
-          // 11: after compressive yield point (unload, turn into tensile stress)
-      case 11:
+        // 11: after compressive yield point (unload, turn into tensile stress)
+    case 11:
 
-          trialStiffness = ste;
-          trialForce = ste * (trialDeformation - uc0);
+        trialStiffness = ste;
+        trialForce = ste * (trialDeformation - uc0);
 
-          break;
+        break;
 
-          // 12: after compressive yield point (unload, turn into tensile stress, ur6<=strain)
-      case 12:
+        // 12: after compressive yield point (unload, turn into tensile stress, ur6<=strain)
+    case 12:
 
-          trialStiffness = sty;
-          trialForce = sty * (trialDeformation - ur6) + fr6;
+        trialStiffness = sty;
+        trialForce = sty * (trialDeformation - ur6) + fr6;
 
-          break;
+        break;
 
-          // 13: after tensile hardening point (unload, turn into compressive stress)
-      case 13:
+        // 13: after tensile hardening point (unload, turn into compressive stress)
+    case 13:
 
-          trialStiffness = (fcr - fr4) / (ucr - ur4);
-          trialForce = trialStiffness * (trialDeformation - ucr) + fcr;
+        trialStiffness = (fcr - fr4) / (ucr - ur4);
+        trialForce = trialStiffness * (trialDeformation - ucr) + fcr;
 
-          break;
+        break;
 
-      }
+    }
 
     return 0;
 }
 
-double
-AxialSpHD::getStress (void)
+double AxialSpHD::getStress(void)
 {
     return trialForce;
 }
 
-double
-AxialSpHD::getTangent (void)
+double AxialSpHD::getTangent(void)
 {
     return trialStiffness;
 }
 
-double
-AxialSpHD::getInitialTangent (void)
+double AxialSpHD::getInitialTangent(void)
 {
     return sce;
 }
 
-double
-AxialSpHD::getStrain (void)
+double AxialSpHD::getStrain(void)
 {
     return trialDeformation;
 }
 
-int
-AxialSpHD::commitState (void)
+int AxialSpHD::commitState(void)
 {
     commitDeformation = trialDeformation;
     commitForce = trialForce;
@@ -739,8 +691,7 @@ AxialSpHD::commitState (void)
     return 0;
 }
 
-int
-AxialSpHD::revertToLastCommit (void)
+int AxialSpHD::revertToLastCommit(void)
 {
     trialDeformation = commitDeformation;
     trialForce = commitForce;
@@ -751,8 +702,7 @@ AxialSpHD::revertToLastCommit (void)
     return 0;
 }
 
-int
-AxialSpHD::revertToStart (void)
+int AxialSpHD::revertToStart(void)
 {
     trialDeformation = 0.0;
     trialForce = 0.0;
@@ -767,11 +717,10 @@ AxialSpHD::revertToStart (void)
     return 0;
 }
 
-UniaxialMaterial *
-AxialSpHD::getCopy (void)
+UniaxialMaterial *AxialSpHD::getCopy(void)
 {
-    AxialSpHD *theCopy = new AxialSpHD (this->getTag (), sce, fty, fcy, bte,
-                                        bty, bth, bcy, fcr, ath);
+    AxialSpHD *theCopy = new AxialSpHD(this->getTag(), sce, fty, fcy, bte,
+                                       bty, bth, bcy, fcr, ath);
 
     // Copy committed history variables
     theCopy->commitStg = commitStg;
@@ -792,83 +741,78 @@ AxialSpHD::getCopy (void)
     return theCopy;
 }
 
-int
-AxialSpHD::sendSelf (int cTag, Channel & theChannel)
+int AxialSpHD::sendSelf(int cTag, Channel & theChannel)
 {
     int res = 0;
 
-    static Vector data (18);
+    static Vector data(18);
 
-    data (0) = this->getTag ();
-    data (1) = sce;
-    data (2) = fty;
-    data (3) = fcy;
-    data (4) = bte;
-    data (5) = bty;
-    data (6) = bth;
-    data (7) = bcy;
-    data (8) = fcr;
-    data (9) = ath;
-    data (10) = commitDeformation;
-    data (11) = commitForce;
-    data (12) = commitStiffness;
-    data (13) = commitStg;
-    data (14) = trialDeformation;
-    data (15) = trialForce;
-    data (16) = trialStiffness;
-    data (17) = trialStg;
+    data(0) = this->getTag();
+    data(1) = sce;
+    data(2) = fty;
+    data(3) = fcy;
+    data(4) = bte;
+    data(5) = bty;
+    data(6) = bth;
+    data(7) = bcy;
+    data(8) = fcr;
+    data(9) = ath;
+    data(10) = commitDeformation;
+    data(11) = commitForce;
+    data(12) = commitStiffness;
+    data(13) = commitStg;
+    data(14) = trialDeformation;
+    data(15) = trialForce;
+    data(16) = trialStiffness;
+    data(17) = trialStg;
 
-    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    res = theChannel.sendVector(this->getDbTag(), cTag, data);
     if (res < 0)
         opserr << "AxialSpHD::sendSelf() - failed to send data\n";
 
     return res;
 }
 
-int
-AxialSpHD::recvSelf (int cTag, Channel & theChannel,
-                     FEM_ObjectBroker & theBroker)
+int AxialSpHD::recvSelf(int cTag, Channel & theChannel,
+                        FEM_ObjectBroker & theBroker)
 {
     int res = 0;
 
-    static Vector data (18);
-    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    static Vector data(18);
+    res = theChannel.recvVector(this->getDbTag(), cTag, data);
 
-    if (res < 0)
-      {
-          opserr << "AxialSpHD::recvSelf() - failed to receive data\n";
-          this->setTag (0);
-      }
+    if (res < 0) {
+        opserr << "AxialSpHD::recvSelf() - failed to receive data\n";
+        this->setTag(0);
+    }
 
-    else
-      {
-          this->setTag ((int) data (0));
-          sce = data (1);
-          fty = data (2);
-          fcy = data (3);
-          bte = data (4);
-          bty = data (5);
-          bth = data (6);
-          bcy = data (7);
-          fcr = data (8);
-          ath = data (9);
-          commitDeformation = data (10);
-          commitForce = data (11);
-          commitStiffness = data (12);
-          commitStg = (int) data (13);
-          trialDeformation = data (14);
-          trialForce = data (15);
-          trialStiffness = data (16);
-          trialStg = (int) data (17);
-      }
+    else {
+        this->setTag((int) data(0));
+        sce = data(1);
+        fty = data(2);
+        fcy = data(3);
+        bte = data(4);
+        bty = data(5);
+        bth = data(6);
+        bcy = data(7);
+        fcr = data(8);
+        ath = data(9);
+        commitDeformation = data(10);
+        commitForce = data(11);
+        commitStiffness = data(12);
+        commitStg = (int) data(13);
+        trialDeformation = data(14);
+        trialForce = data(15);
+        trialStiffness = data(16);
+        trialStg = (int) data(17);
+    }
 
     return res;
 }
 
-void
-AxialSpHD::Print (OPS_Stream & s, int flag)
+void AxialSpHD::Print(OPS_Stream & s, int flag)
 {
-    s << "AxialSpHD : " << this->getTag () << endln;
+    s << "AxialSpHD : " << this->getTag() << endln;
     s << "    sce : " << endln;
     s << "    fty : " << endln;
     s << "    fcy : " << endln;
