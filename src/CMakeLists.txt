@@ -1,4 +1,4 @@
-add_library(libg3 SHARED)
+#add_library(libg3 OBJECT)
 add_subdirectory(domain)
 add_subdirectory(damage)
 add_subdirectory(actor)
@@ -14,24 +14,25 @@ add_subdirectory(recorder)
 add_subdirectory(tagged)
 add_subdirectory(utility)
 add_subdirectory(base)
+add_subdirectory(system_of_eqn)
 
-target_link_libraries(libg3
-    PUBLIC
-	domain
-	damage
-	actor
-	analysis
-	convergenceTest
-	coordTransformation
-	graph
-	handler
-
-	matrix
-	recorder
-	tagged
-	utility
-	base
-)
+#target_link_libraries(libg3
+#    OBJECT
+#	domain
+#	damage
+#	actor
+#	analysis
+#	convergenceTest
+#	coordTransformation
+#	graph
+#	handler
+#	matrix
+#	recorder
+#	tagged
+#	utility
+#	#base
+#)
+#set_target_properties(libg3 PROPERTIES LINK_FLAGS "-Wl,--whole-archive")
 
 #
 #add_subdirectory(utility)
