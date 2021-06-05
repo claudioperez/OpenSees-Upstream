@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:19 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/load/LoadIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/model/LoadIter.C
 //
 // Written: fmk 11/95
@@ -35,28 +35,25 @@
 #include "LoadIter.h"
 
 // LoadIter(LoadCase &loadcase):
-//	constructor that takes the nodes associated with a load
+//      constructor that takes the nodes associated with a load
 
-LoadIter::LoadIter(const LoadCase &loadcase)
-  :myLoadCase(loadcase), currIndexLoads(0), currIndexLoadCases(0)
+LoadIter::LoadIter (const LoadCase & loadcase):
+myLoadCase (loadcase),
+currIndexLoads (0),
+currIndexLoadCases (0)
 {
 
 }
 
 
 Load *
-LoadIter::operator()(void)
+LoadIter::operator () (void)
 {
 /** WARNING - HAVE TO CHANGE FOR LOAD CASES */
 
- // if we still have loads from myLoads to return
-  if (currIndexLoads == myLoadCase.numLoads)
-    return 0;
-  else
-    return myLoadCase.myLoads[currIndexLoads++];
+    // if we still have loads from myLoads to return
+    if (currIndexLoads == myLoadCase.numLoads)
+        return 0;
+    else
+        return myLoadCase.myLoads[currIndexLoads++];
 }
-  
-
-
-    
-    

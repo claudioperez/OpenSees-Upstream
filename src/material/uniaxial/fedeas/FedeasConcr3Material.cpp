@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-07-15 21:36:46 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/fedeas/FedeasConcr3Material.cpp,v $
-                                                                      
+
 // Written: MHS
 // Created: Jan 2001
 //
@@ -32,80 +32,84 @@
 #include <stdlib.h>
 #include <FedeasConcr3Material.h>
 
-FedeasConcr3Material::FedeasConcr3Material(int tag,
-					 double fc, double ec, double fu, double eu,
-					 double rat, double ft, double epst0,
-					 double ft0, double beta, double epstu):
+FedeasConcr3Material::FedeasConcr3Material (int tag,
+                                            double fc, double ec, double fu,
+                                            double eu, double rat, double ft,
+                                            double epst0, double ft0,
+                                            double beta, double epstu):
 // 2 history variables and 10 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasConcrete3, 2, 10)
+FedeasMaterial (tag, MAT_TAG_FedeasConcrete3, 2, 10)
 {
-	data[0]  = fc;
-	data[1]  = ec;
-	data[2]  = fu;
-	data[3]  = eu;
-	data[4]  = rat;
-	data[5]  = ft;
-	data[6]  = epst0;
-	data[7]  = ft0;
-	data[8]  = beta;
-	data[9]  = epstu;
+    data[0] = fc;
+    data[1] = ec;
+    data[2] = fu;
+    data[3] = eu;
+    data[4] = rat;
+    data[5] = ft;
+    data[6] = epst0;
+    data[7] = ft0;
+    data[8] = beta;
+    data[9] = epstu;
 
-	tangent =  2.0*data[0]/data[1];
-	tangentP = tangent;
+    tangent = 2.0 * data[0] / data[1];
+    tangentP = tangent;
 }
 
-FedeasConcr3Material::FedeasConcr3Material(int tag, const Vector &d):
+FedeasConcr3Material::FedeasConcr3Material (int tag, const Vector & d):
 // 2 history variables and 10 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasConcrete3, 2, 10)
+FedeasMaterial (tag, MAT_TAG_FedeasConcrete3, 2, 10)
 {
-  if (d.Size() != numData) {
-    opserr << "FedeasConcr3Material::FedeasConcr3Material -- not enough input arguments\n";
-    exit(-1);
-  }
-		
-  for (int i = 0; i < numData; i++)
-    data[i] = d(i);
+    if (d.Size () != numData)
+      {
+          opserr <<
+              "FedeasConcr3Material::FedeasConcr3Material -- not enough input arguments\n";
+          exit (-1);
+      }
 
-  tangent =  2.0*data[0]/data[1];
-  tangentP = tangent;
+    for (int i = 0; i < numData; i++)
+        data[i] = d (i);
+
+    tangent = 2.0 * data[0] / data[1];
+    tangentP = tangent;
 }
 
-FedeasConcr3Material::FedeasConcr3Material(void):
-FedeasMaterial(0, MAT_TAG_FedeasConcrete3, 2, 10)
+FedeasConcr3Material::FedeasConcr3Material (void):
+FedeasMaterial (0, MAT_TAG_FedeasConcrete3, 2, 10)
 {
-	// Does nothing
+    // Does nothing
 }
 
-FedeasConcr3Material::~FedeasConcr3Material(void)
+FedeasConcr3Material::~FedeasConcr3Material (void)
 {
-	// Does nothing
+    // Does nothing
 }
 
-UniaxialMaterial*
-FedeasConcr3Material::getCopy(void)
+UniaxialMaterial *
+FedeasConcr3Material::getCopy (void)
 {
-  Vector d(data, numData);
+    Vector d (data, numData);
 
-  FedeasConcr3Material *theCopy = new FedeasConcr3Material(this->getTag(), d);
-  
-  // Copy history variables
-  for (int i = 0; i < 2*numHstv; i++)
-    theCopy->hstv[i] = hstv[i];
-  
-  theCopy->epsilonP = epsilonP;
-  theCopy->sigmaP   = sigmaP;
-  theCopy->tangentP = tangentP;
+    FedeasConcr3Material *theCopy =
+        new FedeasConcr3Material (this->getTag (), d);
 
-  theCopy->epsilon = epsilonP;
-  theCopy->sigma = sigmaP;
-  theCopy->tangent = tangentP;  
-  
-  return theCopy;
+    // Copy history variables
+    for (int i = 0; i < 2 * numHstv; i++)
+        theCopy->hstv[i] = hstv[i];
+
+    theCopy->epsilonP = epsilonP;
+    theCopy->sigmaP = sigmaP;
+    theCopy->tangentP = tangentP;
+
+    theCopy->epsilon = epsilonP;
+    theCopy->sigma = sigmaP;
+    theCopy->tangent = tangentP;
+
+    return theCopy;
 }
 
 double
-FedeasConcr3Material::getInitialTangent(void)
+FedeasConcr3Material::getInitialTangent (void)
 {
-	//return 2.0*fc/ec;
-	return 2.0*data[0]/data[1];
+    //return 2.0*fc/ec;
+    return 2.0 * data[0] / data[1];
 }

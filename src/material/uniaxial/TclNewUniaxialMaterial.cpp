@@ -34,34 +34,37 @@
 #include <string.h>
 
 int
-TclCommand_NewUniaxialMaterial(ClientData clientData, Tcl_Interp *interp, int argc, 
-				  TCL_Char **argv, TclModelBuilder *theTclBuilder)
+TclCommand_NewUniaxialMaterial (ClientData clientData, Tcl_Interp * interp,
+                                int argc, TCL_Char ** argv,
+                                TclModelBuilder * theTclBuilder)
 {
 
-  int tag;
-  UniaxialMaterial *theMaterial = 0;
+    int tag;
+    UniaxialMaterial *theMaterial = 0;
 
-  if (argc < 3) {
-    opserr << "WARNING insufficient number of arguments\n";
-    return 0;
-  }
-  
-  if (Tcl_GetInt(interp, argv[2], &tag) != TCL_OK) {
-    opserr << "WARNING invalid uniaxialMaterial tag\n";
-    return 0;
-  }
+    if (argc < 3)
+      {
+          opserr << "WARNING insufficient number of arguments\n";
+          return 0;
+      }
 
-  /*
-  if (Tcl_GetDouble(interp, argv[3], &E) != TCL_OK) {
-    opserr << "WARNING invalid E\n";
-    return 0;	
-  }
-  */
-  
-  theMaterial = new NewUniaxialMaterial(tag);
+    if (Tcl_GetInt (interp, argv[2], &tag) != TCL_OK)
+      {
+          opserr << "WARNING invalid uniaxialMaterial tag\n";
+          return 0;
+      }
 
-  if (theMaterial != 0) 
-    return theTclBuilder->addUniaxialMaterial(*theMaterial);
-  else
-    return -1;
+    /*
+       if (Tcl_GetDouble(interp, argv[3], &E) != TCL_OK) {
+       opserr << "WARNING invalid E\n";
+       return 0;  
+       }
+     */
+
+    theMaterial = new NewUniaxialMaterial (tag);
+
+    if (theMaterial != 0)
+        return theTclBuilder->addUniaxialMaterial (*theMaterial);
+    else
+        return -1;
 }

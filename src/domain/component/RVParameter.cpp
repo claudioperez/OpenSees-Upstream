@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.9 $
 // $Date: 2008-08-26 15:43:43 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/component/RVParameter.cpp,v $
@@ -26,139 +26,148 @@
 #include <RVParameter.h>
 #include <RandomVariable.h>
 
-RVParameter::RVParameter(int passedTag, RandomVariable *theRV, Parameter *theParam)
-  :Parameter(passedTag,1976), myRV(theRV), myParam(theParam), currentValue(0.0)
+RVParameter::RVParameter (int passedTag, RandomVariable * theRV,
+                          Parameter * theParam):
+Parameter (passedTag, 1976),
+myRV (theRV),
+myParam (theParam),
+currentValue (0.0)
 {
-  if (myRV != 0)
-    currentValue = myRV->getCurrentValue();
+    if (myRV != 0)
+        currentValue = myRV->getCurrentValue ();
 }
 
 
-RVParameter::~RVParameter()
+RVParameter::~RVParameter ()
 {
-  if (myParam != 0)
-    delete myParam;
-}
-
-int
-RVParameter::update(int newValue)
-{
-  currentValue = newValue;
-
-  return 0;
+    if (myParam != 0)
+        delete myParam;
 }
 
 int
-RVParameter::update(double newValue)
+RVParameter::update (int newValue)
 {
-  currentValue = newValue;
+    currentValue = newValue;
 
-  myRV->setCurrentValue(newValue);
-
-  if (myParam != 0) {
-    myParam->setValue(newValue);
-    myParam->update(newValue);
-  }
-
-  return 0;
-}
-
-int
-RVParameter::activate(bool active)
-{
-  if (myParam != 0)
-    return myParam->activate(active);
-  else
     return 0;
 }
 
-double
-RVParameter::getValue(void)
+int
+RVParameter::update (double newValue)
 {
-  //return currentValue;
-  return myRV->getCurrentValue();
+    currentValue = newValue;
+
+    myRV->setCurrentValue (newValue);
+
+    if (myParam != 0)
+      {
+          myParam->setValue (newValue);
+          myParam->update (newValue);
+      }
+
+    return 0;
+}
+
+int
+RVParameter::activate (bool active)
+{
+    if (myParam != 0)
+        return myParam->activate (active);
+    else
+        return 0;
+}
+
+double
+RVParameter::getValue (void)
+{
+    //return currentValue;
+    return myRV->getCurrentValue ();
 }
 
 void
-RVParameter::setValue(double newValue)
+RVParameter::setValue (double newValue)
 {
-  currentValue = newValue;
+    currentValue = newValue;
 
-  myRV->setCurrentValue(newValue);
+    myRV->setCurrentValue (newValue);
 
-  if (myParam != 0) {
-    myParam->setValue(newValue);
-    myParam->update(newValue);
-  }
+    if (myParam != 0)
+      {
+          myParam->setValue (newValue);
+          myParam->update (newValue);
+      }
 }
 
 bool
-RVParameter::isImplicit(void)
+RVParameter::isImplicit (void)
 {
-  return false;
+    return false;
 }
 
 double
-RVParameter::getSensitivity(int index)
+RVParameter::getSensitivity (int index)
 {
-  return Parameter::getSensitivity(index);
+    return Parameter::getSensitivity (index);
 }
 
 double
-RVParameter::getPerturbation(void)
+RVParameter::getPerturbation (void)
 {
-  return 0.001*myRV->getStdv();
+    return 0.001 * myRV->getStdv ();
 }
 
-int 
-RVParameter::getPointerTag(void) 
+int
+RVParameter::getPointerTag (void)
 {
-    return myRV->getTag();
+    return myRV->getTag ();
 }
 
 void
-RVParameter::Print(OPS_Stream &s, int flag)  
+RVParameter::Print (OPS_Stream & s, int flag)
 {
-  s << "RVParameter, tag = " << this->getTag() << endln;
-  myRV->Print(s, flag);
-  if (myParam != 0) {
-    myParam->Print(s, flag);
-  }
+    s << "RVParameter, tag = " << this->getTag () << endln;
+    myRV->Print (s, flag);
+    if (myParam != 0)
+      {
+          myParam->Print (s, flag);
+      }
 }
 
 int
-RVParameter::addComponent(DomainComponent *theObject, const char **argv, int argc)
+RVParameter::addComponent (DomainComponent * theObject, const char **argv,
+                           int argc)
 {
-  return myParam->addComponent(theObject, argv, argc);
+    return myParam->addComponent (theObject, argv, argc);
 }
 
 int
-RVParameter::addComponent(int tag, const char **argv, int argc)
+RVParameter::addComponent (int tag, const char **argv, int argc)
 {
-  return myParam->addComponent(tag, argv, argc);
+    return myParam->addComponent (tag, argv, argc);
 }
 
 int
-RVParameter::addObject(int parameterID, MovableObject *object)
+RVParameter::addObject (int parameterID, MovableObject * object)
 {
-  return myParam->addObject(parameterID, object);
+    return myParam->addObject (parameterID, object);
 }
 
 void
-RVParameter::setDomain(Domain *theDomain)
+RVParameter::setDomain (Domain * theDomain)
 {
- if (myParam != 0)
-	myParam->setDomain(theDomain);
+    if (myParam != 0)
+        myParam->setDomain (theDomain);
 }
 
-int 
-RVParameter::sendSelf(int commitTag, Channel &theChannel)
+int
+RVParameter::sendSelf (int commitTag, Channel & theChannel)
 {
-  return 0;
+    return 0;
 }
 
-int 
-RVParameter::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+int
+RVParameter::recvSelf (int commitTag, Channel & theChannel,
+                       FEM_ObjectBroker & theBroker)
 {
-  return 0;
+    return 0;
 }

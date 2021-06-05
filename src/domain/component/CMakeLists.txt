@@ -8,7 +8,7 @@ target_sources(domain
 	LoadFactorParameter.cpp
 	MaterialStageParameter.cpp
 	MatParameter.cpp
-	InitialStateParameter.cpp
+	#InitialStateParameter.cpp
 	ElementStateParameter.cpp
     PUBLIC
 	DomainComponent.h
@@ -18,7 +18,7 @@ target_sources(domain
 	LoadFactorParameter.h
 	MaterialStageParameter.h
 	MatParameter.h
-	InitialStateParameter.h
+	#InitialStateParameter.h
 	ElementStateParameter.h
 )
 

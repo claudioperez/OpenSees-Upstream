@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $Source$
@@ -35,41 +35,48 @@
 
 static MapOfTaggedObjects theStiffnessDegradationObjects;
 
-bool OPS_addStiffnessDegradation(StiffnessDegradation *newComponent)
+bool
+OPS_addStiffnessDegradation (StiffnessDegradation * newComponent)
 {
-  return theStiffnessDegradationObjects.addComponent(newComponent);
+    return theStiffnessDegradationObjects.addComponent (newComponent);
 }
 
-StiffnessDegradation *OPS_getStiffnessDegradation(int tag)
+StiffnessDegradation *
+OPS_getStiffnessDegradation (int tag)
 {
-  TaggedObject *theResult = theStiffnessDegradationObjects.getComponentPtr(tag);
-  if (theResult == 0) {
-    opserr << "StiffnessDegradation *getStiffnessDegradation(int tag) - none found with tag: " << tag << endln;
-    return 0;
-  }
-  StiffnessDegradation *theMat = (StiffnessDegradation *)theResult;
+    TaggedObject *theResult =
+        theStiffnessDegradationObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          opserr <<
+              "StiffnessDegradation *getStiffnessDegradation(int tag) - none found with tag: "
+              << tag << endln;
+          return 0;
+      }
+    StiffnessDegradation *theMat = (StiffnessDegradation *) theResult;
 
-  return theMat;  
+    return theMat;
 }
 
-void OPS_clearAllStiffnessDegradation(void)
+void
+OPS_clearAllStiffnessDegradation (void)
 {
-  theStiffnessDegradationObjects.clearAll();
+    theStiffnessDegradationObjects.clearAll ();
 }
 
-StiffnessDegradation::StiffnessDegradation(int tag, int classTag)
-  :MaterialState(tag,classTag)
+StiffnessDegradation::StiffnessDegradation (int tag, int classTag):
+MaterialState (tag, classTag)
 {
-  
+
 }
 
-StiffnessDegradation::~StiffnessDegradation()
+StiffnessDegradation::~StiffnessDegradation ()
 {
-  
+
 }
 
-StiffnessDegradation*
-StiffnessDegradation::getCopy(UniaxialMaterial *u)
+StiffnessDegradation *
+StiffnessDegradation::getCopy (UniaxialMaterial * u)
 {
-  return this->getCopy();
+    return this->getCopy ();
 }

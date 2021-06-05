@@ -5,34 +5,34 @@ target_sources(analysis
       NewtonRaphson.cpp
       ModifiedNewton.cpp 
       NewtonLineSearch.cpp 
-      Broyden.cpp 
-      BFGS.cpp
-      KrylovNewton.cpp 
-      PeriodicNewton.cpp 
-      AcceleratedNewton.cpp
-      LineSearch.cpp 
-      InitialInterpolatedLineSearch.cpp 
-      NewtonHallM.cpp
-      SecantLineSearch.cpp 
-      RegulaFalsiLineSearch.cpp 
-      BisectionLineSearch.cpp
+      #Broyden.cpp 
+      #BFGS.cpp
+      #KrylovNewton.cpp 
+      #PeriodicNewton.cpp 
+      #AcceleratedNewton.cpp
+      #LineSearch.cpp 
+      #InitialInterpolatedLineSearch.cpp 
+      #NewtonHallM.cpp
+      #SecantLineSearch.cpp 
+      #RegulaFalsiLineSearch.cpp 
+      #BisectionLineSearch.cpp
     PUBLIC
       EquiSolnAlgo.h 
       Linear.h 
       NewtonRaphson.h
       ModifiedNewton.h 
       NewtonLineSearch.h 
-      Broyden.h 
-      BFGS.h
-      KrylovNewton.h 
-      PeriodicNewton.h 
-      AcceleratedNewton.h
-      LineSearch.h 
-      InitialInterpolatedLineSearch.h 
-      NewtonHallM.h
-      SecantLineSearch.h 
-      RegulaFalsiLineSearch.h 
-      BisectionLineSearch.h
+      #Broyden.h 
+      #BFGS.h
+      #KrylovNewton.h 
+      #PeriodicNewton.h 
+      #AcceleratedNewton.h
+      #LineSearch.h 
+      #InitialInterpolatedLineSearch.h 
+      #NewtonHallM.h
+      #SecantLineSearch.h 
+      #RegulaFalsiLineSearch.h 
+      #BisectionLineSearch.h
 )
 
 target_include_directories(analysis PUBLIC $(CMAKE_CURRENT_LIST_DIR))

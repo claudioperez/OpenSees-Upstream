@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.0 $
 // $Date: 2019-01-28 17:53:01 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/equiSolnAlgo/ExpressNewton.cpp,v $
@@ -51,113 +51,126 @@
 #include <ID.h>
 
 #include <Timer.h>
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 #include <string>
 
 // Constructor
-ExpressNewton::ExpressNewton(int ni, double km, int tg, int fo)
-  :EquiSolnAlgo(EquiALGORITHM_TAGS_ExpressNewton), nIter(ni), factorOnce(fo) 
+ExpressNewton::ExpressNewton (int ni, double km, int tg, int fo):
+EquiSolnAlgo (EquiALGORITHM_TAGS_ExpressNewton),
+nIter (ni),
+factorOnce (fo)
 {
-  if (tg == INITIAL_TANGENT) {
-    kMultiplier1 = km;
-    kMultiplier2 = 0.0;
-  }
-  else {
-    kMultiplier1 = 0.0;
-    kMultiplier2 = km;
-  }
+    if (tg == INITIAL_TANGENT)
+      {
+          kMultiplier1 = km;
+          kMultiplier2 = 0.0;
+      }
+    else
+      {
+          kMultiplier1 = 0.0;
+          kMultiplier2 = km;
+      }
 }
 
 // Destructor
-ExpressNewton::~ExpressNewton()
+ExpressNewton::~ExpressNewton ()
 {
 
 }
 
-int 
-ExpressNewton::solveCurrentStep(void)
+int
+ExpressNewton::solveCurrentStep (void)
 {
     // set up some pointers and check they are valid
     // NOTE this could be taken away if we set Ptrs as protecetd in superclass
 
-    AnalysisModel *theAnalysisModel = this->getAnalysisModelPtr(); 
-    LinearSOE  *theSOE = this->getLinearSOEptr();
-    IncrementalIntegrator *theIntegrator = this->getIncrementalIntegratorPtr();
+    AnalysisModel *theAnalysisModel = this->getAnalysisModelPtr ();
+    LinearSOE *theSOE = this->getLinearSOEptr ();
+    IncrementalIntegrator *theIntegrator =
+        this->getIncrementalIntegratorPtr ();
 
-    if ((theAnalysisModel == 0) || (theIntegrator ==0 ) || (theSOE == 0)){
-	opserr << "WARNING ExpressNewton::solveCurrentStep() -";
-	opserr << "setLinks() has not been called.\n";
-	return -5;
-    }
+    if ((theAnalysisModel == 0) || (theIntegrator == 0) || (theSOE == 0))
+      {
+          opserr << "WARNING ExpressNewton::solveCurrentStep() -";
+          opserr << "setLinks() has not been called.\n";
+          return -5;
+      }
 
-	if (factorOnce != 2) {
-		if (theIntegrator->formTangent(HALL_TANGENT, kMultiplier1, kMultiplier2) < 0) {
-		  opserr << "WARNING ExpressNewton::solveCurrentStep() -";
-		  opserr << "the Integrator failed in formTangent()\n";
-		  return -1;
-		}
-		if (factorOnce == 1)
-			factorOnce = 2;
-    }
+    if (factorOnce != 2)
+      {
+          if (theIntegrator->
+              formTangent (HALL_TANGENT, kMultiplier1, kMultiplier2) < 0)
+            {
+                opserr << "WARNING ExpressNewton::solveCurrentStep() -";
+                opserr << "the Integrator failed in formTangent()\n";
+                return -1;
+            }
+          if (factorOnce == 1)
+              factorOnce = 2;
+      }
 
-    for (int iter = 0; iter <nIter; ++iter)
-    {
-    if (theIntegrator->formUnbalance() < 0) {
-	opserr << "WARNING ExpressNewton::solveCurrentStep() -";
-	opserr << "the Integrator failed in formUnbalance()\n";	
-	return -2;
-    }
+    for (int iter = 0; iter < nIter; ++iter)
+      {
+          if (theIntegrator->formUnbalance () < 0)
+            {
+                opserr << "WARNING ExpressNewton::solveCurrentStep() -";
+                opserr << "the Integrator failed in formUnbalance()\n";
+                return -2;
+            }
 
-    if (theSOE->solve() < 0) {
-	opserr << "WARNING ExpressNewton::solveCurrentStep() -";
-	opserr << "the LinearSOE failed in solve()\n";	
-	return -3;
-    }
+          if (theSOE->solve () < 0)
+            {
+                opserr << "WARNING ExpressNewton::solveCurrentStep() -";
+                opserr << "the LinearSOE failed in solve()\n";
+                return -3;
+            }
 
-    if (theIntegrator->update(theSOE->getX()) < 0) {
-	opserr << "WARNING ExpressNewton::solveCurrentStep() -";
-	opserr << "the Integrator failed in update()\n";	
-	return -4;
-    }
-    }
+          if (theIntegrator->update (theSOE->getX ()) < 0)
+            {
+                opserr << "WARNING ExpressNewton::solveCurrentStep() -";
+                opserr << "the Integrator failed in update()\n";
+                return -4;
+            }
+      }
 
     return 0;
 }
 
 int
-ExpressNewton::setConvergenceTest(ConvergenceTest *theNewTest)
+ExpressNewton::setConvergenceTest (ConvergenceTest * theNewTest)
 {
-  return 0;
+    return 0;
 }
 
 int
-ExpressNewton::sendSelf(int cTag, Channel &theChannel)
+ExpressNewton::sendSelf (int cTag, Channel & theChannel)
 {
-  static Vector data(4);
-  data(0) = nIter;
-  data(1) = kMultiplier1;
-  data(1) = kMultiplier2;
-  data(2) = factorOnce;
-  return theChannel.sendVector(this->getDbTag(), cTag, data);
+    static Vector data (4);
+    data (0) = nIter;
+    data (1) = kMultiplier1;
+    data (1) = kMultiplier2;
+    data (2) = factorOnce;
+    return theChannel.sendVector (this->getDbTag (), cTag, data);
 
 
 }
 
 int
-ExpressNewton::recvSelf(int cTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+ExpressNewton::recvSelf (int cTag, Channel & theChannel,
+                         FEM_ObjectBroker & theBroker)
 {
-  static Vector data(4);
-  theChannel.recvVector(this->getDbTag(), cTag, data);
-  nIter = int(data(0));
-  kMultiplier1 = data(1);
-  kMultiplier2 = data(2);
-  factorOnce = int(data(3));
-  return 0;
+    static Vector data (4);
+    theChannel.recvVector (this->getDbTag (), cTag, data);
+    nIter = int (data (0));
+    kMultiplier1 = data (1);
+    kMultiplier2 = data (2);
+    factorOnce = int (data (3));
+    return 0;
 }
 
 
 void
-ExpressNewton::Print(OPS_Stream &s, int flag)
+ExpressNewton::Print (OPS_Stream & s, int flag)
 {
     s << "\t ExpressNewton algorithm";
 }

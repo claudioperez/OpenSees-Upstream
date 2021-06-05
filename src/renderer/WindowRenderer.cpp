@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:27 $
 // $Source: /usr/local/cvs/OpenSees/SRC/renderer/WindowRenderer.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/renderer/WindowRenderer.C
 //
 // Written: fmk 
@@ -47,15 +47,13 @@
 #include <Device.h>
 #include <Scan.h>
 
-WindowRenderer::WindowRenderer(int width, int height,
-			       ColorMap &_theMap)
-  :Renderer(_theMap)
+WindowRenderer::WindowRenderer (int width, int height, ColorMap & _theMap):
+Renderer (_theMap)
 {
 
 }
 
-WindowRenderer::~WindowRenderer()
+WindowRenderer::~WindowRenderer ()
 {
 
 }
-

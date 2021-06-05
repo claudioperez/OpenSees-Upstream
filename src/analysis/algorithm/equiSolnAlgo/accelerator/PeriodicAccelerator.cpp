@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2008-09-16 18:15:42 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/equiSolnAlgo/accelerator/PeriodicAccelerator.cpp,v $
-                                                                        
+
 // Written: MHS
 // Created: April 2002
 
@@ -37,128 +37,133 @@
 #include <ID.h>
 #include <Channel.h>
 
-PeriodicAccelerator::PeriodicAccelerator(int iter, int tangent)
-  :Accelerator(ACCELERATOR_TAGS_Periodic),
-   iteration(0), totalIter(0), maxIter(iter), theTangent(tangent)
+PeriodicAccelerator::PeriodicAccelerator (int iter, int tangent):
+Accelerator (ACCELERATOR_TAGS_Periodic),
+iteration (0),
+totalIter (0),
+maxIter (iter),
+theTangent (tangent)
 {
-  if (maxIter < 1)
-    maxIter = 1;
+    if (maxIter < 1)
+        maxIter = 1;
 }
 
-PeriodicAccelerator::~PeriodicAccelerator()
+PeriodicAccelerator::~PeriodicAccelerator ()
 {
 
-}
-
-int 
-PeriodicAccelerator::newStep(LinearSOE &theSOE)
-{
-  totalIter = 0;
-
-  // Reset iteration counter
-  iteration = (theTangent == CURRENT_TANGENT) ? maxIter : 0;
-
-  return 0;
 }
 
 int
-PeriodicAccelerator::accelerate(Vector &vStar, LinearSOE &theSOE,
-				IncrementalIntegrator &theIntegrator)
+PeriodicAccelerator::newStep (LinearSOE & theSOE)
 {
-  iteration++;
-  totalIter++;
+    totalIter = 0;
 
-  return 0; 
+    // Reset iteration counter
+    iteration = (theTangent == CURRENT_TANGENT) ? maxIter : 0;
+
+    return 0;
 }
 
 int
-PeriodicAccelerator::updateTangent(IncrementalIntegrator &theIntegrator)
+PeriodicAccelerator::accelerate (Vector & vStar, LinearSOE & theSOE,
+                                 IncrementalIntegrator & theIntegrator)
 {
-  /*
-  if (theTangent == NO_TANGENT)
-    return 0;
+    iteration++;
+    totalIter++;
 
-  else if (theTangent == SECOND_TANGENT) {
-    if (totalIter == maxIter) {
-      theIntegrator.formTangent(CURRENT_TANGENT);
-      return 1;
-    }
-    else
-      return 0;
-  }
+    return 0;
+}
 
-  else { // CURRENT_TANGENT or INITIAL_TANGENT
-    if (iteration >= maxIter) {
-      iteration = 0;
-      theIntegrator.formTangent(theTangent);
-      if (theTangent == CURRENT_TANGENT)
-	return 1;
-      else
-	return 0;
-    }
-    else
-      return 0;
-  }
-  */
+int
+PeriodicAccelerator::updateTangent (IncrementalIntegrator & theIntegrator)
+{
+    /*
+       if (theTangent == NO_TANGENT)
+       return 0;
 
-  if (iteration < maxIter)
-    return 0;
+       else if (theTangent == SECOND_TANGENT) {
+       if (totalIter == maxIter) {
+       theIntegrator.formTangent(CURRENT_TANGENT);
+       return 1;
+       }
+       else
+       return 0;
+       }
 
-  switch (theTangent) {
-  case CURRENT_TANGENT:
-    iteration = 0;
-    theIntegrator.formTangent(CURRENT_TANGENT);
-    return 1;
-    break;
-  case INITIAL_TANGENT:
-    iteration = 0;
-    theIntegrator.formTangent(INITIAL_TANGENT);
-    return 0;
-    break;
-  case NO_TANGENT:
-    iteration = 0;
-    return 0;
-    break;
-  default:
-    return 0;
-  }
+       else { // CURRENT_TANGENT or INITIAL_TANGENT
+       if (iteration >= maxIter) {
+       iteration = 0;
+       theIntegrator.formTangent(theTangent);
+       if (theTangent == CURRENT_TANGENT)
+       return 1;
+       else
+       return 0;
+       }
+       else
+       return 0;
+       }
+     */
+
+    if (iteration < maxIter)
+        return 0;
+
+    switch (theTangent)
+      {
+      case CURRENT_TANGENT:
+          iteration = 0;
+          theIntegrator.formTangent (CURRENT_TANGENT);
+          return 1;
+          break;
+      case INITIAL_TANGENT:
+          iteration = 0;
+          theIntegrator.formTangent (INITIAL_TANGENT);
+          return 0;
+          break;
+      case NO_TANGENT:
+          iteration = 0;
+          return 0;
+          break;
+      default:
+          return 0;
+      }
 }
 
 bool
-PeriodicAccelerator::updateTangent(void)
+PeriodicAccelerator::updateTangent (void)
 {
-  if (iteration > maxIter) {
-    iteration = 0;
-    return true;
-  }
-  else 
-    return false;
+    if (iteration > maxIter)
+      {
+          iteration = 0;
+          return true;
+      }
+    else
+        return false;
 }
 
 void
-PeriodicAccelerator::Print(OPS_Stream &s, int flag)
+PeriodicAccelerator::Print (OPS_Stream & s, int flag)
 {
-  s << "PeriodicAccelerator" << endln;
-  s << "\tIterations till restart: " << maxIter << endln;
+    s << "PeriodicAccelerator" << endln;
+    s << "\tIterations till restart: " << maxIter << endln;
 }
 
 int
-PeriodicAccelerator::sendSelf(int commitTag, Channel &theChannel)
+PeriodicAccelerator::sendSelf (int commitTag, Channel & theChannel)
 {
-  static ID data(2);
-  data(0) = theTangent;
-  data(1) = maxIter;
-  return theChannel.sendID(0, commitTag, data);
-  
+    static ID data (2);
+    data (0) = theTangent;
+    data (1) = maxIter;
+    return theChannel.sendID (0, commitTag, data);
+
 }
 
 int
-PeriodicAccelerator::recvSelf(int commitTag, Channel &theChannel, 
-			    FEM_ObjectBroker &theBroker)
+PeriodicAccelerator::recvSelf (int commitTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
 {
-  static ID data(2);
-  int res = theChannel.recvID(0, commitTag, data);
-  theTangent = data(0);
-  maxIter = data(1);
-  return res;
+    static ID data (2);
+    int res = theChannel.recvID (0, commitTag, data);
+    theTangent = data (0);
+    maxIter = data (1);
+    return res;
 }

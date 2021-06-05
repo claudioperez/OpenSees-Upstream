@@ -48,7 +48,7 @@
 #define GNGMaterial_h
 
 #include <UniaxialMaterial.h>
-#include <Information.h>
+#include <base/Information.h>
 
 class GNGMaterial : public UniaxialMaterial
 {

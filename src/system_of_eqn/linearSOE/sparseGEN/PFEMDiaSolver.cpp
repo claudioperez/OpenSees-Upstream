@@ -37,43 +37,46 @@
 #include <cmath>
 #include <Timer.h>
 
-void* OPS_PFEMDiaSolver()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_PFEMDiaSolver ()
 {
-    PFEMDiaSolver* theSolver = new PFEMDiaSolver();
-    return new PFEMDiaLinSOE(*theSolver);
+    PFEMDiaSolver *theSolver = new PFEMDiaSolver ();
+    return new PFEMDiaLinSOE (*theSolver);
+}
+#endif
+
+PFEMDiaSolver::PFEMDiaSolver ():LinearSOESolver (SOLVER_TAGS_PFEMDiaSolver),
+theSOE (0)
+{
 }
 
-PFEMDiaSolver::PFEMDiaSolver()
-    :LinearSOESolver(SOLVER_TAGS_PFEMDiaSolver), theSOE(0)
-{
-}
-
-PFEMDiaSolver::~PFEMDiaSolver()
+PFEMDiaSolver::~PFEMDiaSolver ()
 {
 }
 
 int
-PFEMDiaSolver::solve()
+PFEMDiaSolver::solve ()
 {
     // Timer timer;
     // timer.start();
 
     // Gt and -G
-    cs* Gt = theSOE->Gt;
-    cs* G = theSOE->G;
+    cs *Gt = theSOE->Gt;
+    cs *G = theSOE->G;
 
     // Mp and M
-    Vector& Mp = theSOE->Mp;
-    Vector& M = theSOE->M;
+    Vector & Mp = theSOE->Mp;
+    Vector & M = theSOE->M;
 
     // size
-    const Vector& B = theSOE->getB();
-    const ID& dofType = theSOE->getDofType();
-    const ID& dofID = theSOE->getDofID();
+    const Vector & B = theSOE->getB ();
+    const ID & dofType = theSOE->getDofType ();
+    const ID & dofID = theSOE->getDofID ();
 
-    int Vsize = M.Size();
-    int Psize = Mp.Size();
-    int size = B.Size();
+    int Vsize = M.Size ();
+    int Psize = Mp.Size ();
+    int size = B.Size ();
 
     // tolv, tolp, numiter
     double tolv = 1e-6;
@@ -84,86 +87,106 @@ PFEMDiaSolver::solve()
     // timer.start();
 
     // initial dv and dp
-    Vector dP(Psize);
-    Vector dV(Vsize);
-    double* dP_ptr = 0;
-    double* dV_ptr = 0;
-    if (Psize > 0) {
-	dP_ptr = &dP(0);
-    }
-    if (Vsize > 0) {
-	dV_ptr = &dV(0);
-    }
+    Vector dP (Psize);
+    Vector dV (Vsize);
+    double *dP_ptr = 0;
+    double *dV_ptr = 0;
+    if (Psize > 0)
+      {
+          dP_ptr = &dP (0);
+      }
+    if (Vsize > 0)
+      {
+          dV_ptr = &dV (0);
+      }
 
     bool converged = false;
     int numi = 0;
-    for (int j=0; j<numiter; ++j) {
+    for (int j = 0; j < numiter; ++j)
+      {
 
-	// (-G)*dp
-	if (Psize > 0 && Vsize > 0) {
-	    cs_gaxpy(G, dP_ptr, dV_ptr);
-	}
+          // (-G)*dp
+          if (Psize > 0 && Vsize > 0)
+            {
+                cs_gaxpy (G, dP_ptr, dV_ptr);
+            }
 
-	// dv
-	for(int i=0; i<size; i++) {        // row
+          // dv
+          for (int i = 0; i < size; i++)
+            {                   // row
 
-	    int rowtype = dofType(i);      // row type
-	    int rowid = dofID(i);          // row id
-	    if(rowtype < 3 && rowtype>=0) {
-		if (M(rowid) == 0) {
-		    opserr << "M("<<rowid<<") = 0\n";
-		    return -1;
-		}
-		dV(rowid) = (B(i)-dV(rowid))/M(rowid);
-	    }
-	}
+                int rowtype = dofType (i);      // row type
+                int rowid = dofID (i);  // row id
+                if (rowtype < 3 && rowtype >= 0)
+                  {
+                      if (M (rowid) == 0)
+                        {
+                            opserr << "M(" << rowid << ") = 0\n";
+                            return -1;
+                        }
+                      dV (rowid) = (B (i) - dV (rowid)) / M (rowid);
+                  }
+            }
 
-	// Gt*dv
-	if (Psize > 0 && Vsize > 0) {
-	    cs_gaxpy(Gt, dV_ptr, dP_ptr);
-	}
+          // Gt*dv
+          if (Psize > 0 && Vsize > 0)
+            {
+                cs_gaxpy (Gt, dV_ptr, dP_ptr);
+            }
 
-	// dp
-	for(int i=0; i<size; i++) {        // row
+          // dp
+          for (int i = 0; i < size; i++)
+            {                   // row
 
-	    int rowtype = dofType(i);      // row type
-	    int rowid = dofID(i);          // row id
-	    if(rowtype == 3) {
-		if (Mp(rowid) == 0) {
-		    opserr << "Mp("<<rowid<<") = 0\n";
-		    return -1;
-		}
-		dP(rowid) = (B(i)-dP(rowid))/Mp(rowid);
-	    }
-	}
+                int rowtype = dofType (i);      // row type
+                int rowid = dofID (i);  // row id
+                if (rowtype == 3)
+                  {
+                      if (Mp (rowid) == 0)
+                        {
+                            opserr << "Mp(" << rowid << ") = 0\n";
+                            return -1;
+                        }
+                      dP (rowid) = (B (i) - dP (rowid)) / Mp (rowid);
+                  }
+            }
 
-	if (dV.Norm()<tolv && dP.Norm()<tolp) {
-	    numi = j+1;
-	    converged = true;
-	    break;
-	}
-    }
+          if (dV.Norm () < tolv && dP.Norm () < tolp)
+            {
+                numi = j + 1;
+                converged = true;
+                break;
+            }
+      }
 
-    if (converged) {
-	opserr<<"Converged in "<<numi+1<<"iterations\n";
-    } else {
-	opserr<<"Failed to converged, norm(dv) = "<<dV.Norm()<<", norm(dp) = "<<dP.Norm()<<"\n";
-	return -1;
-    }
+    if (converged)
+      {
+          opserr << "Converged in " << numi + 1 << "iterations\n";
+      }
+    else
+      {
+          opserr << "Failed to converged, norm(dv) = " << dV.
+              Norm () << ", norm(dp) = " << dP.Norm () << "\n";
+          return -1;
+      }
 
     // copy to X
-    Vector X(size);
-    for(int i=0; i<size; i++) {            // row
-        int rowtype = dofType(i);          // row type
-        int rowid = dofID(i);
-        if(rowtype>=0 && rowtype<3) {
-            X(i) = dV(rowid);
-        } else if(rowtype == 3) {
-            X(i) = dP(rowid);
-        }
+    Vector X (size);
+    for (int i = 0; i < size; i++)
+      {                         // row
+          int rowtype = dofType (i);    // row type
+          int rowid = dofID (i);
+          if (rowtype >= 0 && rowtype < 3)
+            {
+                X (i) = dV (rowid);
+            }
+          else if (rowtype == 3)
+            {
+                X (i) = dP (rowid);
+            }
 
-    }
-    theSOE->setX(X);
+      }
+    theSOE->setX (X);
 
     // timer.pause();
     // opserr<<"solving time for PFEMDiasolver = "<<timer.getReal()<<"\n";
@@ -171,30 +194,30 @@ PFEMDiaSolver::solve()
     return 0;
 }
 
-int PFEMDiaSolver::setSize()
+int
+PFEMDiaSolver::setSize ()
 {
     return 0;
 }
 
 int
-PFEMDiaSolver::sendSelf(int cTag, Channel &theChannel)
-{
-    // nothing to do
-    return 0;
-}
-
-int
-PFEMDiaSolver::recvSelf(int ctag,
-		  Channel &theChannel,
-		  FEM_ObjectBroker &theBroker)
+PFEMDiaSolver::sendSelf (int cTag, Channel & theChannel)
 {
     // nothing to do
     return 0;
 }
 
+int
+PFEMDiaSolver::recvSelf (int ctag,
+                         Channel & theChannel, FEM_ObjectBroker & theBroker)
+{
+    // nothing to do
+    return 0;
+}
+
 
 int
-PFEMDiaSolver::setLinearSOE(PFEMDiaLinSOE& theSOE)
+PFEMDiaSolver::setLinearSOE (PFEMDiaLinSOE & theSOE)
 {
     this->theSOE = &theSOE;
     return 0;

@@ -31,7 +31,7 @@
 #define MaterialResponse_h
 
 #include <Response.h>
-#include <Information.h>
+#include <base/Information.h>
 
 class Material;
 

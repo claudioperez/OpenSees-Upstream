@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:00:41 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/domainDecompAlgo/DomainDecompAlgo.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/analysis/algorithm/DomainDecompAlgo.C
 // 
 // Written: fmk 
@@ -47,49 +47,50 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 
-DomainDecompAlgo::DomainDecompAlgo()
-:SolutionAlgorithm(DomDecompALGORITHM_TAGS_DomainDecompAlgo),
- theModel(0), theIntegrator(0), theLinearSOE(0), theSolver(0),
- theSubdomain(0)
+DomainDecompAlgo::DomainDecompAlgo ():SolutionAlgorithm (DomDecompALGORITHM_TAGS_DomainDecompAlgo),
+theModel (0), theIntegrator (0), theLinearSOE (0), theSolver (0),
+theSubdomain (0)
 {
 
 }
 
 
-DomainDecompAlgo::~DomainDecompAlgo()
+DomainDecompAlgo::~DomainDecompAlgo ()
 {
 
 }
 
 int
-DomainDecompAlgo::solveCurrentStep(void)
+DomainDecompAlgo::solveCurrentStep (void)
 {
     if (theModel == 0 || theIntegrator == 0 || theLinearSOE == 0 ||
-	theSolver == 0 || theSubdomain != 0 ) {
+        theSolver == 0 || theSubdomain != 0)
+      {
 
-	const Vector &extResponse = 
-	    theSubdomain->getLastExternalSysResponse();
+          const Vector & extResponse =
+              theSubdomain->getLastExternalSysResponse ();
 
-	theSolver->setComputedXext(extResponse);
-	theSolver->solveXint();
+          theSolver->setComputedXext (extResponse);
+          theSolver->solveXint ();
 
-	theIntegrator->update(theLinearSOE->getX());
-	
-	return 0;
-    }
-    else {
-	opserr << "DomainDecompAlgo::solveCurrentStep() ";
-	opserr << "no links have been set\n";
-	return -1;
-    }
+          theIntegrator->update (theLinearSOE->getX ());
+
+          return 0;
+      }
+    else
+      {
+          opserr << "DomainDecompAlgo::solveCurrentStep() ";
+          opserr << "no links have been set\n";
+          return -1;
+      }
 }
 
-void 
-DomainDecompAlgo::setLinks(AnalysisModel &theAnaModel, 
-				  IncrementalIntegrator &theInteg,
-				  LinearSOE &theSOE,
-				  DomainSolver &theDomainSolver,
-				  Subdomain &theSub)
+void
+DomainDecompAlgo::setLinks (AnalysisModel & theAnaModel,
+                            IncrementalIntegrator & theInteg,
+                            LinearSOE & theSOE,
+                            DomainSolver & theDomainSolver,
+                            Subdomain & theSub)
 {
     theModel = &theAnaModel;
     theIntegrator = &theInteg;
@@ -97,19 +98,18 @@ DomainDecompAlgo::setLinks(AnalysisModel &theAnaModel,
     theSolver = &theDomainSolver;
     theSubdomain = &theSub;
 }
-    
+
 
 
 int
-DomainDecompAlgo::sendSelf(int cTag, Channel &theChannel)
+DomainDecompAlgo::sendSelf (int cTag, Channel & theChannel)
 {
     return 0;
 }
 
 int
-DomainDecompAlgo::recvSelf(int ctag, Channel &theChannel, 
-			   FEM_ObjectBroker &theBroker)
+DomainDecompAlgo::recvSelf (int ctag, Channel & theChannel,
+                            FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
-

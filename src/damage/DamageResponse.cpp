@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2004-09-01 03:54:28 $
 // $Source: /usr/local/cvs/OpenSees/SRC/damage/DamageResponse.cpp,v $
-                                                                        
+
 // Written: Arash Altoontash, Gregory Deierlein
 // Created: Aug 2002
 //
@@ -30,49 +30,63 @@
 #include <DamageResponse.h>
 #include <DamageModel.h>
 
-DamageResponse::DamageResponse(DamageModel *dmg, int id):
-Response(), theDamage(dmg), responseID(id)
+DamageResponse::DamageResponse (DamageModel * dmg, int id):
+Response (),
+theDamage (dmg),
+responseID (id)
 {
 
 }
 
-DamageResponse::DamageResponse(DamageModel *dmg, int id, int val):
-Response(val), theDamage(dmg), responseID(id)
+DamageResponse::DamageResponse (DamageModel * dmg, int id, int val):
+Response (val),
+theDamage (dmg),
+responseID (id)
 {
 
 }
 
-DamageResponse::DamageResponse(DamageModel *dmg, int id, double val):
-Response(val), theDamage(dmg), responseID(id)
+DamageResponse::DamageResponse (DamageModel * dmg, int id, double val):
+Response (val),
+theDamage (dmg),
+responseID (id)
 {
 
 }
 
-DamageResponse::DamageResponse(DamageModel *dmg, int id, const ID &val):
-Response(val), theDamage(dmg), responseID(id)
+DamageResponse::DamageResponse (DamageModel * dmg, int id, const ID & val):
+Response (val),
+theDamage (dmg),
+responseID (id)
 {
 
 }
 
-DamageResponse::DamageResponse(DamageModel *dmg, int id, const Vector &val):
-Response(val), theDamage(dmg), responseID(id)
+DamageResponse::DamageResponse (DamageModel * dmg, int id,
+                                const Vector & val):
+Response (val),
+theDamage (dmg),
+responseID (id)
 {
 
 }
 
-DamageResponse::DamageResponse(DamageModel *dmg, int id, const Matrix &val):
-Response(val), theDamage(dmg), responseID(id)
+DamageResponse::DamageResponse (DamageModel * dmg, int id,
+                                const Matrix & val):
+Response (val),
+theDamage (dmg),
+responseID (id)
 {
 
 }
 
-DamageResponse::~DamageResponse()
+DamageResponse::~DamageResponse ()
 {
 
 }
 
 int
-DamageResponse::getResponse(void)
+DamageResponse::getResponse (void)
 {
-  return theDamage->getResponse(responseID, myInfo);
+    return theDamage->getResponse (responseID, myInfo);
 }

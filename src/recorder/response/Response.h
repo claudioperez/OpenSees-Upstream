@@ -34,7 +34,7 @@ class ID;
 class Vector;
 class Matrix;
 
-#include <Information.h>
+#include <base/Information.h>
 
 class Response
 {

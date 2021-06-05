@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/single/SingleDomLC_Iter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/domain/SingleDomLC_Iter.C
 //
 // Written: fmk 
@@ -40,37 +40,36 @@
 #include <TaggedObjectStorage.h>
 
 // SingleDomLC_Iter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SingleDomLC_Iter::SingleDomLC_Iter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+SingleDomLC_Iter::SingleDomLC_Iter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 }
 
-SingleDomLC_Iter::~SingleDomLC_Iter()
+SingleDomLC_Iter::~SingleDomLC_Iter ()
 {
-}    
+}
 
 void
-SingleDomLC_Iter::reset(void)
+SingleDomLC_Iter::reset (void)
 {
-    myIter.reset();
+    myIter.reset ();
 }
 
 
 LoadCase *
-SingleDomLC_Iter::operator()(void)
+SingleDomLC_Iter::operator () (void)
 {
     // check if we still have LoadCases in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	LoadCase *result = (LoadCase *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          LoadCase *result = (LoadCase *) theComponent;
+          return result;
+      }
 }
-
-    
-    

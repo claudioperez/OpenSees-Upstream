@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:28 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/bandGEN/BandGenLinSolver.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/system_of_eqn/linearSOE/bandGEN/BandGenLinSolver.C
 //
 // Written: fmk 
@@ -40,22 +40,21 @@
 #include <BandGenLinSolver.h>
 #include <BandGenLinSOE.h>
 
-BandGenLinSolver::BandGenLinSolver(int classTags)    
-:LinearSOESolver(classTags),
- theSOE(0)
+BandGenLinSolver::BandGenLinSolver (int classTags):
+LinearSOESolver (classTags),
+theSOE (0)
 {
 
-}    
+}
 
-BandGenLinSolver::~BandGenLinSolver()    
+BandGenLinSolver::~BandGenLinSolver ()
 {
 
-}    
+}
 
-int 
-BandGenLinSolver::setLinearSOE(BandGenLinSOE &theBandGenSOE)
+int
+BandGenLinSolver::setLinearSOE (BandGenLinSOE & theBandGenSOE)
 {
     theSOE = &theBandGenSOE;
     return 0;
 }
-

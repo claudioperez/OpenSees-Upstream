@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/partitioned/PartitionedDomainEleIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/domain/partitioned/PartitionedDomainEleIter.C
 //
 // Written: fmk 
@@ -48,66 +48,71 @@
 
 
 // PartitionedDomainEleIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-PartitionedDomainEleIter::
-PartitionedDomainEleIter(PartitionedDomain *partitionedDomain)
-  :subdomainIter(0), currentIter(0), currentSubdomain(0),
-   thePartitionedDomain(partitionedDomain)
+PartitionedDomainEleIter::PartitionedDomainEleIter (PartitionedDomain * partitionedDomain):subdomainIter (0), currentIter (0), currentSubdomain (0),
+thePartitionedDomain
+(partitionedDomain)
 {
-    mainEleIter = new SingleDomEleIter(thePartitionedDomain->elements); 
-    subdomainIter = new ArrayOfTaggedObjectsIter(
-		     *(thePartitionedDomain->theSubdomains));
+    mainEleIter = new SingleDomEleIter (thePartitionedDomain->elements);
+    subdomainIter =
+        new ArrayOfTaggedObjectsIter (*(thePartitionedDomain->theSubdomains));
 }
 
 
-PartitionedDomainEleIter::~PartitionedDomainEleIter()
+PartitionedDomainEleIter::~PartitionedDomainEleIter ()
 {
     delete subdomainIter;
-}    
+}
 
 void
-PartitionedDomainEleIter::reset(void)
+PartitionedDomainEleIter::reset (void)
 {
     mainDomain = true;
-    mainEleIter->reset();
-    subdomainIter->reset();
+    mainEleIter->reset ();
+    subdomainIter->reset ();
     currentIter = mainEleIter;
 
-    TaggedObject *currentObject = (*subdomainIter)();
+    TaggedObject *currentObject = (*subdomainIter) ();
     if (currentObject != 0)
-	currentSubdomain = (Subdomain *)currentObject;
+        currentSubdomain = (Subdomain *) currentObject;
     else
-	currentSubdomain = 0;
+        currentSubdomain = 0;
 }
 
 Element *
-PartitionedDomainEleIter::operator()(void)
+PartitionedDomainEleIter::operator () (void)
 {
-    Element *theEle;
+    Element * theEle;
 
-    while ((currentSubdomain != 0 || mainDomain == true)) {
-	if (mainDomain == true) {
-	    theEle = (*currentIter)();
+    while ((currentSubdomain != 0 || mainDomain == true))
+      {
+          if (mainDomain == true)
+            {
+                theEle = (*currentIter) ();
 
-	    if (theEle != 0) {
-		return theEle;
+                if (theEle != 0)
+                  {
+                      return theEle;
+                  }
+                else
+                  {
+                      mainDomain = false;
+                      Element *res = currentSubdomain;
+                      TaggedObject *currentObject = (*subdomainIter) ();
+                      currentSubdomain = (Subdomain *) currentObject;
+                      return res;
+                  }
             }
-	    else {
-		mainDomain = false;
-		Element *res = currentSubdomain;
-		TaggedObject *currentObject = (*subdomainIter)();
-		currentSubdomain = (Subdomain *)currentObject;
-		return res;
-	    }
-	} else {
-	    Element *res = currentSubdomain;
-	    TaggedObject *currentObject = (*subdomainIter)();
-	    currentSubdomain = (Subdomain *)currentObject;
-	    return res;
-	}
-    }
-    
+          else
+            {
+                Element *res = currentSubdomain;
+                TaggedObject *currentObject = (*subdomainIter) ();
+                currentSubdomain = (Subdomain *) currentObject;
+                return res;
+            }
+      }
+
     // we will only get here if we are done 
     return 0;
 }

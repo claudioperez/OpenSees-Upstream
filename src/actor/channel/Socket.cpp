@@ -34,7 +34,8 @@
 #include <string.h>
 
 #ifdef _WIN32
-extern "C" {
+extern "C"
+{
 #include <winsock2.h>
 };
 #else
@@ -63,30 +64,34 @@ typedef socklen_t socklen_type;
 
 
 int
-startup_sockets(void)
+startup_sockets (void)
 {
 #ifdef _WIN32
     WSADATA wsaData;
-    if (numSockets == 0) {
-        numSockets++;
-        return WSAStartup(0x0002, &wsaData) == 0;
-    } else {
-        numSockets++;
-        return 1;
-    }
+    if (numSockets == 0)
+      {
+          numSockets++;
+          return WSAStartup (0x0002, &wsaData) == 0;
+      }
+    else
+      {
+          numSockets++;
+          return 1;
+      }
 #else
     return 1;
 #endif
-} 
+}
 
 
 void
-cleanup_sockets(void)
+cleanup_sockets (void)
 {
 #ifdef _WIN32
     numSockets--;
-    if (numSockets == 0) {
-        WSACleanup();
-    }
+    if (numSockets == 0)
+      {
+          WSACleanup ();
+      }
 #endif
 }

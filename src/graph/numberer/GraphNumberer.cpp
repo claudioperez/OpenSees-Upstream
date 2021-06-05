@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2006-01-12 23:39:21 $
 // $Source: /usr/local/cvs/OpenSees/SRC/graph/numberer/GraphNumberer.cpp,v $
-                                                                        
-                                                                        
+
+
 // Written: fmk 
 // Created: 11/96
 // Revision: A
@@ -33,17 +33,13 @@
 
 
 #include <GraphNumberer.h>
-GraphNumberer::GraphNumberer(int cTag)
-:MovableObject(cTag)
-{
-    // does nothing
-}
-    
-GraphNumberer::~GraphNumberer()
+GraphNumberer::GraphNumberer (int cTag):
+MovableObject (cTag)
 {
     // does nothing
 }
 
-
-
-
+GraphNumberer::~GraphNumberer ()
+{
+    // does nothing
+}

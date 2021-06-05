@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:00:58 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/loadBalancer/SwapHeavierToLighterNeighbours.cpp,v $
-                                                                        
-                                                                        
+
+
  // File: ~/domain/loadBalancer/HeavierToSmallerNeighbours.C
 // 
 // Written: fmk 
@@ -39,82 +39,99 @@
 #include <Graph.h>
 #include <VertexIter.h>
 #include <Vertex.h>
-#include <ID.h> 
+#include <ID.h>
 
 
-SwapHeavierToLighterNeighbours::SwapHeavierToLighterNeighbours()
- :numReleases(1), factorGreater(1.0)
+SwapHeavierToLighterNeighbours::SwapHeavierToLighterNeighbours ():numReleases (1),
+factorGreater
+(1.0)
 {
 
 }
 
-SwapHeavierToLighterNeighbours::
-SwapHeavierToLighterNeighbours(double factGreater, 
-			       int releases)
- :numReleases(releases),factorGreater(factGreater)
+SwapHeavierToLighterNeighbours::SwapHeavierToLighterNeighbours (double
+                                                                factGreater,
+                                                                int releases):
+numReleases (releases),
+factorGreater (factGreater)
 {
     if (releases < 1)
-	numReleases = 1;
+        numReleases = 1;
 }
 
 
-SwapHeavierToLighterNeighbours::~SwapHeavierToLighterNeighbours()
+SwapHeavierToLighterNeighbours::~SwapHeavierToLighterNeighbours ()
 {
-    
+
 }
 
 int
-SwapHeavierToLighterNeighbours::balance(Graph &theWeightedGraph)
+SwapHeavierToLighterNeighbours::balance (Graph & theWeightedGraph)
 {
     // check to see a domain partitioner has been set
-    DomainPartitioner *thePartitioner = this->getDomainPartitioner();
-    if (thePartitioner == 0) {
-	opserr << "SwapHeavierToLighterNeighbours::balance";
-	opserr << "- No DomainPartitioner has been set\n"; 
-	return -1;
-    }
+    DomainPartitioner *thePartitioner = this->getDomainPartitioner ();
+    if (thePartitioner == 0)
+      {
+          opserr << "SwapHeavierToLighterNeighbours::balance";
+          opserr << "- No DomainPartitioner has been set\n";
+          return -1;
+      }
 
     int res = 0;
 
-    for (int ii=0; ii<numReleases; ii++) {
-	VertexIter &theVertices = theWeightedGraph.getVertices();
-	Vertex *vertexPtr;
-	while ((vertexPtr = theVertices()) != 0) {
-	    int vertexTag = vertexPtr->getTag();
-	    double vertexLoad = vertexPtr->getWeight();
-	    const ID &adjacency = vertexPtr->getAdjacency();
-	    int size = adjacency.Size();
-	    for (int j=0; j<size; j++) {
-		int otherVertexTag = adjacency(j);
-		Vertex *otherVertexPtr 
-		    = theWeightedGraph.getVertexPtr(otherVertexTag);
-		double otherVertexLoad = otherVertexPtr->getWeight();
-		
-		if (vertexLoad > otherVertexLoad && otherVertexLoad != 0) 
-		    if (vertexLoad/otherVertexLoad > factorGreater) {
-			res = thePartitioner->
-			    swapBoundary(vertexTag,otherVertexTag);
-			if (res < 0) {
-			    opserr << "WARNING SwapHeavierToLighterNeighbours";
-			    opserr << "::balance - DomainPartitioner returned ";
-			    opserr << res << endln;
-			    return res;
-			}
-		    }
-		
-		if (vertexLoad != 0 && otherVertexLoad == 0)  {
-		    res = thePartitioner->
-			swapBoundary(vertexTag,otherVertexTag); 
-		    if (res < 0) {
-			opserr << "WARNING SwapHeavierToLighterNeighbours";
-			opserr << "::balance - DomainPartitioner returned ";
-			opserr << res << endln;
-			return res;
-		    }
-		}
-	    }		
-	}
-    }
+    for (int ii = 0; ii < numReleases; ii++)
+      {
+          VertexIter & theVertices = theWeightedGraph.getVertices ();
+          Vertex *vertexPtr;
+          while ((vertexPtr = theVertices ()) != 0)
+            {
+                int vertexTag = vertexPtr->getTag ();
+                double vertexLoad = vertexPtr->getWeight ();
+                const ID & adjacency = vertexPtr->getAdjacency ();
+                int size = adjacency.Size ();
+                for (int j = 0; j < size; j++)
+                  {
+                      int otherVertexTag = adjacency (j);
+                      Vertex *otherVertexPtr
+                          = theWeightedGraph.getVertexPtr (otherVertexTag);
+                      double otherVertexLoad = otherVertexPtr->getWeight ();
+
+                      if (vertexLoad > otherVertexLoad
+                          && otherVertexLoad != 0)
+                          if (vertexLoad / otherVertexLoad > factorGreater)
+                            {
+                                res =
+                                    thePartitioner->swapBoundary (vertexTag,
+                                                                  otherVertexTag);
+                                if (res < 0)
+                                  {
+                                      opserr <<
+                                          "WARNING SwapHeavierToLighterNeighbours";
+                                      opserr <<
+                                          "::balance - DomainPartitioner returned ";
+                                      opserr << res << endln;
+                                      return res;
+                                  }
+                            }
+
+                      if (vertexLoad != 0 && otherVertexLoad == 0)
+                        {
+                            res =
+                                thePartitioner->swapBoundary (vertexTag,
+                                                              otherVertexTag);
+                            if (res < 0)
+                              {
+                                  opserr <<
+                                      "WARNING SwapHeavierToLighterNeighbours";
+                                  opserr <<
+                                      "::balance - DomainPartitioner returned ";
+                                  opserr << res << endln;
+                                  return res;
+                              }
+                        }
+                  }
+            }
+      }
 
 
     return res;

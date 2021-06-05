@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/partitioned/PartitionedDomainSubIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/domain/partitioned/PartitionedDomainSubIter.C
 //
 // Written: fmk 
@@ -42,39 +42,38 @@
 
 
 // PartitionedDomainSubIter(PartitionedDomainain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-PartitionedDomainSubIter::PartitionedDomainSubIter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+PartitionedDomainSubIter::PartitionedDomainSubIter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 
 }
 
 
-PartitionedDomainSubIter::~PartitionedDomainSubIter()
+PartitionedDomainSubIter::~PartitionedDomainSubIter ()
 {
-}    
+}
 
 void
-PartitionedDomainSubIter::reset(void)
+PartitionedDomainSubIter::reset (void)
 {
-    myIter.reset();
-}    
+    myIter.reset ();
+}
 
 
 Subdomain *
-PartitionedDomainSubIter::operator()(void)
+PartitionedDomainSubIter::operator () (void)
 {
     // check if we still have Subdomains in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	Subdomain *result = (Subdomain *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          Subdomain *result = (Subdomain *) theComponent;
+          return result;
+      }
 }
-
-    
-    

@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.6 $
 // $Date: 2009-12-17 23:50:36 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/response/Response.cpp,v $
-                                                                        
+
 // Written: MHS 
 // Created: Oct 2000
 //
@@ -29,67 +29,66 @@
 
 #include <Response.h>
 
-Response::Response(void)
- :myInfo()
+Response::Response (void):
+myInfo ()
 {
 
 }
 
-Response::Response(int val)
-:myInfo(val)
+Response::Response (int val):
+myInfo (val)
 {
 
 }
 
-Response::Response(double val)
-:myInfo(val)
+Response::Response (double val):
+myInfo (val)
 {
 
 }
 
-Response::Response(const ID &val)
- :myInfo(val)
+Response::Response (const ID & val):
+myInfo (val)
 {
 
 }
 
-Response::Response(const Vector &val)
-:myInfo(val)
+Response::Response (const Vector & val):
+myInfo (val)
 {
 
 }
 
-Response::Response(const Matrix &val)
- :myInfo(val)
+Response::Response (const Matrix & val):
+myInfo (val)
 {
 
 }
 
-Response::Response(const Vector &val1, const ID &val2)
- :myInfo(val2,val1)
+Response::Response (const Vector & val1, const ID & val2):
+myInfo (val2, val1)
 {
 
 }
 
-Response::~Response()
+Response::~Response ()
 {
 
-}
-
-void
-Response::Print(OPS_Stream &s, int flag)
-{
-	myInfo.Print(s, flag);
 }
 
 void
-Response::Print(ofstream &s, int flag)
+Response::Print (OPS_Stream & s, int flag)
 {
-  myInfo.Print(s, flag);
+    myInfo.Print (s, flag);
 }
 
-Information &
-Response::getInformation(void)
+void
+Response::Print (ofstream & s, int flag)
 {
-  return myInfo;
+    myInfo.Print (s, flag);
+}
+
+Information & Response::getInformation (void)
+{
+    return myInfo;
 }

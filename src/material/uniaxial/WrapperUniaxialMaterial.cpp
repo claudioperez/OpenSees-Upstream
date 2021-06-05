@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2008-12-19 17:28:53 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/WrapperUniaxialMaterial.cpp,v $
@@ -29,175 +29,188 @@
 
 extern modelState theModelState;
 
-WrapperUniaxialMaterial::WrapperUniaxialMaterial(const char *name, matObject *theMat_)
-  :UniaxialMaterial(theMat_->tag,MAT_TAG_WrapperUniaxialMaterial),
-  funcName(0),
-  theMat(theMat_),
-  strain(0.0), stress(0.0), tangent(0.0), initTangent(0.0)
+WrapperUniaxialMaterial::WrapperUniaxialMaterial (const char *name,
+                                                  matObject * theMat_):
+UniaxialMaterial (theMat_->tag, MAT_TAG_WrapperUniaxialMaterial),
+funcName (0),
+theMat (theMat_),
+strain (0.0),
+stress (0.0),
+tangent (0.0),
+initTangent (0.0)
 {
-  /*opserr << "WrapperMaterial::WrapperMaterial() " << theMat->tag << endln; */
+    /*opserr << "WrapperMaterial::WrapperMaterial() " << theMat->tag << endln; */
 
-  funcName = new char[strlen(name)+1];
-  if (funcName != 0)
-    strcpy(funcName, name);
+    funcName = new char[strlen (name) + 1];
+    if (funcName != 0)
+        strcpy (funcName, name);
 
-  int isw = ISW_FORM_TANG_AND_RESID;
-  int error = 0;
-  theMat->matFunctPtr(theMat, &theModelState, &strain, &initTangent, &stress, &isw, &error);
+    int isw = ISW_FORM_TANG_AND_RESID;
+    int error = 0;
+    theMat->matFunctPtr (theMat, &theModelState, &strain, &initTangent,
+                         &stress, &isw, &error);
 
-  tangent=initTangent;
+    tangent = initTangent;
 }
 
-WrapperUniaxialMaterial::WrapperUniaxialMaterial()
-  :UniaxialMaterial(0, MAT_TAG_WrapperUniaxialMaterial),
-  funcName(0),
-  theMat(0),
-  strain(0.0), stress(0.0), tangent(0.0), initTangent(0.0)
+WrapperUniaxialMaterial::WrapperUniaxialMaterial ():UniaxialMaterial (0, MAT_TAG_WrapperUniaxialMaterial),
+funcName (0),
+theMat (0), strain (0.0), stress (0.0), tangent (0.0), initTangent (0.0)
 {
-  
+
 }
 
 // destructor
-WrapperUniaxialMaterial::~WrapperUniaxialMaterial()
+WrapperUniaxialMaterial::~WrapperUniaxialMaterial ()
 {
 
-  /*opserr << "WrapperUniaxialMaterial::~WrapperUniaxialMaterial()\n";*/
+    /*opserr << "WrapperUniaxialMaterial::~WrapperUniaxialMaterial()\n"; */
 
-  if (funcName != 0)
-    delete [] funcName;
+    if (funcName != 0)
+        delete[]funcName;
 
-  if (theMat->theParam != 0)
-    delete [] theMat->theParam;
+    if (theMat->theParam != 0)
+        delete[]theMat->theParam;
 
-  if (theMat->cState != 0)
-    delete [] theMat->cState;
+    if (theMat->cState != 0)
+        delete[]theMat->cState;
 
-  if (theMat->tState != 0)
-    delete [] theMat->tState;
+    if (theMat->tState != 0)
+        delete[]theMat->tState;
 
-  delete theMat;
+    delete theMat;
 }
 
-int 
+int
 WrapperUniaxialMaterial::setTrialStrain (double theStrain, double strainRate)
 {
-  int isw = ISW_FORM_TANG_AND_RESID;
-  int error = 0;
-  strain = theStrain;
-  theMat->matFunctPtr(theMat, &theModelState, &strain, &tangent, &stress, &isw, &error);
+    int isw = ISW_FORM_TANG_AND_RESID;
+    int error = 0;
+    strain = theStrain;
+    theMat->matFunctPtr (theMat, &theModelState, &strain, &tangent, &stress,
+                         &isw, &error);
 
-  return error;
+    return error;
 }
 
-int 
-WrapperUniaxialMaterial::setTrial (double theStrain, double &theStress, double &theTangent, double strainRate)
+int
+WrapperUniaxialMaterial::setTrial (double theStrain, double &theStress,
+                                   double &theTangent, double strainRate)
 {
-  int isw = ISW_FORM_TANG_AND_RESID;
-  int error = 0;
-  strain = theStrain;
-  theMat->matFunctPtr(theMat, &theModelState, &strain, &tangent , &stress, &isw, &error);
-  theTangent = tangent;
-  theStress = stress;
+    int isw = ISW_FORM_TANG_AND_RESID;
+    int error = 0;
+    strain = theStrain;
+    theMat->matFunctPtr (theMat, &theModelState, &strain, &tangent, &stress,
+                         &isw, &error);
+    theTangent = tangent;
+    theStress = stress;
 
-  return error;
+    return error;
 }
 
-double 
+double
 WrapperUniaxialMaterial::getStrain (void)
 {
-  return strain;
+    return strain;
 }
-double 
+
+double
 WrapperUniaxialMaterial::getStress (void)
 {
-  return stress;
+    return stress;
 }
 
-double 
+double
 WrapperUniaxialMaterial::getTangent (void)
 {
-  return tangent;
+    return tangent;
 }
 
-double 
-WrapperUniaxialMaterial::getInitialTangent(void)
+double
+WrapperUniaxialMaterial::getInitialTangent (void)
 {
-  return initTangent;
+    return initTangent;
 }
 
-double 
+double
 WrapperUniaxialMaterial::getDampTangent (void)
 {
-  return 0;
+    return 0;
 }
 
-int 
+int
 WrapperUniaxialMaterial::commitState (void)
 {
-  int isw = ISW_COMMIT;
-  int error = 0;
-  theMat->matFunctPtr(theMat, &theModelState, &strain, &tangent, &stress, &isw, &error);
+    int isw = ISW_COMMIT;
+    int error = 0;
+    theMat->matFunctPtr (theMat, &theModelState, &strain, &tangent, &stress,
+                         &isw, &error);
 
-  return error;
+    return error;
 }
 
-int 
+int
 WrapperUniaxialMaterial::revertToLastCommit (void)
 {
-  int isw = ISW_REVERT;
-  int error = 0;
-  theMat->matFunctPtr(theMat, &theModelState, &strain, &tangent , &stress, &isw, &error);
-  return error;
+    int isw = ISW_REVERT;
+    int error = 0;
+    theMat->matFunctPtr (theMat, &theModelState, &strain, &tangent, &stress,
+                         &isw, &error);
+    return error;
 }
 
-int 
+int
 WrapperUniaxialMaterial::revertToStart (void)
 {
-  int isw = ISW_REVERT_TO_START;
-  int error = 0;
-  theMat->matFunctPtr(theMat, &theModelState, &strain, &tangent , &stress, &isw, &error);
-  return error;
+    int isw = ISW_REVERT_TO_START;
+    int error = 0;
+    theMat->matFunctPtr (theMat, &theModelState, &strain, &tangent, &stress,
+                         &isw, &error);
+    return error;
 }
 
 UniaxialMaterial *
-WrapperUniaxialMaterial::getCopy (void) 
+WrapperUniaxialMaterial::getCopy (void)
 {
     matObject *theMatObject = new matObject;
     theMatObject->tag = theMat->tag;
     theMatObject->nParam = theMat->nParam;
     theMatObject->nState = theMat->nState;
 
-    OPS_AllocateMaterial(theMatObject);
+    OPS_AllocateMaterial (theMatObject);
 
-    for (int i=0; i<theMat->nParam; i++)
-      theMatObject->theParam[i] = theMat->theParam[i];
+    for (int i = 0; i < theMat->nParam; i++)
+        theMatObject->theParam[i] = theMat->theParam[i];
 
-    for (int i=0; i<theMat->nState; i++) {
-      theMatObject->cState[i] = theMat->cState[i];
-      theMatObject->tState[i] = theMat->tState[i];
-    }
+    for (int i = 0; i < theMat->nState; i++)
+      {
+          theMatObject->cState[i] = theMat->cState[i];
+          theMatObject->tState[i] = theMat->tState[i];
+      }
 
     theMatObject->matFunctPtr = theMat->matFunctPtr;
 
-    WrapperUniaxialMaterial *theResult = new WrapperUniaxialMaterial(funcName, theMatObject);
+    WrapperUniaxialMaterial *theResult =
+        new WrapperUniaxialMaterial (funcName, theMatObject);
     return theResult;
 }
 
-int 
-WrapperUniaxialMaterial::sendSelf(int commitTag, Channel &theChannel)
+int
+WrapperUniaxialMaterial::sendSelf (int commitTag, Channel & theChannel)
 {
-  return -1;
-}
-int 
-WrapperUniaxialMaterial::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
-{
-  return -1;
-}
-void 
-WrapperUniaxialMaterial::Print(OPS_Stream &s, int flag)
-{
-  s << "WrapperUniaxialMaterial - wrapping function  matTag: " << theMat->tag << endln;
+    return -1;
 }
 
+int
+WrapperUniaxialMaterial::recvSelf (int commitTag, Channel & theChannel,
+                                   FEM_ObjectBroker & theBroker)
+{
+    return -1;
+}
 
-
+void
+WrapperUniaxialMaterial::Print (OPS_Stream & s, int flag)
+{
+    s << "WrapperUniaxialMaterial - wrapping function  matTag: " << theMat->
+        tag << endln;
+}

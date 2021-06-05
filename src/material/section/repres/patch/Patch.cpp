@@ -17,26 +17,25 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:22 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/section/repres/patch/Patch.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: Patch.C
 // Written by Remo M. de Souza
 // December 1998
 
 
-#include <Patch.h> 
+#include <Patch.h>
 
-Patch::Patch(void)
+Patch::Patch (void)
 {
 
 }
 
-Patch::~Patch(void)
+Patch::~Patch (void)
 {
 
 }
-

@@ -7,8 +7,8 @@
 
 #include <vector>
 #include "UniaxialMaterial.h"
-#include <OPS_Globals.h>
-#include <elementAPI.h>
+#include <OPS_Globals.h>  
+// #include <elementAPI.h> // cmp
 
 /* ------------------------------------------------------------------------ */
 

@@ -41,7 +41,7 @@
 #define EigenAlgorithm_h
 
 #include <SolutionAlgorithm.h>
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 
 class AnalysisModel;
 class EigenSOE;

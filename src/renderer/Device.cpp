@@ -17,22 +17,21 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:01:57 $
 // $Source: /usr/local/cvs/OpenSees/SRC/renderer/Device.cpp,v $
-                                                                        
-                                                                        
+
+
 #include "Device.h"
 #include <OPS_Stream.h>
 
-Device::Device()
+Device::Device ()
 {
 
 }
 
-Device::~Device()
+Device::~Device ()
 {
 
 }
-

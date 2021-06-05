@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-07-15 21:36:46 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/fedeas/FedeasSteel1Material.cpp,v $
-                                                                      
+
 // Written: MHS
 // Created: Jan 2001
 //
@@ -32,91 +32,95 @@
 #include <stdlib.h>
 #include <FedeasSteel1Material.h>
 
-FedeasSteel1Material::FedeasSteel1Material(int tag,
-					 double fy, double E0, double b,
-					 double a1, double a2, double a3, double a4):
+FedeasSteel1Material::FedeasSteel1Material (int tag,
+                                            double fy, double E0, double b,
+                                            double a1, double a2, double a3,
+                                            double a4):
 // 7 history variables and 7 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
 {
-	data[0]  = fy;
-	data[1]  = E0;
-	data[2]  = b;
-	data[3]  = a1;
-	data[4]  = a2;
-	data[5]  = a3;
-	data[6]  = a4;
+    data[0] = fy;
+    data[1] = E0;
+    data[2] = b;
+    data[3] = a1;
+    data[4] = a2;
+    data[5] = a3;
+    data[6] = a4;
 
-	tangent = E0;
-	tangentP = E0;
+    tangent = E0;
+    tangentP = E0;
 }
 
-FedeasSteel1Material::FedeasSteel1Material(int tag,
-					 double fy, double E0, double b):
+FedeasSteel1Material::FedeasSteel1Material (int tag,
+                                            double fy, double E0, double b):
 // 7 history variables and 7 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
 {
-	data[0]  = fy;
-	data[1]  = E0;
-	data[2]  = b;
+    data[0] = fy;
+    data[1] = E0;
+    data[2] = b;
 
-	// Default values for no isotropic hardening
-	data[3]  = 0.0;
-	data[4]  = 1.0;
-	data[5]  = 0.0;
-	data[6]  = 1.0;
+    // Default values for no isotropic hardening
+    data[3] = 0.0;
+    data[4] = 1.0;
+    data[5] = 0.0;
+    data[6] = 1.0;
 
-	tangent = E0;
-	tangentP = E0;
+    tangent = E0;
+    tangentP = E0;
 }
 
-FedeasSteel1Material::FedeasSteel1Material(int tag, const Vector &d):
+FedeasSteel1Material::FedeasSteel1Material (int tag, const Vector & d):
 // 7 history variables and 7 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasMaterial (tag, MAT_TAG_FedeasSteel1, 7, 7)
 {
-  if (d.Size() != numData) {
-    opserr << "FedeasSteel1Material::FedeasSteel1Material -- not enough input arguments\n";
-    exit(-1);
-  }
+    if (d.Size () != numData)
+      {
+          opserr <<
+              "FedeasSteel1Material::FedeasSteel1Material -- not enough input arguments\n";
+          exit (-1);
+      }
 
-  for (int i = 0; i < numData; i++)
-    data[i] = d(i);
+    for (int i = 0; i < numData; i++)
+        data[i] = d (i);
 }
 
-FedeasSteel1Material::FedeasSteel1Material(void):
-FedeasMaterial(0, MAT_TAG_FedeasSteel1, 7, 7)
+FedeasSteel1Material::FedeasSteel1Material (void):
+FedeasMaterial (0, MAT_TAG_FedeasSteel1, 7, 7)
 {
-	// Does nothing
+    // Does nothing
 }
 
-FedeasSteel1Material::~FedeasSteel1Material(void)
+FedeasSteel1Material::~FedeasSteel1Material (void)
 {
-	// Does nothing
+    // Does nothing
 }
 
-UniaxialMaterial*
-FedeasSteel1Material::getCopy(void)
+UniaxialMaterial *
+FedeasSteel1Material::getCopy (void)
 {
-  Vector d(data, numData);
+    Vector d (data, numData);
 
-  FedeasSteel1Material *theCopy = new FedeasSteel1Material(this->getTag(), d);
-  
-  // Copy history variables
-  for (int i = 0; i < 2*numHstv; i++)
-    theCopy->hstv[i] = hstv[i];
-  
-  theCopy->epsilonP = epsilonP;
-  theCopy->sigmaP   = sigmaP;
-  theCopy->tangentP = tangentP;
+    FedeasSteel1Material *theCopy =
+        new FedeasSteel1Material (this->getTag (), d);
 
-  theCopy->epsilon = epsilonP;
-  theCopy->sigma = sigmaP;
-  theCopy->tangent = tangentP;    
-  return theCopy;
+    // Copy history variables
+    for (int i = 0; i < 2 * numHstv; i++)
+        theCopy->hstv[i] = hstv[i];
+
+    theCopy->epsilonP = epsilonP;
+    theCopy->sigmaP = sigmaP;
+    theCopy->tangentP = tangentP;
+
+    theCopy->epsilon = epsilonP;
+    theCopy->sigma = sigmaP;
+    theCopy->tangent = tangentP;
+    return theCopy;
 }
 
 double
-FedeasSteel1Material::getInitialTangent(void)
+FedeasSteel1Material::getInitialTangent (void)
 {
-	//return E;
-	return data[1];
+    //return E;
+    return data[1];
 }

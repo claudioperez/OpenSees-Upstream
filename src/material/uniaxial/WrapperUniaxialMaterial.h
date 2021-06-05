@@ -30,7 +30,7 @@
 #include <UniaxialMaterial.h>
 #include <Matrix.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
 class WrapperUniaxialMaterial : public UniaxialMaterial
 {

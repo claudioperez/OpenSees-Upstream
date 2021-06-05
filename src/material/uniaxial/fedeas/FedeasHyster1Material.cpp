@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-07-15 21:36:46 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/fedeas/FedeasHyster1Material.cpp,v $
-                                                                      
+
 // Written: MHS
 // Created: Jan 2001
 //
@@ -32,81 +32,87 @@
 #include <stdlib.h>
 #include <FedeasHyster1Material.h>
 
-FedeasHyster1Material::FedeasHyster1Material(int tag,
-	double mom1p, double rot1p, double mom2p, double rot2p,
-	double mom1n, double rot1n, double mom2n, double rot2n,
-	double pinchX, double pinchY, double damfc1, double damfc2):
+FedeasHyster1Material::FedeasHyster1Material (int tag,
+                                              double mom1p, double rot1p,
+                                              double mom2p, double rot2p,
+                                              double mom1n, double rot1n,
+                                              double mom2n, double rot2n,
+                                              double pinchX, double pinchY,
+                                              double damfc1, double damfc2):
 // 6 history variables and 12 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasHysteretic1, 6, 12)
+FedeasMaterial (tag, MAT_TAG_FedeasHysteretic1, 6, 12)
 {
-	data[0]  = mom1p;
-	data[1]  = rot1p;
-	data[2]  = mom2p;
-	data[3]  = rot2p;
+    data[0] = mom1p;
+    data[1] = rot1p;
+    data[2] = mom2p;
+    data[3] = rot2p;
 
-	data[4]  = mom1n;
-	data[5]  = rot1n;
-	data[6]  = mom2n;
-	data[7]  = rot2n;
+    data[4] = mom1n;
+    data[5] = rot1n;
+    data[6] = mom2n;
+    data[7] = rot2n;
 
-	data[8]  = pinchX;
-	data[9]  = pinchY;
-	data[10] = damfc1;
-	data[11] = damfc2;
+    data[8] = pinchX;
+    data[9] = pinchY;
+    data[10] = damfc1;
+    data[11] = damfc2;
 
-	tangentP =  data[0]/data[1];
-	tangent = tangentP;
+    tangentP = data[0] / data[1];
+    tangent = tangentP;
 }
 
-FedeasHyster1Material::FedeasHyster1Material(int tag, const Vector &d):
+FedeasHyster1Material::FedeasHyster1Material (int tag, const Vector & d):
 // 6 history variables and 12 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasHysteretic1, 6, 12)
+FedeasMaterial (tag, MAT_TAG_FedeasHysteretic1, 6, 12)
 {
-  if (d.Size() != numData) {
-    opserr << "FedeasHyster1Material::FedeasHyster1Material -- not enough input arguments\n";
-    exit(-1);
-  }
-		
-  for (int i = 0; i < numData; i++)
-    data[i] = d(i);
+    if (d.Size () != numData)
+      {
+          opserr <<
+              "FedeasHyster1Material::FedeasHyster1Material -- not enough input arguments\n";
+          exit (-1);
+      }
+
+    for (int i = 0; i < numData; i++)
+        data[i] = d (i);
 }
 
-FedeasHyster1Material::FedeasHyster1Material(void):
-FedeasMaterial(0, MAT_TAG_FedeasHysteretic1, 6, 12)
+FedeasHyster1Material::FedeasHyster1Material (void):
+FedeasMaterial (0, MAT_TAG_FedeasHysteretic1, 6, 12)
 {
-	// Does nothing
+    // Does nothing
 }
 
-FedeasHyster1Material::~FedeasHyster1Material(void)
+FedeasHyster1Material::~FedeasHyster1Material (void)
 {
-	// Does nothing
+    // Does nothing
 }
 
-UniaxialMaterial*
-FedeasHyster1Material::getCopy(void)
+UniaxialMaterial *
+FedeasHyster1Material::getCopy (void)
 {
-  Vector d(data, numData);
+    Vector d (data, numData);
 
-  FedeasHyster1Material *theCopy = new FedeasHyster1Material(this->getTag(), d);
-  
-  // Copy history variables
-  for (int i = 0; i < 2*numHstv; i++)
-    theCopy->hstv[i] = hstv[i];
-  
-  theCopy->epsilonP = epsilonP;
-  theCopy->sigmaP   = sigmaP;
-  theCopy->tangentP = tangentP;
+    FedeasHyster1Material *theCopy =
+        new FedeasHyster1Material (this->getTag (), d);
 
-  theCopy->epsilon = epsilonP;
-  theCopy->sigma = sigmaP;
-  theCopy->tangent = tangentP;  
+    // Copy history variables
+    for (int i = 0; i < 2 * numHstv; i++)
+        theCopy->hstv[i] = hstv[i];
 
-  return theCopy;
+    theCopy->epsilonP = epsilonP;
+    theCopy->sigmaP = sigmaP;
+    theCopy->tangentP = tangentP;
+
+    theCopy->epsilon = epsilonP;
+    theCopy->sigma = sigmaP;
+    theCopy->tangent = tangentP;
+
+    return theCopy;
 }
 
 double
-FedeasHyster1Material::getInitialTangent(void)
+FedeasHyster1Material::getInitialTangent (void)
 {
-	//return mom1p/rot1p;
-	return data[0]/data[1];
+    //return mom1p/rot1p;
+    return data[0] / data[1];
 }

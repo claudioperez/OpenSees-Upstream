@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2005-11-07 23:52:13 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/channel/Channel.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/actor/channel/Channel.C
 //
 // Written: fmk
@@ -37,33 +37,34 @@
 #include <Message.h>
 #include <MovableObject.h>
 #include <FEM_ObjectBroker.h>
-int Channel::numChannel = 0;
+int
+    Channel::numChannel = 0;
 
 Channel::Channel ()
 {
-	numChannel++;
-	tag = numChannel;
+    numChannel++;
+    tag = numChannel;
 }
 
-Channel::~Channel()
+Channel::~Channel ()
 {
-    
-}    
 
-int
-Channel::isDatastore(void)
-{
-  return 0;
 }
 
 int
-Channel::getDbTag(void)
+Channel::isDatastore (void)
 {
-  return 0;
+    return 0;
 }
 
 int
-Channel::getTag(void)
+Channel::getDbTag (void)
 {
-		return tag;
+    return 0;
+}
+
+int
+Channel::getTag (void)
+{
+    return tag;
 }

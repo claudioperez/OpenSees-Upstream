@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.6 $
 // $Date: 2009-12-17 23:50:36 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/response/ElementResponse.cpp,v $
-                                                                        
+
 // Written: MHS 
 // Created: Oct 2000
 //
@@ -30,61 +30,77 @@
 #include <ElementResponse.h>
 #include <Element.h>
 
-ElementResponse::ElementResponse(Element *ele, int id):
-Response(), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id):
+Response (),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::ElementResponse(Element *ele, int id, int val):
-Response(val), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id, int val):
+Response (val),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::ElementResponse(Element *ele, int id, double val):
-Response(val), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id, double val):
+Response (val),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::ElementResponse(Element *ele, int id, const ID &val):
-Response(val), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id, const ID & val):
+Response (val),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::ElementResponse(Element *ele, int id, const Vector &val):
-Response(val), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id, const Vector & val):
+Response (val),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::ElementResponse(Element *ele, int id, const Matrix &val):
-Response(val), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id, const Matrix & val):
+Response (val),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::ElementResponse(Element *ele, int id, const Vector &val1, const ID &val2)
- :Response(val1, val2), theElement(ele), responseID(id)
+ElementResponse::ElementResponse (Element * ele, int id, const Vector & val1,
+                                  const ID & val2):
+Response (val1, val2),
+theElement (ele),
+responseID (id)
 {
 
 }
 
-ElementResponse::~ElementResponse()
+ElementResponse::~ElementResponse ()
 {
 
 }
 
 int
-ElementResponse::getResponse(void)
+ElementResponse::getResponse (void)
 {
-  return theElement->getResponse(responseID, myInfo);
+    return theElement->getResponse (responseID, myInfo);
 }
 
 int
-ElementResponse::getResponseSensitivity(int gradNumber)
+ElementResponse::getResponseSensitivity (int gradNumber)
 {
-  return theElement->getResponseSensitivity(responseID, gradNumber, myInfo);
+    return theElement->getResponseSensitivity (responseID, gradNumber,
+                                               myInfo);
 }

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:16 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/analysis/Analysis.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/analysis/Analysis.C
 // 
 // Written: fmk 
@@ -38,21 +38,18 @@
 #include <Analysis.h>
 #include <Domain.h>
 
-Analysis::Analysis(Domain &theDom)
-:theDomain(&theDom)
+Analysis::Analysis (Domain & theDom):theDomain (&theDom)
 {
 
 }
 
-Analysis::~Analysis()
+Analysis::~Analysis ()
 {
 
 }
 
 Domain *
-Analysis::getDomainPtr(void)
+Analysis::getDomainPtr (void)
 {
     return theDomain;
 }
-
-

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.4 $
 // $Date: 2003-02-19 15:43:25 $
 // $Source: /usr/local/cvs/OpenSees/SRC/renderer/VrmlViewer.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/graphics/VrmlViewer.C
 //
 // Written: fmk 
@@ -39,7 +39,8 @@
 
 #include <OPS_Globals.h>
 #include <iomanip>
-using std::ios;
+using
+    std::ios;
 
 #include <string.h>
 
@@ -48,254 +49,279 @@ using std::ios;
 
 #include <Vector.h>
 
-VrmlViewer::VrmlViewer(char *fileName,
-		       Domain &_theDomain, ColorMap &_theMap)
-  :Renderer(_theMap)
+VrmlViewer::VrmlViewer (char *fileName,
+                        Domain & _theDomain, ColorMap & _theMap):
+Renderer (_theMap)
 {
-    strcpy(vrmlFileName, fileName);
-    vrmlFile = new fstream(vrmlFileName, ios::out);
-    if (vrmlFile == 0) {
-	opserr << "FATAL - VrmlViewer::VrmlViewer() - could not open file ";
-	opserr << fileName << endln;
-	exit(-1);
-    }
-  (*vrmlFile) << "#VRML V2.0 utf8 \n";        
+    strcpy (vrmlFileName, fileName);
+    vrmlFile = new fstream (vrmlFileName, ios::out);
+    if (vrmlFile == 0)
+      {
+          opserr << "FATAL - VrmlViewer::VrmlViewer() - could not open file ";
+          opserr << fileName << endln;
+          exit (-1);
+      }
+    (*vrmlFile) << "#VRML V2.0 utf8 \n";
 }
 
-VrmlViewer::~VrmlViewer()
+VrmlViewer::~VrmlViewer ()
 {
-    vrmlFile->close();
+    vrmlFile->close ();
     delete vrmlFile;
 }
 
-int 
-VrmlViewer::clearImage(void)
+int
+VrmlViewer::clearImage (void)
 {
     // open the file again
-    vrmlFile = new fstream(vrmlFileName, ios::out);
-    if (vrmlFile == 0) {
-	opserr << "FATAL - VrmlViewer::clearImage() - could not open file ";
-	opserr << vrmlFileName << endln;
-	return -1;
-    }
-  (*vrmlFile) << "#VRML V2.0 utf8 \n";    
+    vrmlFile = new fstream (vrmlFileName, ios::out);
+    if (vrmlFile == 0)
+      {
+          opserr << "FATAL - VrmlViewer::clearImage() - could not open file ";
+          opserr << vrmlFileName << endln;
+          return -1;
+      }
+    (*vrmlFile) << "#VRML V2.0 utf8 \n";
     return 0;
 }
 
 
-int 
-VrmlViewer::doneImage(void)
+int
+VrmlViewer::doneImage (void)
 {
-    vrmlFile->close();
+    vrmlFile->close ();
     return 0;
 }
 
-int 
-VrmlViewer::drawLine(const Vector &pos1, const Vector &pos2, 
-		       float V1, float V2)
+int
+VrmlViewer::drawLine (const Vector & pos1, const Vector & pos2,
+                      float V1, float V2)
 {
-  float x,y,z, r, g, b;
+    float x, y, z, r, g, b;
 
 
     (*vrmlFile) << "Shape { geometry IndexedLineSet ";
-  (*vrmlFile) << "{ coord Coordinate { \n\t\t point [\n";
-  
-  int size = pos1.Size();
-  if (size == 1) {
-    x = pos1(0);
-    y = 0;
-    z = 0;
-  } else if (size == 2) {
-    x = pos1(0);
-    y = pos1(1);
-    z = 0;
-  } else {
-    x = pos1(0);
-    y = pos1(1);
-    z = pos1(2);
-  }  
-  (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << ",\n";
-  
+    (*vrmlFile) << "{ coord Coordinate { \n\t\t point [\n";
+
+    int size = pos1.Size ();
+    if (size == 1)
+      {
+          x = pos1 (0);
+          y = 0;
+          z = 0;
+      }
+    else if (size == 2)
+      {
+          x = pos1 (0);
+          y = pos1 (1);
+          z = 0;
+      }
+    else
+      {
+          x = pos1 (0);
+          y = pos1 (1);
+          z = pos1 (2);
+      }
+    (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << ",\n";
 
 
-  size = pos2.Size();
-  if (size == 1) {
-    x = pos2(0);
-    y = 0;
-    z = 0;
-  } else if (size == 2) {
-    x = pos2(0);
-    y = pos2(1);
-    z = 0;
-  } else {
-    x = pos2(0);
-    y = pos2(1);
-    z = pos2(2);
-  }  
 
-  (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << " ] }\n";  
-  (*vrmlFile) << "          coordIndex [ 0 1 ]\n";  
-  (*vrmlFile) << "          colorPerVertex TRUE\n ";    
-  (*vrmlFile) << "          color Color { \n\t color [\n";  
-  
-  r = theMap->getRed(V1);
-  g = theMap->getGreen(V1);
-  b = theMap->getBlue(V1);
+    size = pos2.Size ();
+    if (size == 1)
+      {
+          x = pos2 (0);
+          y = 0;
+          z = 0;
+      }
+    else if (size == 2)
+      {
+          x = pos2 (0);
+          y = pos2 (1);
+          z = 0;
+      }
+    else
+      {
+          x = pos2 (0);
+          y = pos2 (1);
+          z = pos2 (2);
+      }
 
-  (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << ",\n";
-  
-  r = theMap->getRed(V2);
-  g = theMap->getGreen(V2);
-  b = theMap->getBlue(V2);
+    (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << " ] }\n";
+    (*vrmlFile) << "          coordIndex [ 0 1 ]\n";
+    (*vrmlFile) << "          colorPerVertex TRUE\n ";
+    (*vrmlFile) << "          color Color { \n\t color [\n";
 
-  (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << " ] \n }}}\n";
-  
-  return 0;
+    r = theMap->getRed (V1);
+    g = theMap->getGreen (V1);
+    b = theMap->getBlue (V1);
+
+    (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << ",\n";
+
+    r = theMap->getRed (V2);
+    g = theMap->getGreen (V2);
+    b = theMap->getBlue (V2);
+
+    (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << " ] \n }}}\n";
+
+    return 0;
 }
 
 
 
 
 
-int 
-VrmlViewer::drawTriangle(const Vector &pos1, const Vector &pos2,
-			   const Vector &pos3,
-			   float V1, float V2, float V3)
+int
+VrmlViewer::drawTriangle (const Vector & pos1, const Vector & pos2,
+                          const Vector & pos3, float V1, float V2, float V3)
 {
-  int size;
-  float x,y,z, r, g, b;
+    int size;
+    float x, y, z, r, g, b;
 
-  (*vrmlFile) << "Shape { geometry IndexedFaceSet ";
-  (*vrmlFile) << "{ coord Coordinate { \n\t\t point [\n";  
-  
-  size = pos1.Size();
-  if (size == 1) {
-    x = pos1(0);
-    y = 0;
-    z = 0;
-  } else if (size == 2) {
-    x = pos1(0);
-    y = pos1(1);
-    z = 0;
-  } else {
-    x = pos1(0);
-    y = pos1(1);
-    z = pos1(2);
-  }  
+    (*vrmlFile) << "Shape { geometry IndexedFaceSet ";
+    (*vrmlFile) << "{ coord Coordinate { \n\t\t point [\n";
 
-  (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << ",\n";
+    size = pos1.Size ();
+    if (size == 1)
+      {
+          x = pos1 (0);
+          y = 0;
+          z = 0;
+      }
+    else if (size == 2)
+      {
+          x = pos1 (0);
+          y = pos1 (1);
+          z = 0;
+      }
+    else
+      {
+          x = pos1 (0);
+          y = pos1 (1);
+          z = pos1 (2);
+      }
 
-  size = pos2.Size();
-  if (size == 1) {
-    x = pos2(0);
-    y = 0;
-    z = 0;
-  } else if (size == 2) {
-    x = pos2(0);
-    y = pos2(1);
-    z = 0;
-  } else {
-    x = pos2(0);
-    y = pos2(1);
-    z = pos2(2);
-  }  
+    (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << ",\n";
 
-  (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << ",\n";
-  
-  size = pos3.Size();
-  if (size == 1) {
-    x = pos3(0);
-    y = 0;
-    z = 0;
-  } else if (size == 2) {
-    x = pos3(0);
-    y = pos3(1);
-    z = 0;
-  } else {
-    x = pos3(0);
-    y = pos3(1);
-    z = pos3(2);
-  }  
+    size = pos2.Size ();
+    if (size == 1)
+      {
+          x = pos2 (0);
+          y = 0;
+          z = 0;
+      }
+    else if (size == 2)
+      {
+          x = pos2 (0);
+          y = pos2 (1);
+          z = 0;
+      }
+    else
+      {
+          x = pos2 (0);
+          y = pos2 (1);
+          z = pos2 (2);
+      }
 
-  (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << " ] }\n";  
-  (*vrmlFile) << "          coordIndex [ 0 1 2 ]\n";  
-  (*vrmlFile) << "          colorPerVertex TRUE\n ";    
-  (*vrmlFile) << "          color Color { \n\t color [\n";  
-  
-  r = theMap->getRed(V1);
-  g = theMap->getGreen(V1);
-  b = theMap->getBlue(V1);
-  
-  (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << ",\n";
-      
-  r = theMap->getRed(V2);
-  g = theMap->getGreen(V2);
-  b = theMap->getBlue(V2);
-  
-  (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << ",\n";  
+    (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << ",\n";
 
-  r = theMap->getRed(V3);
-  g = theMap->getGreen(V3);
-  b = theMap->getBlue(V3);
+    size = pos3.Size ();
+    if (size == 1)
+      {
+          x = pos3 (0);
+          y = 0;
+          z = 0;
+      }
+    else if (size == 2)
+      {
+          x = pos3 (0);
+          y = pos3 (1);
+          z = 0;
+      }
+    else
+      {
+          x = pos3 (0);
+          y = pos3 (1);
+          z = pos3 (2);
+      }
 
-  (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << " ] \n }}}\n";
-  
-  return 0;
+    (*vrmlFile) << "\t\t\t " << x << "  " << y << "  " << z << " ] }\n";
+    (*vrmlFile) << "          coordIndex [ 0 1 2 ]\n";
+    (*vrmlFile) << "          colorPerVertex TRUE\n ";
+    (*vrmlFile) << "          color Color { \n\t color [\n";
+
+    r = theMap->getRed (V1);
+    g = theMap->getGreen (V1);
+    b = theMap->getBlue (V1);
+
+    (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << ",\n";
+
+    r = theMap->getRed (V2);
+    g = theMap->getGreen (V2);
+    b = theMap->getBlue (V2);
+
+    (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << ",\n";
+
+    r = theMap->getRed (V3);
+    g = theMap->getGreen (V3);
+    b = theMap->getBlue (V3);
+
+    (*vrmlFile) << "\t\t\t " << r << "  " << g << "  " << b << " ] \n }}}\n";
+
+    return 0;
 }
 
 
-int 
-VrmlViewer::setVRP(float x, float y, float z)
+int
+VrmlViewer::setVRP (float x, float y, float z)
 {
-  return 0;
+    return 0;
 }
 
 
-int 
-VrmlViewer::setVPN(float x, float y, float z) 
+int
+VrmlViewer::setVPN (float x, float y, float z)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setVUP(float x, float y, float z) 
+int
+VrmlViewer::setVUP (float x, float y, float z)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setViewWindow(float, float, float, float) 
+int
+VrmlViewer::setViewWindow (float, float, float, float)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setPlaneDist(float, float) 
+int
+VrmlViewer::setPlaneDist (float, float)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setProjectionMode(int) 
+int
+VrmlViewer::setProjectionMode (int)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setFillMode(int)    
+int
+VrmlViewer::setFillMode (int)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setPRP(float u, float v, float n) 
+int
+VrmlViewer::setPRP (float u, float v, float n)
 {
-  return 0;
+    return 0;
 }
 
-int 
-VrmlViewer::setPortWindow(float, float, float, float)
+int
+VrmlViewer::setPortWindow (float, float, float, float)
 {
-  return 0;
+    return 0;
 }
-

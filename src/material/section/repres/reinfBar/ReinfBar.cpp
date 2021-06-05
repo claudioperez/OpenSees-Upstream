@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:01:37 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/section/repres/reinfBar/ReinfBar.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ReinfBar.C
 // Written by Remo M. de Souza
 // December 1998
@@ -35,71 +35,83 @@
 
 
 ReinfBar::ReinfBar (void):
-                   diameter(0.0), area(0.0), matID(0), posit(2)
+diameter (0.0),
+area (0.0),
+matID (0),
+posit (2)
 {
 
 }
 
 
-ReinfBar::ReinfBar(double barArea, int materialID, const Vector &position):
-                   diameter(0.0), area(barArea),
-                   matID(materialID), posit(position)
+ReinfBar::ReinfBar (double barArea, int materialID, const Vector & position):
+diameter (0.0),
+area (barArea),
+matID (materialID),
+posit (position)
 {
 }
 
-ReinfBar::~ReinfBar()
+ReinfBar::~ReinfBar ()
 {
 
 }
 
-void ReinfBar::setDiameter (double barDiameter)
+void
+ReinfBar::setDiameter (double barDiameter)
 {
-   double pi = acos(-1.0);
-   diameter = barDiameter;
-   area = pi * diameter*diameter/4.0;     
+    double pi = acos (-1.0);
+    diameter = barDiameter;
+    area = pi * diameter * diameter / 4.0;
 }
 
-void ReinfBar::setArea (double barArea)
+void
+ReinfBar::setArea (double barArea)
 {
-   area = barArea;
+    area = barArea;
 }
 
-void ReinfBar::setMaterial (int materialID)
+void
+ReinfBar::setMaterial (int materialID)
 {
-   matID = materialID;
+    matID = materialID;
 }
 
-void ReinfBar::setPosition (const Vector &position)
+void
+ReinfBar::setPosition (const Vector & position)
 {
-   posit = position;
+    posit = position;
 }
 
-double ReinfBar::getDiameter(void) const
+double
+ReinfBar::getDiameter (void) const
 {
-   return diameter;
+    return diameter;
 }
 
-double ReinfBar::getArea (void) const
+double
+ReinfBar::getArea (void) const
 {
-   return area;
-}
-
-
-const Vector & ReinfBar::getPosition(void) const
-{
-   return posit;
+    return area;
 }
 
 
-void ReinfBar::Print(OPS_Stream &s, int flag) const
+const Vector &
+ReinfBar::getPosition (void) const
 {
-   s << "\nReinforcing Bar area: " << area;
-   s << "\nMaterial ID: " << matID;
-   s << "\nDiameter: " << diameter;
-   s << "\nArea: " << area;
-   s << "\nPosition: " << posit;
+    return posit;
+}
+
+
+void
+ReinfBar::Print (OPS_Stream & s, int flag) const
+{
+    s << "\nReinforcing Bar area: " << area;
+    s << "\nMaterial ID: " << matID;
+    s << "\nDiameter: " << diameter;
+    s << "\nArea: " << area;
+    s << "\nPosition: " << posit;
 }
 
 
 //    friend OPS_Stream &operator<<(OPS_Stream &s, ReinfBar &reinfBar);    
-

@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // Written: MHS
 // Created: March 2001
 //
@@ -33,146 +33,153 @@
 #include <math.h>
 #include <float.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
+#ifdef OPS_API_COMMANDLINE
 void *
-OPS_KarsanUnloadingRule(void)
+OPS_KarsanUnloadingRule (void)
 {
-  UnloadingRule *theDegradation = 0;
+    UnloadingRule *theDegradation = 0;
 
-  if (OPS_GetNumRemainingInputArgs() < 3) {
-    opserr << "Invalid number of args, want: unloadingRule Karsan tag? epsc? epsu?" << endln;
-    return 0;
-  }
+    if (OPS_GetNumRemainingInputArgs () < 3)
+      {
+          opserr <<
+              "Invalid number of args, want: unloadingRule Karsan tag? epsc? epsu?"
+              << endln;
+          return 0;
+      }
 
-  int iData[1];
-  double dData[2];
-  
-  int numData = 1;
-  if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid tag for unloadingRule Karsan" << endln;
-    return 0;
-  }
+    int iData[1];
+    double dData[2];
 
-  numData = 2;
-  if (OPS_GetDoubleInput(&numData, dData) != 0) {
-    opserr << "WARNING invalid data for unloadingRule Karsan" << endln;
-    return 0;
-  }
+    int numData = 1;
+    if (OPS_GetIntInput (&numData, iData) != 0)
+      {
+          opserr << "WARNING invalid tag for unloadingRule Karsan" << endln;
+          return 0;
+      }
 
-  theDegradation = new KarsanUnloadingRule(iData[0], dData[0], dData[1]);
-  if (theDegradation == 0) {
-    opserr << "WARNING could not create KarsanUnloadingRule\n";
-    return 0;
-  }
+    numData = 2;
+    if (OPS_GetDoubleInput (&numData, dData) != 0)
+      {
+          opserr << "WARNING invalid data for unloadingRule Karsan" << endln;
+          return 0;
+      }
 
-  return theDegradation;
+    theDegradation = new KarsanUnloadingRule (iData[0], dData[0], dData[1]);
+    if (theDegradation == 0)
+      {
+          opserr << "WARNING could not create KarsanUnloadingRule\n";
+          return 0;
+      }
+
+    return theDegradation;
+}
+#endif
+
+KarsanUnloadingRule::KarsanUnloadingRule (int tag, double e, double eu):
+UnloadingRule (tag, DEG_TAG_UNLOAD_Karsan), epsc (e),
+epscu (eu)
+{
+    this->revertToStart ();
+    this->revertToLastCommit ();
 }
 
-KarsanUnloadingRule::KarsanUnloadingRule
-(int tag, double e, double eu):
-  UnloadingRule(tag,DEG_TAG_UNLOAD_Karsan),
-  epsc(e), epscu(eu)
-{
-  this->revertToStart();
-  this->revertToLastCommit();
-}
- 
-KarsanUnloadingRule::KarsanUnloadingRule():
-  UnloadingRule(0,DEG_TAG_UNLOAD_Karsan), 
-  epsc(0.0), epscu(0.0), CminStrain(0.0)
+KarsanUnloadingRule::KarsanUnloadingRule ():
+UnloadingRule (0, DEG_TAG_UNLOAD_Karsan),
+epsc (0.0), epscu (0.0), CminStrain (0.0)
 {
 
 }
 
-KarsanUnloadingRule::~KarsanUnloadingRule()
+KarsanUnloadingRule::~KarsanUnloadingRule ()
 {
 
 }
 
-const char*
-KarsanUnloadingRule::getMeasure(void)
+const char *
+KarsanUnloadingRule::getMeasure (void)
 {
-  return "minStrain";
+    return "minStrain";
 }
 
 int
-KarsanUnloadingRule::setTrialMeasure(double measure)
+KarsanUnloadingRule::setTrialMeasure (double measure)
 {
-  TminStrain = measure;
-  
-  if (TminStrain > CminStrain)
-    TminStrain = CminStrain;
-  
-  if (TminStrain < epscu)
-    TminStrain = epscu;
-  
-  return 0;
+    TminStrain = measure;
+
+    if (TminStrain > CminStrain)
+        TminStrain = CminStrain;
+
+    if (TminStrain < epscu)
+        TminStrain = epscu;
+
+    return 0;
 }
 
 double
-KarsanUnloadingRule::getValue(void)
+KarsanUnloadingRule::getValue (void)
 {
-  double eta = TminStrain/epsc;
-  
-  double ratio = 0.707*(eta-2.0) + 0.834;
-  
-  if (eta < 2.0)
-    ratio = 0.145*eta*eta + 0.13*eta;
-  
-  return ratio*epsc;
+    double eta = TminStrain / epsc;
+
+    double ratio = 0.707 * (eta - 2.0) + 0.834;
+
+    if (eta < 2.0)
+        ratio = 0.145 * eta * eta + 0.13 * eta;
+
+    return ratio * epsc;
 }
 
 int
-KarsanUnloadingRule::commitState(void)
+KarsanUnloadingRule::commitState (void)
 {
-  CminStrain = TminStrain;
-  
-  return 0;
-}
- 
-int
-KarsanUnloadingRule::revertToLastCommit(void)
-{
-  TminStrain = CminStrain;
-  
-  return 0;
+    CminStrain = TminStrain;
+
+    return 0;
 }
 
 int
-KarsanUnloadingRule::revertToStart(void)
+KarsanUnloadingRule::revertToLastCommit (void)
 {
-  CminStrain = 0.0;
+    TminStrain = CminStrain;
 
-  return 0;
-}
-
-UnloadingRule*
-KarsanUnloadingRule::getCopy(void)
-{
-  KarsanUnloadingRule *theCopy =
-    new KarsanUnloadingRule (this->getTag(), epsc, epscu);
-  
-  theCopy->CminStrain = CminStrain;
-  
-  return theCopy;
+    return 0;
 }
 
 int
-KarsanUnloadingRule::sendSelf(int commitTag, Channel &theChannel)
+KarsanUnloadingRule::revertToStart (void)
 {
-  return -1;
+    CminStrain = 0.0;
+
+    return 0;
+}
+
+UnloadingRule *
+KarsanUnloadingRule::getCopy (void)
+{
+    KarsanUnloadingRule *theCopy =
+        new KarsanUnloadingRule (this->getTag (), epsc, epscu);
+
+    theCopy->CminStrain = CminStrain;
+
+    return theCopy;
 }
 
 int
-KarsanUnloadingRule::recvSelf(int commitTag, Channel &theChannel, 
-			      FEM_ObjectBroker &theBroker)
+KarsanUnloadingRule::sendSelf (int commitTag, Channel & theChannel)
 {
-  return -1;
+    return -1;
+}
+
+int
+KarsanUnloadingRule::recvSelf (int commitTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
+{
+    return -1;
 }
 
 void
-KarsanUnloadingRule::Print(OPS_Stream &s, int flag)
+KarsanUnloadingRule::Print (OPS_Stream & s, int flag)
 {
-  s << "KarsanUnloadingRule, tag: " << this->getTag() << endln;
+    s << "KarsanUnloadingRule, tag: " << this->getTag () << endln;
 }

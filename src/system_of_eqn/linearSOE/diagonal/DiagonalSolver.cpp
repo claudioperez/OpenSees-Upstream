@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2005-01-27 22:22:50 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/diagonal/DiagonalSolver.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: Jan 2005
 // Revision: A
@@ -37,22 +37,21 @@
 #include <DiagonalSolver.h>
 #include <DiagonalSOE.h>
 
-DiagonalSolver::DiagonalSolver(int theClassTag)    
-:LinearSOESolver(theClassTag),
- theSOE(0)
+DiagonalSolver::DiagonalSolver (int theClassTag):
+LinearSOESolver (theClassTag),
+theSOE (0)
 {
 
-}    
+}
 
-DiagonalSolver::~DiagonalSolver()    
+DiagonalSolver::~DiagonalSolver ()
 {
 
-}    
+}
 
-int 
-DiagonalSolver::setLinearSOE(DiagonalSOE &theProfileSPDSOE)
+int
+DiagonalSolver::setLinearSOE (DiagonalSOE & theProfileSPDSOE)
 {
     theSOE = &theProfileSPDSOE;
     return 0;
 }
-

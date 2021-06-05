@@ -37,7 +37,7 @@
 // What: "@(#)LineSearch.h, revA"
 
 #include <MovableObject.h>
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 
 class SolutionAlgorithm;
 class IncrementalIntegrator;

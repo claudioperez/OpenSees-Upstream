@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:00:58 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/loadBalancer/LoadBalancer.cpp,v $
-                                                                        
-                                                                        
+
+
  // File: ~/domain/loadBalancer/LoadBalancer.C
 // 
 // Written: fmk 
@@ -35,32 +35,32 @@
 // What: "@(#) LoadBalancer.C, revA"
 
 #include <LoadBalancer.h>
- 
-LoadBalancer::LoadBalancer()
-:theDomainPartitioner(0)
+
+LoadBalancer::LoadBalancer ():theDomainPartitioner (0)
 {
-    
+
 }
 
-LoadBalancer::~LoadBalancer()
+LoadBalancer::~LoadBalancer ()
 {
-    
+
 }
 
 void
-LoadBalancer::setLinks(DomainPartitioner &thePartitioner)
+LoadBalancer::setLinks (DomainPartitioner & thePartitioner)
 {
     theDomainPartitioner = &thePartitioner;
 }
 
 DomainPartitioner *
-LoadBalancer::getDomainPartitioner(void)
+LoadBalancer::getDomainPartitioner (void)
 {
-    if (theDomainPartitioner == 0) {
-	opserr << "WARNING LoadBalancer::getDomainPartitioner() ";
-	opserr << " no DomainPartitioner is set - has setLinks() been called?\n";
-    }
-    
+    if (theDomainPartitioner == 0)
+      {
+          opserr << "WARNING LoadBalancer::getDomainPartitioner() ";
+          opserr <<
+              " no DomainPartitioner is set - has setLinks() been called?\n";
+      }
+
     return theDomainPartitioner;
 }
-

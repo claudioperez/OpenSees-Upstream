@@ -39,9 +39,11 @@
 #include <Vector.h>
 #include <Channel.h>
 
-#include <elementAPI.h>
-
+// #include <elementAPI.h>
+/*
+#ifdef OPS_API_COMMANDLINE
 void *
+
 OPS_LinearSeries(void)
 {
   // Pointer to a uniaxial material that will be returned
@@ -87,69 +89,75 @@ OPS_LinearSeries(void)
 
   return theSeries;
 }
+#endif
+*/
 
-
-LinearSeries::LinearSeries(int tag, double theFactor)
-  :TimeSeries(tag, TSERIES_TAG_LinearSeries),
-   cFactor(theFactor)
+LinearSeries::LinearSeries (int tag, double theFactor):
+TimeSeries (tag, TSERIES_TAG_LinearSeries),
+cFactor (theFactor)
 {
-  // does nothing
+    // does nothing
 }
 
 
-LinearSeries::~LinearSeries()
+LinearSeries::~LinearSeries ()
 {
-  // does nothing
+    // does nothing
 }
 
 TimeSeries *
-LinearSeries::getCopy(void) {
-  return new LinearSeries(this->getTag(), cFactor);
+LinearSeries::getCopy (void)
+{
+    return new LinearSeries (this->getTag (), cFactor);
 }
 
 double
-LinearSeries::getFactor(double pseudoTime)
+LinearSeries::getFactor (double pseudoTime)
 {
-  return cFactor*pseudoTime;
+    return cFactor * pseudoTime;
 }
 
 
 int
-LinearSeries::sendSelf(int commitTag, Channel &theChannel)
+LinearSeries::sendSelf (int commitTag, Channel & theChannel)
 {
-  int dbTag = this->getDbTag();
+    int dbTag = this->getDbTag ();
 
-  Vector data(1);
-  data(0) = cFactor;
-  int result = theChannel.sendVector(dbTag,commitTag, data);
-  if (result < 0) {
-    opserr << "LinearSeries::sendSelf() - channel failed to send data\n";
-    return result;
-  }
-  return 0;
+    Vector data (1);
+    data (0) = cFactor;
+    int result = theChannel.sendVector (dbTag, commitTag, data);
+    if (result < 0)
+      {
+          opserr <<
+              "LinearSeries::sendSelf() - channel failed to send data\n";
+          return result;
+      }
+    return 0;
 }
 
 
 int
-LinearSeries::recvSelf(int commitTag, Channel &theChannel,
-		       FEM_ObjectBroker &theBroker)
+LinearSeries::recvSelf (int commitTag, Channel & theChannel,
+                        FEM_ObjectBroker & theBroker)
 {
-  int dbTag = this->getDbTag();
-  Vector data(1);
-  int result = theChannel.recvVector(dbTag,commitTag, data);
-  if (result < 0) {
-    opserr << "LinearSeries::sendSelf() - channel failed to receive data\n";
-    cFactor = 1.0;
-    return result;
-  }
-  cFactor = data(0);
+    int dbTag = this->getDbTag ();
+    Vector data (1);
+    int result = theChannel.recvVector (dbTag, commitTag, data);
+    if (result < 0)
+      {
+          opserr <<
+              "LinearSeries::sendSelf() - channel failed to receive data\n";
+          cFactor = 1.0;
+          return result;
+      }
+    cFactor = data (0);
 
-  return 0;
+    return 0;
 }
 
 
 void
-LinearSeries::Print(OPS_Stream &s, int flag)
+LinearSeries::Print (OPS_Stream & s, int flag)
 {
     s << "Linear Series: constant factor: " << cFactor << "\n";
 

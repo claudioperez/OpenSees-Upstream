@@ -32,7 +32,7 @@
 #ifndef ReinfBar_h 
 #define ReinfBar_h 
 
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 
 class Vector;
 

@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.6 $
 // $Date: 2010-09-11 00:50:53 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/PenaltyMaterial.cpp,v $
@@ -39,308 +39,348 @@
 #include <ID.h>
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
-#include <Information.h>
+#include <base/Information.h>
 #include <Parameter.h>
 
 #include <OPS_Globals.h>
 
-#include <elementAPI.h>
-#define OPS_Export 
+// #include <elementAPI.h> // cmp
+#define OPS_Export
 
-OPS_Export void *
-OPS_PenaltyMaterial(void)
+OPS_Export
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_PenaltyMaterial (void)
 {
-  // Pointer to a uniaxial material that will be returned
-  UniaxialMaterial *theMaterial = 0;
-  UniaxialMaterial *theOtherMaterial = 0;
-  int    iData[2];
+    // Pointer to a uniaxial material that will be returned
+    UniaxialMaterial *theMaterial = 0;
+    UniaxialMaterial *theOtherMaterial = 0;
+    int iData[2];
 
-  int argc = OPS_GetNumRemainingInputArgs();
-  if (argc < 2) {
-    opserr << "WARNING insufficient args, uniaxialMaterial Penalty $tag $otherTag $penalty" << endln;
-    return 0;
-  }
+    int argc = OPS_GetNumRemainingInputArgs ();
+    if (argc < 2)
+      {
+          opserr <<
+              "WARNING insufficient args, uniaxialMaterial Penalty $tag $otherTag $penalty"
+              << endln;
+          return 0;
+      }
 
-  int numData = 2;
-  if (OPS_GetIntInput(&numData, iData) < 0) {
-    opserr << "WARNING invalid uniaxialMaterial Penalty $tag $otherTag $penalty" << endln;
-    return 0;
-  }
+    int numData = 2;
+    if (OPS_GetIntInput (&numData, iData) < 0)
+      {
+          opserr <<
+              "WARNING invalid uniaxialMaterial Penalty $tag $otherTag $penalty"
+              << endln;
+          return 0;
+      }
 
-  theOtherMaterial = OPS_GetUniaxialMaterial(iData[1]);
-  if (theOtherMaterial == 0) {
-    opserr << "WARNING invalid otherTag uniaxialMaterial Penalty tag: " << iData[0] << endln;
-    return 0;	
-  }
+    theOtherMaterial = OPS_GetUniaxialMaterial (iData[1]);
+    if (theOtherMaterial == 0)
+      {
+          opserr << "WARNING invalid otherTag uniaxialMaterial Penalty tag: "
+              << iData[0] << endln;
+          return 0;
+      }
 
-  double penalty = 0.0;
-  numData = 1;
-  if (OPS_GetDouble(&numData,&penalty) < 0) {
-    opserr << "WARNING invalid input uniaxialMaterial Penalty tag: " << iData[0] << endln;
-    return 0;
-  }
+    double penalty = 0.0;
+    numData = 1;
+    if (OPS_GetDouble (&numData, &penalty) < 0)
+      {
+          opserr << "WARNING invalid input uniaxialMaterial Penalty tag: " <<
+              iData[0] << endln;
+          return 0;
+      }
 
-  // Parsing was successful, allocate the material
-  theMaterial = new PenaltyMaterial(iData[0], *theOtherMaterial, penalty);
+    // Parsing was successful, allocate the material
+    theMaterial = new PenaltyMaterial (iData[0], *theOtherMaterial, penalty);
 
-  if (theMaterial == 0) {
-    opserr << "WARNING could not create uniaxialMaterial of type PenaltyMaterial\n";
-    return 0;
-  }
+    if (theMaterial == 0)
+      {
+          opserr <<
+              "WARNING could not create uniaxialMaterial of type PenaltyMaterial\n";
+          return 0;
+      }
 
-  return theMaterial;
+    return theMaterial;
+}
+#endif
+
+PenaltyMaterial::PenaltyMaterial (int tag, UniaxialMaterial & material,
+                                  double mult):
+UniaxialMaterial (tag, MAT_TAG_Penalty),
+theMaterial (0),
+penalty (mult),
+parameterID (0)
+{
+    theMaterial = material.getCopy ();
+
+    if (theMaterial == 0)
+      {
+          opserr <<
+              "PenaltyMaterial::PenaltyMaterial -- failed to get copy of material\n";
+          exit (-1);
+      }
 }
 
-PenaltyMaterial::PenaltyMaterial(int tag, UniaxialMaterial &material, double mult)
-  :UniaxialMaterial(tag,MAT_TAG_Penalty), theMaterial(0), penalty(mult), parameterID(0)
-{
-  theMaterial = material.getCopy();
-
-  if (theMaterial == 0) {
-    opserr <<  "PenaltyMaterial::PenaltyMaterial -- failed to get copy of material\n";
-    exit(-1);
-  }
-}
-
-PenaltyMaterial::PenaltyMaterial()
-  :UniaxialMaterial(0,MAT_TAG_Penalty), theMaterial(0), penalty(0.0), parameterID(0)
+PenaltyMaterial::PenaltyMaterial ():UniaxialMaterial (0, MAT_TAG_Penalty), theMaterial (0), penalty (0.0),
+parameterID (0)
 {
 
 }
 
-PenaltyMaterial::~PenaltyMaterial()
+PenaltyMaterial::~PenaltyMaterial ()
 {
-  if (theMaterial)
-    delete theMaterial;
+    if (theMaterial)
+        delete theMaterial;
 }
 
-int 
-PenaltyMaterial::setTrialStrain(double strain, double strainRate)
+int
+PenaltyMaterial::setTrialStrain (double strain, double strainRate)
 {
-  return theMaterial->setTrialStrain(strain, strainRate);
-}
-
-
-int 
-PenaltyMaterial::setTrialStrain(double strain, double temp, double strainRate)
-{
-  return theMaterial->setTrialStrain(strain, temp, strainRate);
-}
-
-
-double 
-PenaltyMaterial::getStress(void)
-{
-  return theMaterial->getStress() + penalty*theMaterial->getStrain();
-}
-
-double 
-PenaltyMaterial::getTangent(void)
-{
-  return theMaterial->getTangent() + penalty;
-}
-
-double 
-PenaltyMaterial::getDampTangent(void)
-{
-  return theMaterial->getDampTangent();
+    return theMaterial->setTrialStrain (strain, strainRate);
 }
 
 
-
-double 
-PenaltyMaterial::getStrain(void)
+int
+PenaltyMaterial::setTrialStrain (double strain, double temp,
+                                 double strainRate)
 {
-  return theMaterial->getStrain();
+    return theMaterial->setTrialStrain (strain, temp, strainRate);
 }
 
-double 
-PenaltyMaterial::getStrainRate(void)
+
+double
+PenaltyMaterial::getStress (void)
 {
-  return theMaterial->getStrainRate();
+    return theMaterial->getStress () + penalty * theMaterial->getStrain ();
 }
 
-int 
-PenaltyMaterial::commitState(void)
-{	
-  return theMaterial->commitState();
+double
+PenaltyMaterial::getTangent (void)
+{
+    return theMaterial->getTangent () + penalty;
 }
 
-int 
-PenaltyMaterial::revertToLastCommit(void)
+double
+PenaltyMaterial::getDampTangent (void)
 {
-  return theMaterial->revertToLastCommit();
+    return theMaterial->getDampTangent ();
 }
 
-int 
-PenaltyMaterial::revertToStart(void)
+
+
+double
+PenaltyMaterial::getStrain (void)
 {
-  return theMaterial->revertToStart();
+    return theMaterial->getStrain ();
+}
+
+double
+PenaltyMaterial::getStrainRate (void)
+{
+    return theMaterial->getStrainRate ();
+}
+
+int
+PenaltyMaterial::commitState (void)
+{
+    return theMaterial->commitState ();
+}
+
+int
+PenaltyMaterial::revertToLastCommit (void)
+{
+    return theMaterial->revertToLastCommit ();
+}
+
+int
+PenaltyMaterial::revertToStart (void)
+{
+    return theMaterial->revertToStart ();
 }
 
 UniaxialMaterial *
-PenaltyMaterial::getCopy(void)
+PenaltyMaterial::getCopy (void)
 {
-  PenaltyMaterial *theCopy = 
-    new PenaltyMaterial(this->getTag(), *theMaterial, penalty);
-        
-  return theCopy;
-}
+    PenaltyMaterial *theCopy =
+        new PenaltyMaterial (this->getTag (), *theMaterial, penalty);
 
-int 
-PenaltyMaterial::sendSelf(int cTag, Channel &theChannel)
-{
-  int dbTag = this->getDbTag();
-
-  static ID dataID(3);
-  dataID(0) = this->getTag();
-  dataID(1) = theMaterial->getClassTag();
-  int matDbTag = theMaterial->getDbTag();
-  if ( matDbTag == 0) {
-    matDbTag = theChannel.getDbTag();
-    theMaterial->setDbTag(matDbTag);
-  }
-  dataID(2) = matDbTag;
-  if (theChannel.sendID(dbTag, cTag, dataID) < 0) {
-    opserr << "PenaltyMaterial::sendSelf() - failed to send the ID\n";
-    return -1;
-  }
-
-  static Vector dataVec(1);
-  dataVec(0) = penalty;
-
-  if (theChannel.sendVector(dbTag, cTag, dataVec) < 0) {
-    opserr << "PenaltyMaterial::sendSelf() - failed to send the Vector\n";
-    return -2;
-  }
-
-  if (theMaterial->sendSelf(cTag, theChannel) < 0) {
-    opserr << "PenaltyMaterial::sendSelf() - failed to send the Material\n";
-    return -3;
-  }
-
-  return 0;
-}
-
-int 
-PenaltyMaterial::recvSelf(int cTag, Channel &theChannel, 
-			 FEM_ObjectBroker &theBroker)
-{
-  int dbTag = this->getDbTag();
-
-  static ID dataID(3);
-  if (theChannel.recvID(dbTag, cTag, dataID) < 0) {
-    opserr << "PenaltyMaterial::recvSelf() - failed to get the ID\n";
-    return -1;
-  }
-  this->setTag(int(dataID(0)));
-
-  // as no way to change material, don't have to check classTag of the material 
-  if (theMaterial == 0) {
-    int matClassTag = int(dataID(1));
-    theMaterial = theBroker.getNewUniaxialMaterial(matClassTag);
-    if (theMaterial == 0) {
-      opserr << "PenaltyMaterial::recvSelf() - failed to create Material with classTag " 
-	   << dataID(0) << endln;
-      return -2;
-    }
-  }
-  theMaterial->setDbTag(dataID(2));
-
-  static Vector dataVec(1);
-  if (theChannel.recvVector(dbTag, cTag, dataVec) < 0) {
-    opserr << "PenaltyMaterial::recvSelf() - failed to get the Vector\n";
-    return -3;
-  }
-
-  penalty = dataVec(0);
-
-  if (theMaterial->recvSelf(cTag, theChannel, theBroker) < 0) {
-    opserr << "PenaltyMaterial::recvSelf() - failed to get the Material\n";
-    return -4;
-  }
-  return 0;
-}
-
-void 
-PenaltyMaterial::Print(OPS_Stream &s, int flag)
-{
-  s << "PenaltyMaterial tag: " << this->getTag() << endln;
-  s << "\tMaterial: " << theMaterial->getTag() << endln;
-  s << "\tPenalty: " << penalty << endln;
+    return theCopy;
 }
 
 int
-PenaltyMaterial::setParameter(const char **argv, int argc, Parameter &param)
+PenaltyMaterial::sendSelf (int cTag, Channel & theChannel)
 {
-  if (strcmp(argv[0],"penalty") == 0) {
-    param.setValue(penalty);
-    return param.addObject(1,this);
-  }
-  return theMaterial->setParameter(argv, argc, param);
+    int dbTag = this->getDbTag ();
+
+    static ID dataID (3);
+    dataID (0) = this->getTag ();
+    dataID (1) = theMaterial->getClassTag ();
+    int matDbTag = theMaterial->getDbTag ();
+    if (matDbTag == 0)
+      {
+          matDbTag = theChannel.getDbTag ();
+          theMaterial->setDbTag (matDbTag);
+      }
+    dataID (2) = matDbTag;
+    if (theChannel.sendID (dbTag, cTag, dataID) < 0)
+      {
+          opserr << "PenaltyMaterial::sendSelf() - failed to send the ID\n";
+          return -1;
+      }
+
+    static Vector dataVec (1);
+    dataVec (0) = penalty;
+
+    if (theChannel.sendVector (dbTag, cTag, dataVec) < 0)
+      {
+          opserr <<
+              "PenaltyMaterial::sendSelf() - failed to send the Vector\n";
+          return -2;
+      }
+
+    if (theMaterial->sendSelf (cTag, theChannel) < 0)
+      {
+          opserr <<
+              "PenaltyMaterial::sendSelf() - failed to send the Material\n";
+          return -3;
+      }
+
+    return 0;
 }
 
 int
-PenaltyMaterial::updateParameter(int parameterID, Information &info)
+PenaltyMaterial::recvSelf (int cTag, Channel & theChannel,
+                           FEM_ObjectBroker & theBroker)
 {
-  switch (parameterID) {
-  case -1:
-    return -1;
-  case 1:
-    this->penalty = info.theDouble;
-    break;
-  }
+    int dbTag = this->getDbTag ();
 
-  return 0;
+    static ID dataID (3);
+    if (theChannel.recvID (dbTag, cTag, dataID) < 0)
+      {
+          opserr << "PenaltyMaterial::recvSelf() - failed to get the ID\n";
+          return -1;
+      }
+    this->setTag (int (dataID (0)));
+
+    // as no way to change material, don't have to check classTag of the material 
+    if (theMaterial == 0)
+      {
+          int matClassTag = int (dataID (1));
+          theMaterial = theBroker.getNewUniaxialMaterial (matClassTag);
+          if (theMaterial == 0)
+            {
+                opserr <<
+                    "PenaltyMaterial::recvSelf() - failed to create Material with classTag "
+                    << dataID (0) << endln;
+                return -2;
+            }
+      }
+    theMaterial->setDbTag (dataID (2));
+
+    static Vector dataVec (1);
+    if (theChannel.recvVector (dbTag, cTag, dataVec) < 0)
+      {
+          opserr <<
+              "PenaltyMaterial::recvSelf() - failed to get the Vector\n";
+          return -3;
+      }
+
+    penalty = dataVec (0);
+
+    if (theMaterial->recvSelf (cTag, theChannel, theBroker) < 0)
+      {
+          opserr <<
+              "PenaltyMaterial::recvSelf() - failed to get the Material\n";
+          return -4;
+      }
+    return 0;
+}
+
+void
+PenaltyMaterial::Print (OPS_Stream & s, int flag)
+{
+    s << "PenaltyMaterial tag: " << this->getTag () << endln;
+    s << "\tMaterial: " << theMaterial->getTag () << endln;
+    s << "\tPenalty: " << penalty << endln;
 }
 
 int
-PenaltyMaterial::activateParameter(int paramID)
+PenaltyMaterial::setParameter (const char **argv, int argc, Parameter & param)
 {
-  parameterID = paramID;
-
-  return 0;
-}
-
-double
-PenaltyMaterial::getStressSensitivity(int gradIndex, bool conditional)
-{
-  // dsig = dsigma + dalpha*strain < + alpha*dstrain>
-  if (parameterID == 1)
-    return theMaterial->getStrain(); // dalpha*strain where dalpha=1
-  else
-    return theMaterial->getStressSensitivity(gradIndex,conditional);
-}
-
-double
-PenaltyMaterial::getStrainSensitivity(int gradIndex)
-{
-  return theMaterial->getStrainSensitivity(gradIndex);
-}
-
-double
-PenaltyMaterial::getInitialTangentSensitivity(int gradIndex)
-{
-  if (parameterID == 1)
-    return 1.0;
-  else
-    return theMaterial->getInitialTangentSensitivity(gradIndex);
-}
-
-double
-PenaltyMaterial::getDampTangentSensitivity(int gradIndex)
-{
-  theMaterial->getDampTangentSensitivity(gradIndex);
-}
-
-double
-PenaltyMaterial::getRhoSensitivity(int gradIndex)
-{
-  return theMaterial->getRhoSensitivity(gradIndex);
+    if (strcmp (argv[0], "penalty") == 0)
+      {
+          param.setValue (penalty);
+          return param.addObject (1, this);
+      }
+    return theMaterial->setParameter (argv, argc, param);
 }
 
 int
-PenaltyMaterial::commitSensitivity(double strainGradient, int gradIndex, int numGrads)
+PenaltyMaterial::updateParameter (int parameterID, Information & info)
 {
-  return theMaterial->commitSensitivity(strainGradient, gradIndex, numGrads);
+    switch (parameterID)
+      {
+      case -1:
+          return -1;
+      case 1:
+          this->penalty = info.theDouble;
+          break;
+      }
+
+    return 0;
+}
+
+int
+PenaltyMaterial::activateParameter (int paramID)
+{
+    parameterID = paramID;
+
+    return 0;
+}
+
+double
+PenaltyMaterial::getStressSensitivity (int gradIndex, bool conditional)
+{
+    // dsig = dsigma + dalpha*strain < + alpha*dstrain>
+    if (parameterID == 1)
+        return theMaterial->getStrain ();       // dalpha*strain where dalpha=1
+    else
+        return theMaterial->getStressSensitivity (gradIndex, conditional);
+}
+
+double
+PenaltyMaterial::getStrainSensitivity (int gradIndex)
+{
+    return theMaterial->getStrainSensitivity (gradIndex);
+}
+
+double
+PenaltyMaterial::getInitialTangentSensitivity (int gradIndex)
+{
+    if (parameterID == 1)
+        return 1.0;
+    else
+        return theMaterial->getInitialTangentSensitivity (gradIndex);
+}
+
+double
+PenaltyMaterial::getDampTangentSensitivity (int gradIndex)
+{
+    theMaterial->getDampTangentSensitivity (gradIndex);
+}
+
+double
+PenaltyMaterial::getRhoSensitivity (int gradIndex)
+{
+    return theMaterial->getRhoSensitivity (gradIndex);
+}
+
+int
+PenaltyMaterial::commitSensitivity (double strainGradient, int gradIndex,
+                                    int numGrads)
+{
+    return theMaterial->commitSensitivity (strainGradient, gradIndex,
+                                           numGrads);
 }

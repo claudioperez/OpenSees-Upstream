@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 
 // $Revision: 1.2 $
 // $Date: 2006-09-05 22:32:43 $
@@ -34,7 +34,7 @@
 
 #include <LimitCurve.h>
 #include <string.h>
-#include <Information.h>
+#include <base/Information.h>
 
 
 #include <TaggedObject.h>
@@ -43,37 +43,47 @@
 static MapOfTaggedObjects theLimitCurveObjects;
 
 
-bool OPS_addLimitCurve(LimitCurve *newComponent) {
-  return theLimitCurveObjects.addComponent(newComponent);
+bool
+OPS_addLimitCurve (LimitCurve * newComponent)
+{
+    return theLimitCurveObjects.addComponent (newComponent);
 }
 
-LimitCurve *OPS_getLimitCurve(int tag) {
+LimitCurve *
+OPS_getLimitCurve (int tag)
+{
 
-  TaggedObject *theResult = theLimitCurveObjects.getComponentPtr(tag);
-  if (theResult == 0) {
-    opserr << "LimitCurve *getLimitCurve(int tag) - none found with tag: " << tag << endln;
-    return 0;
-  }
-  LimitCurve *theMat = (LimitCurve *)theResult;
+    TaggedObject *theResult = theLimitCurveObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          opserr <<
+              "LimitCurve *getLimitCurve(int tag) - none found with tag: " <<
+              tag << endln;
+          return 0;
+      }
+    LimitCurve *theMat = (LimitCurve *) theResult;
 
-  return theMat;
+    return theMat;
 }
 
-void OPS_clearAllLimitCurve(void) {
-  theLimitCurveObjects.clearAll();
+void
+OPS_clearAllLimitCurve (void)
+{
+    theLimitCurveObjects.clearAll ();
 }
 
 
 
 
 
-LimitCurve::LimitCurve(int tag, int clasTag)
-:TaggedObject(tag), MovableObject(clasTag)
+LimitCurve::LimitCurve (int tag, int clasTag):
+TaggedObject (tag),
+MovableObject (clasTag)
 {
 
 }
 
-LimitCurve::~LimitCurve()
+LimitCurve::~LimitCurve ()
 {
-  // does nothing
+    // does nothing
 }

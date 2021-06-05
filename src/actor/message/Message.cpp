@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.6 $
 // $Date: 2004-11-25 00:54:09 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/message/Message.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/actor/Message.C
 //
 
@@ -33,73 +33,73 @@
 #include <strings.h>
 #endif
 
-Message::Message()
-:length(0),data(0)
+Message::Message ():length (0), data (0)
 {
 
 }
 
-Message::Message(double *Ptr, int size)
+Message::Message (double *Ptr, int size)
 {
-    length = size*sizeof(double);
-    data = (char *)Ptr;
+    length = size * sizeof (double);
+    data = (char *) Ptr;
 }
 
-Message::Message(int *Ptr, int size)
+Message::Message (int *Ptr, int size)
 {
-    length = size*sizeof(int);
-    data = (char *)Ptr;
+    length = size * sizeof (int);
+    data = (char *) Ptr;
 }
 
-Message::Message(char *Ptr, int size)
+Message::Message (char *Ptr, int size)
 {
-    length = size*sizeof(char);
+    length = size * sizeof (char);
     data = Ptr;
 }
 
-Message::~Message()
+Message::~Message ()
 {
 
 }
 
 #ifdef _WIN32
-extern "C" void bcopy(const char *scource, char *dest, int length);
+extern "C" void bcopy (const char *scource, char *dest, int length);
 #include <winsock.h>
 #define bcopy(s,d,l) memmove(d,s,l)
 #endif
 
 int
-Message::putData(char *theData, int startLoc, int endLoc)
+Message::putData (char *theData, int startLoc, int endLoc)
 {
     if (startLoc > 0 && startLoc <= length &&
-	endLoc <= length && endLoc > startLoc) {
-	int theLength = endLoc - startLoc;
-	char *dataPos = &data[startLoc];
-	bcopy(theData, dataPos, theLength);
-	return 0;
-    } else {
-	opserr << "Message::putData() - invalid length of data given\n";
-	return -1;
-    }
+        endLoc <= length && endLoc > startLoc)
+      {
+          int theLength = endLoc - startLoc;
+          char *dataPos = &data[startLoc];
+          bcopy (theData, dataPos, theLength);
+          return 0;
+      }
+    else
+      {
+          opserr << "Message::putData() - invalid length of data given\n";
+          return -1;
+      }
 }
 
 void
-Message::setData(char *theData, int theLength)
+Message::setData (char *theData, int theLength)
 {
-	data = theData;
-	length = theLength;
+    data = theData;
+    length = theLength;
 }
 
 const char *
-Message::getData(void)
+Message::getData (void)
 {
     return data;
 }
 
-int 
-Message::getSize()
+int
+Message::getSize ()
 {
     return length;
 }
-
-

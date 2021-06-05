@@ -19,13 +19,16 @@
 #include <math.h>
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
-extern "C" {
+extern "C"
+{
 #include "FeStructs.h"
 }
 
-void* OPS_SymSparseLinSolver()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_SymSparseLinSolver ()
 {
     // now determine ordering scheme
     //   1 -- MMD
@@ -33,112 +36,123 @@ void* OPS_SymSparseLinSolver()
     //   3 -- RCM
     int lSparse = 1;
     int numdata = 1;
-    if (OPS_GetNumRemainingInputArgs() > 0) {
-	if (OPS_GetIntInput(&numdata, &lSparse) < 0) {
-	    opserr << "WARNING SparseSPD failed to read lSparse\n";
-	    return 0;
-	}
-    }
+    if (OPS_GetNumRemainingInputArgs () > 0)
+      {
+          if (OPS_GetIntInput (&numdata, &lSparse) < 0)
+            {
+                opserr << "WARNING SparseSPD failed to read lSparse\n";
+                return 0;
+            }
+      }
 
-    SymSparseLinSolver *theSolver = new SymSparseLinSolver();
-    return new SymSparseLinSOE(*theSolver, lSparse);  
+    SymSparseLinSolver *theSolver = new SymSparseLinSolver ();
+    return new SymSparseLinSOE (*theSolver, lSparse);
 }
+#endif
 
-SymSparseLinSolver::SymSparseLinSolver()
-:LinearSOESolver(SOLVER_TAGS_SymSparseLinSolver),
- theSOE(0)
+SymSparseLinSolver::SymSparseLinSolver ():LinearSOESolver (SOLVER_TAGS_SymSparseLinSolver),
+theSOE (0)
 {
     // nothing to do.
 }
 
 
-SymSparseLinSolver::~SymSparseLinSolver()
-{ 
+SymSparseLinSolver::~SymSparseLinSolver ()
+{
     // nothing to do.
 }
 
 
-extern "C" int pfsfct(int neqns, double *diag, double **penv, int nblks, int *xblk,
-		      OFFDBLK **begblk, OFFDBLK *first, int *rowblks);
+extern "C" int pfsfct (int neqns, double *diag, double **penv, int nblks,
+                       int *xblk, OFFDBLK ** begblk, OFFDBLK * first,
+                       int *rowblks);
 
-extern "C" void pfsslv(int neqns, double *diag, double **penv, int nblks,
-		       int *xblk, double *rhs, OFFDBLK **begblk);
+extern "C" void pfsslv (int neqns, double *diag, double **penv, int nblks,
+                        int *xblk, double *rhs, OFFDBLK ** begblk);
 
 
 int
-SymSparseLinSolver::solve(void)
-{ 
-    if (theSOE == 0) {
-	opserr << "WARNING SymSparseLinSolver::solve(void)- ";
-	opserr << " No LinearSOE object has been set\n";
-	return -1;
-    }
+SymSparseLinSolver::solve (void)
+{
+    if (theSOE == 0)
+      {
+          opserr << "WARNING SymSparseLinSolver::solve(void)- ";
+          opserr << " No LinearSOE object has been set\n";
+          return -1;
+      }
 
-    int      nblks = theSOE->nblks;
-    int      *xblk = theSOE->xblk;
-    int      *invp = theSOE->invp;
-    double   *diag = theSOE->diag;
-    double   **penv = theSOE->penv;
-    int      *rowblks = theSOE->rowblks;
-    OFFDBLK  **begblk = theSOE->begblk;
-    OFFDBLK  *first = theSOE->first;
+    int nblks = theSOE->nblks;
+    int *xblk = theSOE->xblk;
+    int *invp = theSOE->invp;
+    double *diag = theSOE->diag;
+    double **penv = theSOE->penv;
+    int *rowblks = theSOE->rowblks;
+    OFFDBLK **begblk = theSOE->begblk;
+    OFFDBLK *first = theSOE->first;
 
     int neq = theSOE->size;
 
     // check for quick return
     if (neq == 0)
-	return 0;
+        return 0;
 
     // first copy B into X
 
-    for (int i=0; i<neq; i++) {
-        theSOE->X[i] = theSOE->B[i];
-    }
+    for (int i = 0; i < neq; i++)
+      {
+          theSOE->X[i] = theSOE->B[i];
+      }
     double *Xptr = theSOE->X;
 
-    if (theSOE->factored == false) {
+    if (theSOE->factored == false)
+      {
 
-        //factor the matrix
-        //call the "C" function to do the numerical factorization.
-        int factor;
-	factor = pfsfct(neq, diag, penv, nblks, xblk, begblk, first, rowblks);
-	if (factor > 0) {
-	    opserr << "In SymSparseLinSolver: error in factorization.\n";
-	    return -1;
-	}
-	theSOE->factored = true;
-    }
+          //factor the matrix
+          //call the "C" function to do the numerical factorization.
+          int factor;
+          factor =
+              pfsfct (neq, diag, penv, nblks, xblk, begblk, first, rowblks);
+          if (factor > 0)
+            {
+                opserr << "In SymSparseLinSolver: error in factorization.\n";
+                return -1;
+            }
+          theSOE->factored = true;
+      }
 
     // do forward and backward substitution.
     // call the "C" function.
 
-    pfsslv(neq, diag, penv, nblks, xblk, Xptr, begblk);
+    pfsslv (neq, diag, penv, nblks, xblk, Xptr, begblk);
 
     // Since the X we get by solving AX=B is P*X, we need to reordering
     // the Xptr to ge the wanted X.
 
     double *tempX = new double[neq];
-    if (tempX == 0) {
-        opserr << "WARNING SymSparseLinSover::SymSparseLinSolver :";
-	opserr << " ran out of memory for vectors (tempX) ";
-	return -1;
-    } 
+    if (tempX == 0)
+      {
+          opserr << "WARNING SymSparseLinSover::SymSparseLinSolver :";
+          opserr << " ran out of memory for vectors (tempX) ";
+          return -1;
+      }
 
-    for (int m=0; m<neq; m++) {
-        tempX[m] = Xptr[invp[m]];
-    }
-	
-    for (int k=0; k<neq; k++) {
-        Xptr[k] = tempX[k];
-    }
-	
-    delete [] tempX;
+    for (int m = 0; m < neq; m++)
+      {
+          tempX[m] = Xptr[invp[m]];
+      }
+
+    for (int k = 0; k < neq; k++)
+      {
+          Xptr[k] = tempX[k];
+      }
+
+    delete[]tempX;
     return 0;
 }
 
 
 int
-SymSparseLinSolver::setSize()
+SymSparseLinSolver::setSize ()
 {
     // nothing to do
     return 0;
@@ -146,7 +160,7 @@ SymSparseLinSolver::setSize()
 
 
 int
-SymSparseLinSolver::setLinearSOE(SymSparseLinSOE &theLinearSOE)
+SymSparseLinSolver::setLinearSOE (SymSparseLinSOE & theLinearSOE)
 {
     theSOE = &theLinearSOE;
     return 0;
@@ -154,7 +168,7 @@ SymSparseLinSolver::setLinearSOE(SymSparseLinSOE &theLinearSOE)
 
 
 int
-SymSparseLinSolver::sendSelf(int cTAg, Channel &theChannel)
+SymSparseLinSolver::sendSelf (int cTAg, Channel & theChannel)
 {
     // doing nothing
     return 0;
@@ -162,13 +176,10 @@ SymSparseLinSolver::sendSelf(int cTAg, Channel &theChannel)
 
 
 int
-SymSparseLinSolver::recvSelf(int cTag,
-			     Channel &theChannel, FEM_ObjectBroker &theBroker)
+SymSparseLinSolver::recvSelf (int cTag,
+                              Channel & theChannel,
+                              FEM_ObjectBroker & theBroker)
 {
     // nothing to do
     return 0;
 }
-
-
-
-

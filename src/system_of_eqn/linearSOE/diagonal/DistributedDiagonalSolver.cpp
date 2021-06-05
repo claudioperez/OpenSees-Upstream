@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2005-06-20 21:35:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/diagonal/DistributedDiagonalSolver.cpp,v $
@@ -31,148 +31,159 @@
 #include <DistributedDiagonalSOE.h>
 #include <Channel.h>
 
-DistributedDiagonalSolver::DistributedDiagonalSolver(int classTag)
-:LinearSOESolver(classTag),
- theSOE(0), minDiagTol(0.0)
-{
-  
-}    
-
-DistributedDiagonalSolver::DistributedDiagonalSolver(double tol)
-:LinearSOESolver(SOLVER_TAGS_DistributedDiagonalSolver),
- theSOE(0), minDiagTol(tol)
+DistributedDiagonalSolver::DistributedDiagonalSolver (int classTag):
+LinearSOESolver (classTag),
+theSOE (0),
+minDiagTol (0.0)
 {
 
-}    
-
-DistributedDiagonalSolver::~DistributedDiagonalSolver()    
-{
-
-}    
-
-int 
-DistributedDiagonalSolver::setLinearSOE(DistributedDiagonalSOE &theProfileSPDSOE)
-{
-  
-  theSOE = &theProfileSPDSOE;
-  return 0;
 }
 
-int 
-DistributedDiagonalSolver::setSize(void)
+DistributedDiagonalSolver::DistributedDiagonalSolver (double tol):
+LinearSOESolver (SOLVER_TAGS_DistributedDiagonalSolver),
+theSOE (0),
+minDiagTol (tol)
 {
-  return 0;
+
 }
 
-
-int 
-DistributedDiagonalSolver::solve(void)
+DistributedDiagonalSolver::~DistributedDiagonalSolver ()
 {
-  int size = theSOE->size;
-  int processID = theSOE->processID;
 
-  Channel **theChannels = theSOE->theChannels;
-  int numChannels = theSOE->numChannels;
-
-  int numShared = theSOE->numShared;
-  ID &myDOFs = theSOE->myDOFs;
-  ID &myDOFsShared = theSOE->myDOFsShared;
-  
-  double *X = theSOE->X;
-  double *B = theSOE->B;
-  double *A = theSOE->A;
-  double *dataShared = theSOE->dataShared;
-  Vector *vectShared = theSOE->vectShared;
-
-  //
-  // first copy A & B contributions to sharedData
-  //
-
-  for (int i=0; i<numShared; i++)
-    dataShared[i] = 0.0;
-
-  // assuming numShared < size .. could do an if statement
-
-  for (int i=0; i<numShared; i++) {
-    int dof = myDOFsShared(i);
-    int loc = myDOFs.getLocation(dof);
-    if (loc >= 0) {
-      dataShared[i] = A[loc];
-      dataShared[i+numShared] = B[loc];
-    }
-  }
-
-  //
-  // use P0 to gather & send back out
-  //
-
-  if (numShared != 0) {
-    if (processID != 0) {
-      Channel *theChannel = theChannels[0];
-      theChannel->sendVector(0, 0, *vectShared);
-      theChannel->recvVector(0, 0, *vectShared);
-    } 
-    else {
-
-      static Vector otherShared(1);
-      otherShared.resize(2*numShared);
-      for (int i=0; i<numChannels; i++) {
-	Channel *theChannel = theChannels[i];
-	theChannel->recvVector(0, 0, otherShared);
-	*vectShared += otherShared;
-      }
-      for (int i=0; i<numChannels; i++) {
-	Channel *theChannel = theChannels[i];
-	theChannel->sendVector(0, 0, *vectShared);
-      }
-    }
-  }
-  
-  
-  //
-  // set the corresponding A & B entries
-  //
-  
-  
-  for (int i=0; i<numShared; i++) {
-    int dof = myDOFsShared(i);
-    int loc = myDOFs.getLocation(dof);
-    if (loc >= 0) {
-      A[loc] = dataShared[i];
-      B[loc] = dataShared[i+numShared];
-    }
-  }  
-
-  //
-  // now solve
-  //
-  
-  for (int i=0; i<size; i++) {
-    X[i] = B[i]/A[i];
-  }
-
-  return 0;
 }
 
 int
-DistributedDiagonalSolver::sendSelf(int cTag,
-			       Channel &theChannel)
+DistributedDiagonalSolver::
+setLinearSOE (DistributedDiagonalSOE & theProfileSPDSOE)
 {
-  static Vector data(1);
-  data(0) = minDiagTol;
-  return theChannel.sendVector(0, cTag, data);
+
+    theSOE = &theProfileSPDSOE;
+    return 0;
+}
+
+int
+DistributedDiagonalSolver::setSize (void)
+{
+    return 0;
 }
 
 
-int 
-DistributedDiagonalSolver::recvSelf(int cTag,
-			       Channel &theChannel, 
-			       FEM_ObjectBroker &theBroker)
+int
+DistributedDiagonalSolver::solve (void)
 {
-  static Vector data(1);
-  theChannel.recvVector(0, cTag, data);
+    int size = theSOE->size;
+    int processID = theSOE->processID;
 
-  minDiagTol = data(0);
-  return 0;
+    Channel **theChannels = theSOE->theChannels;
+    int numChannels = theSOE->numChannels;
+
+    int numShared = theSOE->numShared;
+    ID & myDOFs = theSOE->myDOFs;
+    ID & myDOFsShared = theSOE->myDOFsShared;
+
+    double *X = theSOE->X;
+    double *B = theSOE->B;
+    double *A = theSOE->A;
+    double *dataShared = theSOE->dataShared;
+    Vector *vectShared = theSOE->vectShared;
+
+    //
+    // first copy A & B contributions to sharedData
+    //
+
+    for (int i = 0; i < numShared; i++)
+        dataShared[i] = 0.0;
+
+    // assuming numShared < size .. could do an if statement
+
+    for (int i = 0; i < numShared; i++)
+      {
+          int dof = myDOFsShared (i);
+          int loc = myDOFs.getLocation (dof);
+          if (loc >= 0)
+            {
+                dataShared[i] = A[loc];
+                dataShared[i + numShared] = B[loc];
+            }
+      }
+
+    //
+    // use P0 to gather & send back out
+    //
+
+    if (numShared != 0)
+      {
+          if (processID != 0)
+            {
+                Channel *theChannel = theChannels[0];
+                theChannel->sendVector (0, 0, *vectShared);
+                theChannel->recvVector (0, 0, *vectShared);
+            }
+          else
+            {
+
+                static Vector otherShared (1);
+                otherShared.resize (2 * numShared);
+                for (int i = 0; i < numChannels; i++)
+                  {
+                      Channel *theChannel = theChannels[i];
+                      theChannel->recvVector (0, 0, otherShared);
+                      *vectShared += otherShared;
+                  }
+                for (int i = 0; i < numChannels; i++)
+                  {
+                      Channel *theChannel = theChannels[i];
+                      theChannel->sendVector (0, 0, *vectShared);
+                  }
+            }
+      }
+
+
+    //
+    // set the corresponding A & B entries
+    //
+
+
+    for (int i = 0; i < numShared; i++)
+      {
+          int dof = myDOFsShared (i);
+          int loc = myDOFs.getLocation (dof);
+          if (loc >= 0)
+            {
+                A[loc] = dataShared[i];
+                B[loc] = dataShared[i + numShared];
+            }
+      }
+
+    //
+    // now solve
+    //
+
+    for (int i = 0; i < size; i++)
+      {
+          X[i] = B[i] / A[i];
+      }
+
+    return 0;
 }
 
+int
+DistributedDiagonalSolver::sendSelf (int cTag, Channel & theChannel)
+{
+    static Vector data (1);
+    data (0) = minDiagTol;
+    return theChannel.sendVector (0, cTag, data);
+}
+
+
+int
+DistributedDiagonalSolver::recvSelf (int cTag,
+                                     Channel & theChannel,
+                                     FEM_ObjectBroker & theBroker)
+{
+    static Vector data (1);
+    theChannel.recvVector (0, cTag, data);
+
+    minDiagTol = data (0);
+    return 0;
+}

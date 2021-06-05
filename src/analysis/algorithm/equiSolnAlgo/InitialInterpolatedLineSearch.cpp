@@ -37,170 +37,178 @@
 #include <math.h>
 
 
-InitialInterpolatedLineSearch::InitialInterpolatedLineSearch(double tol, int mIter, double mnEta,
-							     double mxEta, int pFlag)
-:LineSearch(LINESEARCH_TAGS_InitialInterpolatedLineSearch),
- x(0), tolerance(tol), maxIter(mIter), minEta(mnEta), maxEta(mxEta), printFlag(pFlag)
-{   
+InitialInterpolatedLineSearch::InitialInterpolatedLineSearch (double tol,
+                                                              int mIter,
+                                                              double mnEta,
+                                                              double mxEta,
+                                                              int pFlag):
+LineSearch (LINESEARCH_TAGS_InitialInterpolatedLineSearch),
+x (0),
+tolerance (tol),
+maxIter (mIter),
+minEta (mnEta),
+maxEta (mxEta),
+printFlag (pFlag)
+{
 
 }
 
-InitialInterpolatedLineSearch::~InitialInterpolatedLineSearch()
+InitialInterpolatedLineSearch::~InitialInterpolatedLineSearch ()
 {
-  if (x != 0)
-    delete x;
+    if (x != 0)
+        delete x;
 }
 
-int 
-InitialInterpolatedLineSearch::newStep(LinearSOE &theSOE)
+int
+InitialInterpolatedLineSearch::newStep (LinearSOE & theSOE)
 {
-  const Vector &dU = theSOE.getX();
+    const Vector & dU = theSOE.getX ();
 
-  if (x == 0)
-    x = new Vector(dU);
+    if (x == 0)
+        x = new Vector (dU);
 
-  if (x->Size() != dU.Size()) {
-    delete x;
-    x = new Vector(dU);
-  }
+    if (x->Size () != dU.Size ())
+      {
+          delete x;
+          x = new Vector (dU);
+      }
 
-  return 0;
+    return 0;
 }
 
-int 
-InitialInterpolatedLineSearch::search(double s0, 
-				      double s1, 
-				      LinearSOE &theSOE, 
-				      IncrementalIntegrator &theIntegrator)
+int
+InitialInterpolatedLineSearch::search (double s0,
+                                       double s1,
+                                       LinearSOE & theSOE,
+                                       IncrementalIntegrator & theIntegrator)
 {
-  double s = s1;
+    double s = s1;
 
-  //initialize r = ratio of residuals 
-  double r0 = 0.0;
+    //initialize r = ratio of residuals 
+    double r0 = 0.0;
 
-  if ( s0 != 0.0 ) 
-    r0 = fabs( s / s0 );
-	
-  if  (r0 <= tolerance )
-    return 0; // Line Search Not Required Residual Decrease Less Than Tolerance
+    if (s0 != 0.0)
+        r0 = fabs (s / s0);
 
-  double eta = 1.0;     //initial value of line search parameter
-  double etaPrev = 1.0;
-  double r = r0;
+    if (r0 <= tolerance)
+        return 0;               // Line Search Not Required Residual Decrease Less Than Tolerance
 
-  const Vector &dU = theSOE.getX();
+    double eta = 1.0;           //initial value of line search parameter
+    double etaPrev = 1.0;
+    double r = r0;
 
-  int count = 0; //initial value of iteration counter 
+    const Vector & dU = theSOE.getX ();
 
-  if (printFlag == 0) {
-    opserr << "InitialInterpolated Line Search - initial       "
-	 << "    eta : " << eta 
-	 << " , Ratio |s/s0| = " << r0 << endln;
-  }    
+    int count = 0;              //initial value of iteration counter 
 
-
-  // Solution procedure follows the one in Crissfields book.
-  // (M.A. Crissfield, Nonlinear Finite Element Analysis of Solid and Structures, Wiley. 97).
-  // NOTE: it is not quite linear interpolation/false-position/regula-falsi as eta(0) = 0.0
-  // does not change. uses eta(i) = eta(i-1)*s0
-  //                                -----------
-  //                                s0 - s(i-1)  to compute eta(i)
+    if (printFlag == 0)
+      {
+          opserr << "InitialInterpolated Line Search - initial       "
+              << "    eta : " << eta << " , Ratio |s/s0| = " << r0 << endln;
+      }
 
 
-  //  opserr << "dU: " << dU;
+    // Solution procedure follows the one in Crissfields book.
+    // (M.A. Crissfield, Nonlinear Finite Element Analysis of Solid and Structures, Wiley. 97).
+    // NOTE: it is not quite linear interpolation/false-position/regula-falsi as eta(0) = 0.0
+    // does not change. uses eta(i) = eta(i-1)*s0
+    //                                -----------
+    //                                s0 - s(i-1)  to compute eta(i)
 
-  while ( r > tolerance  &&  count < maxIter ) {
 
-    count++;
-    
-    eta *=  s0 / (s0 - s); 
+    //  opserr << "dU: " << dU;
 
-    //-- want to put limits on eta(i)
-    if (eta > maxEta)  eta = maxEta;
-    if (r   > r0    )  eta =  1.0;
-    if (eta < minEta)  eta = minEta;
+    while (r > tolerance && count < maxIter)
+      {
 
-    if (eta == etaPrev)
-      break; // no change in response break
+          count++;
 
-    //dx = ( eta * dx0 ); 
+          eta *= s0 / (s0 - s);
+
+          //-- want to put limits on eta(i)
+          if (eta > maxEta)
+              eta = maxEta;
+          if (r > r0)
+              eta = 1.0;
+          if (eta < minEta)
+              eta = minEta;
+
+          if (eta == etaPrev)
+              break;            // no change in response break
+
+          //dx = ( eta * dx0 ); 
+          *x = dU;
+          *x *= eta - etaPrev;
+
+          if (theIntegrator.update (*x) < 0)
+            {
+                opserr << "WARNInG InitialInterpolatedLineSearch::search() -";
+                opserr << "the Integrator failed in update()\n";
+                return -1;
+            }
+
+          if (theIntegrator.formUnbalance () < 0)
+            {
+                opserr << "WARNInG InitialInterpolatedLineSearch::search() -";
+                opserr << "the Integrator failed in formUnbalance()\n";
+                return -2;
+            }
+
+          //new residual
+          const Vector & ResidI = theSOE.getB ();
+
+          //new value of s
+          s = dU ^ ResidI;
+
+          //new value of r 
+          r = fabs (s / s0);
+
+          if (printFlag == 0)
+            {
+                opserr << "InitialInterpolated Line Search - iteration: " <<
+                    count << " , eta(j) : " << eta << " , Ratio |sj/s0| = " <<
+                    r << endln;
+            }
+
+          // reset the variables, also check not just hitting bounds over and over
+          if (eta == etaPrev)
+              count = maxIter;
+          else
+              etaPrev = eta;
+
+      }                         //end while
+
+    // set X in the SOE for the revised dU, needed for convergence tests
     *x = dU;
-    *x *= eta-etaPrev;
-	    
-    if (theIntegrator.update(*x) < 0) {
-      opserr << "WARNInG InitialInterpolatedLineSearch::search() -";
-      opserr << "the Integrator failed in update()\n";	
-      return -1;
-    }
-    
-    if (theIntegrator.formUnbalance() < 0) {
-      opserr << "WARNInG InitialInterpolatedLineSearch::search() -";
-      opserr << "the Integrator failed in formUnbalance()\n";	
-      return -2;
-    }	
 
-    //new residual
-    const Vector &ResidI = theSOE.getB();
-    
-    //new value of s
-    s = dU ^ ResidI;
+    if (eta != 0.0)
+        *x *= eta;
 
-    //new value of r 
-    r = fabs( s / s0 ); 
+    theSOE.setX (*x);
 
-    if (printFlag == 0) {
-      opserr << "InitialInterpolated Line Search - iteration: " << count 
-	   << " , eta(j) : " << eta
-	   << " , Ratio |sj/s0| = " << r << endln;
-    }    
-
-    // reset the variables, also check not just hitting bounds over and over
-    if (eta == etaPrev)
-      count = maxIter;
-    else
-      etaPrev = eta;
-
-  } //end while
-
-  // set X in the SOE for the revised dU, needed for convergence tests
-  *x = dU;
-
-  if (eta != 0.0)
-    *x *= eta;
-
-  theSOE.setX(*x);
-
-  return 0;
+    return 0;
 }
 
 
 int
-InitialInterpolatedLineSearch::sendSelf(int cTag, Channel &theChannel)
+InitialInterpolatedLineSearch::sendSelf (int cTag, Channel & theChannel)
 {
-  return 0;
+    return 0;
 }
 
 int
-InitialInterpolatedLineSearch::recvSelf(int cTag, 
-					Channel &theChannel, 
-					FEM_ObjectBroker &theBroker)
+InitialInterpolatedLineSearch::recvSelf (int cTag,
+                                         Channel & theChannel,
+                                         FEM_ObjectBroker & theBroker)
 {
-  return 0;
+    return 0;
 }
 
 
 void
-InitialInterpolatedLineSearch::Print(OPS_Stream &s, int flag)
+InitialInterpolatedLineSearch::Print (OPS_Stream & s, int flag)
 {
-  if (flag == 0) 
-    s << "InitialInterpolatedLineSearch :: Line Search Tolerance = " << tolerance << endln; 
+    if (flag == 0)
+        s << "InitialInterpolatedLineSearch :: Line Search Tolerance = " <<
+            tolerance << endln;
 }
-
-
-
-
-
-
-
-
-

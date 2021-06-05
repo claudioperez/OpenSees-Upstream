@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:02:10 $
 // $Source: /usr/local/cvs/OpenSees/SRC/tagged/TaggedObject.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/taggedt/TaggedObject.C
 //
 // Written: fmk 
@@ -37,25 +37,25 @@
 
 #include "TaggedObject.h"
 
-TaggedObject::TaggedObject(int tag)
-  :theTag(tag)
+TaggedObject::TaggedObject (int tag):
+theTag (tag)
 {
 
 }
 
-TaggedObject::~TaggedObject()
+TaggedObject::~TaggedObject ()
 {
     // does nothing
 }
- 
+
 void
-TaggedObject::setTag(int newTag) 
+TaggedObject::setTag (int newTag)
 {
     theTag = newTag;
 }
 
-OPS_Stream &operator<<(OPS_Stream &s, TaggedObject &m)
+OPS_Stream & operator<< (OPS_Stream & s, TaggedObject & m)
 {
-    m.Print(s);
+    m.Print (s);
     return s;
 }

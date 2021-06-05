@@ -36,45 +36,46 @@
 #include <float.h>
 
 
-ExternalUniaxialMaterial::ExternalUniaxialMaterial(int tag) :UniaxialMaterial(tag, MAT_TAG_ExternalUniaxialMaterial)
+ExternalUniaxialMaterial::ExternalUniaxialMaterial (int tag):
+UniaxialMaterial (tag, MAT_TAG_ExternalUniaxialMaterial)
 {
 
 }
 
 void
-ExternalUniaxialMaterial::SetLinks(UMSetTrialStrain _setTrialStrain,
-	UMGetStress _getStress,
-	UMGetTangent _getTangent,
-	UMGetInitialTangent _getInitialTangent,
-	UMGetDampTangent _getDampTangent,
-	UMGetStrain _getStrain,
-	UMGetStrainRate _getStrainRate,
-	UMGetRho _getRho,
-	UMCommitState _commitState,
-	UMRevertToLastCommit _revertToLastCommit,
-	UMRevertToStart _revertToStart,
-	UMGetCopy _getCopy,
-	UMPrint _print) {
+ExternalUniaxialMaterial::SetLinks (UMSetTrialStrain _setTrialStrain,
+                                    UMGetStress _getStress,
+                                    UMGetTangent _getTangent,
+                                    UMGetInitialTangent _getInitialTangent,
+                                    UMGetDampTangent _getDampTangent,
+                                    UMGetStrain _getStrain,
+                                    UMGetStrainRate _getStrainRate,
+                                    UMGetRho _getRho,
+                                    UMCommitState _commitState,
+                                    UMRevertToLastCommit _revertToLastCommit,
+                                    UMRevertToStart _revertToStart,
+                                    UMGetCopy _getCopy, UMPrint _print)
+{
 
-	_SetTrialStrain = _setTrialStrain;
-	_GetStress = _getStress;
-	_GetTangent = _getTangent;
-	_GetInitialTangent = _getInitialTangent;
-	_GetStrain = _getStrain;
-	_CommitState = _commitState;
-	_RevertToLastCommit = _revertToLastCommit;
-	_RevertToStart = _revertToStart;
-	_GetCopy = _getCopy;
-	_Print = _print;
-	_GetDampTangent = _getDampTangent;
-	_GetStrainRate = _getStrainRate;
-	_GetRho = _getRho;
+    _SetTrialStrain = _setTrialStrain;
+    _GetStress = _getStress;
+    _GetTangent = _getTangent;
+    _GetInitialTangent = _getInitialTangent;
+    _GetStrain = _getStrain;
+    _CommitState = _commitState;
+    _RevertToLastCommit = _revertToLastCommit;
+    _RevertToStart = _revertToStart;
+    _GetCopy = _getCopy;
+    _Print = _print;
+    _GetDampTangent = _getDampTangent;
+    _GetStrainRate = _getStrainRate;
+    _GetRho = _getRho;
 
 }
 
-ExternalUniaxialMaterial::~ExternalUniaxialMaterial()
+ExternalUniaxialMaterial::~ExternalUniaxialMaterial ()
 {
-	
+
 }
 
 
@@ -134,24 +135,22 @@ ExternalUniaxialMaterial::~ExternalUniaxialMaterial()
 //}
 
 int
-ExternalUniaxialMaterial::sendSelf(int cTag, Channel &theChannel)
+ExternalUniaxialMaterial::sendSelf (int cTag, Channel & theChannel)
 {
-	int res = 0;
-	return res;
+    int res = 0;
+    return res;
 }
 
 int
-ExternalUniaxialMaterial::recvSelf(int cTag, Channel &theChannel,
-	FEM_ObjectBroker &theBroker)
+ExternalUniaxialMaterial::recvSelf (int cTag, Channel & theChannel,
+                                    FEM_ObjectBroker & theBroker)
 {
-	int res = 0;
-	return res;
+    int res = 0;
+    return res;
 }
 
 //void
 //ExternalUniaxialMaterial::Print(OPS_Stream &s, int flag)
 //{
-//	return _PrintSelf(flag);
+//      return _PrintSelf(flag);
 //}
-
-

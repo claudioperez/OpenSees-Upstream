@@ -25,7 +25,7 @@
 #ifndef SectionIntegration_h
 #define SectionIntegration_h
 
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 #include <MovableObject.h>
 
 class Information;

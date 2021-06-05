@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:30 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/sparseGEN/SparseGenColLinSolver.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/system_of_eqn/linearSOE/SparseGenCol/SparseGenColLinSolver.C
 //
 // Written: fmk 
@@ -36,29 +36,21 @@
 #include <SparseGenColLinSolver.h>
 #include <SparseGenColLinSOE.h>
 
-SparseGenColLinSolver::SparseGenColLinSolver(int theClassTag)    
-:LinearSOESolver(theClassTag),
- theSOE(0)
+SparseGenColLinSolver::SparseGenColLinSolver (int theClassTag):
+LinearSOESolver (theClassTag),
+theSOE (0)
 {
 
-}    
+}
 
-SparseGenColLinSolver::~SparseGenColLinSolver()    
+SparseGenColLinSolver::~SparseGenColLinSolver ()
 {
 
-}    
+}
 
-int 
-SparseGenColLinSolver::setLinearSOE(SparseGenColLinSOE &theSparseGenColSOE)
+int
+SparseGenColLinSolver::setLinearSOE (SparseGenColLinSOE & theSparseGenColSOE)
 {
     theSOE = &theSparseGenColSOE;
     return 0;
 }
-
-
-
-
-
-
-
-

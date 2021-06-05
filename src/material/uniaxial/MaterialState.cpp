@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $Source$
@@ -31,38 +31,39 @@
 
 #include <MaterialState.h>
 
-MaterialState::MaterialState(int tag, int classTag)
-  :TaggedObject(tag), MovableObject(classTag)
+MaterialState::MaterialState (int tag, int classTag):
+TaggedObject (tag),
+MovableObject (classTag)
 {
-  
+
 }
 
-MaterialState::~MaterialState()
+MaterialState::~MaterialState ()
 {
-  
-}
 
-int
-MaterialState::setVariable(const char *argv)
-{
-  return -1;
 }
 
 int
-MaterialState::getVariable(int variableID, double &info)
+MaterialState::setVariable (const char *argv)
 {
-  return -1;
+    return -1;
 }
 
 int
-MaterialState::setParameter(const char **argv, int argc,
-			    Information &eleInformation)
+MaterialState::getVariable (int variableID, double &info)
 {
-  return -1;
+    return -1;
 }
 
 int
-MaterialState::updateParameter(int responseID, Information &eleInformation)
+MaterialState::setParameter (const char **argv, int argc,
+                             Information & eleInformation)
 {
-  return -1;
+    return -1;
+}
+
+int
+MaterialState::updateParameter (int responseID, Information & eleInformation)
+{
+    return -1;
 }

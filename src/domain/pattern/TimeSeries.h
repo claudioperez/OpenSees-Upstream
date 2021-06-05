@@ -38,8 +38,8 @@
 
 #include <TaggedObject.h>
 #include <MovableObject.h>
-#include <OPS_Globals.h>
-#include <Information.h>
+#include <OPS_Globals.h>  
+#include <base/Information.h>
 
 
 class TimeSeries : public TaggedObject, public MovableObject

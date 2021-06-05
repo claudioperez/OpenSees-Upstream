@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // Written: Chris McGann, U.Washington
 //          02.2011
 //
@@ -28,71 +28,75 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 
-Vector SurfaceLoader::data(1);
+Vector
+SurfaceLoader::data (1);
 
-SurfaceLoader::SurfaceLoader(int tag, int theElementTag)
-  : ElementalLoad(tag, LOAD_TAG_SurfaceLoader, theElementTag)
+SurfaceLoader::SurfaceLoader (int tag, int theElementTag):
+ElementalLoad (tag, LOAD_TAG_SurfaceLoader, theElementTag)
 {
 }
 
-SurfaceLoader::SurfaceLoader()
-  : ElementalLoad(LOAD_TAG_SurfaceLoader)
+SurfaceLoader::SurfaceLoader ():ElementalLoad (LOAD_TAG_SurfaceLoader)
 {
 }
 
-SurfaceLoader::~SurfaceLoader()
+SurfaceLoader::~SurfaceLoader ()
 {
 }
 
 const Vector &
-SurfaceLoader::getData(int &type, double loadFactor)
+SurfaceLoader::getData (int &type, double loadFactor)
 {
-	type = LOAD_TAG_SurfaceLoader;
+    type = LOAD_TAG_SurfaceLoader;
 
-	return data;
+    return data;
 }
 
 int
-SurfaceLoader::sendSelf(int commitTag, Channel &theChannel)
+SurfaceLoader::sendSelf (int commitTag, Channel & theChannel)
 {
-	int res = 0;
-    static ID iddata(3);
-    int dataTag = this->getDbTag();
-    iddata(0) = this->getTag();
-    iddata(1) = dataTag;
-    iddata(2) = eleTag;
+    int res = 0;
+    static ID iddata (3);
+    int dataTag = this->getDbTag ();
+    iddata (0) = this->getTag ();
+    iddata (1) = dataTag;
+    iddata (2) = eleTag;
 
-    res = theChannel.sendID(dataTag, commitTag, iddata);
-    if (res < 0) {
-        opserr << "WARNING SurfaceLoader::sendSelf() - " << this->getTag() << " failed to send iddata\n";
-        return res;
-    }
+    res = theChannel.sendID (dataTag, commitTag, iddata);
+    if (res < 0)
+      {
+          opserr << "WARNING SurfaceLoader::sendSelf() - " << this->
+              getTag () << " failed to send iddata\n";
+          return res;
+      }
 
     return res;
 }
 
 int
-SurfaceLoader::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+SurfaceLoader::recvSelf (int commitTag, Channel & theChannel,
+                         FEM_ObjectBroker & theBroker)
 {
     int res = 0;
-    static ID iddata(3);
-    int dataTag = this->getDbTag();
+    static ID iddata (3);
+    int dataTag = this->getDbTag ();
 
-    res = theChannel.recvID(dataTag, commitTag, iddata);
-    if (res < 0) {
-        opserr << "WARNING SurfaceLoader::recvSelf() - " << this->getTag() << " failed to receive iddata\n";
-        return res;
-    }
-     this->setTag(iddata(0));
-     eleTag = iddata(2);
+    res = theChannel.recvID (dataTag, commitTag, iddata);
+    if (res < 0)
+      {
+          opserr << "WARNING SurfaceLoader::recvSelf() - " << this->
+              getTag () << " failed to receive iddata\n";
+          return res;
+      }
+    this->setTag (iddata (0));
+    eleTag = iddata (2);
 
-	return res;
+    return res;
 }
 
 void
-SurfaceLoader::Print(OPS_Stream &s, int flag)
+SurfaceLoader::Print (OPS_Stream & s, int flag)
 {
-	s << "SurfaceLoader...";
-	s << "  element acted on: " << eleTag << endln;
+    s << "SurfaceLoader...";
+    s << "  element acted on: " << eleTag << endln;
 }
-

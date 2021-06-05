@@ -25,32 +25,34 @@
 #include <SectionIntegration.h>
 #include <Matrix.h>
 
-SectionIntegration::SectionIntegration(int classTag):
-  MovableObject(classTag)
+SectionIntegration::SectionIntegration (int classTag):
+MovableObject (classTag)
 {
-  // Nothing to do
+    // Nothing to do
 }
 
-SectionIntegration::~SectionIntegration()
+SectionIntegration::~SectionIntegration ()
 {
-  // Nothing to do
+    // Nothing to do
 }
 
 void
-SectionIntegration::getLocationsDeriv(int nFibers, double *dyidh, double *dzidh)
+SectionIntegration::getLocationsDeriv (int nFibers, double *dyidh,
+                                       double *dzidh)
 {
-  for (int i = 0; i < nFibers; i++)
-    dyidh[i] = 0.0;
-
-  if (dyidh != 0) {
     for (int i = 0; i < nFibers; i++)
-      dzidh[i] = 0.0;
-  }
+        dyidh[i] = 0.0;
+
+    if (dyidh != 0)
+      {
+          for (int i = 0; i < nFibers; i++)
+              dzidh[i] = 0.0;
+      }
 }
 
 void
-SectionIntegration::getWeightsDeriv(int nFibers, double *dwtdh)
+SectionIntegration::getWeightsDeriv (int nFibers, double *dwtdh)
 {
-  for (int i = 0; i < nFibers; i++)
-    dwtdh[i] = 0.0;
+    for (int i = 0; i < nFibers; i++)
+        dwtdh[i] = 0.0;
 }

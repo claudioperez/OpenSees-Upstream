@@ -31,7 +31,7 @@
 #define SteelBRB_h
 
 #include <UniaxialMaterial.h>
-#include <Information.h>
+#include <base/Information.h>
 
 class SteelBRB : public UniaxialMaterial
 {

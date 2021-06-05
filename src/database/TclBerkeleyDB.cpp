@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2005-07-25 18:06:09 $
 // $Source: /usr/local/cvs/OpenSees/SRC/database/TclBerkeleyDB.cpp,v $
-                                                                        
+
 // Written: fmk
 
 // Description: This file contains the function invoked when the user invokes
@@ -43,26 +43,27 @@
 #endif
 
 extern "C" DllExport int
-TclCommand_BerkeleyDB(ClientData clientData, 
-		      Tcl_Interp *interp,  
-		      int argc, 
-		      TCL_Char **argv, 
-		      Domain *theDomain, 
-		      FEM_ObjectBroker *theBroker,
-		      FE_Datastore **theDatabase)
+TclCommand_BerkeleyDB (ClientData clientData,
+                       Tcl_Interp * interp,
+                       int argc,
+                       TCL_Char ** argv,
+                       Domain * theDomain,
+                       FEM_ObjectBroker * theBroker,
+                       FE_Datastore ** theDatabase)
 {
-  
-  // delete the old database
-  if (*theDatabase != 0)
-    delete (*theDatabase);
-  
-  (*theDatabase) = new BerkeleyDbDatastore(argv[2], *theDomain, *theBroker);
 
-  if (*theDatabase == 0) {
-    opserr << "WARNING database MySql dabaseName? - out of memory\n";
-    return TCL_ERROR;
-  }
-  
-  return TCL_OK;
+    // delete the old database
+    if (*theDatabase != 0)
+        delete (*theDatabase);
+
+    (*theDatabase) =
+        new BerkeleyDbDatastore (argv[2], *theDomain, *theBroker);
+
+    if (*theDatabase == 0)
+      {
+          opserr << "WARNING database MySql dabaseName? - out of memory\n";
+          return TCL_ERROR;
+      }
+
+    return TCL_OK;
 }
-

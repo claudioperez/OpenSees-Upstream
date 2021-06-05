@@ -32,55 +32,71 @@
 #include <FrictionModel.h>
 
 
-FrictionResponse::FrictionResponse(FrictionModel *frn, int id)
-    : Response(), theFriction(frn), responseID(id)
+FrictionResponse::FrictionResponse (FrictionModel * frn, int id):
+Response (),
+theFriction (frn),
+responseID (id)
 {
 
 }
 
 
-FrictionResponse::FrictionResponse(FrictionModel *frn, int id, int val)
-    : Response(val), theFriction(frn), responseID(id)
+FrictionResponse::FrictionResponse (FrictionModel * frn, int id, int val):
+Response (val),
+theFriction (frn),
+responseID (id)
 {
 
 }
 
 
-FrictionResponse::FrictionResponse(FrictionModel *frn, int id, double val)
-    : Response(val), theFriction(frn), responseID(id)
+FrictionResponse::FrictionResponse (FrictionModel * frn, int id, double val):
+Response (val),
+theFriction (frn),
+responseID (id)
 {
 
 }
 
 
-FrictionResponse::FrictionResponse(FrictionModel *frn, int id, const ID &val)
-    : Response(val), theFriction(frn), responseID(id)
+FrictionResponse::FrictionResponse (FrictionModel * frn, int id,
+                                    const ID & val):
+Response (val),
+theFriction (frn),
+responseID (id)
 {
 
 }
 
 
-FrictionResponse::FrictionResponse(FrictionModel *frn, int id, const Vector &val)
-    : Response(val), theFriction(frn), responseID(id)
+FrictionResponse::FrictionResponse (FrictionModel * frn, int id,
+                                    const Vector & val):
+Response (val),
+theFriction (frn),
+responseID (id)
 {
 
 }
 
 
-FrictionResponse::FrictionResponse(FrictionModel *frn, int id, const Matrix &val)
-    : Response(val), theFriction(frn), responseID(id)
+FrictionResponse::FrictionResponse (FrictionModel * frn, int id,
+                                    const Matrix & val):
+Response (val),
+theFriction (frn),
+responseID (id)
 {
 
 }
 
 
-FrictionResponse::~FrictionResponse()
+FrictionResponse::~FrictionResponse ()
 {
 
 }
 
 
-int FrictionResponse::getResponse()
+int
+FrictionResponse::getResponse ()
 {
-    return theFriction->getResponse(responseID, myInfo);
+    return theFriction->getResponse (responseID, myInfo);
 }

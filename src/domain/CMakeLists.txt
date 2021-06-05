@@ -1,5 +1,5 @@
 
-add_library(domain "")
+add_library(domain SHARED)
 
 target_include_directories(domain PUBLIC $(CMAKE_CURRENT_LIST_DIR))
 

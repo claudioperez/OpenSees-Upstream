@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:02:02 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/petsc/ActorPetscSOE.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/system_of_eqn/linearSOE/petsc/ActorPetscSOE.C
 //
 // Written: fmk & om
@@ -44,18 +44,22 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 
-ActorPetscSOE::ActorPetscSOE(PetscSolver &theSOESolver, int blockSize)
-  :myRank(0), theSOE(0), theSolver(&theSOESolver), recvBuffer(0)
+ActorPetscSOE::ActorPetscSOE (PetscSolver & theSOESolver, int blockSize):
+myRank (0),
+theSOE (0),
+theSolver (&theSOESolver),
+recvBuffer (0)
 {
 
-  MPI_Comm_rank(PETSC_COMM_WORLD, &myRank);
-  MPI_Comm_size(PETSC_COMM_WORLD, &numProcessors);
-  //  MPI_Comm_dup(PETSC_COMM_WORLD, &theComm);
-  if (myRank == 0) {
-    opserr << " ActorPetscSOE::ActorPetscSOE - must be rank 0\n";
-  }
-  recvBuffer = (void *)(&recvData[0]);
-  MPI_Barrier(PETSC_COMM_WORLD);
+    MPI_Comm_rank (PETSC_COMM_WORLD, &myRank);
+    MPI_Comm_size (PETSC_COMM_WORLD, &numProcessors);
+    //  MPI_Comm_dup(PETSC_COMM_WORLD, &theComm);
+    if (myRank == 0)
+      {
+          opserr << " ActorPetscSOE::ActorPetscSOE - must be rank 0\n";
+      }
+    recvBuffer = (void *) (&recvData[0]);
+    MPI_Barrier (PETSC_COMM_WORLD);
 
 /***************
   // recv data on the PetscSolver & determine KSP and PC type
@@ -127,105 +131,112 @@ ActorPetscSOE::ActorPetscSOE(PetscSolver &theSOESolver, int blockSize)
   }
   *********/
 
-  theSOE = new PetscSOE(*theSolver, blockSize);
+    theSOE = new PetscSOE (*theSolver, blockSize);
 }
 
 
-    
-ActorPetscSOE::~ActorPetscSOE()
+
+ActorPetscSOE::~ActorPetscSOE ()
 {
-  //  if (theSOE != 0)
-  //    delete theSOE;
+    //  if (theSOE != 0)
+    //    delete theSOE;
 }
 
 
-int 
-ActorPetscSOE::run(void)
+int
+ActorPetscSOE::run (void)
 {
-  int flag = 1;
-  int tag, low, high, ierr, n, numRows;
-  double *theData;
-  int dnz = 0;
-  int onz = 0;
-  int *dnnz = PETSC_NULL;
-  int *onnz = PETSC_NULL;
-  MPI_Status status;
-  void *buffer = 0;
-  
-  while (flag != 0) {
-    MPI_Bcast(recvBuffer, 3, MPI_INT, 0, PETSC_COMM_WORLD);  
-    flag = recvData[0];
-    switch(flag) {
+    int flag = 1;
+    int tag, low, high, ierr, n, numRows;
+    double *theData;
+    int dnz = 0;
+    int onz = 0;
+    int *dnnz = PETSC_NULL;
+    int *onnz = PETSC_NULL;
+    MPI_Status status;
+    void *buffer = 0;
 
-    case 0:
-      MPI_Barrier(PETSC_COMM_WORLD);
-      break;
+    while (flag != 0)
+      {
+          MPI_Bcast (recvBuffer, 3, MPI_INT, 0, PETSC_COMM_WORLD);
+          flag = recvData[0];
+          switch (flag)
+            {
 
-    case 1:
-      if (theSOE == 0)
-	return -1;
-      theSOE->isFactored = recvData[1];
-      theSOE->solve();
-      break;
+            case 0:
+                MPI_Barrier (PETSC_COMM_WORLD);
+                break;
 
-    case 2:
-      if (theSOE == 0)
-	return -1;
-      tag = 100;
-      MPI_Recv(recvBuffer, 3, MPI_INT, 0, tag, PETSC_COMM_WORLD, &status);
+            case 1:
+                if (theSOE == 0)
+                    return -1;
+                theSOE->isFactored = recvData[1];
+                theSOE->solve ();
+                break;
 
-      numRows = recvData[1];
-      n = recvData[2];
-      onnz = new int[numRows];
-      dnnz = new int[numRows];
-      buffer = (void *)dnnz;
-      tag = 101;
-      MPI_Recv(buffer, numRows, MPI_INT, 0, tag, PETSC_COMM_WORLD, &status);
+            case 2:
+                if (theSOE == 0)
+                    return -1;
+                tag = 100;
+                MPI_Recv (recvBuffer, 3, MPI_INT, 0, tag, PETSC_COMM_WORLD,
+                          &status);
 
-      buffer = (void *)onnz;
-      tag = 102;
-      MPI_Recv(buffer, numRows, MPI_INT, 0, tag, PETSC_COMM_WORLD, &status);
+                numRows = recvData[1];
+                n = recvData[2];
+                onnz = new int[numRows];
+                dnnz = new int[numRows];
+                buffer = (void *) dnnz;
+                tag = 101;
+                MPI_Recv (buffer, numRows, MPI_INT, 0, tag, PETSC_COMM_WORLD,
+                          &status);
 
-      MPI_Bcast(recvBuffer, 3, MPI_INT, 0, PETSC_COMM_WORLD);  
-      theSOE->setSizeParallel(numRows, n, dnz, dnnz, onz, onnz);	
-      break;
+                buffer = (void *) onnz;
+                tag = 102;
+                MPI_Recv (buffer, numRows, MPI_INT, 0, tag, PETSC_COMM_WORLD,
+                          &status);
 
-    case 3:
-      if (theSOE == 0)
-	return -1;
-      theSOE->zeroA();
-      break;
+                MPI_Bcast (recvBuffer, 3, MPI_INT, 0, PETSC_COMM_WORLD);
+                theSOE->setSizeParallel (numRows, n, dnz, dnnz, onz, onnz);
+                break;
 
-    case 4:
-      if (theSOE == 0)
-	return -1;
-      theSOE->zeroB();
-      break;
+            case 3:
+                if (theSOE == 0)
+                    return -1;
+                theSOE->zeroA ();
+                break;
 
-    case 5:
-      if (theSOE == 0)
-	return -1;
-      tag = 99;
-      ierr = VecGetOwnershipRange(theSOE->x, &low, &high); CHKERRA(ierr);
-      recvData[0] = low; recvData[1] = high;
-      MPI_Send(recvBuffer, 2, MPI_INT, 0, tag, PETSC_COMM_WORLD);
-      ierr = VecGetArray(theSOE->x, &theData); CHKERRA(ierr);       
-      MPI_Send(theData, high-low, MPI_DOUBLE, 0, tag, PETSC_COMM_WORLD); 
-      ierr = VecRestoreArray(theSOE->x, &theData); CHKERRA(ierr);             
-      break;
+            case 4:
+                if (theSOE == 0)
+                    return -1;
+                theSOE->zeroB ();
+                break;
 
-    case 6:
-      if (theSOE == 0)
-	return -1;
-      // some work here
+            case 5:
+                if (theSOE == 0)
+                    return -1;
+                tag = 99;
+                ierr = VecGetOwnershipRange (theSOE->x, &low, &high);
+                CHKERRA (ierr);
+                recvData[0] = low;
+                recvData[1] = high;
+                MPI_Send (recvBuffer, 2, MPI_INT, 0, tag, PETSC_COMM_WORLD);
+                ierr = VecGetArray (theSOE->x, &theData);
+                CHKERRA (ierr);
+                MPI_Send (theData, high - low, MPI_DOUBLE, 0, tag,
+                          PETSC_COMM_WORLD);
+                ierr = VecRestoreArray (theSOE->x, &theData);
+                CHKERRA (ierr);
+                break;
 
-    default:
-      opserr << "ActorPetscSOE::invalid action " << flag << " received\n";
-    }
-  }
-  return 0;
+            case 6:
+                if (theSOE == 0)
+                    return -1;
+                // some work here
+
+            default:
+                opserr << "ActorPetscSOE::invalid action " << flag <<
+                    " received\n";
+            }
+      }
+    return 0;
 }
-
-
-
-

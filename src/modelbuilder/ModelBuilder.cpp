@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:23 $
 // $Source: /usr/local/cvs/OpenSees/SRC/modelbuilder/ModelBuilder.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/model/ModelBuilder.C
 //
 // Written: fmk 
@@ -40,22 +40,19 @@
 #include <Domain.h>
 
 //  ModelBuilderModel(Domain &theDomain);
-//	constructor
-ModelBuilder::ModelBuilder(Domain &theDomain)
-:myDomain(&theDomain)
+//      constructor
+ModelBuilder::ModelBuilder (Domain & theDomain):myDomain (&theDomain)
 {
 
 }
 
-ModelBuilder::~ModelBuilder()
+ModelBuilder::~ModelBuilder ()
 {
-    
+
 }
 
 Domain *
-ModelBuilder::getDomainPtr(void) const 
+ModelBuilder::getDomainPtr (void) const
 {
     return myDomain;
 }
-    
-

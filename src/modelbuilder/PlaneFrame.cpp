@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.4 $
 // $Date: 2010-04-23 22:53:08 $
 // $Source: /usr/local/cvs/OpenSees/SRC/modelbuilder/PlaneFrame.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/model/PlaneFrame.C
 //
 // Written: fmk 
@@ -37,14 +37,18 @@
 #include <PlaneFrame.h>
 #include <Domain.h>
 #include <fstream>
-using std::ifstream;
+using
+    std::ifstream;
 
 #include <iostream>
-using std::cout;
-using std::cin;
+using
+    std::cout;
+using
+    std::cin;
 
 #include <iomanip>
-using std::ios;
+using
+    std::ios;
 #include <stdlib.h>
 
 #include <ElasticBeam2d.h>
@@ -57,49 +61,50 @@ using std::ios;
 #include <LinearSeries.h>
 
 //  PlaneFrameModel();
-//	constructor
-PlaneFrame::PlaneFrame(Domain &theDomain)
-:ModelBuilder(theDomain)
+//      constructor
+PlaneFrame::PlaneFrame (Domain & theDomain):ModelBuilder (theDomain)
 {
 
 }
 
 // ~PlaneFrame();    
-//	destructor,
+//      destructor,
 
-PlaneFrame::~PlaneFrame()
+PlaneFrame::~PlaneFrame ()
 {
 
-}    
+}
 
 int
-PlaneFrame::buildFE_Model(void) 
+PlaneFrame::buildFE_Model (void)
 {
     int numEle, numNode, numSPs, numMPs, numNodLoads;
     int res = 0;
-    Domain *theDomain = this->getDomainPtr();    
-    if (theDomain == 0) {
-	opserr << "FATAL::PlaneFrame::buildModel(void) -";
-	opserr << " no associated domain !! - what have you been doing\n";
-	exit(-1);
-    }	
-    
+    Domain *theDomain = this->getDomainPtr ();
+    if (theDomain == 0)
+      {
+          opserr << "FATAL::PlaneFrame::buildModel(void) -";
+          opserr << " no associated domain !! - what have you been doing\n";
+          exit (-1);
+      }
+
     // get the input file and open it for reading
     char fileName[15];
     cout << "Enter File Containing Model: ";
     cin >> fileName;
     cout << fileName;
-    
-    ifstream inputFile(fileName, ios::in);
-    if (!inputFile) {
-	opserr << "FATAL:PlaneFrame::buildModel(void) -";
-	opserr << " could not open file: " << fileName << endln;
-	exit(-1);
-    }
-    
+
+    ifstream inputFile (fileName, ios::in);
+    if (!inputFile)
+      {
+          opserr << "FATAL:PlaneFrame::buildModel(void) -";
+          opserr << " could not open file: " << fileName << endln;
+          exit (-1);
+      }
+
     //
     // read in the model paramaters
-    // 	  :numNodes numElements numSP_Constraints Num MP_Constraints 
+    //    :numNodes numElements numSP_Constraints Num MP_Constraints 
     //     numLoadCases
 
     inputFile >> numNode >> numEle >> numSPs >> numMPs >> numNodLoads;
@@ -114,118 +119,126 @@ PlaneFrame::buildFE_Model(void)
     bool result;
     ndof = 3;
     int i;
-	Vector dummy(2);
-	CrdTransf *theTransf = new LinearCrdTransf2d (1,dummy,dummy);
+    Vector dummy (2);
+    CrdTransf *theTransf = new LinearCrdTransf2d (1, dummy, dummy);
 
-    
+
     // for each node read in the data, create a node & add it to the domain
-        for (i=0; i<numNode; i++) {
-	inputFile >> tag >> xCrd >> yCrd;
-	NodePtr = new Node(tag,ndof,xCrd,yCrd);
-	result = theDomain->addNode(NodePtr);
-        if (result == false) {
-                res =-1;
-		opserr << "PlaneFrame::buildModel(void) -";
-		opserr << " problems adding node " << tag << endln;
-        }
-    }
+    for (i = 0; i < numNode; i++)
+      {
+          inputFile >> tag >> xCrd >> yCrd;
+          NodePtr = new Node (tag, ndof, xCrd, yCrd);
+          result = theDomain->addNode (NodePtr);
+          if (result == false)
+            {
+                res = -1;
+                opserr << "PlaneFrame::buildModel(void) -";
+                opserr << " problems adding node " << tag << endln;
+            }
+      }
 
 
     // read in the elemental data, model only recognises type 2 and 3
     // for element type beam2d04 and beam2d03.
-    //	  each of numEle elements: type tag A E I node1 node2
+    //    each of numEle elements: type tag A E I node1 node2
 
     Element *elePtr;
-    double A,E,I;
+    double A, E, I;
     int nd1, nd2;
-    for (i=0; i<numEle; i++) {
-	inputFile >> tag >> A >> E >> I >> nd1 >> nd2;
-	elePtr = new ElasticBeam2d(tag,A,E,I,nd1,nd2,*theTransf);
-	result = theDomain->addElement(elePtr);
-        if (result == false) {
-                res =-1;
-		opserr << "PlaneFrame::buildModel(void) -";
-		opserr << " problems adding element " << tag << endln;
-        }
-    }
+    for (i = 0; i < numEle; i++)
+      {
+          inputFile >> tag >> A >> E >> I >> nd1 >> nd2;
+          elePtr = new ElasticBeam2d (tag, A, E, I, nd1, nd2, *theTransf);
+          result = theDomain->addElement (elePtr);
+          if (result == false)
+            {
+                res = -1;
+                opserr << "PlaneFrame::buildModel(void) -";
+                opserr << " problems adding element " << tag << endln;
+            }
+      }
 
     // add a LoadPattern with a LinearSeries
-    LoadPattern *theLoadPattern = new LoadPattern(1);
-    TimeSeries  *theSeries = new LinearSeries(1);
-    theLoadPattern->setTimeSeries(theSeries);
-    result = theDomain->addLoadPattern(theLoadPattern);
-    if (result == false) {
-      opserr << "PlaneFrame::buildModel(void) -";
-      opserr << " problems adding load pattern " << *theLoadPattern;
-      res =-1;
-    }    
+    LoadPattern *theLoadPattern = new LoadPattern (1);
+    TimeSeries *theSeries = new LinearSeries (1);
+    theLoadPattern->setTimeSeries (theSeries);
+    result = theDomain->addLoadPattern (theLoadPattern);
+    if (result == false)
+      {
+          opserr << "PlaneFrame::buildModel(void) -";
+          opserr << " problems adding load pattern " << *theLoadPattern;
+          res = -1;
+      }
 
-    
+
     //
     // read in the SP Constraint data
     //   each of numSPs SP_Constraints: nodeTag dof value
-    
+
     SP_Constraint *SPPtr;
-    for (i=0; i<numSPs; i++) {
-	inputFile >> nd1 >> nd2 >> E;
-	SPPtr = new SP_Constraint(i,nd1,nd2,E);
-	result = theDomain->addSP_Constraint(SPPtr, 0);
-        if (result == false) {
-                res =-1;
-		opserr << "PlaneFrame::buildModel(void) -";
-		opserr << " problems adding SP_Constraint on " << nd1 << endln;
-        }
-    }    
+    for (i = 0; i < numSPs; i++)
+      {
+          inputFile >> nd1 >> nd2 >> E;
+          SPPtr = new SP_Constraint (i, nd1, nd2, E);
+          result = theDomain->addSP_Constraint (SPPtr, 0);
+          if (result == false)
+            {
+                res = -1;
+                opserr << "PlaneFrame::buildModel(void) -";
+                opserr << " problems adding SP_Constraint on " << nd1 <<
+                    endln;
+            }
+      }
 
     //
     // read in the MP Constraint data
     //   each of numMPs SP_Constraints: nodeTag dof value
-    
+
     MP_Constraint *MPPtr;
     int numDOF1, numDOF2;
-    for (i=0; i<numMPs; i++) {
-	inputFile >> nd1 >> nd2 >> numDOF1 >> numDOF2;
-	ID constrainedDOF(numDOF1);
-	ID retainedDOF(numDOF2);	
-	for (int j=0; j<numDOF1; j++)
-	  inputFile >> constrainedDOF(j);
-	for (int k=0; k<numDOF2; k++)
-	  inputFile >> retainedDOF(k);
-	Matrix Ccr(numDOF1,numDOF2);
-	for (int jj=0; jj<numDOF1; jj++)
-	  for (int kk=0; kk<numDOF2; kk++)
-	  inputFile >> Ccr(jj,kk);
-	MPPtr = new MP_Constraint(nd2,nd1,Ccr,constrainedDOF,retainedDOF);
-	result = theDomain->addMP_Constraint(MPPtr);
-        if (result == false) {
-                res =-1;
-		opserr << "PlaneFrame::buildModel(void) -";
-		opserr << " problems adding MP_Constraint on " << nd1 << endln;
-        }
+    for (i = 0; i < numMPs; i++)
+      {
+          inputFile >> nd1 >> nd2 >> numDOF1 >> numDOF2;
+          ID constrainedDOF (numDOF1);
+          ID retainedDOF (numDOF2);
+          for (int j = 0; j < numDOF1; j++)
+              inputFile >> constrainedDOF (j);
+          for (int k = 0; k < numDOF2; k++)
+              inputFile >> retainedDOF (k);
+          Matrix Ccr (numDOF1, numDOF2);
+          for (int jj = 0; jj < numDOF1; jj++)
+              for (int kk = 0; kk < numDOF2; kk++)
+                  inputFile >> Ccr (jj, kk);
+          MPPtr =
+              new MP_Constraint (nd2, nd1, Ccr, constrainedDOF, retainedDOF);
+          result = theDomain->addMP_Constraint (MPPtr);
+          if (result == false)
+            {
+                res = -1;
+                opserr << "PlaneFrame::buildModel(void) -";
+                opserr << " problems adding MP_Constraint on " << nd1 <<
+                    endln;
+            }
 
-    }        
+      }
 
-    Vector forces(3);
-    NodalLoad *nodeLoadPtr;    
-    for (i=0; i<numNodLoads; i++) {
-	inputFile >> tag >> forces(0) >> forces(1) >> forces(2);
-	nodeLoadPtr = new NodalLoad(i, tag, forces);
-	bool result = theDomain->addNodalLoad(nodeLoadPtr, 0);
-	if (result == false) {
-		opserr << "PlaneFrame::buildModel(void) -";
-		opserr << " problems adding load " << *nodeLoadPtr;
-                res =-1;
-        }
-    }    
+    Vector forces (3);
+    NodalLoad *nodeLoadPtr;
+    for (i = 0; i < numNodLoads; i++)
+      {
+          inputFile >> tag >> forces (0) >> forces (1) >> forces (2);
+          nodeLoadPtr = new NodalLoad (i, tag, forces);
+          bool result = theDomain->addNodalLoad (nodeLoadPtr, 0);
+          if (result == false)
+            {
+                opserr << "PlaneFrame::buildModel(void) -";
+                opserr << " problems adding load " << *nodeLoadPtr;
+                res = -1;
+            }
+      }
 
     //
     // done inputing the model
     //
     return res;
-}	
-	
-
-
-
-
-
+}

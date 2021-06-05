@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2008-11-09 06:05:48 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/backbone/HystereticBackbone.cpp,v $
@@ -35,58 +35,71 @@
 
 static MapOfTaggedObjects theHystereticBackboneObjects;
 
-bool OPS_addHystereticBackbone(HystereticBackbone *newComponent) {
-  return theHystereticBackboneObjects.addComponent(newComponent);
+bool
+OPS_addHystereticBackbone (HystereticBackbone * newComponent)
+{
+    return theHystereticBackboneObjects.addComponent (newComponent);
 }
 
-HystereticBackbone *OPS_getHystereticBackbone(int tag) {
+HystereticBackbone *
+OPS_getHystereticBackbone (int tag)
+{
 
-  TaggedObject *theResult = theHystereticBackboneObjects.getComponentPtr(tag);
-  if (theResult == 0) {
-    opserr << "HystereticBackbone *getHystereticBackbone(int tag) - none found with tag: " << tag << endln;
-    return 0;
-  }
-  HystereticBackbone *theMat = (HystereticBackbone *)theResult;
+    TaggedObject *theResult =
+        theHystereticBackboneObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          opserr <<
+              "HystereticBackbone *getHystereticBackbone(int tag) - none found with tag: "
+              << tag << endln;
+          return 0;
+      }
+    HystereticBackbone *theMat = (HystereticBackbone *) theResult;
 
-  return theMat;
+    return theMat;
 }
 
-void OPS_clearAllHystereticBackbone(void) {
-  theHystereticBackboneObjects.clearAll();
+void
+OPS_clearAllHystereticBackbone (void)
+{
+    theHystereticBackboneObjects.clearAll ();
 }
 
 
 HystereticBackbone::HystereticBackbone (int tag, int classTag):
-  TaggedObject(tag), MovableObject(classTag)
+TaggedObject (tag),
+MovableObject (classTag)
 {
-  
+
 }
 
-HystereticBackbone::~HystereticBackbone()
+HystereticBackbone::~HystereticBackbone ()
 {
-  
+
 }
 
-int 
+int
 HystereticBackbone::setVariable (char *argv)
 {
-  return -1;
+    return -1;
 }
 
 int
 HystereticBackbone::getVariable (int varID, double &theValue)
 {
-  return -1;
+    return -1;
 }
 
 int
-HystereticBackbone::setParameter(char **argv, int argc, Information &eleInformation)
+HystereticBackbone::setParameter (char **argv, int argc,
+                                  Information & eleInformation)
 {
-  return -1;
+    return -1;
 }
 
 int
-HystereticBackbone::updateParameter(int responseID, Information &eleInformation)
+HystereticBackbone::updateParameter (int responseID,
+                                     Information & eleInformation)
 {
-  return -1;
+    return -1;
 }

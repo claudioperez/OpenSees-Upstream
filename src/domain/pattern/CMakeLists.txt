@@ -4,12 +4,12 @@ target_sources(domain
 	EarthquakePattern.cpp
 	LinearSeries.cpp
 	LoadPattern.cpp
-	FireLoadPattern.cpp
+	#FireLoadPattern.cpp
 	LoadPatternIter.cpp
 	PathSeries.cpp
 	PathTimeSeries.cpp
-	PathTimeSeriesThermal.cpp
-	RectangularSeries.cpp
+	#PathTimeSeriesThermal.cpp
+	#RectangularSeries.cpp
 	TimeSeries.cpp
 	TrigSeries.cpp
 	ConstantSeries.cpp
@@ -17,21 +17,21 @@ target_sources(domain
 	TimeSeriesIntegrator.cpp
 	TrapezoidalTimeSeriesIntegrator.cpp
 	SimpsonTimeSeriesIntegrator.cpp
-	MultiSupportPattern.cpp
+	#MultiSupportPattern.cpp
 	PulseSeries.cpp
 	TriangleSeries.cpp
-	PeerMotion.cpp
-	PeerNGAMotion.cpp
+	#PeerMotion.cpp
+	#PeerNGAMotion.cpp
     PUBLIC
 	EarthquakePattern.h
 	LinearSeries.h
 	LoadPattern.h
-	FireLoadPattern.h
+	#FireLoadPattern.h
 	LoadPatternIter.h
 	PathSeries.h
 	PathTimeSeries.h
-	PathTimeSeriesThermal.h
-	RectangularSeries.h
+	#PathTimeSeriesThermal.h
+	#RectangularSeries.h
 	TimeSeries.h
 	TrigSeries.h
 	ConstantSeries.h
@@ -39,13 +39,13 @@ target_sources(domain
 	TimeSeriesIntegrator.h
 	TrapezoidalTimeSeriesIntegrator.h
 	SimpsonTimeSeriesIntegrator.h
-	MultiSupportPattern.h
+	#MultiSupportPattern.h
 	PulseSeries.h
 	TriangleSeries.h
-	PeerMotion.h
-	PeerNGAMotion.h
+	#PeerMotion.h
+	#PeerNGAMotion.h
 )
 
 target_include_directories(domain PUBLIC $(CMAKE_CURRENT_LIST_DIR))
 
-add_subdirectory(drm)
+# add_subdirectory(drm)

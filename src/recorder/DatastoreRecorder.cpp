@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-11-25 00:53:12 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/DatastoreRecorder.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/DatastoreRecorder/DatastoreRecorder.h
 //
 // Written: fmk 
@@ -39,44 +39,35 @@
 #include <Domain.h>
 #include <FE_Datastore.h>
 
-DatastoreRecorder::DatastoreRecorder(FE_Datastore &theDb)
-:Recorder(RECORDER_TAGS_DatastoreRecorder), theDatastore(&theDb)
-{
-    
-}
-
-
-DatastoreRecorder::~DatastoreRecorder()
+DatastoreRecorder::DatastoreRecorder (FE_Datastore & theDb):Recorder (RECORDER_TAGS_DatastoreRecorder),
+theDatastore
+(&theDb)
 {
 
 }
 
 
-int 
-DatastoreRecorder::record(int commitTag, double timeStamp)
+DatastoreRecorder::~DatastoreRecorder ()
 {
-    return theDatastore->commitState(commitTag);
+
 }
 
 
-int 
-DatastoreRecorder::playback(int commitTag)
+int
+DatastoreRecorder::record (int commitTag, double timeStamp)
 {
-    return theDatastore->restoreState(commitTag);
+    return theDatastore->commitState (commitTag);
+}
+
+
+int
+DatastoreRecorder::playback (int commitTag)
+{
+    return theDatastore->restoreState (commitTag);
 }
 
 int
-DatastoreRecorder::restart(void)
+DatastoreRecorder::restart (void)
 {
-	return 0;
+    return 0;
 }
-
-
-
-
-
-
-
-
-
-

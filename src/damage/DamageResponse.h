@@ -30,7 +30,7 @@
 #ifndef DamageResponse_h
 #define DamageResponse_h
 
-#include <Information.h>
+#include <base/Information.h>
 #include <Response.h>
 
 class ID;

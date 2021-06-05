@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2008-09-16 18:17:45 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/equiSolnAlgo/EquiSolnAlgo.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/analysis/algorithm/EquiSolnAlgo.C 
 // 
 // Written: fmk 
@@ -45,51 +45,54 @@
 #include <LinearSOE.h>
 #include <ConvergenceTest.h>
 
-EquiSolnAlgo::EquiSolnAlgo(int clasTag)
-:SolutionAlgorithm(clasTag),
- theModel(0), theIntegrator(0), theSysOfEqn(0), theTest(0)
+EquiSolnAlgo::EquiSolnAlgo (int clasTag):
+SolutionAlgorithm (clasTag),
+theModel (0),
+theIntegrator (0),
+theSysOfEqn (0),
+theTest (0)
 {
 
 }
 
-EquiSolnAlgo::~EquiSolnAlgo()
+EquiSolnAlgo::~EquiSolnAlgo ()
 {
 
 }
 
-void 
-EquiSolnAlgo::setLinks(AnalysisModel &theNewModel, 
-		       IncrementalIntegrator &theNewIntegrator,
-		       LinearSOE &theSOE,
-		       ConvergenceTest *theConvergenceTest)
+void
+EquiSolnAlgo::setLinks (AnalysisModel & theNewModel,
+                        IncrementalIntegrator & theNewIntegrator,
+                        LinearSOE & theSOE,
+                        ConvergenceTest * theConvergenceTest)
 {
     theModel = &theNewModel;
     theIntegrator = &theNewIntegrator;
     theSysOfEqn = &theSOE;
     theTest = theConvergenceTest;
 
-    this->setConvergenceTest(theConvergenceTest);
+    this->setConvergenceTest (theConvergenceTest);
 }
 
 
-int 
-EquiSolnAlgo::setConvergenceTest(ConvergenceTest *theConvergenceTest)
+int
+EquiSolnAlgo::setConvergenceTest (ConvergenceTest * theConvergenceTest)
 {
-  theTest = theConvergenceTest;
-  return 0;
+    theTest = theConvergenceTest;
+    return 0;
 }
 
 ConvergenceTest *
-EquiSolnAlgo::getConvergenceTest(void)
+EquiSolnAlgo::getConvergenceTest (void)
 {
-  return theTest;
+    return theTest;
 }
 
 
 
 
 AnalysisModel *
-EquiSolnAlgo::getAnalysisModelPtr(void) const
+EquiSolnAlgo::getAnalysisModelPtr (void) const
 {
     return theModel;
 }
@@ -97,7 +100,7 @@ EquiSolnAlgo::getAnalysisModelPtr(void) const
 
 
 IncrementalIntegrator *
-EquiSolnAlgo::getIncrementalIntegratorPtr(void) const
+EquiSolnAlgo::getIncrementalIntegratorPtr (void) const
 {
     return theIntegrator;
 }
@@ -105,9 +108,7 @@ EquiSolnAlgo::getIncrementalIntegratorPtr(void) const
 
 
 LinearSOE *
-EquiSolnAlgo::getLinearSOEptr(void) const
+EquiSolnAlgo::getLinearSOEptr (void) const
 {
     return theSysOfEqn;
 }
-    
-

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.4 $
 // $Date: 2007-04-02 23:43:19 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/analysis/SubstructuringAnalysis.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/Analysis/SubstructuringAnalysis.C
 // 
 // Written: fmk 
@@ -54,39 +54,26 @@
 // Constructor
 //    sets theModel and theSysOFEqn to 0 and the Algorithm to the one supplied
 
-SubstructuringAnalysis::SubstructuringAnalysis(Subdomain &the_Domain,
-					       ConstraintHandler &handler,
-					       DOF_Numberer &numberer,
-					       AnalysisModel &model,
-					       DomainDecompAlgo &theSolnAlgo,
-					       IncrementalIntegrator &integrator,
-					       LinearSOE &theLinSOE,
-					       DomainSolver &theDDSolver,
-					       ConvergenceTest *theTest)
-:DomainDecompositionAnalysis(the_Domain,
-			     handler,
-			     numberer,
-			     model,
-			     theSolnAlgo,
-			     integrator,
-			     theLinSOE,
-			     theDDSolver,
-			     theTest)
+SubstructuringAnalysis::SubstructuringAnalysis (Subdomain & the_Domain, ConstraintHandler & handler, DOF_Numberer & numberer, AnalysisModel & model, DomainDecompAlgo & theSolnAlgo, IncrementalIntegrator & integrator, LinearSOE & theLinSOE, DomainSolver & theDDSolver, ConvergenceTest * theTest):DomainDecompositionAnalysis (the_Domain,
+                             handler,
+                             numberer,
+                             model,
+                             theSolnAlgo,
+                             integrator, theLinSOE, theDDSolver, theTest)
 {
 
-}    
+}
 
 
-SubstructuringAnalysis::~SubstructuringAnalysis()
+SubstructuringAnalysis::~SubstructuringAnalysis ()
 {
 
-}    
+}
 
-int 
-SubstructuringAnalysis::analyze(void)
+int
+SubstructuringAnalysis::analyze (void)
 {
     opserr << "SubstructuringAnalysis::analyze(void)";
     opserr << "does nothing and should not have been called\n";
     return -1;
 }
-

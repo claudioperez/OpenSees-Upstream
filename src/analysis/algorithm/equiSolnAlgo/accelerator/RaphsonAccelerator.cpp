@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2008-09-16 18:15:42 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/equiSolnAlgo/accelerator/RaphsonAccelerator.cpp,v $
-                                                                        
+
 // Written: MHS
 // Created: April 2002
 
@@ -37,91 +37,94 @@
 #include <ID.h>
 #include <Channel.h>
 
-RaphsonAccelerator::RaphsonAccelerator(int tangent)
-  :Accelerator(ACCELERATOR_TAGS_Raphson), theTangent(tangent), totalIter(0)
+RaphsonAccelerator::RaphsonAccelerator (int tangent):
+Accelerator (ACCELERATOR_TAGS_Raphson),
+theTangent (tangent),
+totalIter (0)
 {
 
 }
 
-RaphsonAccelerator::~RaphsonAccelerator()
+RaphsonAccelerator::~RaphsonAccelerator ()
 {
 
-}
-
-int 
-RaphsonAccelerator::newStep(LinearSOE &theSOE)
-{
-  totalIter = 0;
-
-  return 0;
 }
 
 int
-RaphsonAccelerator::accelerate(Vector &vStar, LinearSOE &theSOE,
-			       IncrementalIntegrator &theIntegrator)
+RaphsonAccelerator::newStep (LinearSOE & theSOE)
 {
-  totalIter++;
+    totalIter = 0;
 
-  return 0; 
+    return 0;
 }
 
 int
-RaphsonAccelerator::updateTangent(IncrementalIntegrator &theIntegrator)
+RaphsonAccelerator::accelerate (Vector & vStar, LinearSOE & theSOE,
+                                IncrementalIntegrator & theIntegrator)
 {
-  /*
-  if (theTangent == NO_TANGENT)
-    return 0;
+    totalIter++;
 
-  else if (theTangent == SECOND_TANGENT) {
-    if (totalIter == 1) {
-      theIntegrator.formTangent(CURRENT_TANGENT);
-      return 1;
-    }
-    else 
-      return 0;
-  }
-
-  else { // CURRENT_TANGENT or INITIAL_TANGENT
-    theIntegrator.formTangent(theTangent);
-    return 1;
-  }
-  */
-
-  switch (theTangent) {
-  case CURRENT_TANGENT:
-    theIntegrator.formTangent(CURRENT_TANGENT);
-    return 1;
-    break;
-  case INITIAL_TANGENT:
-    theIntegrator.formTangent(INITIAL_TANGENT);
     return 0;
-    break;
-  default:
-    return 0;
-    break;
-  }
+}
+
+int
+RaphsonAccelerator::updateTangent (IncrementalIntegrator & theIntegrator)
+{
+    /*
+       if (theTangent == NO_TANGENT)
+       return 0;
+
+       else if (theTangent == SECOND_TANGENT) {
+       if (totalIter == 1) {
+       theIntegrator.formTangent(CURRENT_TANGENT);
+       return 1;
+       }
+       else 
+       return 0;
+       }
+
+       else { // CURRENT_TANGENT or INITIAL_TANGENT
+       theIntegrator.formTangent(theTangent);
+       return 1;
+       }
+     */
+
+    switch (theTangent)
+      {
+      case CURRENT_TANGENT:
+          theIntegrator.formTangent (CURRENT_TANGENT);
+          return 1;
+          break;
+      case INITIAL_TANGENT:
+          theIntegrator.formTangent (INITIAL_TANGENT);
+          return 0;
+          break;
+      default:
+          return 0;
+          break;
+      }
 }
 
 void
-RaphsonAccelerator::Print(OPS_Stream &s, int flag)
+RaphsonAccelerator::Print (OPS_Stream & s, int flag)
 {
-  s << "RaphsonAccelerator" << endln;
+    s << "RaphsonAccelerator" << endln;
 }
 
 int
-RaphsonAccelerator::sendSelf(int commitTag, Channel &theChannel)
+RaphsonAccelerator::sendSelf (int commitTag, Channel & theChannel)
 {
-  static ID data(1);
-  data(0) = theTangent;
-  return theChannel.sendID(0, commitTag, data);
+    static ID data (1);
+    data (0) = theTangent;
+    return theChannel.sendID (0, commitTag, data);
 }
 
 int
-RaphsonAccelerator::recvSelf(int commitTag, Channel &theChannel, 
-			    FEM_ObjectBroker &theBroker)
+RaphsonAccelerator::recvSelf (int commitTag, Channel & theChannel,
+                              FEM_ObjectBroker & theBroker)
 {
-  static ID data(1);
-  int res = theChannel.recvID(0, commitTag, data);
-  theTangent = data(0);
-  return res;
+    static ID data (1);
+    int res = theChannel.recvID (0, commitTag, data);
+    theTangent = data (0);
+    return res;
 }

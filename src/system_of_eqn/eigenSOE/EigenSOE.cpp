@@ -18,62 +18,65 @@
 #include <EigenSolver.h>
 #include <AnalysisModel.h>
 
-EigenSOE::EigenSOE(EigenSolver &theEigenSolver, int classTag)
-  :MovableObject(classTag), theSolver(&theEigenSolver)
+EigenSOE::EigenSOE (EigenSolver & theEigenSolver, int classTag):
+MovableObject (classTag),
+theSolver (&theEigenSolver)
 {
 
 }
 
 
-EigenSOE::EigenSOE(int classTag)
-  :MovableObject(classTag), theSolver(0)
+EigenSOE::EigenSOE (int classTag):
+MovableObject (classTag),
+theSolver (0)
 {
 
 }
 
 
-EigenSOE::~EigenSOE()
+EigenSOE::~EigenSOE ()
 {
-  if (theSolver != 0)
-    delete theSolver;
-}
-
-int 
-EigenSOE::solve(int numModes, bool generalized, bool findSmallest)
-{
-  if (theSolver == 0)
-    return -1;
-  else
-    return (theSolver->solve(numModes, generalized, findSmallest));
+    if (theSolver != 0)
+        delete theSolver;
 }
 
 int
-EigenSOE::setSolver(EigenSolver &newSolver)
+EigenSOE::solve (int numModes, bool generalized, bool findSmallest)
+{
+    if (theSolver == 0)
+        return -1;
+    else
+        return (theSolver->solve (numModes, generalized, findSmallest));
+}
+
+int
+EigenSOE::setSolver (EigenSolver & newSolver)
 {
     theSolver = &newSolver;
     return 0;
 }
 
 EigenSolver *
-EigenSOE::getSolver(void)
-{	
+EigenSOE::getSolver (void)
+{
     return theSolver;
 }
 
 const Vector &
-EigenSOE::getEigenvector(int mode) {
-    return theSolver->getEigenvector(mode);
-}
-
-double 
-EigenSOE::getEigenvalue(int mode) {
-    return theSolver->getEigenvalue(mode);
-}
-
-
-int 
-EigenSOE::setLinks(AnalysisModel &theModel)
+EigenSOE::getEigenvector (int mode)
 {
-  return 0;
+    return theSolver->getEigenvector (mode);
 }
 
+double
+EigenSOE::getEigenvalue (int mode)
+{
+    return theSolver->getEigenvalue (mode);
+}
+
+
+int
+EigenSOE::setLinks (AnalysisModel & theModel)
+{
+    return 0;
+}

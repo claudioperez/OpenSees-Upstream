@@ -24,7 +24,7 @@
 
 #include "PVDRecorder.h"
 #include <sstream>
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 #include <OPS_Globals.h>
 #include <Domain.h>
 #include <Element.h>
@@ -39,121 +39,178 @@
 #include "PFEMElement/Particle.h"
 #include "PFEMElement/ParticleGroup.h"
 
-std::map<int,PVDRecorder::VtkType> PVDRecorder::vtktypes;
+std::map < int,
+    PVDRecorder::VtkType >
+    PVDRecorder::vtktypes;
 
-void* OPS_PVDRecorder()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_PVDRecorder ()
 {
-    int numdata = OPS_GetNumRemainingInputArgs();
-    if(numdata < 1) {
-	opserr<<"WARNING: insufficient number of arguments\n";
-	return 0;
-    }
+    int
+        numdata = OPS_GetNumRemainingInputArgs ();
+    if (numdata < 1)
+      {
+          opserr << "WARNING: insufficient number of arguments\n";
+          return 0;
+      }
 
     // filename
-    const char* name = OPS_GetString();
+    const char *
+        name = OPS_GetString ();
 
     // plotting options
-    numdata = OPS_GetNumRemainingInputArgs();
-    int indent=2;
-    int precision = 10;
+    numdata = OPS_GetNumRemainingInputArgs ();
+    int
+        indent = 2;
+    int
+        precision = 10;
     PVDRecorder::NodeData nodedata;
-    std::vector<PVDRecorder::EleData> eledata;
-    double dT = 0.0;
-    while(numdata > 0) {
-	const char* type = OPS_GetString();
-	if(strcmp(type, "disp") == 0) {
-	    nodedata.disp = true;
-	} else if(strcmp(type, "vel") == 0) {
-	    nodedata.vel = true;
-	} else if(strcmp(type, "accel") == 0) {
-	    nodedata.accel = true;
-	} else if(strcmp(type, "incrDisp") == 0) {
-	    nodedata.incrdisp = true;
-	} else if(strcmp(type, "reaction") == 0) {
-	    nodedata.reaction = true;
-	} else if(strcmp(type, "pressure") == 0) {
-	    nodedata.pressure = true;
-	} else if(strcmp(type, "unbalancedLoad") == 0) {
-	    nodedata.unbalanced = true;
-	} else if(strcmp(type, "mass") == 0) {
-	    nodedata.mass = true;
-	} else if(strcmp(type, "eigen") == 0) {
-	    numdata = OPS_GetNumRemainingInputArgs();
-	    if(numdata < 1) {
-		opserr<<"WARNING: eigen needs 'numEigenvector'\n";
-		return 0;
-	    }
-	    numdata = 1;
-	    if(OPS_GetIntInput(&numdata,&nodedata.numeigen) < 0) {
-		opserr << "WARNING: failed to read numeigen\n";
-		return 0;
-	    }
+    std::vector < PVDRecorder::EleData > eledata;
+    double
+        dT = 0.0;
+    while (numdata > 0)
+      {
+          const char *
+              type = OPS_GetString ();
+          if (strcmp (type, "disp") == 0)
+            {
+                nodedata.disp = true;
+            }
+          else if (strcmp (type, "vel") == 0)
+            {
+                nodedata.vel = true;
+            }
+          else if (strcmp (type, "accel") == 0)
+            {
+                nodedata.accel = true;
+            }
+          else if (strcmp (type, "incrDisp") == 0)
+            {
+                nodedata.incrdisp = true;
+            }
+          else if (strcmp (type, "reaction") == 0)
+            {
+                nodedata.reaction = true;
+            }
+          else if (strcmp (type, "pressure") == 0)
+            {
+                nodedata.pressure = true;
+            }
+          else if (strcmp (type, "unbalancedLoad") == 0)
+            {
+                nodedata.unbalanced = true;
+            }
+          else if (strcmp (type, "mass") == 0)
+            {
+                nodedata.mass = true;
+            }
+          else if (strcmp (type, "eigen") == 0)
+            {
+                numdata = OPS_GetNumRemainingInputArgs ();
+                if (numdata < 1)
+                  {
+                      opserr << "WARNING: eigen needs 'numEigenvector'\n";
+                      return 0;
+                  }
+                numdata = 1;
+                if (OPS_GetIntInput (&numdata, &nodedata.numeigen) < 0)
+                  {
+                      opserr << "WARNING: failed to read numeigen\n";
+                      return 0;
+                  }
 
-	} else if(strcmp(type, "-precision") == 0) {
-	    numdata = OPS_GetNumRemainingInputArgs();
-	    if(numdata < 1) {
-		opserr<<"WARNING: needs precision \n";
-		return 0;
-	    }
-	    numdata = 1;
-	    if(OPS_GetIntInput(&numdata,&precision) < 0) {
-		opserr << "WARNING: failed to read precision\n";
-		return 0;
-	    }
+            }
+          else if (strcmp (type, "-precision") == 0)
+            {
+                numdata = OPS_GetNumRemainingInputArgs ();
+                if (numdata < 1)
+                  {
+                      opserr << "WARNING: needs precision \n";
+                      return 0;
+                  }
+                numdata = 1;
+                if (OPS_GetIntInput (&numdata, &precision) < 0)
+                  {
+                      opserr << "WARNING: failed to read precision\n";
+                      return 0;
+                  }
 
-	} else if(strcmp(type, "eleResponse") == 0) {
-	    numdata = OPS_GetNumRemainingInputArgs();
-	    if(numdata < 1) {
-		opserr<<"WANRING: elementResponse needs 'argc','argv'\n";
-		return 0;
-	    }
-	    PVDRecorder::EleData edata;
-	    numdata = OPS_GetNumRemainingInputArgs();
-	    edata.resize(numdata);
-	    for(int i=0; i<numdata; i++) {
-		edata[i] = OPS_GetString();
-	    }
-	    eledata.push_back(edata);
-	} else if(strcmp(type, "-dT") == 0) {
-	    numdata = OPS_GetNumRemainingInputArgs();
-	    if(numdata < 1) {
-		opserr<<"WARNING: needs dT \n";
-		return 0;
-	    }
-	    numdata = 1;
-	    if(OPS_GetDoubleInput(&numdata,&dT) < 0) {
-		opserr << "WARNING: failed to read dT\n";
-		return 0;
-	    }
-	    if (dT < 0) dT = 0;
-	}
-	numdata = OPS_GetNumRemainingInputArgs();
-    }
+            }
+          else if (strcmp (type, "eleResponse") == 0)
+            {
+                numdata = OPS_GetNumRemainingInputArgs ();
+                if (numdata < 1)
+                  {
+                      opserr <<
+                          "WANRING: elementResponse needs 'argc','argv'\n";
+                      return 0;
+                  }
+                PVDRecorder::EleData edata;
+                numdata = OPS_GetNumRemainingInputArgs ();
+                edata.resize (numdata);
+                for (int i = 0; i < numdata; i++)
+                  {
+                      edata[i] = OPS_GetString ();
+                  }
+                eledata.push_back (edata);
+            }
+          else if (strcmp (type, "-dT") == 0)
+            {
+                numdata = OPS_GetNumRemainingInputArgs ();
+                if (numdata < 1)
+                  {
+                      opserr << "WARNING: needs dT \n";
+                      return 0;
+                  }
+                numdata = 1;
+                if (OPS_GetDoubleInput (&numdata, &dT) < 0)
+                  {
+                      opserr << "WARNING: failed to read dT\n";
+                      return 0;
+                  }
+                if (dT < 0)
+                    dT = 0;
+            }
+          numdata = OPS_GetNumRemainingInputArgs ();
+      }
 
     // create recorder
-    return new PVDRecorder(name,nodedata,eledata,indent,precision,dT);
+    return new PVDRecorder (name, nodedata, eledata, indent, precision, dT);
 }
+#endif
 
-PVDRecorder::PVDRecorder(const char *name, const NodeData& ndata,
-			 const std::vector<EleData>& edata, int ind, int pre,
-			 double dt)
-    :Recorder(RECORDER_TAGS_PVDRecorder), indentsize(ind), precision(pre),
-     indentlevel(0), pathname(), basename(),
-     timestep(), timeparts(), theFile(), quota('\"'), parts(),
-     nodedata(ndata), eledata(edata), theDomain(0), partnum(),
-     dT(dt), nextTime(0.0)
+PVDRecorder::PVDRecorder (const char *name, const NodeData & ndata,
+                          const std::vector < EleData > &edata, int ind,
+                          int pre, double dt):
+Recorder (RECORDER_TAGS_PVDRecorder),
+indentsize (ind),
+precision (pre),
+indentlevel (0),
+pathname (),
+basename (),
+timestep (),
+timeparts (),
+theFile (),
+quota ('\"'),
+parts (),
+nodedata (ndata),
+eledata (edata),
+theDomain (0),
+partnum (),
+dT (dt),
+nextTime (0.0)
 {
-    PVDRecorder::setVTKType();
-    getfilename(name);
+    PVDRecorder::setVTKType ();
+    getfilename (name);
 }
 
-PVDRecorder::PVDRecorder()
-    :Recorder(RECORDER_TAGS_PVDRecorder)
+PVDRecorder::PVDRecorder ():Recorder (RECORDER_TAGS_PVDRecorder)
 {
 }
 
 
-PVDRecorder::~PVDRecorder()
+PVDRecorder::~PVDRecorder ()
 {
 }
 
@@ -162,1635 +219,1899 @@ PVDRecorder::~PVDRecorder()
 // part 1 - all particles
 // part n - element type n
 int
-PVDRecorder::record(int ctag, double timestamp)
+PVDRecorder::record (int ctag, double timestamp)
 {
-    if (dT>0 && nextTime>timestamp) {
-	return 0;
-    }
+    if (dT > 0 && nextTime > timestamp)
+      {
+          return 0;
+      }
 
-    if (dT > 0) {
-	nextTime = timestamp+dT;
-    }
+    if (dT > 0)
+      {
+          nextTime = timestamp + dT;
+      }
 
-    if(precision==0)
+    if (precision == 0)
         return 0;
 
     // get current time
-    timestep.push_back(timestamp);
+    timestep.push_back (timestamp);
 
     // save vtu file
-    if(vtu() < 0) return -1;
+    if (vtu () < 0)
+        return -1;
 
     // save pvd file
-    if(pvd() < 0) return -1;
+    if (pvd () < 0)
+        return -1;
 
     return 0;
 }
 
 int
-PVDRecorder::restart()
+PVDRecorder::restart ()
 {
-    timestep.clear();
-    timeparts.clear();
+    timestep.clear ();
+    timeparts.clear ();
     return 0;
 }
 
 int
-PVDRecorder::domainChanged()
+PVDRecorder::domainChanged ()
 {
     return 0;
 }
 
 int
-PVDRecorder::setDomain(Domain& domain)
+PVDRecorder::setDomain (Domain & domain)
 {
     theDomain = &domain;
     return 0;
 }
 
 int
-PVDRecorder::pvd()
+PVDRecorder::pvd ()
 {
     // open pvd file
-    theFile.close();
-    std::string pvdname = pathname+basename+".pvd";
+    theFile.close ();
+    std::string pvdname = pathname + basename + ".pvd";
 
-    theFile.open(pvdname.c_str(), std::ios::trunc|std::ios::out);
-    if(theFile.fail()) {
-	opserr<<"WARNING: Failed to open file "<<pvdname.c_str()<<"\n";
-	return -1;
-    }
-    theFile.precision(precision);
+    theFile.open (pvdname.c_str (), std::ios::trunc | std::ios::out);
+    if (theFile.fail ())
+      {
+          opserr << "WARNING: Failed to open file " << pvdname.
+              c_str () << "\n";
+          return -1;
+      }
+    theFile.precision (precision);
     theFile << std::scientific;
 
     // header
-    theFile<<"<?xml version="<<quota<<"1.0"<<quota<<"?>\n";
-    theFile<<"<VTKFile type="<<quota<<"Collection"<<quota;
-    theFile<<" compressor="<<quota<<"vtkZLibDataCompressor"<<quota;
-    theFile<<">\n";
+    theFile << "<?xml version=" << quota << "1.0" << quota << "?>\n";
+    theFile << "<VTKFile type=" << quota << "Collection" << quota;
+    theFile << " compressor=" << quota << "vtkZLibDataCompressor" << quota;
+    theFile << ">\n";
 
     // collection
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Collection>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Collection>\n";
 
     // all data files
-    this->incrLevel();
-    for(int i=0; i<(int)timestep.size(); i++) {
-	double t = timestep[i];
-	const ID& partno = timeparts[i];
-	for(int j=0; j<partno.Size(); j++) {
-	    this->indent();
-	    theFile<<"<DataSet timestep="<<quota<<t<<quota;
-	    theFile<<" group="<<quota<<quota;
-	    theFile<<" part="<<quota<<partno(j)<<quota;
-	    theFile<<" file="<<quota<<basename.c_str();
-	    theFile<<"/"<<basename.c_str()<<"_T"<<t<<"_P";
-	    theFile<<partno(j)<<".vtu"<<quota;
-	    theFile<<"/>\n";
-	}
-    }
+    this->incrLevel ();
+    for (int i = 0; i < (int) timestep.size (); i++)
+      {
+          double t = timestep[i];
+          const ID & partno = timeparts[i];
+          for (int j = 0; j < partno.Size (); j++)
+            {
+                this->indent ();
+                theFile << "<DataSet timestep=" << quota << t << quota;
+                theFile << " group=" << quota << quota;
+                theFile << " part=" << quota << partno (j) << quota;
+                theFile << " file=" << quota << basename.c_str ();
+                theFile << "/" << basename.c_str () << "_T" << t << "_P";
+                theFile << partno (j) << ".vtu" << quota;
+                theFile << "/>\n";
+            }
+      }
 
     // end colloection
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Collection>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Collection>\n";
 
     // end VTKFile
-    this->decrLevel();
-    this->indent();
-    theFile<<"</VTKFile>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</VTKFile>\n";
 
-    theFile.close();
+    theFile.close ();
 
     return 0;
 }
 
 int
-PVDRecorder::vtu()
+PVDRecorder::vtu ()
 {
-    if (theDomain == 0) {
-	opserr << "WARNING: failed to get domain -- PVDRecorder::vtu\n";
-	return -1;
-    }
+    if (theDomain == 0)
+      {
+          opserr << "WARNING: failed to get domain -- PVDRecorder::vtu\n";
+          return -1;
+      }
     // get node ndf
-    NodeIter& theNodes = theDomain->getNodes();
-    Node* theNode = 0;
+    NodeIter & theNodes = theDomain->getNodes ();
+    Node *theNode = 0;
     int nodendf = 0;
-    while ((theNode = theNodes()) != 0) {
-	if(nodendf < theNode->getNumberDOF()) {
-	    nodendf = theNode->getNumberDOF();
-	}
-    }
-    if (nodendf < 3) {
-	nodendf = 3;
-    }
+    while ((theNode = theNodes ()) != 0)
+      {
+          if (nodendf < theNode->getNumberDOF ())
+            {
+                nodendf = theNode->getNumberDOF ();
+            }
+      }
+    if (nodendf < 3)
+      {
+          nodendf = 3;
+      }
 
     // get parts
-    this->getParts();
+    this->getParts ();
 
     // get background mesh
     VInt gtags;
-    TaggedObjectIter& meshes = OPS_getAllMesh();
-    Mesh* mesh = 0;
-    while((mesh = dynamic_cast<Mesh*>(meshes())) != 0) {
-	ParticleGroup* group = dynamic_cast<ParticleGroup*>(mesh);
-	if (group == 0) {
-	    continue;
-	}
-        gtags.push_back(group->getTag());
-    }
+    TaggedObjectIter & meshes = OPS_getAllMesh ();
+    Mesh *mesh = 0;
+    while ((mesh = dynamic_cast < Mesh * >(meshes ())) != 0)
+      {
+          ParticleGroup *group = dynamic_cast < ParticleGroup * >(mesh);
+          if (group == 0)
+            {
+                continue;
+            }
+          gtags.push_back (group->getTag ());
+      }
 
 
     // part 0: all nodes
-    ID partno(0, (int)parts.size()+(int)gtags.size()+1);
+    ID partno (0, (int) parts.size () + (int) gtags.size () + 1);
     partno[0] = 0;
-    if (this->savePart0(nodendf) < 0) {
-        return -1;
-    }
+    if (this->savePart0 (nodendf) < 0)
+      {
+          return -1;
+      }
 
     // particle parts
-    for (int i=0; i<(int)gtags.size(); ++i) {
-        partno[1+i] = 1+i;
-        if (this->savePartParticle(1+i, gtags[i],nodendf) < 0) {
-            return -1;
-        }
-    }
+    for (int i = 0; i < (int) gtags.size (); ++i)
+      {
+          partno[1 + i] = 1 + i;
+          if (this->savePartParticle (1 + i, gtags[i], nodendf) < 0)
+            {
+                return -1;
+            }
+      }
 
     // save other parts
     // int index = 1;
-    for(std::map<int,ID>::iterator it=parts.begin(); it!=parts.end(); it++) {
-	// int& no = partnum[it->first];
-	// if (no == 0) {
-	//     no = (int)partnum.size();
-	// }
-	int no = partno.Size();
-	partno[no] = no;
-	if(this->savePart(no,it->first,nodendf) < 0) return -1;
-    }
+    for (std::map < int, ID >::iterator it = parts.begin ();
+         it != parts.end (); it++)
+      {
+          // int& no = partnum[it->first];
+          // if (no == 0) {
+          //     no = (int)partnum.size();
+          // }
+          int no = partno.Size ();
+          partno[no] = no;
+          if (this->savePart (no, it->first, nodendf) < 0)
+              return -1;
+      }
 
 
-    timeparts.push_back(partno);
+    timeparts.push_back (partno);
 
     // clear parts
-    parts.clear();
+    parts.clear ();
 
     return 0;
 }
 
 void
-PVDRecorder::getParts()
+PVDRecorder::getParts ()
 {
-    if (theDomain == 0) {
-	opserr<<"WARNING: setDomain has not been called -- PVDRecorder\n";
-	return;
-    }
+    if (theDomain == 0)
+      {
+          opserr << "WARNING: setDomain has not been called -- PVDRecorder\n";
+          return;
+      }
 
-    ElementIter* eiter = &(theDomain->getElements());
-    Element* theEle = 0;
-    while((theEle = (*eiter)()) != 0) {
-	int ctag = theEle->getClassTag();
-	int etag = theEle->getTag();
-	parts[ctag].insert(etag);
-    }
+    ElementIter *eiter = &(theDomain->getElements ());
+    Element *theEle = 0;
+    while ((theEle = (*eiter) ()) != 0)
+      {
+          int ctag = theEle->getClassTag ();
+          int etag = theEle->getTag ();
+          parts[ctag].insert (etag);
+      }
 }
 
 int
-PVDRecorder::savePart0(int nodendf)
+PVDRecorder::savePart0 (int nodendf)
 {
-    if (theDomain == 0) {
-	opserr<<"WARNING: setDomain has not been called -- PVDRecorder\n";
-	return -1;
-    }
+    if (theDomain == 0)
+      {
+          opserr << "WARNING: setDomain has not been called -- PVDRecorder\n";
+          return -1;
+      }
 
     // get time and part
     std::stringstream ss;
-    ss.precision(precision);
+    ss.precision (precision);
     ss << std::scientific;
-    ss << 0 << ' ' << timestep.back();
+    ss << 0 << ' ' << timestep.back ();
     std::string stime, spart;
     ss >> spart >> stime;
 
     // open file
-    theFile.close();
-    std::string vtuname = pathname+basename+"/"+basename+"_T"+stime+"_P"+spart+".vtu";
-    theFile.open(vtuname.c_str(), std::ios::trunc|std::ios::out);
-    if(theFile.fail()) {
-	opserr<<"WARNING: Failed to open file "<<vtuname.c_str()<<"\n";
-	return -1;
-    }
-    theFile.precision(precision);
+    theFile.close ();
+    std::string vtuname =
+        pathname + basename + "/" + basename + "_T" + stime + "_P" + spart +
+        ".vtu";
+    theFile.open (vtuname.c_str (), std::ios::trunc | std::ios::out);
+    if (theFile.fail ())
+      {
+          opserr << "WARNING: Failed to open file " << vtuname.
+              c_str () << "\n";
+          return -1;
+      }
+    theFile.precision (precision);
     theFile << std::scientific;
 
     // header
-    theFile<<"<?xml version="<<quota<<"1.0"<<quota<<"?>\n";
-    theFile<<"<VTKFile type="<<quota<<"UnstructuredGrid"<<quota;
-    theFile<<" version="<<quota<<"1.0"<<quota;
-    theFile<<" byte_order="<<quota<<"LittleEndian"<<quota;
-    theFile<<" compressor="<<quota<<"vtkZLibDataCompressor"<<quota;
-    theFile<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<"<UnstructuredGrid>\n";
+    theFile << "<?xml version=" << quota << "1.0" << quota << "?>\n";
+    theFile << "<VTKFile type=" << quota << "UnstructuredGrid" << quota;
+    theFile << " version=" << quota << "1.0" << quota;
+    theFile << " byte_order=" << quota << "LittleEndian" << quota;
+    theFile << " compressor=" << quota << "vtkZLibDataCompressor" << quota;
+    theFile << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<UnstructuredGrid>\n";
 
     // get pressure nodes
-    ID ptags(0,theDomain->getNumPCs());
-    Pressure_ConstraintIter& thePCs = theDomain->getPCs();
-    Pressure_Constraint* thePC = 0;
-    while ((thePC = thePCs()) != 0) {
-	Node* pnode = thePC->getPressureNode();
-	if (pnode != 0) {
-	    ptags.insert(pnode->getTag());
-	}
-    }
+    ID ptags (0, theDomain->getNumPCs ());
+    Pressure_ConstraintIter & thePCs = theDomain->getPCs ();
+    Pressure_Constraint *thePC = 0;
+    while ((thePC = thePCs ()) != 0)
+      {
+          Node *pnode = thePC->getPressureNode ();
+          if (pnode != 0)
+            {
+                ptags.insert (pnode->getTag ());
+            }
+      }
 
     // get all nodes except pressure nodes
-    std::vector<Node*> nodes;
-    NodeIter& theNodes = theDomain->getNodes();
-    Node* theNode = 0;
-    while ((theNode = theNodes()) != 0) {
-	int nd = theNode->getTag();
-	if (ptags.getLocationOrdered(nd) < 0) {
-	    nodes.push_back(theNode);
-	}
-    }
+    std::vector < Node * >nodes;
+    NodeIter & theNodes = theDomain->getNodes ();
+    Node *theNode = 0;
+    while ((theNode = theNodes ()) != 0)
+      {
+          int nd = theNode->getTag ();
+          if (ptags.getLocationOrdered (nd) < 0)
+            {
+                nodes.push_back (theNode);
+            }
+      }
 
     // Piece
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Piece NumberOfPoints="<<quota<<(int)nodes.size()<<quota;
-    theFile<<" NumberOfCells="<<quota<<1<<quota<<">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Piece NumberOfPoints=" << quota << (int) nodes.
+        size () << quota;
+    theFile << " NumberOfCells=" << quota << 1 << quota << ">\n";
 
     // points
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Points>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Points>\n";
 
     // points header
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-    theFile<<" Name="<<quota<<"Points"<<quota;
-    theFile<<" NumberOfComponents="<<quota<<3<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Float32" << quota;
+    theFile << " Name=" << quota << "Points" << quota;
+    theFile << " NumberOfComponents=" << quota << 3 << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
 
     // points coordinates
-    this->incrLevel();
-    for(int i=0; i<(int)nodes.size(); i++) {
-	const Vector& crds = nodes[i]->getCrds();
-	this->indent();
-	for(int j=0; j<3; j++) {
-	    if(j < crds.Size()) {
-		theFile<<crds(j)<<' ';
-	    } else {
-		theFile<<0.0<<' ';
-	    }
-	}
-	theFile<<std::endl;
-    }
+    this->incrLevel ();
+    for (int i = 0; i < (int) nodes.size (); i++)
+      {
+          const Vector & crds = nodes[i]->getCrds ();
+          this->indent ();
+          for (int j = 0; j < 3; j++)
+            {
+                if (j < crds.Size ())
+                  {
+                      theFile << crds (j) << ' ';
+                  }
+                else
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+            }
+          theFile << std::endl;
+      }
 
     // points footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Points>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Points>\n";
 
     // cells
-    this->indent();
-    theFile<<"<Cells>\n";
+    this->indent ();
+    theFile << "<Cells>\n";
 
     // connectivity
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"connectivity"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<(int)nodes.size(); i++) {
-	this->indent();
-	theFile<<i<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "connectivity" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < (int) nodes.size (); i++)
+      {
+          this->indent ();
+          theFile << i << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // offsets
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"offsets"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<(int)nodes.size()<<std::endl;
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "offsets" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << (int) nodes.size () << std::endl;
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // types
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"types"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<VTK_POLY_VERTEX<<std::endl;
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "types" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << VTK_POLY_VERTEX << std::endl;
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // cells footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Cells>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Cells>\n";
 
     // point data
-    this->indent();
-    theFile<<"<PointData>\n";
+    this->indent ();
+    theFile << "<PointData>\n";
 
     // node tags
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"NodeTag"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<(int)nodes.size(); i++) {
-	this->indent();
-	theFile<<nodes[i]->getTag()<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "NodeTag" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < (int) nodes.size (); i++)
+      {
+          this->indent ();
+          theFile << nodes[i]->getTag () << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // node velocity
-    if(nodedata.vel) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Velocity"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialVel();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.vel)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Velocity" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialVel ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node displacement
-    if(nodedata.disp) {
-	// all displacement
-    this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"AllDisplacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialDisp();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
+    if (nodedata.disp)
+      {
+          // all displacement
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "AllDisplacement" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialDisp ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
 
-    // displacement
-    this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Displacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<3<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialDisp();
-	    this->indent();
-	    for(int j=0; j<3; j++) {
-		if(j < vel.Size() && j < nodes[i]->getCrds().Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+          // displacement
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Displacement" << quota;
+          theFile << " NumberOfComponents=" << quota << 3 << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialDisp ();
+                this->indent ();
+                for (int j = 0; j < 3; j++)
+                  {
+                      if (j < vel.Size () && j < nodes[i]->getCrds ().Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node incr displacement
-    if(nodedata.incrdisp) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"IncrDisplacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getIncrDisp();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.incrdisp)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "IncrDisplacement" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getIncrDisp ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node acceleration
-    if(nodedata.accel) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Acceleration"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialAccel();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.accel)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Acceleration" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialAccel ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node pressure
-    if(nodedata.pressure) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Pressure"<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    double pressure = 0.0;
-	    Pressure_Constraint* thePC = theDomain->getPressure_Constraint(nodes[i]->getTag());
-	    if(thePC != 0) {
-		pressure = thePC->getPressure();
-	    }
-	    this->indent();
-	    theFile<<pressure<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.pressure)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Pressure" << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                double pressure = 0.0;
+                Pressure_Constraint *thePC =
+                    theDomain->getPressure_Constraint (nodes[i]->getTag ());
+                if (thePC != 0)
+                  {
+                      pressure = thePC->getPressure ();
+                  }
+                this->indent ();
+                theFile << pressure << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node reaction
-    if(nodedata.reaction) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Reaction"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getReaction();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.reaction)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Reaction" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getReaction ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node unbalanced load
-    if(nodedata.unbalanced) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"UnbalancedLoad"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Vector& vel = nodes[i]->getUnbalancedLoad();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.unbalanced)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "UnbalancedLoad" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Vector & vel = nodes[i]->getUnbalancedLoad ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node mass
-    if(nodedata.mass) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"NodeMass"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Matrix& mat = nodes[i]->getMass();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < mat.noRows()) {
-		    theFile<<mat(j,j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.mass)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "NodeMass" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Matrix & mat = nodes[i]->getMass ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < mat.noRows ())
+                        {
+                            theFile << mat (j, j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node eigen vector
-    for(int k=0; k<nodedata.numeigen; k++) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"EigenVector"<<k+1<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)nodes.size(); i++) {
-	    const Matrix& eigens = nodes[i]->getEigenvectors();
-	    if(k >= eigens.noCols()) {
-		opserr<<"WARNING: eigenvector "<<k+1<<" is too large\n";
-		return -1;
-	    }
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < eigens.noRows()) {
-		    theFile<<eigens(j,k)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    for (int k = 0; k < nodedata.numeigen; k++)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "EigenVector" << k + 1 << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) nodes.size (); i++)
+            {
+                const Matrix & eigens = nodes[i]->getEigenvectors ();
+                if (k >= eigens.noCols ())
+                  {
+                      opserr << "WARNING: eigenvector " << k +
+                          1 << " is too large\n";
+                      return -1;
+                  }
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < eigens.noRows ())
+                        {
+                            theFile << eigens (j, k) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // point data footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</PointData>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</PointData>\n";
 
     // cell data
-    this->indent();
-    theFile<<"<CellData>\n";
+    this->indent ();
+    theFile << "<CellData>\n";
 
     // element tags
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"ElementTag"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<0<<std::endl;
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "ElementTag" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << 0 << std::endl;
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // cell data footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</CellData>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</CellData>\n";
 
     // footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Piece>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Piece>\n";
 
-    this->decrLevel();
-    this->indent();
-    theFile<<"</UnstructuredGrid>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</UnstructuredGrid>\n";
 
-    this->decrLevel();
-    this->indent();
-    theFile<<"</VTKFile>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</VTKFile>\n";
 
-    theFile.close();
+    theFile.close ();
 
     return 0;
 }
 
 int
-PVDRecorder::savePartParticle(int pno, int bgtag, int nodendf)
+PVDRecorder::savePartParticle (int pno, int bgtag, int nodendf)
 {
-    if (theDomain == 0) {
-	opserr<<"WARNING: setDomain has not been called -- PVDRecorder\n";
-	return -1;
-    }
+    if (theDomain == 0)
+      {
+          opserr << "WARNING: setDomain has not been called -- PVDRecorder\n";
+          return -1;
+      }
 
     // get time and part
     std::stringstream ss;
-    ss.precision(precision);
+    ss.precision (precision);
     ss << std::scientific;
-    ss << pno << ' ' << timestep.back();
+    ss << pno << ' ' << timestep.back ();
     std::string stime, spart;
     ss >> spart >> stime;
 
     // open file
-    theFile.close();
-    std::string vtuname = pathname+basename+"/"+basename+"_T"+stime+"_P"+spart+".vtu";
-    theFile.open(vtuname.c_str(), std::ios::trunc|std::ios::out);
-    if(theFile.fail()) {
-	opserr<<"WARNING: Failed to open file "<<vtuname.c_str()<<"\n";
-	return -1;
-    }
-    theFile.precision(precision);
+    theFile.close ();
+    std::string vtuname =
+        pathname + basename + "/" + basename + "_T" + stime + "_P" + spart +
+        ".vtu";
+    theFile.open (vtuname.c_str (), std::ios::trunc | std::ios::out);
+    if (theFile.fail ())
+      {
+          opserr << "WARNING: Failed to open file " << vtuname.
+              c_str () << "\n";
+          return -1;
+      }
+    theFile.precision (precision);
     theFile << std::scientific;
 
     // header
-    theFile<<"<?xml version="<<quota<<"1.0"<<quota<<"?>\n";
-    theFile<<"<VTKFile type="<<quota<<"UnstructuredGrid"<<quota;
-    theFile<<" version="<<quota<<"1.0"<<quota;
-    theFile<<" byte_order="<<quota<<"LittleEndian"<<quota;
-    theFile<<" compressor="<<quota<<"vtkZLibDataCompressor"<<quota;
-    theFile<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<"<UnstructuredGrid>\n";
+    theFile << "<?xml version=" << quota << "1.0" << quota << "?>\n";
+    theFile << "<VTKFile type=" << quota << "UnstructuredGrid" << quota;
+    theFile << " version=" << quota << "1.0" << quota;
+    theFile << " byte_order=" << quota << "LittleEndian" << quota;
+    theFile << " compressor=" << quota << "vtkZLibDataCompressor" << quota;
+    theFile << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<UnstructuredGrid>\n";
 
     // get particles in group
     VParticle particles;
-    ParticleGroup* group = dynamic_cast<ParticleGroup*>(OPS_getMesh(bgtag));
-    if (group == 0) {
-        opserr << "WARNING: particle group "<<bgtag<<"doesn't exist\n";
-        return -1;
-    }
-    for(int j=0; j<group->numParticles(); j++) {
-	Particle* p = group->getParticle(j);
-	if(p == 0) continue;
-	particles.push_back(p);
-    }
+    ParticleGroup *group =
+        dynamic_cast < ParticleGroup * >(OPS_getMesh (bgtag));
+    if (group == 0)
+      {
+          opserr << "WARNING: particle group " << bgtag << "doesn't exist\n";
+          return -1;
+      }
+    for (int j = 0; j < group->numParticles (); j++)
+      {
+          Particle *p = group->getParticle (j);
+          if (p == 0)
+              continue;
+          particles.push_back (p);
+      }
 
     // Piece
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Piece NumberOfPoints="<<quota<<(int)particles.size()<<quota;
-    theFile<<" NumberOfCells="<<quota<<1<<quota<<">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Piece NumberOfPoints=" << quota << (int) particles.
+        size () << quota;
+    theFile << " NumberOfCells=" << quota << 1 << quota << ">\n";
 
     // points
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Points>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Points>\n";
 
     // points header
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-    theFile<<" Name="<<quota<<"Points"<<quota;
-    theFile<<" NumberOfComponents="<<quota<<3<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Float32" << quota;
+    theFile << " Name=" << quota << "Points" << quota;
+    theFile << " NumberOfComponents=" << quota << 3 << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
 
     // points coordinates
-    this->incrLevel();
-    for(int i=0; i<(int)particles.size(); i++) {
-	const VDouble& crds = particles[i]->getCrds();
-	this->indent();
-	for(int j=0; j<3; j++) {
-	    if(j < (int)crds.size()) {
-		theFile<<crds[j]<<' ';
-	    } else {
-		theFile<<0.0<<' ';
-	    }
-	}
-	theFile<<std::endl;
-    }
+    this->incrLevel ();
+    for (int i = 0; i < (int) particles.size (); i++)
+      {
+          const VDouble & crds = particles[i]->getCrds ();
+          this->indent ();
+          for (int j = 0; j < 3; j++)
+            {
+                if (j < (int) crds.size ())
+                  {
+                      theFile << crds[j] << ' ';
+                  }
+                else
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+            }
+          theFile << std::endl;
+      }
 
     // points footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Points>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Points>\n";
 
     // cells
-    this->indent();
-    theFile<<"<Cells>\n";
+    this->indent ();
+    theFile << "<Cells>\n";
 
     // connectivity
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"connectivity"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<(int)particles.size(); i++) {
-	this->indent();
-	theFile<<i<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "connectivity" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < (int) particles.size (); i++)
+      {
+          this->indent ();
+          theFile << i << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // offsets
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"offsets"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<(int)particles.size()<<std::endl;
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "offsets" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << (int) particles.size () << std::endl;
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // types
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"types"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<VTK_POLY_VERTEX<<std::endl;
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "types" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << VTK_POLY_VERTEX << std::endl;
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // cells footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Cells>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Cells>\n";
 
     // point data
-    this->indent();
-    theFile<<"<PointData>\n";
+    this->indent ();
+    theFile << "<PointData>\n";
 
     // node tags
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"NodeTag"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<(int)particles.size(); i++) {
-	this->indent();
-	theFile<<i<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "NodeTag" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < (int) particles.size (); i++)
+      {
+          this->indent ();
+          theFile << i << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // node velocity
-    if(nodedata.vel) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Velocity"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    const VDouble& vel = particles[i]->getVel();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < (int)vel.size()) {
-		    theFile<<vel[j]<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.vel)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Velocity" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                const VDouble & vel = particles[i]->getVel ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < (int) vel.size ())
+                        {
+                            theFile << vel[j] << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node displacement
-    if(nodedata.disp) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Displacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.disp)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Displacement" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node incr displacement
-    if(nodedata.incrdisp) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"IncrDisplacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.incrdisp)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "IncrDisplacement" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node acceleration
-    if(nodedata.accel) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Acceleration"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.accel)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Acceleration" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node pressure
-    if(nodedata.pressure) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Pressure"<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    double pressure = particles[i]->getPressure();
-	    this->indent();
-	    theFile<<pressure<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.pressure)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Pressure" << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                double pressure = particles[i]->getPressure ();
+                this->indent ();
+                theFile << pressure << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node reaction
-    if(nodedata.reaction) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Reaction"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.reaction)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Reaction" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node unbalanced load
-    if(nodedata.unbalanced) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"UnbalancedLoad"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.unbalanced)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "UnbalancedLoad" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node mass
-    if(nodedata.mass) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"NodeMass"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.mass)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "NodeMass" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node eigen vector
-    for(int k=0; k<nodedata.numeigen; k++) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"EigenVector"<<k+1<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<(int)particles.size(); i++) {
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		theFile<<0.0<<' ';
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    for (int k = 0; k < nodedata.numeigen; k++)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "EigenVector" << k + 1 << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < (int) particles.size (); i++)
+            {
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // point data footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</PointData>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</PointData>\n";
 
     // cell data
-    this->indent();
-    theFile<<"<CellData>\n";
+    this->indent ();
+    theFile << "<CellData>\n";
 
     // element tags
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"ElementTag"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<0<<std::endl;
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "ElementTag" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << 0 << std::endl;
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // cell data footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</CellData>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</CellData>\n";
 
     // footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Piece>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Piece>\n";
 
-    this->decrLevel();
-    this->indent();
-    theFile<<"</UnstructuredGrid>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</UnstructuredGrid>\n";
 
-    this->decrLevel();
-    this->indent();
-    theFile<<"</VTKFile>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</VTKFile>\n";
 
-    theFile.close();
+    theFile.close ();
 
     return 0;
 }
 
 int
-PVDRecorder::savePart(int partno, int ctag, int nodendf)
+PVDRecorder::savePart (int partno, int ctag, int nodendf)
 {
-    if (theDomain == 0) {
-	opserr<<"WARNING: setDomain has not been called -- PVDRecorder\n";
-	return -1;
-    }
+    if (theDomain == 0)
+      {
+          opserr << "WARNING: setDomain has not been called -- PVDRecorder\n";
+          return -1;
+      }
 
     // get time and part
     std::stringstream ss;
-    ss.precision(precision);
+    ss.precision (precision);
     ss << std::scientific;
-    ss << partno << ' ' << timestep.back();
+    ss << partno << ' ' << timestep.back ();
     std::string stime, spart;
     ss >> spart >> stime;
 
     // open file
-    theFile.close();
-    std::string vtuname = pathname+basename+"/"+basename+"_T"+stime+"_P"+spart+".vtu";
-    theFile.open(vtuname.c_str(), std::ios::trunc|std::ios::out);
-    if(theFile.fail()) {
-	opserr<<"WARNING: Failed to open file "<<vtuname.c_str()<<"\n";
-	return -1;
-    }
-    theFile.precision(precision);
+    theFile.close ();
+    std::string vtuname =
+        pathname + basename + "/" + basename + "_T" + stime + "_P" + spart +
+        ".vtu";
+    theFile.open (vtuname.c_str (), std::ios::trunc | std::ios::out);
+    if (theFile.fail ())
+      {
+          opserr << "WARNING: Failed to open file " << vtuname.
+              c_str () << "\n";
+          return -1;
+      }
+    theFile.precision (precision);
     theFile << std::scientific;
 
     // header
-    theFile<<"<?xml version="<<quota<<"1.0"<<quota<<"?>\n";
-    theFile<<"<VTKFile type="<<quota<<"UnstructuredGrid"<<quota;
-    theFile<<" version="<<quota<<"1.0"<<quota;
-    theFile<<" byte_order="<<quota<<"LittleEndian"<<quota;
-    theFile<<" compressor="<<quota<<"vtkZLibDataCompressor"<<quota;
-    theFile<<">\n";
-    this->incrLevel();
-    this->indent();
-    theFile<<"<UnstructuredGrid>\n";
+    theFile << "<?xml version=" << quota << "1.0" << quota << "?>\n";
+    theFile << "<VTKFile type=" << quota << "UnstructuredGrid" << quota;
+    theFile << " version=" << quota << "1.0" << quota;
+    theFile << " byte_order=" << quota << "LittleEndian" << quota;
+    theFile << " compressor=" << quota << "vtkZLibDataCompressor" << quota;
+    theFile << ">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<UnstructuredGrid>\n";
 
     // get nodes
-    const ID& eletags = parts[ctag];
-    ID ndtags(0,eletags.Size()*3);
-    std::vector<Element*> eles(eletags.Size());
+    const ID & eletags = parts[ctag];
+    ID ndtags (0, eletags.Size () * 3);
+    std::vector < Element * >eles (eletags.Size ());
     int numelenodes = 0;
     int increlenodes = 1;
-    for(int i=0; i<eletags.Size(); i++) {
-	eles[i] = theDomain->getElement(eletags(i));
-	if (eles[i] == 0) {
-	    opserr<<"WARNING: element "<<eletags(i)<<" is not defined--pvdRecorder\n";
-	    return -1;
-	}
-	const ID& elenodes = eles[i]->getExternalNodes();
-	if(numelenodes == 0) {
-	    numelenodes = elenodes.Size();
-	    if(ctag==ELE_TAG_PFEMElement2D||
-	       ctag==ELE_TAG_PFEMElement2DCompressible||
-	       ctag==ELE_TAG_PFEMElement2DBubble||
-	       ctag==ELE_TAG_PFEMElement2Dmini ||
-	       ctag==ELE_TAG_MINI ||
-	       ctag==ELE_TAG_PFEMElement2DQuasi) {
-		numelenodes = 3;
-		increlenodes = 2;
-	    } else if (ctag==ELE_TAG_TaylorHood2D) {
-		numelenodes = 6;
-		increlenodes = 1;
-	    } else if (ctag==ELE_TAG_PFEMElement3DBubble) {
-		numelenodes = 4;
-		increlenodes = 2;
-	    }
-	}
-	for(int j=0; j<numelenodes; j++) {
-	    ndtags.insert(elenodes(j*increlenodes));
-	}
-    }
+    for (int i = 0; i < eletags.Size (); i++)
+      {
+          eles[i] = theDomain->getElement (eletags (i));
+          if (eles[i] == 0)
+            {
+                opserr << "WARNING: element " << eletags (i) <<
+                    " is not defined--pvdRecorder\n";
+                return -1;
+            }
+          const ID & elenodes = eles[i]->getExternalNodes ();
+          if (numelenodes == 0)
+            {
+                numelenodes = elenodes.Size ();
+                if (ctag == ELE_TAG_PFEMElement2D ||
+                    ctag == ELE_TAG_PFEMElement2DCompressible ||
+                    ctag == ELE_TAG_PFEMElement2DBubble ||
+                    ctag == ELE_TAG_PFEMElement2Dmini ||
+                    ctag == ELE_TAG_MINI ||
+                    ctag == ELE_TAG_PFEMElement2DQuasi)
+                  {
+                      numelenodes = 3;
+                      increlenodes = 2;
+                  }
+                else if (ctag == ELE_TAG_TaylorHood2D)
+                  {
+                      numelenodes = 6;
+                      increlenodes = 1;
+                  }
+                else if (ctag == ELE_TAG_PFEMElement3DBubble)
+                  {
+                      numelenodes = 4;
+                      increlenodes = 2;
+                  }
+            }
+          for (int j = 0; j < numelenodes; j++)
+            {
+                ndtags.insert (elenodes (j * increlenodes));
+            }
+      }
 
     // Piece
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Piece NumberOfPoints="<<quota<<ndtags.Size()<<quota;
-    theFile<<" NumberOfCells="<<quota<<eletags.Size()<<quota<<">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Piece NumberOfPoints=" << quota << ndtags.Size () << quota;
+    theFile << " NumberOfCells=" << quota << eletags.
+        Size () << quota << ">\n";
 
     // points
-    this->incrLevel();
-    this->indent();
-    theFile<<"<Points>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<Points>\n";
 
     // points header
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-    theFile<<" Name="<<quota<<"Points"<<quota;
-    theFile<<" NumberOfComponents="<<quota<<3<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Float32" << quota;
+    theFile << " Name=" << quota << "Points" << quota;
+    theFile << " NumberOfComponents=" << quota << 3 << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
 
     // points coordinates
-    this->incrLevel();
-    std::vector<Node*> nodes(ndtags.Size());
-    for(int i=0; i<ndtags.Size(); i++) {
-	nodes[i] = theDomain->getNode(ndtags(i));
-	if(nodes[i] == 0) {
-	    opserr<<"WARNIG: Node "<<ndtags(i)<<" is not defined -- pvdRecorder\n";
-	    return -1;
-	}
-	const Vector& crds = nodes[i]->getCrds();
-	this->indent();
-	for(int j=0; j<3; j++) {
-	    if(j < crds.Size()) {
-		theFile<<crds(j)<<' ';
-	    } else {
-		theFile<<0.0<<' ';
-	    }
-	}
-	theFile<<std::endl;
-    }
+    this->incrLevel ();
+    std::vector < Node * >nodes (ndtags.Size ());
+    for (int i = 0; i < ndtags.Size (); i++)
+      {
+          nodes[i] = theDomain->getNode (ndtags (i));
+          if (nodes[i] == 0)
+            {
+                opserr << "WARNIG: Node " << ndtags (i) <<
+                    " is not defined -- pvdRecorder\n";
+                return -1;
+            }
+          const Vector & crds = nodes[i]->getCrds ();
+          this->indent ();
+          for (int j = 0; j < 3; j++)
+            {
+                if (j < crds.Size ())
+                  {
+                      theFile << crds (j) << ' ';
+                  }
+                else
+                  {
+                      theFile << 0.0 << ' ';
+                  }
+            }
+          theFile << std::endl;
+      }
 
     // points footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Points>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Points>\n";
 
     // cells
-    this->indent();
-    theFile<<"<Cells>\n";
+    this->indent ();
+    theFile << "<Cells>\n";
 
     // connectivity
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"connectivity"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<eletags.Size(); i++) {
-	const ID& elenodes = eles[i]->getExternalNodes();
-	this->indent();
-	if (ctag==ELE_TAG_TaylorHood2D) {
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "connectivity" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < eletags.Size (); i++)
+      {
+          const ID & elenodes = eles[i]->getExternalNodes ();
+          this->indent ();
+          if (ctag == ELE_TAG_TaylorHood2D)
+            {
 
-	    // for 2nd order element, the order of mid nodes
-	    // is different to VTK
-	    int vtkOrder[] = {0,1,2,5,3,4};
-	    for(int j=0; j<numelenodes; j++) {
-		theFile<<ndtags.getLocationOrdered(elenodes(vtkOrder[j]*increlenodes))<<' ';
-	    }
+                // for 2nd order element, the order of mid nodes
+                // is different to VTK
+                int vtkOrder[] = { 0, 1, 2, 5, 3, 4 };
+                for (int j = 0; j < numelenodes; j++)
+                  {
+                      theFile << ndtags.
+                          getLocationOrdered (elenodes
+                                              (vtkOrder[j] *
+                                               increlenodes)) << ' ';
+                  }
 
-	} else {
+            }
+          else
+            {
 
-	    for(int j=0; j<numelenodes; j++) {
-		theFile<<ndtags.getLocationOrdered(elenodes(j*increlenodes))<<' ';
-	    }
-	}
-	theFile<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+                for (int j = 0; j < numelenodes; j++)
+                  {
+                      theFile << ndtags.
+                          getLocationOrdered (elenodes (j * increlenodes)) <<
+                          ' ';
+                  }
+            }
+          theFile << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // offsets
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"offsets"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "offsets" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
     int offset = numelenodes;
-    for(int i=0; i<eletags.Size(); i++) {
-	this->indent();
-	theFile<<offset<<std::endl;
-	offset += numelenodes;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    for (int i = 0; i < eletags.Size (); i++)
+      {
+          this->indent ();
+          theFile << offset << std::endl;
+          offset += numelenodes;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // types
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"types"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "types" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
     int type = vtktypes[ctag];
-    if (type == 0) {
-	opserr<<"WARNING: the element type cannot be assigned a VTK type\n";
-	return -1;
-    }
-    for(int i=0; i<eletags.Size(); i++) {
-	this->indent();
-	theFile<<type<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    if (type == 0)
+      {
+          opserr <<
+              "WARNING: the element type cannot be assigned a VTK type\n";
+          return -1;
+      }
+    for (int i = 0; i < eletags.Size (); i++)
+      {
+          this->indent ();
+          theFile << type << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // cells footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Cells>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Cells>\n";
 
     // point data
-    this->indent();
-    theFile<<"<PointData>\n";
+    this->indent ();
+    theFile << "<PointData>\n";
 
     // node tags
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"NodeTag"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<ndtags.Size(); i++) {
-	this->indent();
-	theFile<<ndtags(i)<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "NodeTag" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < ndtags.Size (); i++)
+      {
+          this->indent ();
+          theFile << ndtags (i) << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // node velocity
-    if(nodedata.vel) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Velocity"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialVel();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.vel)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Velocity" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialVel ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node displacement
-    if(nodedata.disp) {
-	// all displacement
-    this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"AllDisplacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialDisp();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
+    if (nodedata.disp)
+      {
+          // all displacement
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "AllDisplacement" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialDisp ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
 
-    // displacement
-    this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Displacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<3<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialDisp();
-	    this->indent();
-	    for(int j=0; j<3; j++) {
-		if(j < vel.Size() && j < nodes[i]->getCrds().Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+          // displacement
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Displacement" << quota;
+          theFile << " NumberOfComponents=" << quota << 3 << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialDisp ();
+                this->indent ();
+                for (int j = 0; j < 3; j++)
+                  {
+                      if (j < vel.Size () && j < nodes[i]->getCrds ().Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node incr displacement
-    if(nodedata.incrdisp) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"IncrDisplacement"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getIncrDisp();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.incrdisp)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "IncrDisplacement" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getIncrDisp ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node acceleration
-    if(nodedata.accel) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Acceleration"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getTrialAccel();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.accel)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Acceleration" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getTrialAccel ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node pressure
-    if(nodedata.pressure) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Pressure"<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    double pressure = 0.0;
-	    Pressure_Constraint* thePC = theDomain->getPressure_Constraint(ndtags(i));
-	    if(thePC != 0) {
-		pressure = thePC->getPressure();
-	    }
-	    this->indent();
-	    theFile<<pressure<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.pressure)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Pressure" << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                double pressure = 0.0;
+                Pressure_Constraint *thePC =
+                    theDomain->getPressure_Constraint (ndtags (i));
+                if (thePC != 0)
+                  {
+                      pressure = thePC->getPressure ();
+                  }
+                this->indent ();
+                theFile << pressure << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node reaction
-    if(nodedata.reaction) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"Reaction"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getReaction();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.reaction)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "Reaction" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getReaction ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node unbalanced load
-    if(nodedata.unbalanced) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"UnbalancedLoad"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Vector& vel = nodes[i]->getUnbalancedLoad();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < vel.Size()) {
-		    theFile<<vel(j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.unbalanced)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "UnbalancedLoad" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Vector & vel = nodes[i]->getUnbalancedLoad ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < vel.Size ())
+                        {
+                            theFile << vel (j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node mass
-    if(nodedata.mass) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"NodeMass"<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Matrix& mat = nodes[i]->getMass();
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < mat.noRows()) {
-		    theFile<<mat(j,j)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    if (nodedata.mass)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "NodeMass" << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Matrix & mat = nodes[i]->getMass ();
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < mat.noRows ())
+                        {
+                            theFile << mat (j, j) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // node eigen vector
-    for(int k=0; k<nodedata.numeigen; k++) {
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<"EigenVector"<<k+1<<quota;
-	theFile<<" NumberOfComponents="<<quota<<nodendf<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int i=0; i<ndtags.Size(); i++) {
-	    const Matrix& eigens = nodes[i]->getEigenvectors();
-	    if(k >= eigens.noCols()) {
-		opserr<<"WARNING: eigenvector "<<k+1<<" is too large\n";
-		return -1;
-	    }
-	    this->indent();
-	    for(int j=0; j<nodendf; j++) {
-		if(j < eigens.noRows()) {
-		    theFile<<eigens(j,k)<<' ';
-		} else {
-		    theFile<<0.0<<' ';
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+    for (int k = 0; k < nodedata.numeigen; k++)
+      {
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << "EigenVector" << k + 1 << quota;
+          theFile << " NumberOfComponents=" << quota << nodendf << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int i = 0; i < ndtags.Size (); i++)
+            {
+                const Matrix & eigens = nodes[i]->getEigenvectors ();
+                if (k >= eigens.noCols ())
+                  {
+                      opserr << "WARNING: eigenvector " << k +
+                          1 << " is too large\n";
+                      return -1;
+                  }
+                this->indent ();
+                for (int j = 0; j < nodendf; j++)
+                  {
+                      if (j < eigens.noRows ())
+                        {
+                            theFile << eigens (j, k) << ' ';
+                        }
+                      else
+                        {
+                            theFile << 0.0 << ' ';
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // point data footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</PointData>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</PointData>\n";
 
     // cell data
-    this->indent();
-    theFile<<"<CellData>\n";
+    this->indent ();
+    theFile << "<CellData>\n";
 
     // element tags
-    this->incrLevel();
-    this->indent();
-    theFile<<"<DataArray type="<<quota<<"Int32"<<quota;
-    theFile<<" Name="<<quota<<"ElementTag"<<quota;
-    theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-    this->incrLevel();
-    for(int i=0; i<eletags.Size(); i++) {
-	this->indent();
-	theFile<<eletags(i)<<std::endl;
-    }
-    this->decrLevel();
-    this->indent();
-    theFile<<"</DataArray>\n";
+    this->incrLevel ();
+    this->indent ();
+    theFile << "<DataArray type=" << quota << "Int32" << quota;
+    theFile << " Name=" << quota << "ElementTag" << quota;
+    theFile << " format=" << quota << "ascii" << quota << ">\n";
+    this->incrLevel ();
+    for (int i = 0; i < eletags.Size (); i++)
+      {
+          this->indent ();
+          theFile << eletags (i) << std::endl;
+      }
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</DataArray>\n";
 
     // element response
-    for(int i=0; i<(int)eledata.size(); i++) {
+    for (int i = 0; i < (int) eledata.size (); i++)
+      {
 
-	if(eletags.Size() == 0) break;
+          if (eletags.Size () == 0)
+              break;
 
-	// check data
-	int argc = (int)eledata[i].size();
-	if(argc == 0) continue;
-	std::vector<const char*> argv(argc);
-	for(int j=0; j<argc; j++) {
-	    argv[j] = eledata[i][j].c_str();
-	}
-	const Vector* data =theDomain->getElementResponse(eletags(0),&(argv[0]),argc);
-	if(data==0) continue;
-	int eressize = data->Size();
-	if(eressize == 0) continue;
+          // check data
+          int argc = (int) eledata[i].size ();
+          if (argc == 0)
+              continue;
+          std::vector < const char *>argv (argc);
+          for (int j = 0; j < argc; j++)
+            {
+                argv[j] = eledata[i][j].c_str ();
+            }
+          const Vector *data =
+              theDomain->getElementResponse (eletags (0), &(argv[0]), argc);
+          if (data == 0)
+              continue;
+          int eressize = data->Size ();
+          if (eressize == 0)
+              continue;
 
-	// save data
-	this->indent();
-	theFile<<"<DataArray type="<<quota<<"Float32"<<quota;
-	theFile<<" Name="<<quota<<eles[0]->getClassType();
-	for(int j=0; j<argc; j++) {
-	    theFile<<argv[j];
-	}
-	theFile<<quota;
-	theFile<<" NumberOfComponents="<<quota<<eressize<<quota;
-	theFile<<" format="<<quota<<"ascii"<<quota<<">\n";
-	this->incrLevel();
-	for(int j=0; j<eletags.Size(); j++) {
-	    data=theDomain->getElementResponse(eletags(j),&(argv[0]),argc);
-	    if(data==0) {
-		opserr<<"WARNING: can't get response for element "<<eletags(j)<<"\n";
-		return -1;
-	    }
-	    this->indent();
-	    for(int k=0; k<eressize; k++) {
-		if (k>=data->Size()) {
-		    theFile<<0.0<<" ";
-		} else {
-		    theFile<<(*data)(k)<<" ";
-		}
-	    }
-	    theFile<<std::endl;
-	}
-	this->decrLevel();
-	this->indent();
-	theFile<<"</DataArray>\n";
-    }
+          // save data
+          this->indent ();
+          theFile << "<DataArray type=" << quota << "Float32" << quota;
+          theFile << " Name=" << quota << eles[0]->getClassType ();
+          for (int j = 0; j < argc; j++)
+            {
+                theFile << argv[j];
+            }
+          theFile << quota;
+          theFile << " NumberOfComponents=" << quota << eressize << quota;
+          theFile << " format=" << quota << "ascii" << quota << ">\n";
+          this->incrLevel ();
+          for (int j = 0; j < eletags.Size (); j++)
+            {
+                data =
+                    theDomain->getElementResponse (eletags (j), &(argv[0]),
+                                                   argc);
+                if (data == 0)
+                  {
+                      opserr << "WARNING: can't get response for element " <<
+                          eletags (j) << "\n";
+                      return -1;
+                  }
+                this->indent ();
+                for (int k = 0; k < eressize; k++)
+                  {
+                      if (k >= data->Size ())
+                        {
+                            theFile << 0.0 << " ";
+                        }
+                      else
+                        {
+                            theFile << (*data) (k) << " ";
+                        }
+                  }
+                theFile << std::endl;
+            }
+          this->decrLevel ();
+          this->indent ();
+          theFile << "</DataArray>\n";
+      }
 
     // cell data footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</CellData>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</CellData>\n";
 
     // footer
-    this->decrLevel();
-    this->indent();
-    theFile<<"</Piece>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</Piece>\n";
 
-    this->decrLevel();
-    this->indent();
-    theFile<<"</UnstructuredGrid>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</UnstructuredGrid>\n";
 
-    this->decrLevel();
-    this->indent();
-    theFile<<"</VTKFile>\n";
+    this->decrLevel ();
+    this->indent ();
+    theFile << "</VTKFile>\n";
 
-    theFile.close();
+    theFile.close ();
 
     return 0;
 }
 
 void
-PVDRecorder::indent() {
-    for(int i=0; i<indentlevel*indentsize; i++) {
-	theFile<<' ';
-    }
+PVDRecorder::indent ()
+{
+    for (int i = 0; i < indentlevel * indentsize; i++)
+      {
+          theFile << ' ';
+      }
 }
 
 int
-PVDRecorder::sendSelf(int commitTag, Channel &theChannel)
+PVDRecorder::sendSelf (int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
 int
-PVDRecorder::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+PVDRecorder::recvSelf (int commitTag, Channel & theChannel,
+                       FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
 void
-PVDRecorder::setVTKType()
+PVDRecorder::setVTKType ()
 {
-    if (vtktypes.empty() == false) {
-	return;
-    }
+    if (vtktypes.empty () == false)
+      {
+          return;
+      }
     vtktypes[ELE_TAG_Subdomain] = VTK_POLY_VERTEX;
     vtktypes[ELEMENT_TAGS_WrapperElement] = VTK_POLY_VERTEX;
     vtktypes[ELE_TAG_ElasticBeam2d] = VTK_LINE;
@@ -1980,33 +2301,36 @@ PVDRecorder::setVTKType()
 }
 
 void
-PVDRecorder::getfilename(const char* name)
+PVDRecorder::getfilename (const char *name)
 {
     // use string
-    std::string fname(name);
-    
+    std::string fname (name);
+
     // no slash at all
-    std::size_t found = fname.find_last_of("/\\");
-    if (found == std::string::npos) {
-	pathname = "./";
-	basename = fname;
-	return;
-    }
+    std::size_t found = fname.find_last_of ("/\\");
+    if (found == std::string::npos)
+      {
+          pathname = "./";
+          basename = fname;
+          return;
+      }
 
     // remove trailing slash
-    if (found == fname.length()-1) {
-	fname = fname.substr(0,fname.length()-1);
-	found = fname.find_last_of("/\\");
-    }
-    
+    if (found == fname.length () - 1)
+      {
+          fname = fname.substr (0, fname.length () - 1);
+          found = fname.find_last_of ("/\\");
+      }
+
     // only trailing slash
-    if(found == std::string::npos) {
-	pathname = "./";
-	basename = fname;
-	return;
-    }
+    if (found == std::string::npos)
+      {
+          pathname = "./";
+          basename = fname;
+          return;
+      }
 
     // more slash
-    pathname = fname.substr(0,found+1);
-    basename = fname.substr(found+1);
+    pathname = fname.substr (0, found + 1);
+    basename = fname.substr (found + 1);
 }

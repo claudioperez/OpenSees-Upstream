@@ -30,8 +30,8 @@
 // What: "@(#) ElementRecorderRMS.h, revA"
 
 #include <Recorder.h>
-#include <Information.h>
-#include <OPS_Globals.h>
+#include <base/Information.h>
+#include <OPS_Globals.h>  
 #include <ID.h>
 
 

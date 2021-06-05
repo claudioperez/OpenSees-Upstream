@@ -36,7 +36,7 @@
 
 ** ****************************************************************** */
 
-                                                                        
+
 
 // $Revision: 1.2 $                                                              
 
@@ -70,72 +70,81 @@
 
 #include <math.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
 void *
-OPS_ManderBackbone(void)
+#ifdef OPS_API_COMMANDLINE
+OPS_ManderBackbone (void)
 {
-  HystereticBackbone *theBackbone = 0;
+    HystereticBackbone *theBackbone = 0;
 
-  if (OPS_GetNumRemainingInputArgs() < 4) {
-    opserr << "Invalid number of args, want: hystereticBackbone Mander tag? fc? epsc? E?" << endln;
-    return 0;
-  }
+    if (OPS_GetNumRemainingInputArgs () < 4)
+      {
+          opserr <<
+              "Invalid number of args, want: hystereticBackbone Mander tag? fc? epsc? E?"
+              << endln;
+          return 0;
+      }
 
-  int iData[1];
-  double dData[3];
-  
-  int numData = 1;
-  if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid tag for hystereticBackbone Mander" << endln;
-    return 0;
-  }
+    int iData[1];
+    double dData[3];
 
-  numData = 3;
-  if (OPS_GetDoubleInput(&numData, dData) != 0) {
-    opserr << "WARNING invalid data for hystereticBackbone Mander" << endln;
-    return 0;
-  }
+    int numData = 1;
+    if (OPS_GetIntInput (&numData, iData) != 0)
+      {
+          opserr << "WARNING invalid tag for hystereticBackbone Mander" <<
+              endln;
+          return 0;
+      }
 
-  theBackbone = new ManderBackbone(iData[0], dData[0], dData[1], dData[2]);
-  if (theBackbone == 0) {
-    opserr << "WARNING could not create ManderBackbone\n";
-    return 0;
-  }
+    numData = 3;
+    if (OPS_GetDoubleInput (&numData, dData) != 0)
+      {
+          opserr << "WARNING invalid data for hystereticBackbone Mander" <<
+              endln;
+          return 0;
+      }
 
-  return theBackbone;
+    theBackbone = new ManderBackbone (iData[0], dData[0], dData[1], dData[2]);
+    if (theBackbone == 0)
+      {
+          opserr << "WARNING could not create ManderBackbone\n";
+          return 0;
+      }
+
+    return theBackbone;
+}
+#endif
+
+ManderBackbone::ManderBackbone (int tag, double f, double e, double E):
+HystereticBackbone (tag, BACKBONE_TAG_Mander),
+fpc (f),
+epsc (e),
+Ec (E)
+{
+    fpc = fabs (fpc);
+    epsc = fabs (epsc);
+    Ec = fabs (Ec);
+
+    /*
+
+       if (Ec <= fpc/epsc) {
+
+       opserr << "ManderBackbone::ManderBackbone -- Ec <= Esec, setting Ec = 2*fpc/epsc" << endln;
+
+       Ec = 2*fpc/epsc;
+
+       }
+
+     */
+
 }
 
-ManderBackbone::ManderBackbone(int tag, double f, double e, double E):
-  HystereticBackbone(tag,BACKBONE_TAG_Mander),
-  fpc(f), epsc(e), Ec(E)
-{
-  fpc = fabs(fpc);
-  epsc = fabs(epsc);
-  Ec = fabs(Ec);
-
-  /*
-
-  if (Ec <= fpc/epsc) {
-
-    opserr << "ManderBackbone::ManderBackbone -- Ec <= Esec, setting Ec = 2*fpc/epsc" << endln;
-
-    Ec = 2*fpc/epsc;
-
-  }
-
-  */
-
-}
 
 
+ManderBackbone::ManderBackbone ():
 
-ManderBackbone::ManderBackbone():
-
-  HystereticBackbone(0,BACKBONE_TAG_Mander),
-
-  fpc(0.0), epsc(0.0), Ec(0.0)
-
+HystereticBackbone (0, BACKBONE_TAG_Mander), fpc (0.0), epsc (0.0), Ec (0.0)
 {
 
 
@@ -144,8 +153,7 @@ ManderBackbone::ManderBackbone():
 
 
 
-ManderBackbone::~ManderBackbone()
-
+ManderBackbone::~ManderBackbone ()
 {
 
 
@@ -155,248 +163,229 @@ ManderBackbone::~ManderBackbone()
 
 
 double
-
 ManderBackbone::getTangent (double strain)
-
 {
 
-  if (strain > 0.0)
+    if (strain > 0.0)
 
-    return 0.0;
-
-  
-
-  strain *= -1;
+        return 0.0;
 
 
 
-  double oneOverepsc = 1.0/epsc;
+    strain *= -1;
 
-  
 
-  double x = strain*oneOverepsc;
 
-  double Esec = fpc*oneOverepsc;
+    double oneOverepsc = 1.0 / epsc;
 
-  
 
-  double r = Ec/(Ec-Esec);
 
-  
+    double x = strain * oneOverepsc;
 
-  double xr = pow(x,r);
+    double Esec = fpc * oneOverepsc;
 
-  double denom = r-1.0+xr;
 
-  
 
-  return Esec*r*(r-1.0)*(1.0-xr)/(denom*denom);
+    double r = Ec / (Ec - Esec);
+
+
+
+    double xr = pow (x, r);
+
+    double denom = r - 1.0 + xr;
+
+
+
+    return Esec * r * (r - 1.0) * (1.0 - xr) / (denom * denom);
 
 }
 
 
 
 double
-
 ManderBackbone::getStress (double strain)
-
 {
 
-  if (strain > 0.0)
+    if (strain > 0.0)
+
+        return 0.0;
+
+
+
+    strain *= -1;
+
+
+
+    double oneOverepsc = 1.0 / epsc;
+
+
+
+    double x = strain * oneOverepsc;
+
+    double Esec = fpc * oneOverepsc;
+
+
+
+    double r = Ec / (Ec - Esec);
+
+
+
+    return -fpc * (x * r) / (r - 1.0 + pow (x, r));
+
+}
+
+
+
+double
+ManderBackbone::getEnergy (double strain)
+{
 
     return 0.0;
 
-  
-
-  strain *= -1;
-
-
-
-  double oneOverepsc = 1.0/epsc;
-
-  
-
-  double x = strain*oneOverepsc;
-
-  double Esec = fpc*oneOverepsc;
-
-  
-
-  double r = Ec/(Ec-Esec);
-
-  
-
-  return -fpc*(x*r)/(r-1.0+pow(x,r));
-
 }
 
 
 
 double
-
-ManderBackbone::getEnergy (double strain)
-
+ManderBackbone::getYieldStrain (void)
 {
 
-  return 0.0;
+    return epsc;
 
 }
 
 
 
-double
-
-ManderBackbone::getYieldStrain(void)
-
+HystereticBackbone *
+ManderBackbone::getCopy (void)
 {
 
-  return epsc;
-
-}
-
+    ManderBackbone *theCopy =
+        new ManderBackbone (this->getTag (), fpc, epsc, Ec);
 
 
-HystereticBackbone*
 
-ManderBackbone::getCopy(void)
-
-{
-
-  ManderBackbone *theCopy =
-
-    new ManderBackbone (this->getTag(), fpc, epsc, Ec);
-
-  
-
-  return theCopy;
+    return theCopy;
 
 }
 
 
 
 void
-
-ManderBackbone::Print(OPS_Stream &s, int flag)
-
+ManderBackbone::Print (OPS_Stream & s, int flag)
 {
 
-  s << "ManderBackbone, tag: " << this->getTag() << endln;
+    s << "ManderBackbone, tag: " << this->getTag () << endln;
 
-  s << "\tfpc: " << fpc << endln;
+    s << "\tfpc: " << fpc << endln;
 
-  s << "\tepsc: " << epsc << endln;
+    s << "\tepsc: " << epsc << endln;
 
-  s << "\tEc: " << Ec << endln;
+    s << "\tEc: " << Ec << endln;
 
 }
 
 
 
 int
-
 ManderBackbone::setVariable (char *argv)
-
 {
 
-  return -1;
+    return -1;
 
 }
 
 
 
 int
-
 ManderBackbone::getVariable (int varID, double &theValue)
-
 {
 
-  return -1;
+    return -1;
 
 }
 
 
 
 int
-
-ManderBackbone::sendSelf(int commitTag, Channel &theChannel)
-
+ManderBackbone::sendSelf (int commitTag, Channel & theChannel)
 {
 
-  int res = 0;
+    int res = 0;
 
-  
 
-  static Vector data(4);
 
-  
+    static Vector data (4);
 
-  data(0) = this->getTag();
 
-  data(1) = fpc;
 
-  data(2) = epsc;
+    data (0) = this->getTag ();
 
-  data(3) = Ec;
+    data (1) = fpc;
 
-  
+    data (2) = epsc;
 
-  res += theChannel.sendVector(this->getDbTag(), commitTag, data);
+    data (3) = Ec;
 
-  if (res < 0) {
 
-    opserr << "ManderBackbone::sendSelf -- could not send Vector" << endln;
+
+    res += theChannel.sendVector (this->getDbTag (), commitTag, data);
+
+    if (res < 0)
+      {
+
+          opserr << "ManderBackbone::sendSelf -- could not send Vector" <<
+              endln;
+
+          return res;
+
+      }
+
+
 
     return res;
-
-  }
-
-  
-
-  return res;
 
 }
 
 
 
 int
-
-ManderBackbone::recvSelf(int commitTag, Channel &theChannel, 
-
-			 FEM_ObjectBroker &theBroker)
-
+ManderBackbone::recvSelf (int commitTag, Channel & theChannel,
+                          FEM_ObjectBroker & theBroker)
 {
 
-  int res = 0;
+    int res = 0;
 
-  
 
-  static Vector data(4);
 
-  
+    static Vector data (4);
 
-  res += theChannel.recvVector(this->getDbTag(), commitTag, data);
 
-  if (res < 0) {
 
-    opserr << "ManderBackbone::recvSelf -- could not receive Vector" << endln;
+    res += theChannel.recvVector (this->getDbTag (), commitTag, data);
+
+    if (res < 0)
+      {
+
+          opserr << "ManderBackbone::recvSelf -- could not receive Vector" <<
+              endln;
+
+          return res;
+
+      }
+
+
+
+    this->setTag (int (data (0)));
+
+    fpc = data (1);
+
+    epsc = data (2);
+
+    Ec = data (3);
+
+
 
     return res;
 
-  }
-
-  
-
-  this->setTag(int(data(0)));
-
-  fpc = data(1);
-
-  epsc = data(2);
-
-  Ec = data(3);
-
-  
-
-  return res;
-
 }
-

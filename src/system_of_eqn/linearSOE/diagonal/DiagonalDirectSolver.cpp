@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2005-02-09 19:58:47 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/diagonal/DiagonalDirectSolver.cpp,v $
@@ -39,138 +39,149 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 
-void* OPS_DiagonalDirectSolver()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_DiagonalDirectSolver ()
 {
-    DiagonalSolver *theSolver = new DiagonalDirectSolver();   
-    return new DiagonalSOE(*theSolver);
+    DiagonalSolver *theSolver = new DiagonalDirectSolver ();
+    return new DiagonalSOE (*theSolver);
+}
+#endif
+
+DiagonalDirectSolver::DiagonalDirectSolver (double tol):
+DiagonalSolver (SOLVER_TAGS_DiagonalDirectSolver),
+minDiagTol (tol)
+{
+
 }
 
-DiagonalDirectSolver::DiagonalDirectSolver(double tol)
-:DiagonalSolver(SOLVER_TAGS_DiagonalDirectSolver),
- minDiagTol(tol)
-{
 
-}
-
-    
-DiagonalDirectSolver::~DiagonalDirectSolver()
+DiagonalDirectSolver::~DiagonalDirectSolver ()
 {
 
 }
 
 int
-DiagonalDirectSolver::setSize(void)
+DiagonalDirectSolver::setSize (void)
 {
-  if (theSOE == 0) {
-    opserr << "DiagonalDirectSolver::setSize()";
-    opserr << " No system has been set!\n";
-    return -1;
-  }
-  return 0;
+    if (theSOE == 0)
+      {
+          opserr << "DiagonalDirectSolver::setSize()";
+          opserr << " No system has been set!\n";
+          return -1;
+      }
+    return 0;
 }
 
 
-int 
-DiagonalDirectSolver::solve(void)
+int
+DiagonalDirectSolver::solve (void)
 {
 
-  // check for quick returns
-  if (theSOE == 0) {
-    opserr << "DiagonalDirectSolver::solve(void): ";
-    opserr << " - No ProfileSPDSOE has been assigned\n";
-    return -1;
-  }
-    
-  if (theSOE->size == 0)
-    return 0;
-  
-  // set some pointers
-  double *Aptr = theSOE->A;
-  double *Bptr = theSOE->B;
-  double *Xptr = theSOE->X;
-  int size = theSOE->size;
-
-  if (theSOE->isAfactored == false)  {
-    
-    // FACTOR & SOLVE
-    double invD;
-    for (int i=0; i<size; i++) {
-      
-      double aii = *Aptr;
-
-      // check that the diag > the tolerance specified
-      if (aii == 0.0) {
-	opserr << "DiagonalDirectSolver::solve() - ";
-	opserr << " aii = 0 (i, aii): (" << i << ", " << aii << ")\n"; 
-	return(-2);
+    // check for quick returns
+    if (theSOE == 0)
+      {
+          opserr << "DiagonalDirectSolver::solve(void): ";
+          opserr << " - No ProfileSPDSOE has been assigned\n";
+          return -1;
       }
-      if (fabs(aii) <= minDiagTol) {
-	opserr << "DiagonalDirectSolver::solve() - ";
-	opserr << " aii < minDiagTol (i, aii): (" << i;
-	opserr << ", " << aii << ")\n"; 
-	return(-2);
-      }		
 
-      // store the inverse 1/Aii in A; and solve for Xi
-      invD = 1.0/aii; 
-      *Xptr++ = invD * *Bptr++;
-      *Aptr++ = invD;
-    }
+    if (theSOE->size == 0)
+        return 0;
 
-    theSOE->isAfactored = true;
+    // set some pointers
+    double *Aptr = theSOE->A;
+    double *Bptr = theSOE->B;
+    double *Xptr = theSOE->X;
+    int size = theSOE->size;
 
-  } else {
+    if (theSOE->isAfactored == false)
+      {
 
-    // JUST SOLVE
-    for (int i=0; i<size; i++) {
-      *Xptr++ = *Aptr++ * *Bptr++;
-    }
-  }	
-    
-  return 0;
+          // FACTOR & SOLVE
+          double invD;
+          for (int i = 0; i < size; i++)
+            {
+
+                double aii = *Aptr;
+
+                // check that the diag > the tolerance specified
+                if (aii == 0.0)
+                  {
+                      opserr << "DiagonalDirectSolver::solve() - ";
+                      opserr << " aii = 0 (i, aii): (" << i << ", " << aii <<
+                          ")\n";
+                      return (-2);
+                  }
+                if (fabs (aii) <= minDiagTol)
+                  {
+                      opserr << "DiagonalDirectSolver::solve() - ";
+                      opserr << " aii < minDiagTol (i, aii): (" << i;
+                      opserr << ", " << aii << ")\n";
+                      return (-2);
+                  }
+
+                // store the inverse 1/Aii in A; and solve for Xi
+                invD = 1.0 / aii;
+                *Xptr++ = invD * *Bptr++;
+                *Aptr++ = invD;
+            }
+
+          theSOE->isAfactored = true;
+
+      }
+    else
+      {
+
+          // JUST SOLVE
+          for (int i = 0; i < size; i++)
+            {
+                *Xptr++ = *Aptr++ * *Bptr++;
+            }
+      }
+
+    return 0;
 }
 
 double
-DiagonalDirectSolver::getDeterminant(void) 
+DiagonalDirectSolver::getDeterminant (void)
 {
-  double determinant = 0.0;
-  return determinant;
+    double determinant = 0.0;
+    return determinant;
 }
 
-int 
-DiagonalDirectSolver::setDiagonalSOE(DiagonalSOE &theNewSOE)
+int
+DiagonalDirectSolver::setDiagonalSOE (DiagonalSOE & theNewSOE)
 {
-  if (theSOE != 0) {
-    opserr << "DiagonalDirectSolver::setProfileSOE() - ";
-    opserr << " has already been called \n";	
-    return -1;
-  }
-  
-  theSOE = &theNewSOE;
-  return 0;
+    if (theSOE != 0)
+      {
+          opserr << "DiagonalDirectSolver::setProfileSOE() - ";
+          opserr << " has already been called \n";
+          return -1;
+      }
+
+    theSOE = &theNewSOE;
+    return 0;
 }
 
 
 int
-DiagonalDirectSolver::sendSelf(int cTag,
-			       Channel &theChannel)
+DiagonalDirectSolver::sendSelf (int cTag, Channel & theChannel)
 {
-  static Vector data(1);
-  data(0) = minDiagTol;
-  return theChannel.sendVector(0, cTag, data);
+    static Vector data (1);
+    data (0) = minDiagTol;
+    return theChannel.sendVector (0, cTag, data);
 }
 
 
-int 
-DiagonalDirectSolver::recvSelf(int cTag,
-			       Channel &theChannel, 
-			       FEM_ObjectBroker &theBroker)
+int
+DiagonalDirectSolver::recvSelf (int cTag,
+                                Channel & theChannel,
+                                FEM_ObjectBroker & theBroker)
 {
-  static Vector data(1);
-  theChannel.recvVector(0, cTag, data);
+    static Vector data (1);
+    theChannel.recvVector (0, cTag, data);
 
-  minDiagTol = data(0);
-  return 0;
+    minDiagTol = data (0);
+    return 0;
 }
-
-

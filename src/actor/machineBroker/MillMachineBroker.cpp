@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2003-08-29 07:19:26 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/machineBroker/MillMachineBroker.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/actor/broker/MillMachineBroker.h
 //
 // Written: fmk
@@ -42,59 +42,66 @@
 #include <remote.h>
 #include <Channel.h>
 
-MillMachineBroker::MillMachineBroker(FEM_ObjectBroker *theBroker)
-  :MachineBroker(theBroker), currentMachine(0),maxNumMachines(5)
+MillMachineBroker::MillMachineBroker (FEM_ObjectBroker * theBroker):MachineBroker (theBroker), currentMachine (0),
+maxNumMachines
+(5)
 {
-    char *mill0 = "mill0";
-    char *mill1 = "mill1";
-    char *mill2 = "mill2";
-    char *mill3 = "mill3";
-    char *mill4 = "mill4";
-    
-    char **theMachines = (char **)malloc(5*sizeof(char *));
+    char *
+        mill0 = "mill0";
+    char *
+        mill1 = "mill1";
+    char *
+        mill2 = "mill2";
+    char *
+        mill3 = "mill3";
+    char *
+        mill4 = "mill4";
+
+    char **
+        theMachines = (char **) malloc (5 * sizeof (char *));
     theMachines[0] = mill0;
     theMachines[1] = mill1;
     theMachines[2] = mill2;
     theMachines[3] = mill3;
     theMachines[4] = mill4;
-    
+
     machines = theMachines;
 }
-MillMachineBroker::~MillMachineBroker()
+
+MillMachineBroker::~MillMachineBroker ()
 {
 }
 
 
-int 
-MillMachineBroker::startActor(char *actorProgram, 
-			       Channel &theChannel,
-			       int compDemand)
-{ 
-    char  remotecmd[400];
+int
+MillMachineBroker::startActor (char *actorProgram,
+                               Channel & theChannel, int compDemand)
+{
+    char remotecmd[400];
 
     // get the next machine, a round-robin approach
     char *machine;
     if (currentMachine < maxNumMachines)
-	machine = machines[currentMachine];
-    else {
-	currentMachine = 0;
-	machine = machines[currentMachine];
-    }
+        machine = machines[currentMachine];
+    else
+      {
+          currentMachine = 0;
+          machine = machines[currentMachine];
+      }
 
     currentMachine++;
-    
-    strcpy(remotecmd,REMOTE);
-    strcat(remotecmd," ");          
-    strcat(remotecmd,machine);
-    strcat(remotecmd," ");
-    strcat(remotecmd,actorProgram);
-    strcat(remotecmd," ");
-    strcat(remotecmd,theChannel.addToProgram());    
-    strcat(remotecmd,"\n");
+
+    strcpy (remotecmd, REMOTE);
+    strcat (remotecmd, " ");
+    strcat (remotecmd, machine);
+    strcat (remotecmd, " ");
+    strcat (remotecmd, actorProgram);
+    strcat (remotecmd, " ");
+    strcat (remotecmd, theChannel.addToProgram ());
+    strcat (remotecmd, "\n");
 
     // opserr << "MillMachineBroker::Constructor - command\n"<< remotecmd;
-    system(remotecmd);
+    system (remotecmd);
 
     return 0;
 }
-

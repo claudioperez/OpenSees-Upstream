@@ -37,7 +37,7 @@
 //
 // What: "@(#) Matrix.h, revA"
 
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 
 class Vector;
 class ID;

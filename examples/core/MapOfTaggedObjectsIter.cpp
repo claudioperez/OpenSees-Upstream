@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:30 $
 // $Source: /usr/local/cvs/OpenSees/SRC/tagged/storage/MapOfTaggedObjectsIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/tagged/storage/MapOfTaggedObjectsIter.C
 //
 // Written: fmk 
@@ -35,39 +35,40 @@
 #include <MapOfTaggedObjects.h>
 
 // some typedefs that will be useful
-typedef map<int, TaggedObject *> MAP_TAGGED;
-typedef MAP_TAGGED::value_type   MAP_TAGGED_TYPE;
-typedef MAP_TAGGED::iterator     MAP_TAGGED_ITERATOR;
+typedef map < int, TaggedObject * >MAP_TAGGED;
+typedef
+    MAP_TAGGED::value_type
+    MAP_TAGGED_TYPE;
+typedef
+    MAP_TAGGED::iterator
+    MAP_TAGGED_ITERATOR;
 
 // MapOfTaggedObjectsIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
-MapOfTaggedObjectsIter::MapOfTaggedObjectsIter(MapOfTaggedObjects &theComponents)
+//      constructor that takes the model, just the basic iter
+MapOfTaggedObjectsIter::
+MapOfTaggedObjectsIter (MapOfTaggedObjects & theComponents)
 {
     theMap = &(theComponents.theMap);
 }
 
 
-MapOfTaggedObjectsIter::~MapOfTaggedObjectsIter()
+MapOfTaggedObjectsIter::~MapOfTaggedObjectsIter ()
 {
 
-}    
+}
 
 void
-MapOfTaggedObjectsIter::reset(void)
+MapOfTaggedObjectsIter::reset (void)
 {
-    currentComponent = theMap->begin();
+    currentComponent = theMap->begin ();
 }
 
 TaggedObject *
-MapOfTaggedObjectsIter::operator()(void)
+MapOfTaggedObjectsIter::operator () (void)
 {
-    if (currentComponent != theMap->end()) {
-	TaggedObject *result = (*currentComponent).second;
-	currentComponent++;
-	return result;
-    } else
-	return 0;
-}
-
-    
-    
+    if (currentComponent != theMap->end ())
+      {
+       TaggedObject * result = (*currentComponent).second;
+       currentComponent++; return result;}
+       else
+       return 0;}

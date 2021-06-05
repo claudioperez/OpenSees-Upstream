@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:19 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/load/Load.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/domain/load/Load.C
 //
 // Written: fmk 
@@ -37,26 +37,27 @@
 #include <Load.h>
 
 
-Load::Load(int tag, int clasTag)
-:DomainComponent(tag, clasTag), loadPatternTag(-1)
+Load::Load (int tag, int clasTag):
+DomainComponent (tag, clasTag),
+loadPatternTag (-1)
 {
     // does nothing
 }
 
 
-Load::~Load()
+Load::~Load ()
 {
     // does nothing
 }
 
 void
-Load::setLoadPatternTag(int tag)
+Load::setLoadPatternTag (int tag)
 {
-  loadPatternTag = tag;
+    loadPatternTag = tag;
 }
 
 int
-Load::getLoadPatternTag(void) const
+Load::getLoadPatternTag (void) const
 {
-  return loadPatternTag;
+    return loadPatternTag;
 }

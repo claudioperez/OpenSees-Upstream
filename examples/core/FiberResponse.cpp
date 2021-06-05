@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2001-07-31 18:26:58 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/response/FiberResponse.cpp,v $
-                                                                        
+
 // Written: MHS 
 // Created: Oct 2000
 //
@@ -30,50 +30,62 @@
 #include <FiberResponse.h>
 #include <Fiber.h>
 
-FiberResponse::FiberResponse(Fiber *fib, int id):
-Response(), theFiber(fib), responseID(id)
+FiberResponse::FiberResponse (Fiber * fib, int id):
+Response (),
+theFiber (fib),
+responseID (id)
 {
 
 }
 
-FiberResponse::FiberResponse(Fiber *fib, int id, int val):
-Response(val), theFiber(fib), responseID(id)
+FiberResponse::FiberResponse (Fiber * fib, int id, int val):
+Response (val),
+theFiber (fib),
+responseID (id)
 {
 
 }
 
-FiberResponse::FiberResponse(Fiber *fib, int id, double val):
-Response(val), theFiber(fib), responseID(id)
+FiberResponse::FiberResponse (Fiber * fib, int id, double val):
+Response (val),
+theFiber (fib),
+responseID (id)
 {
 
 }
 
-FiberResponse::FiberResponse(Fiber *fib, int id, const ID &val):
-Response(val), theFiber(fib), responseID(id)
+FiberResponse::FiberResponse (Fiber * fib, int id, const ID & val):
+Response (val),
+theFiber (fib),
+responseID (id)
 {
 
 }
 
-FiberResponse::FiberResponse(Fiber *fib, int id, const Vector &val):
-Response(val), theFiber(fib), responseID(id)
+FiberResponse::FiberResponse (Fiber * fib, int id, const Vector & val):
+Response (val),
+theFiber (fib),
+responseID (id)
 {
 
 }
 
-FiberResponse::FiberResponse(Fiber *fib, int id, const Matrix &val):
-Response(val), theFiber(fib), responseID(id)
+FiberResponse::FiberResponse (Fiber * fib, int id, const Matrix & val):
+Response (val),
+theFiber (fib),
+responseID (id)
 {
 
 }
 
 
-FiberResponse::~FiberResponse()
+FiberResponse::~FiberResponse ()
 {
 
 }
 
 int
-FiberResponse::getResponse(void)
+FiberResponse::getResponse (void)
 {
-	return theFiber->getResponse(responseID, myInfo);
+    return theFiber->getResponse (responseID, myInfo);
 }

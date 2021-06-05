@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $Source$
@@ -35,41 +35,47 @@
 
 static MapOfTaggedObjects theUnloadingRuleObjects;
 
-bool OPS_addUnloadingRule(UnloadingRule *newComponent)
+bool
+OPS_addUnloadingRule (UnloadingRule * newComponent)
 {
-  return theUnloadingRuleObjects.addComponent(newComponent);
+    return theUnloadingRuleObjects.addComponent (newComponent);
 }
 
-UnloadingRule *OPS_getUnloadingRule(int tag)
+UnloadingRule *
+OPS_getUnloadingRule (int tag)
 {
-  TaggedObject *theResult = theUnloadingRuleObjects.getComponentPtr(tag);
-  if (theResult == 0) {
-    opserr << "UnloadingRule *getUnloadingRule(int tag) - none found with tag: " << tag << endln;
-    return 0;
-  }
-  UnloadingRule *theMat = (UnloadingRule *)theResult;
+    TaggedObject *theResult = theUnloadingRuleObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          opserr <<
+              "UnloadingRule *getUnloadingRule(int tag) - none found with tag: "
+              << tag << endln;
+          return 0;
+      }
+    UnloadingRule *theMat = (UnloadingRule *) theResult;
 
-  return theMat;  
+    return theMat;
 }
 
-void OPS_clearAllUnloadingRule(void)
+void
+OPS_clearAllUnloadingRule (void)
 {
-  theUnloadingRuleObjects.clearAll();
+    theUnloadingRuleObjects.clearAll ();
 }
 
-UnloadingRule::UnloadingRule(int tag, int classTag)
-:MaterialState(tag,classTag)
-{
-
-}
-
-UnloadingRule::~UnloadingRule()
+UnloadingRule::UnloadingRule (int tag, int classTag):
+MaterialState (tag, classTag)
 {
 
 }
 
-UnloadingRule*
-UnloadingRule::getCopy(UniaxialMaterial *u)
+UnloadingRule::~UnloadingRule ()
 {
-	return this->getCopy();
+
+}
+
+UnloadingRule *
+UnloadingRule::getCopy (UniaxialMaterial * u)
+{
+    return this->getCopy ();
 }

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/single/SingleDomNodIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/domain/SingleDomNodIter.C
 //
 // Written: fmk 
@@ -41,39 +41,37 @@
 
 
 // SingleDomNodIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SingleDomNodIter::SingleDomNodIter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+SingleDomNodIter::SingleDomNodIter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 }
 
-SingleDomNodIter::~SingleDomNodIter()
+SingleDomNodIter::~SingleDomNodIter ()
 {
-}    
+}
 
 
 void
-SingleDomNodIter::reset(void)
+SingleDomNodIter::reset (void)
 {
-    myIter.reset();
+    myIter.reset ();
 }
 
 
 Node *
-SingleDomNodIter::operator()(void)
+SingleDomNodIter::operator () (void)
 {
     // check if we still have Nodes in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	Node *result = (Node *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          Node *result = (Node *) theComponent;
+          return result;
+      }
 }
-
-
-    
-    

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:19 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/subdomain/SubdomainNodIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/subdomain/SubdomainNodIter.C
 //
 // Written: fmk 
@@ -45,46 +45,39 @@
 
 
 // SubdomainNodIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SubdomainNodIter::SubdomainNodIter(Subdomain &theSub)
-  :currentIter(0), theSubdomain(&theSub), external(true)
+SubdomainNodIter::SubdomainNodIter (Subdomain & theSub):currentIter (0), theSubdomain (&theSub),
+external (true)
 {
 }
 
 
-SubdomainNodIter::~SubdomainNodIter()
+SubdomainNodIter::~SubdomainNodIter ()
 {
-}    
+}
 
 void
-SubdomainNodIter::reset(void)
+SubdomainNodIter::reset (void)
 {
-    currentIter = &(theSubdomain->getExternalNodeIter());
+    currentIter = &(theSubdomain->getExternalNodeIter ());
     external = true;
 }
 
 Node *
-SubdomainNodIter::operator()(void)
+SubdomainNodIter::operator () (void)
 {
-    Node *theNod;
-    
-    theNod = (*currentIter)();
+    Node * theNod;
+
+    theNod = (*currentIter) ();
     if (theNod != 0)
-	return theNod;
-    else  
-	if (external == true) {
-	    currentIter = &(theSubdomain->getInternalNodeIter()); 
-	    external = false;
-	    return (*currentIter)();
-	}     
-	else 
-	    return 0;
-}	
-
-
-    
-    
-
-
-
+        return theNod;
+    else if (external == true)
+      {
+          currentIter = &(theSubdomain->getInternalNodeIter ());
+          external = false;
+          return (*currentIter) ();
+      }
+    else
+        return 0;
+}

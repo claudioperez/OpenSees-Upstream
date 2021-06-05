@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2004-11-24 22:40:16 $
 // $Source: /usr/local/cvs/OpenSees/SRC/handler/DataOutputHandler.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Date: 10/04
 //
@@ -32,14 +32,13 @@
 
 #include "DataOutputHandler.h"
 
-DataOutputHandler::DataOutputHandler(int classTag)
-  :MovableObject(classTag)
+DataOutputHandler::DataOutputHandler (int classTag):
+MovableObject (classTag)
 {
 
 }
 
-DataOutputHandler::~DataOutputHandler()
+DataOutputHandler::~DataOutputHandler ()
 {
     // does nothing
 }
- 

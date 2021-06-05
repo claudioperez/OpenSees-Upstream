@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:16 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/analysis/TransientAnalysis.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/analysis/TransientAnalysis.C
 // 
 // Written: fmk 
@@ -38,30 +38,13 @@
 #include <TransientAnalysis.h>
 #include <Domain.h>
 
-TransientAnalysis::TransientAnalysis(Domain &theDom)
-:Analysis(theDom)
+TransientAnalysis::TransientAnalysis (Domain & theDom):Analysis (theDom)
 {
 
 }
 
 
-TransientAnalysis::~TransientAnalysis()
+TransientAnalysis::~TransientAnalysis ()
 {
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

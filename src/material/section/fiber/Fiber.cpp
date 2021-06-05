@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.6 $
 // $Date: 2007-02-02 01:18:42 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/section/fiber/Fiber.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/fiber/Fiber.C
 //
 // Written: Remo Magalhaes de Souza
@@ -39,46 +39,47 @@
 #include <Matrix.h>
 
 // constructor:
-Fiber::Fiber(int tag, int classTag):
-  TaggedObject(tag), MovableObject(classTag),
-  sDefault(0), fDefault(0)
+Fiber::Fiber (int tag, int classTag):
+TaggedObject (tag),
+MovableObject (classTag),
+sDefault (0),
+fDefault (0)
 {
 
 }
 
 // destructor:
-Fiber::~Fiber()
+Fiber::~Fiber ()
 {
-  if (sDefault != 0)
-    delete sDefault;
-  if (fDefault != 0)
-    delete fDefault;
+    if (sDefault != 0)
+        delete sDefault;
+    if (fDefault != 0)
+        delete fDefault;
 }
 
-Response*
-Fiber::setResponse(const char **argv, int argc, OPS_Stream &s)
+Response *
+Fiber::setResponse (const char **argv, int argc, OPS_Stream & s)
 {
-  return 0;
-}
-
-int
-Fiber::getResponse(int responseID, Information &info)
-{
-  return -1;
-}
-
-const Vector&
-Fiber::getFiberSensitivity(int gradNumber, bool cond)
-{
-  if (sDefault == 0)
-    sDefault = new Vector (this->getOrder());
-  return *sDefault;
-
+    return 0;
 }
 
 int
-Fiber::commitSensitivity(const Vector &dedh, int gradNumber,
-			 int numGrads)
+Fiber::getResponse (int responseID, Information & info)
 {
-  return -1;
+    return -1;
+}
+
+const Vector &
+Fiber::getFiberSensitivity (int gradNumber, bool cond)
+{
+    if (sDefault == 0)
+        sDefault = new Vector (this->getOrder ());
+    return *sDefault;
+
+}
+
+int
+Fiber::commitSensitivity (const Vector & dedh, int gradNumber, int numGrads)
+{
+    return -1;
 }

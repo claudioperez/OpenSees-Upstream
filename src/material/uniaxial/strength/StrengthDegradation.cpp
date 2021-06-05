@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $Source$
@@ -35,41 +35,48 @@
 
 static MapOfTaggedObjects theStrengthDegradationObjects;
 
-bool OPS_addStrengthDegradation(StrengthDegradation *newComponent)
+bool
+OPS_addStrengthDegradation (StrengthDegradation * newComponent)
 {
-  return theStrengthDegradationObjects.addComponent(newComponent);
+    return theStrengthDegradationObjects.addComponent (newComponent);
 }
 
-StrengthDegradation *OPS_getStrengthDegradation(int tag)
+StrengthDegradation *
+OPS_getStrengthDegradation (int tag)
 {
-  TaggedObject *theResult = theStrengthDegradationObjects.getComponentPtr(tag);
-  if (theResult == 0) {
-    opserr << "StrengthDegradation *getStrengthDegradation(int tag) - none found with tag: " << tag << endln;
-    return 0;
-  }
-  StrengthDegradation *theMat = (StrengthDegradation *)theResult;
+    TaggedObject *theResult =
+        theStrengthDegradationObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          opserr <<
+              "StrengthDegradation *getStrengthDegradation(int tag) - none found with tag: "
+              << tag << endln;
+          return 0;
+      }
+    StrengthDegradation *theMat = (StrengthDegradation *) theResult;
 
-  return theMat;  
+    return theMat;
 }
 
-void OPS_clearAllStrengthDegradation(void)
+void
+OPS_clearAllStrengthDegradation (void)
 {
-  theStrengthDegradationObjects.clearAll();
+    theStrengthDegradationObjects.clearAll ();
 }
 
-StrengthDegradation::StrengthDegradation(int tag, int classTag)
-  :MaterialState(tag,classTag)
+StrengthDegradation::StrengthDegradation (int tag, int classTag):
+MaterialState (tag, classTag)
 {
-  
+
 }
 
-StrengthDegradation::~StrengthDegradation()
+StrengthDegradation::~StrengthDegradation ()
 {
-  
+
 }
 
-StrengthDegradation*
-StrengthDegradation::getCopy(UniaxialMaterial *u)
+StrengthDegradation *
+StrengthDegradation::getCopy (UniaxialMaterial * u)
 {
-  return this->getCopy();
+    return this->getCopy ();
 }

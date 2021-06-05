@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $URL$
-                                                                        
-                                                                        
+
+
 // File: ~/domain/load/UniformExcitation.h
 //
 // Written: fmk 11/98
@@ -42,8 +42,9 @@
 #include <FEM_ObjectBroker.h>
 #include <SP_ConstraintIter.h>
 #include <SP_Constraint.h>
-#include <elementAPI.h>
-
+// #include <elementAPI.h>
+/*
+#ifdef OPS_API_COMMANDLINE
 void* OPS_TimeSeriesIntegrator();
 
 void* OPS_UniformExcitationPattern()
@@ -187,41 +188,48 @@ void* OPS_UniformExcitationPattern()
 
     return thePattern;
 }
+#endif
+*/
 
-UniformExcitation::UniformExcitation()
-:EarthquakePattern(0, PATTERN_TAG_UniformExcitation), 
- theMotion(0), theDof(0), vel0(0.0), fact(0.0)
+UniformExcitation::UniformExcitation ():EarthquakePattern (0, PATTERN_TAG_UniformExcitation),
+theMotion (0), theDof (0), vel0 (0.0),
+fact (0.0)
 {
 
 }
 
 
-UniformExcitation::UniformExcitation(GroundMotion &_theMotion, 
-				     int dof, int tag, double velZero, double theFactor)
-:EarthquakePattern(tag, PATTERN_TAG_UniformExcitation), 
- theMotion(&_theMotion), theDof(dof), vel0(velZero), fact(theFactor)
+UniformExcitation::UniformExcitation (GroundMotion & _theMotion,
+                                      int dof, int tag, double velZero,
+                                      double theFactor):
+EarthquakePattern (tag, PATTERN_TAG_UniformExcitation),
+theMotion (&_theMotion),
+theDof (dof),
+vel0 (velZero),
+fact (theFactor)
 {
-  // add the motion to the list of ground motions
-  this->addMotion(*theMotion);
+    // add the motion to the list of ground motions
+    this->addMotion (*theMotion);
 }
 
 
-UniformExcitation::~UniformExcitation()
+UniformExcitation::~UniformExcitation ()
 {
 
 }
 
 
 const GroundMotion *
-UniformExcitation::getGroundMotion(void)
+UniformExcitation::getGroundMotion (void)
 {
-  return theMotion;
+    return theMotion;
 }
 
 int
-UniformExcitation::setParameter(const char **argv, int argc, Parameter &param)
+UniformExcitation::setParameter (const char **argv, int argc,
+                                 Parameter & param)
 {
-  return theMotion->setParameter(argv, argc, param);
+    return theMotion->setParameter (argv, argc, param);
 }
 
 /*
@@ -239,224 +247,255 @@ UniformExcitation::activateParameter(int pparameterID)
 */
 
 void
-UniformExcitation::setDomain(Domain *theDomain) 
+UniformExcitation::setDomain (Domain * theDomain)
 {
-  this->LoadPattern::setDomain(theDomain);
+    this->LoadPattern::setDomain (theDomain);
 
-  // now we go through and set all the node velocities to be vel0 
-  // for those nodes not fixed in the dirn!
-  if (vel0 != 0.0) {
+    // now we go through and set all the node velocities to be vel0 
+    // for those nodes not fixed in the dirn!
+    if (vel0 != 0.0)
+      {
 
-    SP_ConstraintIter &theSPs = theDomain->getSPs();
-    SP_Constraint *theSP;
-    ID constrainedNodes(0);
-    int count = 0;
-    while ((theSP=theSPs()) != 0) {
-      if (theSP->getDOF_Number() == theDof) {
-	constrainedNodes[count] = theSP->getNodeTag();
-	count++;
+          SP_ConstraintIter & theSPs = theDomain->getSPs ();
+          SP_Constraint *theSP;
+          ID constrainedNodes (0);
+          int count = 0;
+          while ((theSP = theSPs ()) != 0)
+            {
+                if (theSP->getDOF_Number () == theDof)
+                  {
+                      constrainedNodes[count] = theSP->getNodeTag ();
+                      count++;
+                  }
+            }
+
+
+          NodeIter & theNodes = theDomain->getNodes ();
+          Node *theNode;
+          Vector newVel (1);
+          int currentSize = 1;
+          while ((theNode = theNodes ()) != 0)
+            {
+                int tag = theNode->getTag ();
+                if (constrainedNodes.getLocation (tag) < 0)
+                  {
+                      int numDOF = theNode->getNumberDOF ();
+                      if (numDOF != currentSize)
+                          newVel.resize (numDOF);
+
+                      newVel = theNode->getVel ();
+                      newVel (theDof) = vel0;
+                      theNode->setTrialVel (newVel);
+                      theNode->commitState ();
+                  }
+            }
       }
-    }
-
-
-    NodeIter &theNodes = theDomain->getNodes();
-    Node *theNode;
-    Vector newVel(1);
-    int currentSize = 1;
-    while ((theNode = theNodes()) != 0) {
-      int tag = theNode->getTag();
-      if (constrainedNodes.getLocation(tag) < 0) {
-	int numDOF = theNode->getNumberDOF();
-	if (numDOF != currentSize) 
-	  newVel.resize(numDOF);
-	
-	newVel = theNode->getVel();
-	newVel(theDof) = vel0;
-	theNode->setTrialVel(newVel);
-	theNode->commitState();
-      }
-    }
-  }
 }
 
 void
-UniformExcitation::applyLoad(double time)
+UniformExcitation::applyLoad (double time)
 {
-    Domain *theDomain = this->getDomain();
+    Domain *theDomain = this->getDomain ();
     if (theDomain == 0)
         return;
-    
-    NodeIter &theNodes = theDomain->getNodes();
+
+    NodeIter & theNodes = theDomain->getNodes ();
     Node *theNode;
-    while ((theNode = theNodes()) != 0) {
-        theNode->setNumColR(1);
-        const Vector &crds=theNode->getCrds();
-        int ndm = crds.Size();
-        
-        if (ndm == 1) {
-            theNode->setR(theDof, 0, fact);
-        }
-        else if (ndm == 2) {
-            if (theDof < 2) {
-                theNode->setR(theDof, 0, fact);
+    while ((theNode = theNodes ()) != 0)
+      {
+          theNode->setNumColR (1);
+          const Vector & crds = theNode->getCrds ();
+          int ndm = crds.Size ();
+
+          if (ndm == 1)
+            {
+                theNode->setR (theDof, 0, fact);
             }
-            else if (theDof == 2) {
-                double xCrd = crds(0);
-                double yCrd = crds(1);
-                theNode->setR(0, 0, -fact*yCrd);
-                theNode->setR(1, 0, fact*xCrd);
-                theNode->setR(2, 0, fact);
+          else if (ndm == 2)
+            {
+                if (theDof < 2)
+                  {
+                      theNode->setR (theDof, 0, fact);
+                  }
+                else if (theDof == 2)
+                  {
+                      double xCrd = crds (0);
+                      double yCrd = crds (1);
+                      theNode->setR (0, 0, -fact * yCrd);
+                      theNode->setR (1, 0, fact * xCrd);
+                      theNode->setR (2, 0, fact);
+                  }
             }
-        }
-        else if (ndm == 3) {
-            if (theDof < 3) {
-                theNode->setR(theDof, 0, fact);
+          else if (ndm == 3)
+            {
+                if (theDof < 3)
+                  {
+                      theNode->setR (theDof, 0, fact);
+                  }
+                else if (theDof == 3)
+                  {
+                      double yCrd = crds (1);
+                      double zCrd = crds (2);
+                      theNode->setR (1, 0, -fact * zCrd);
+                      theNode->setR (2, 0, fact * yCrd);
+                      theNode->setR (3, 0, fact);
+                  }
+                else if (theDof == 4)
+                  {
+                      double xCrd = crds (0);
+                      double zCrd = crds (2);
+                      theNode->setR (0, 0, fact * zCrd);
+                      theNode->setR (2, 0, -fact * xCrd);
+                      theNode->setR (4, 0, fact);
+                  }
+                else if (theDof == 5)
+                  {
+                      double xCrd = crds (0);
+                      double yCrd = crds (1);
+                      theNode->setR (0, 0, -fact * yCrd);
+                      theNode->setR (1, 0, fact * xCrd);
+                      theNode->setR (5, 0, fact);
+                  }
             }
-            else if (theDof == 3) {
-                double yCrd = crds(1);
-                double zCrd = crds(2);
-                theNode->setR(1, 0, -fact*zCrd);
-                theNode->setR(2, 0, fact*yCrd);
-                theNode->setR(3, 0, fact);
-            }
-            else if (theDof == 4) {
-                double xCrd = crds(0);
-                double zCrd = crds(2);
-                theNode->setR(0, 0, fact*zCrd);
-                theNode->setR(2, 0, -fact*xCrd);
-                theNode->setR(4, 0, fact);
-            }
-            else if (theDof == 5) {
-                double xCrd = crds(0);
-                double yCrd = crds(1);
-                theNode->setR(0, 0, -fact*yCrd);
-                theNode->setR(1, 0, fact*xCrd);
-                theNode->setR(5, 0, fact);
-            }
-        }
-    }
-    
-    this->EarthquakePattern::applyLoad(time);
-    
+      }
+
+    this->EarthquakePattern::applyLoad (time);
+
     return;
 }
 
 
 void
-UniformExcitation::applyLoadSensitivity(double time)
+UniformExcitation::applyLoadSensitivity (double time)
 {
-  Domain *theDomain = this->getDomain();
-  if (theDomain == 0)
-    return;
+    Domain *theDomain = this->getDomain ();
+    if (theDomain == 0)
+        return;
 
 //  if (numNodes != theDomain->getNumNodes()) {
-    NodeIter &theNodes = theDomain->getNodes();
+    NodeIter & theNodes = theDomain->getNodes ();
     Node *theNode;
-    while ((theNode = theNodes()) != 0) {
-      theNode->setNumColR(1);
-      theNode->setR(theDof, 0, 1.0);
-    }
+    while ((theNode = theNodes ()) != 0)
+      {
+          theNode->setNumColR (1);
+          theNode->setR (theDof, 0, 1.0);
+      }
 //  }
 
-  this->EarthquakePattern::applyLoadSensitivity(time);
+    this->EarthquakePattern::applyLoadSensitivity (time);
 
-  return;
+    return;
 }
 
 
 
-int 
-UniformExcitation::sendSelf(int commitTag, Channel &theChannel)
+int
+UniformExcitation::sendSelf (int commitTag, Channel & theChannel)
 {
-  int dbTag = this->getDbTag();
+    int dbTag = this->getDbTag ();
 
-  static Vector data(6);
-  data(0) = this->getTag();
-  data(1) = theDof;
-  data(2) = vel0;
-  data(5) = fact;
-  data(3) = theMotion->getClassTag();
-  
-  int motionDbTag = theMotion->getDbTag();
-  if (motionDbTag == 0) {
-    motionDbTag = theChannel.getDbTag();
-    theMotion->setDbTag(motionDbTag);
-  }
-  data(4) = motionDbTag;
+    static Vector data (6);
+    data (0) = this->getTag ();
+    data (1) = theDof;
+    data (2) = vel0;
+    data (5) = fact;
+    data (3) = theMotion->getClassTag ();
 
-  int res = theChannel.sendVector(dbTag, commitTag, data);
-  if (res < 0) {
-    opserr << "UniformExcitation::sendSelf() - channel failed to send data\n";
-    return res;
-  }
-      
-  res = theMotion->sendSelf(commitTag, theChannel);
-  if (res < 0) {
-    opserr << "UniformExcitation::sendSelf() - ground motion to send self\n";
-    return res;
-  }
+    int motionDbTag = theMotion->getDbTag ();
+    if (motionDbTag == 0)
+      {
+          motionDbTag = theChannel.getDbTag ();
+          theMotion->setDbTag (motionDbTag);
+      }
+    data (4) = motionDbTag;
 
-  return 0;
+    int res = theChannel.sendVector (dbTag, commitTag, data);
+    if (res < 0)
+      {
+          opserr <<
+              "UniformExcitation::sendSelf() - channel failed to send data\n";
+          return res;
+      }
+
+    res = theMotion->sendSelf (commitTag, theChannel);
+    if (res < 0)
+      {
+          opserr <<
+              "UniformExcitation::sendSelf() - ground motion to send self\n";
+          return res;
+      }
+
+    return 0;
 }
 
 
-int 
-UniformExcitation::recvSelf(int commitTag, Channel &theChannel, 
-			   FEM_ObjectBroker &theBroker)
+int
+UniformExcitation::recvSelf (int commitTag, Channel & theChannel,
+                             FEM_ObjectBroker & theBroker)
 {
-  int dbTag = this->getDbTag();
+    int dbTag = this->getDbTag ();
 
-  static Vector data(6);
-  int res = theChannel.recvVector(dbTag, commitTag, data);
-  if (res < 0) {
-    opserr << "UniformExcitation::recvSelf() - channel failed to recv data\n";
-    return res;
-  }
+    static Vector data (6);
+    int res = theChannel.recvVector (dbTag, commitTag, data);
+    if (res < 0)
+      {
+          opserr <<
+              "UniformExcitation::recvSelf() - channel failed to recv data\n";
+          return res;
+      }
 
-  this->setTag(int(data(0)));
-  theDof = int(data(1));
-  vel0 = data(2);
-  fact = data(5);
-  int motionClassTag = int(data(3));
-  int motionDbTag = int(data(4));
+    this->setTag (int (data (0)));
+    theDof = int (data (1));
+    vel0 = data (2);
+    fact = data (5);
+    int motionClassTag = int (data (3));
+    int motionDbTag = int (data (4));
 
-  if (theMotion == 0 || theMotion->getClassTag() != motionClassTag) {
-    if (theMotion != 0)
-      delete theMotion;
-    theMotion = theBroker.getNewGroundMotion(motionClassTag);
-    if (theMotion == 0) {
-      opserr << "UniformExcitation::recvSelf() - could not create a grond motion\n";
-      return -3;
-    }
+    if (theMotion == 0 || theMotion->getClassTag () != motionClassTag)
+      {
+          if (theMotion != 0)
+              delete theMotion;
+          theMotion = theBroker.getNewGroundMotion (motionClassTag);
+          if (theMotion == 0)
+            {
+                opserr <<
+                    "UniformExcitation::recvSelf() - could not create a grond motion\n";
+                return -3;
+            }
 
-    // have to set the motion in EarthquakePattern base class
-    if (numMotions == 0) 
-      this->addMotion(*theMotion);
-    else
-      theMotions[0] = theMotion;
-  }
+          // have to set the motion in EarthquakePattern base class
+          if (numMotions == 0)
+              this->addMotion (*theMotion);
+          else
+              theMotions[0] = theMotion;
+      }
 
-  theMotion->setDbTag(motionDbTag);
-  res = theMotion->recvSelf(commitTag, theChannel, theBroker);
-  if (res < 0) {
-      opserr << "UniformExcitation::recvSelf() - motion could not receive itself \n";
-      return res;
-  }
+    theMotion->setDbTag (motionDbTag);
+    res = theMotion->recvSelf (commitTag, theChannel, theBroker);
+    if (res < 0)
+      {
+          opserr <<
+              "UniformExcitation::recvSelf() - motion could not receive itself \n";
+          return res;
+      }
 
-  return 0;
+    return 0;
 }
 
 
-void 
-UniformExcitation::Print(OPS_Stream &s, int flag)
+void
+UniformExcitation::Print (OPS_Stream & s, int flag)
 {
-  s << "UniformExcitation  " << this->getTag() << " - Not Printing the GroundMotion\n";
+    s << "UniformExcitation  " << this->
+        getTag () << " - Not Printing the GroundMotion\n";
 }
 
 LoadPattern *
-UniformExcitation::getCopy(void)
+UniformExcitation::getCopy (void)
 {
-  LoadPattern *theCopy = new UniformExcitation(*theMotion, theDof, this->getTag());
-   return theCopy;
+    LoadPattern *theCopy =
+        new UniformExcitation (*theMotion, theDof, this->getTag ());
+    return theCopy;
 }
+
 //  LocalWords:  OpenSees

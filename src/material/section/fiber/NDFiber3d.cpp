@@ -42,396 +42,430 @@
 #include <FEM_ObjectBroker.h>
 #include <ID.h>
 #include <SectionForceDeformation.h>
-#include <Information.h>
+#include <base/Information.h>
 #include <Parameter.h>
 #include <FiberResponse.h>
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
-Matrix NDFiber3d::ks(6,6); 
-Vector NDFiber3d::fs(6); 
-ID NDFiber3d::code(6);
+Matrix
+NDFiber3d::ks (6, 6);
+Vector
+NDFiber3d::fs (6);
+ID
+NDFiber3d::code (6);
 
 static int numNDFiber3d = 0;
 
-void* OPS_NDFiber3d()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_NDFiber3d ()
 {
-    if(OPS_GetNumRemainingInputArgs() < 4) {
-	opserr<<"insufficient arguments for NDFiber3d\n";
-	return 0;
-    }
+    if (OPS_GetNumRemainingInputArgs () < 4)
+      {
+          opserr << "insufficient arguments for NDFiber3d\n";
+          return 0;
+      }
 
     // get data
     int numData = 3;
     double data[3];
-    if(OPS_GetDoubleInput(&numData,&data[0]) < 0) return 0;
+    if (OPS_GetDoubleInput (&numData, &data[0]) < 0)
+        return 0;
 
     // get mat tag
     int tag;
     numData = 1;
-    if(OPS_GetIntInput(&numData,&tag) < 0) return 0;
+    if (OPS_GetIntInput (&numData, &tag) < 0)
+        return 0;
 
     // get material
-    NDMaterial* theMat = OPS_getNDMaterial(tag);
-    if(theMat == 0) {
-	opserr<<"invalid NDMaterial tag\n";
-	return 0;
-    }
+    NDMaterial *theMat = OPS_getNDMaterial (tag);
+    if (theMat == 0)
+      {
+          opserr << "invalid NDMaterial tag\n";
+          return 0;
+      }
 
-    return new NDFiber3d(numNDFiber3d++,*theMat,data[2],data[0],data[1]);
+    return new NDFiber3d (numNDFiber3d++, *theMat, data[2], data[0], data[1]);
 }
+#endif
 
 
 // constructor:
-NDFiber3d::NDFiber3d(int tag, NDMaterial &theMat,
-		     double Area, double yy, double zz, double d):
-  Fiber(tag, FIBER_TAG_ND3d),
-  theMaterial(0), area(Area), y(yy), z(zz), dValue(d)
+NDFiber3d::NDFiber3d (int tag, NDMaterial & theMat,
+                      double Area, double yy, double zz, double d):
+Fiber (tag, FIBER_TAG_ND3d),
+theMaterial (0),
+area (Area),
+y (yy),
+z (zz),
+dValue (d)
 {
-  theMaterial = theMat.getCopy("BeamFiber");
-  
-  if (theMaterial == 0) {
-    opserr << "NDFiber3d::NDFiber3d -- failed to get copy of NDMaterial\n";
-    exit(-1);
-  }
-  
-  if (code(0) != SECTION_RESPONSE_P) {
-    code(0) = SECTION_RESPONSE_P;
-    code(1) = SECTION_RESPONSE_MZ;
-    code(2) = SECTION_RESPONSE_MY;
-    code(3) = SECTION_RESPONSE_VY;
-    code(4) = SECTION_RESPONSE_VZ;
-    code(5) = SECTION_RESPONSE_T;
-  }
+    theMaterial = theMat.getCopy ("BeamFiber");
+
+    if (theMaterial == 0)
+      {
+          opserr <<
+              "NDFiber3d::NDFiber3d -- failed to get copy of NDMaterial\n";
+          exit (-1);
+      }
+
+    if (code (0) != SECTION_RESPONSE_P)
+      {
+          code (0) = SECTION_RESPONSE_P;
+          code (1) = SECTION_RESPONSE_MZ;
+          code (2) = SECTION_RESPONSE_MY;
+          code (3) = SECTION_RESPONSE_VY;
+          code (4) = SECTION_RESPONSE_VZ;
+          code (5) = SECTION_RESPONSE_T;
+      }
 }
 
 // constructor for blank object that recvSelf needs to be invoked upon
-NDFiber3d::NDFiber3d(): 
-  Fiber(0, FIBER_TAG_ND3d),
-  theMaterial(0), area(0), y(0.0), z(0.0), dValue(0.0)
+NDFiber3d::NDFiber3d ():
+Fiber (0, FIBER_TAG_ND3d),
+theMaterial (0), area (0), y (0.0), z (0.0), dValue (0.0)
 {
-  if (code(0) != SECTION_RESPONSE_P) {
-    code(0) = SECTION_RESPONSE_P;
-    code(1) = SECTION_RESPONSE_MZ;
-    code(2) = SECTION_RESPONSE_MY;
-    code(3) = SECTION_RESPONSE_VY;
-    code(4) = SECTION_RESPONSE_VZ;
-    code(5) = SECTION_RESPONSE_T;
-  }
+    if (code (0) != SECTION_RESPONSE_P)
+      {
+          code (0) = SECTION_RESPONSE_P;
+          code (1) = SECTION_RESPONSE_MZ;
+          code (2) = SECTION_RESPONSE_MY;
+          code (3) = SECTION_RESPONSE_VY;
+          code (4) = SECTION_RESPONSE_VZ;
+          code (5) = SECTION_RESPONSE_T;
+      }
 }
 
 
 // Destructor: 
 NDFiber3d::~NDFiber3d ()
 {
-  if (theMaterial != 0)
-    delete theMaterial;
+    if (theMaterial != 0)
+        delete theMaterial;
 }
 
 
-int   
-NDFiber3d::setTrialFiberStrain(const Vector &vs)
+int
+NDFiber3d::setTrialFiberStrain (const Vector & vs)
 {
-  static Vector strain(3);
-  strain(0) = 0;
-  strain(1) = 0;
-  strain(2) = 0;
-  
-  opserr << "NDFiber3d::setTrialFiberStrain() -- not implemented" << endln;
+    static Vector strain (3);
+    strain (0) = 0;
+    strain (1) = 0;
+    strain (2) = 0;
 
-  return theMaterial->setTrialStrain(strain);
+    opserr << "NDFiber3d::setTrialFiberStrain() -- not implemented" << endln;
+
+    return theMaterial->setTrialStrain (strain);
 }
 
 
 
 // get fiber stress resultants 
-Vector &
-NDFiber3d::getFiberStressResultants (void) 
+Vector & NDFiber3d::getFiberStressResultants (void)
 {
-  fs.Zero();
-  
-  opserr << "NDFiber3d::getFiberStressResultants() -- not implemented" << endln;
+    fs.Zero ();
 
-  return fs;
+    opserr << "NDFiber3d::getFiberStressResultants() -- not implemented" <<
+        endln;
+
+    return fs;
 }
 
 
 
 // get contribution of fiber to section tangent stiffness
-Matrix &
-NDFiber3d::getFiberTangentStiffContr(void) 
+Matrix & NDFiber3d::getFiberTangentStiffContr (void)
 {
-  ks.Zero();
+    ks.Zero ();
 
-  opserr << "NDFiber3d::getFiberTangentStiffContr() -- not implemented" << endln;
+    opserr << "NDFiber3d::getFiberTangentStiffContr() -- not implemented" <<
+        endln;
 
-  return ks;
+    return ks;
 }
 
-Fiber*
+Fiber *
 NDFiber3d::getCopy (void)
 {
-   // make a copy of the fiber 
-  NDFiber3d *theCopy = new NDFiber3d (this->getTag(), 
-				      *theMaterial, area, y, z, dValue);
+    // make a copy of the fiber 
+    NDFiber3d *theCopy = new NDFiber3d (this->getTag (),
+                                        *theMaterial, area, y, z, dValue);
 
-  return theCopy;
-}  
+    return theCopy;
+}
 
 int
-NDFiber3d::getOrder(void)
+NDFiber3d::getOrder (void)
 {
-  return 6;
+    return 6;
 }
 
-const ID&
-NDFiber3d::getType(void)
+const ID &
+NDFiber3d::getType (void)
 {
-  return code;
+    return code;
 }
 
-int   
-NDFiber3d::commitState(void)
+int
+NDFiber3d::commitState (void)
 {
-  return theMaterial->commitState();
-}
-
-
-int   
-NDFiber3d::revertToLastCommit(void)
-{
-  return theMaterial->revertToLastCommit();
+    return theMaterial->commitState ();
 }
 
 
-int   
-NDFiber3d::revertToStart(void)
+int
+NDFiber3d::revertToLastCommit (void)
 {
-  return theMaterial->revertToStart();
+    return theMaterial->revertToLastCommit ();
 }
 
 
-int   
-NDFiber3d::sendSelf(int commitTag, Channel &theChannel)
+int
+NDFiber3d::revertToStart (void)
 {
-  // 
-  // store tag and material info in an ID and send it
-  //
-  int res = 0;
-  
-  int dbTag = this->getDbTag();
-  
-  static ID idData(3);
-  
-  idData(0) = this->getTag();
-  idData(1) = theMaterial->getClassTag();
-  
-  int matDbTag = theMaterial->getDbTag();
-  if (matDbTag == 0) {
-    matDbTag = theChannel.getDbTag();
-    if (matDbTag != 0)
-      theMaterial->setDbTag(matDbTag);
-  }
-  
-  idData(2) = matDbTag;
-  
-  res += theChannel.sendID(dbTag, commitTag, idData);
-  if (res < 0) {
-    opserr << "NDFiber3d::sendSelf - failed to send ID data\n";
+    return theMaterial->revertToStart ();
+}
+
+
+int
+NDFiber3d::sendSelf (int commitTag, Channel & theChannel)
+{
+    // 
+    // store tag and material info in an ID and send it
+    //
+    int res = 0;
+
+    int dbTag = this->getDbTag ();
+
+    static ID idData (3);
+
+    idData (0) = this->getTag ();
+    idData (1) = theMaterial->getClassTag ();
+
+    int matDbTag = theMaterial->getDbTag ();
+    if (matDbTag == 0)
+      {
+          matDbTag = theChannel.getDbTag ();
+          if (matDbTag != 0)
+              theMaterial->setDbTag (matDbTag);
+      }
+
+    idData (2) = matDbTag;
+
+    res += theChannel.sendID (dbTag, commitTag, idData);
+    if (res < 0)
+      {
+          opserr << "NDFiber3d::sendSelf - failed to send ID data\n";
+          return res;
+      }
+
+    // 
+    // store area and position data in a vector and send it
+    //
+    static Vector dData (3);
+
+    dData (0) = area;
+    dData (1) = y;
+    dData (2) = z;
+
+    res += theChannel.sendVector (dbTag, commitTag, dData);
+    if (res < 0)
+      {
+          opserr << "NDFiber3d::sendSelf - failed to send Vector data\n";
+          return res;
+      }
+
+    // now invoke sendSelf on the material
+    res += theMaterial->sendSelf (commitTag, theChannel);
+    if (res < 0)
+      {
+          opserr << "NDFiber3d::sendSelf - failed to send UniaxialMaterial\n";
+          return res;
+      }
+
     return res;
-  }    
-  
-  // 
-  // store area and position data in a vector and send it
-  //
-  static Vector dData(3);
-  
-  dData(0) = area;
-  dData(1) = y;
-  dData(2) = z;
-  
-  res += theChannel.sendVector(dbTag, commitTag, dData);
-  if (res < 0) {
-    opserr << "NDFiber3d::sendSelf - failed to send Vector data\n";
-    return res;
-  }    
-
-  // now invoke sendSelf on the material
-  res += theMaterial->sendSelf(commitTag, theChannel);
-  if (res < 0) {
-    opserr << "NDFiber3d::sendSelf - failed to send UniaxialMaterial\n";
-      return res;
-  }
-    
-  return res;
 }
 
 
-int   
-NDFiber3d::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+int
+NDFiber3d::recvSelf (int commitTag, Channel & theChannel,
+                     FEM_ObjectBroker & theBroker)
 {
-  // 
-  // get tag and material info from an ID
-  //
-  
-  int res = 0;
-  
-  int dbTag = this->getDbTag();
-  
-  static ID idData(3);
-    
-  res += theChannel.recvID(dbTag, commitTag, idData);
-  if (res < 0) {
-    opserr << "NDFiber3d::recvSelf - failed to receive ID data\n";
-    return res;
-  }    
-  
-  this->setTag(idData(0));
+    // 
+    // get tag and material info from an ID
+    //
 
-  // 
-  // get area from a vector received from channel
-  //
-  
-  static Vector dData(3);
-  
-  res += theChannel.recvVector(dbTag, commitTag, dData);
-  if (res < 0) {
-      opserr << "NDFiber3d::recvSelf - failed to receive Vector data\n";
-      return res;
-  }
-  
-  area = dData(0);
-  y = dData(1);
-  z = dData(2);
+    int res = 0;
 
-  //
-  // now we do the material stuff
-  //
-  
-  int matClassTag = idData(1);    
-  
+    int dbTag = this->getDbTag ();
+
+    static ID idData (3);
+
+    res += theChannel.recvID (dbTag, commitTag, idData);
+    if (res < 0)
+      {
+          opserr << "NDFiber3d::recvSelf - failed to receive ID data\n";
+          return res;
+      }
+
+    this->setTag (idData (0));
+
+    // 
+    // get area from a vector received from channel
+    //
+
+    static Vector dData (3);
+
+    res += theChannel.recvVector (dbTag, commitTag, dData);
+    if (res < 0)
+      {
+          opserr << "NDFiber3d::recvSelf - failed to receive Vector data\n";
+          return res;
+      }
+
+    area = dData (0);
+    y = dData (1);
+    z = dData (2);
+
+    //
+    // now we do the material stuff
+    //
+
+    int matClassTag = idData (1);
+
     // if we have a material, check it is of correct type
-  if (theMaterial != 0) {
-    if (matClassTag != theMaterial->getClassTag()) {
-      delete theMaterial;
-      theMaterial = 0;
-    }
-    }
-  
-  // if no material we need to get one,
-  // NOTE: not an else if in case deleted in if above
-  if (theMaterial == 0) {
-    theMaterial = theBroker.getNewNDMaterial(matClassTag);
-    if (theMaterial == 0) {
-      opserr << "NDFiber3d::recvSelf() - " <<
-	  "failed to get a NDMaterial of type " << matClassTag << endln;
-      return -1;
-    }
-  }
-  
+    if (theMaterial != 0)
+      {
+          if (matClassTag != theMaterial->getClassTag ())
+            {
+                delete theMaterial;
+                theMaterial = 0;
+            }
+      }
+
+    // if no material we need to get one,
+    // NOTE: not an else if in case deleted in if above
+    if (theMaterial == 0)
+      {
+          theMaterial = theBroker.getNewNDMaterial (matClassTag);
+          if (theMaterial == 0)
+            {
+                opserr << "NDFiber3d::recvSelf() - " <<
+                    "failed to get a NDMaterial of type " << matClassTag <<
+                    endln;
+                return -1;
+            }
+      }
+
     // set the materials dbTag and invoke recvSelf on the material
-  theMaterial->setDbTag(idData(2));
-  
-  // now invoke recvSelf on the material
-  res += theMaterial->recvSelf(commitTag, theChannel, theBroker);
-  if (res < 0) {
-    opserr << "NDFiber3d::recvSelf() - the material failed in recvSelf()\n";
+    theMaterial->setDbTag (idData (2));
+
+    // now invoke recvSelf on the material
+    res += theMaterial->recvSelf (commitTag, theChannel, theBroker);
+    if (res < 0)
+      {
+          opserr <<
+              "NDFiber3d::recvSelf() - the material failed in recvSelf()\n";
+          return res;
+      }
+
     return res;
-  }    	
-  
-  return res;
 }
 
 
-void NDFiber3d::Print(OPS_Stream &s, int flag)
+void
+NDFiber3d::Print (OPS_Stream & s, int flag)
 {
-  s << "\nNDFiber3d, tag: " << this->getTag() << endln;
-  s << "\tArea: " << area << endln; 
-  s << "\tLocation (y,z): " << y << " " << z << endln; 
-  s << "\tMaterial, tag: " << theMaterial->getTag() << endln;
+    s << "\nNDFiber3d, tag: " << this->getTag () << endln;
+    s << "\tArea: " << area << endln;
+    s << "\tLocation (y,z): " << y << " " << z << endln;
+    s << "\tMaterial, tag: " << theMaterial->getTag () << endln;
 }
 
-Response*
-NDFiber3d::setResponse(const char **argv, int argc, OPS_Stream &s)
+Response *
+NDFiber3d::setResponse (const char **argv, int argc, OPS_Stream & s)
 {
-  if (argc == 0)
-    return 0;
-  
-  if (strcmp(argv[0],"force") == 0 || strcmp(argv[0],"forces") == 0)
-    return new FiberResponse(this, 1, Vector(2));
-  
-  else
-    return theMaterial->setResponse(argv, argc, s);
+    if (argc == 0)
+        return 0;
+
+    if (strcmp (argv[0], "force") == 0 || strcmp (argv[0], "forces") == 0)
+        return new FiberResponse (this, 1, Vector (2));
+
+    else
+        return theMaterial->setResponse (argv, argc, s);
 }
 
 int
-NDFiber3d::getResponse(int responseID, Information &fibInfo)
+NDFiber3d::getResponse (int responseID, Information & fibInfo)
 {
-  switch(responseID) {
-  case 1:
-    return fibInfo.setVector(this->getFiberStressResultants());
-    
-  default:
+    switch (responseID)
+      {
+      case 1:
+          return fibInfo.setVector (this->getFiberStressResultants ());
+
+      default:
+          return -1;
+      }
+}
+
+void
+NDFiber3d::getFiberLocation (double &yLoc, double &zLoc)
+{
+    yLoc = y;
+    zLoc = z;
+}
+
+int
+NDFiber3d::setParameter (const char **argv, int argc, Parameter & param)
+{
+    if (strcmp (argv[0], "A") == 0)
+        return param.addObject (1, this);
+
+    if (strcmp (argv[0], "y") == 0)
+        return param.addObject (2, this);
+
+    if (strcmp (argv[0], "z") == 0)
+        return param.addObject (3, this);
+
+    else
+        return theMaterial->setParameter (argv, argc, param);
+}
+
+int
+NDFiber3d::updateParameter (int parameterID, Information & info)
+{
+    switch (parameterID)
+      {
+      case 1:
+          area = info.theDouble;
+          return 0;
+      case 2:
+          y = info.theDouble;
+          return 0;
+      case 3:
+          z = info.theDouble;
+          return 0;
+      default:
+          return -1;
+      }
+}
+
+int
+NDFiber3d::activateParameter (int parameterID)
+{
     return -1;
-  }
 }
 
-void 
-NDFiber3d::getFiberLocation(double &yLoc, double &zLoc)
+const Vector &
+NDFiber3d::getFiberSensitivity (int gradNumber, bool cond)
 {
-  yLoc = y;
-  zLoc = z;
-}
-
-int
-NDFiber3d::setParameter(const char **argv, int argc, Parameter &param)
-{
-  if (strcmp(argv[0],"A") == 0)
-    return param.addObject(1, this);
-
-  if (strcmp(argv[0],"y") == 0)
-    return param.addObject(2, this);
-
-  if (strcmp(argv[0],"z") == 0)
-    return param.addObject(3, this);
-
-  else
-    return theMaterial->setParameter(argv, argc, param);
+    return Fiber::getFiberSensitivity (gradNumber, cond);
 }
 
 int
-NDFiber3d::updateParameter(int parameterID, Information &info)
+NDFiber3d::commitSensitivity (const Vector & dedh, int gradNumber,
+                              int numGrads)
 {
-  switch(parameterID) {
-  case 1:
-    area = info.theDouble;
-    return 0;
-  case 2:
-    y = info.theDouble;
-    return 0;
-  case 3:
-    z = info.theDouble;
-    return 0;
-  default:
     return -1;
-  }
 }
-
-int
-NDFiber3d::activateParameter(int parameterID)
-{
-  return -1;
-}
-
-const Vector&
-NDFiber3d::getFiberSensitivity(int gradNumber, bool cond)
-{
-  return Fiber::getFiberSensitivity(gradNumber, cond);
-}
-
-int 
-NDFiber3d::commitSensitivity(const Vector &dedh, int gradNumber,
-			     int numGrads)
-{
-  return -1;
-}
-

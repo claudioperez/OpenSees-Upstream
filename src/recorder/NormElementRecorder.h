@@ -38,7 +38,7 @@
 // What: "@(#) NormElementRecorder.h, revA"
 
 #include <Recorder.h>
-#include <Information.h>
+#include <base/Information.h>
 #include <ID.h>
 
 class Domain;

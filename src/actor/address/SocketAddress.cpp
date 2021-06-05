@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-10-15 00:32:53 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/address/SocketAddress.cpp,v $
-                                                                        
-                                                                        
+
+
 // Written: fmk 11/95
 // Revised:
 //
@@ -36,20 +36,18 @@
 
 
 
-SocketAddress::SocketAddress()
-:ChannelAddress(SOCKET_TYPE)
+SocketAddress::SocketAddress ():ChannelAddress (SOCKET_TYPE)
 {
 
 }
 
-SocketAddress::SocketAddress(char *, unsigned int)
-:ChannelAddress(SOCKET_TYPE)
+SocketAddress::SocketAddress (char *, unsigned int):
+ChannelAddress (SOCKET_TYPE)
 {
 
 }
 
-SocketAddress::~SocketAddress()
+SocketAddress::~SocketAddress ()
 {
 
 }
-

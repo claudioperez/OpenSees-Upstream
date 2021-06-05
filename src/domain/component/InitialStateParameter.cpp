@@ -27,69 +27,68 @@
 #include <ElementIter.h>
 #include <Channel.h>
 
-InitialStateParameter::InitialStateParameter(bool stateFlag)
-  :Parameter(0, PARAMETER_TAG_InitialStateParameter), theDomain(0)
+InitialStateParameter::InitialStateParameter (bool stateFlag):
+Parameter (0, PARAMETER_TAG_InitialStateParameter),
+theDomain (0)
 {
-  if (stateFlag == true)
-    flag = 1;
-  else
-    flag = 0;
+    if (stateFlag == true)
+        flag = 1;
+    else
+        flag = 0;
 }
 
-InitialStateParameter::InitialStateParameter()
-  :Parameter(0, PARAMETER_TAG_InitialStateParameter), 
-   flag(0)
-{
-
-}
-
-InitialStateParameter::~InitialStateParameter()
+InitialStateParameter::InitialStateParameter ():Parameter (0, PARAMETER_TAG_InitialStateParameter),
+flag (0)
 {
 
 }
 
-void
-InitialStateParameter::Print(OPS_Stream &s, int flag)  
+InitialStateParameter::~InitialStateParameter ()
 {
 
 }
 
 void
-InitialStateParameter::setDomain(Domain *theDomain)  
+InitialStateParameter::Print (OPS_Stream & s, int flag)
 {
-  if (flag == 1)
-    ops_InitialStateAnalysis = true;
-  else
-    ops_InitialStateAnalysis = false;    
 
-  return;
 }
 
-int 
-InitialStateParameter::sendSelf(int commitTag, Channel &theChannel)
+void
+InitialStateParameter::setDomain (Domain * theDomain)
 {
-  static ID theData(2);
-  theData[0] = this->getTag();
-  theData[1] = flag;
-  theChannel.sendID(commitTag, 0, theData);
+    if (flag == 1)
+        ops_InitialStateAnalysis = true;
+    else
+        ops_InitialStateAnalysis = false;
 
-  return 0;
+    return;
 }
 
-int 
-InitialStateParameter::recvSelf(int commitTag, 
-				Channel &theChannel, 
-				FEM_ObjectBroker &theBroker)
+int
+InitialStateParameter::sendSelf (int commitTag, Channel & theChannel)
 {
-  static ID theData(2);  
-  theChannel.recvID(commitTag, 0, theData);
+    static ID theData (2);
+    theData[0] = this->getTag ();
+    theData[1] = flag;
+    theChannel.sendID (commitTag, 0, theData);
 
-  this->setTag(theData[0]);
-  flag = theData[1];
-
-  theData[0] = -1;
-  theData[1] = -2;
-
-  return 0;
+    return 0;
 }
 
+int
+InitialStateParameter::recvSelf (int commitTag,
+                                 Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
+{
+    static ID theData (2);
+    theChannel.recvID (commitTag, 0, theData);
+
+    this->setTag (theData[0]);
+    flag = theData[1];
+
+    theData[0] = -1;
+    theData[1] = -2;
+
+    return 0;
+}

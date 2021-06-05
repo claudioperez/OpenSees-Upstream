@@ -3,12 +3,12 @@ target_sources(domain
     PRIVATE
 	Subdomain.cpp
 	SubdomainNodIter.cpp 
-	ShadowSubdomain.cpp 
+	#ShadowSubdomain.cpp 
 	ActorSubdomain.cpp
     PUBLIC
 	Subdomain.h
 	SubdomainNodIter.h 
-	ShadowSubdomain.h 
+	#ShadowSubdomain.h 
 	ActorSubdomain.h
 )
 

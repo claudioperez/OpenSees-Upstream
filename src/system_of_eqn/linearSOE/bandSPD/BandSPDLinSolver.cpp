@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2009-05-11 20:55:31 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/bandSPD/BandSPDLinSolver.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: Tue Sep 26 16:27:47: 1996
 //
@@ -32,22 +32,21 @@
 #include <BandSPDLinSolver.h>
 #include <BandSPDLinSOE.h>
 
-BandSPDLinSolver::BandSPDLinSolver(int theClassTag)    
-:LinearSOESolver(theClassTag),
- theSOE(0)
+BandSPDLinSolver::BandSPDLinSolver (int theClassTag):
+LinearSOESolver (theClassTag),
+theSOE (0)
 {
 
-}    
+}
 
-BandSPDLinSolver::~BandSPDLinSolver()    
+BandSPDLinSolver::~BandSPDLinSolver ()
 {
 
-}    
+}
 
-int 
-BandSPDLinSolver::setLinearSOE(BandSPDLinSOE &theBandSPDSOE)
+int
+BandSPDLinSolver::setLinearSOE (BandSPDLinSOE & theBandSPDSOE)
 {
     theSOE = &theBandSPDSOE;
     return 0;
 }
-

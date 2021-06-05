@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.7 $
 // $Date: 2009/03/23 23:17:04 $
 // $Source: /usr/local/cvs/OpenSees/PACKAGES/NewMaterial/cpp/ElasticPPcpp.cpp,v $
-                                                                        
+
 // Written: fmk 
 //
 // Description: This file contains the class implementation for 
@@ -49,267 +49,286 @@
 static int numElasticPPcpp = 0;
 
 OPS_Export void *
-OPS_ElasticPPcpp()
+OPS_ElasticPPcpp ()
 {
-  // print out some KUDO's
-  if (numElasticPPcpp == 0) {
-    opserr << "ElasticPPcpp unaxial material - Written by fmk UC Berkeley Copyright 2008 - Use at your Own Peril\n";
-    numElasticPPcpp =1;
-  }
+    // print out some KUDO's
+    if (numElasticPPcpp == 0)
+      {
+          opserr <<
+              "ElasticPPcpp unaxial material - Written by fmk UC Berkeley Copyright 2008 - Use at your Own Peril\n";
+          numElasticPPcpp = 1;
+      }
 
-  // Pointer to a uniaxial material that will be returned
-  UniaxialMaterial *theMaterial = 0;
+    // Pointer to a uniaxial material that will be returned
+    UniaxialMaterial *theMaterial = 0;
 
-  //
-  // parse the input line for the material parameters
-  //
+    //
+    // parse the input line for the material parameters
+    //
 
-  int    iData[1];
-  double dData[2];
-  int numData;
-  numData = 1;
-  if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid uniaxialMaterial ElasticPP tag" << endln;
-    return 0;
-  }
+    int iData[1];
+    double dData[2];
+    int numData;
+    numData = 1;
+    if (OPS_GetIntInput (&numData, iData) != 0)
+      {
+          opserr << "WARNING invalid uniaxialMaterial ElasticPP tag" << endln;
+          return 0;
+      }
 
-  numData = 2;
-  if (OPS_GetDoubleInput(&numData, dData) != 0) {
-    opserr << "WARNING invalid E & ep\n";
-    return 0;	
-  }
+    numData = 2;
+    if (OPS_GetDoubleInput (&numData, dData) != 0)
+      {
+          opserr << "WARNING invalid E & ep\n";
+          return 0;
+      }
 
-  // 
-  // create a new material
-  //
+    // 
+    // create a new material
+    //
 
-  theMaterial = new ElasticPPcpp(iData[0], dData[0], dData[1]);       
+    theMaterial = new ElasticPPcpp (iData[0], dData[0], dData[1]);
 
-  if (theMaterial == 0) {
-    opserr << "WARNING could not create uniaxialMaterial of type ElasticPPCpp\n";
-    return 0;
-  }
+    if (theMaterial == 0)
+      {
+          opserr <<
+              "WARNING could not create uniaxialMaterial of type ElasticPPCpp\n";
+          return 0;
+      }
 
-  // return the material
-  return theMaterial;
+    // return the material
+    return theMaterial;
 }
 
 
 
 
-ElasticPPcpp::ElasticPPcpp(int tag, double e, double eyp)
-:UniaxialMaterial(tag, 0),
- ezero(0.0), E(e), ep(0.0),
- trialStrain(0.0), trialStress(0.0), trialTangent(E),
- commitStrain(0.0), commitStress(0.0), commitTangent(E)
+ElasticPPcpp::ElasticPPcpp (int tag, double e, double eyp):
+UniaxialMaterial (tag, 0),
+ezero (0.0),
+E (e),
+ep (0.0),
+trialStrain (0.0),
+trialStress (0.0),
+trialTangent (E),
+commitStrain (0.0),
+commitStress (0.0),
+commitTangent (E)
 {
-  fyp = E*eyp;
-  fyn = -fyp;
+    fyp = E * eyp;
+    fyn = -fyp;
 }
 
-ElasticPPcpp::ElasticPPcpp()
-:UniaxialMaterial(0, 0),
- fyp(0.0), fyn(0.0), ezero(0.0), E(0.0), ep(0.0),
- trialStrain(0.0), trialStress(0.0), trialTangent(E),
- commitStrain(0.0), commitStress(0.0), commitTangent(E)
+ElasticPPcpp::ElasticPPcpp ():UniaxialMaterial (0, 0),
+fyp (0.0), fyn (0.0), ezero (0.0), E (0.0), ep (0.0),
+trialStrain (0.0), trialStress (0.0), trialTangent (E),
+commitStrain (0.0), commitStress (0.0), commitTangent (E)
 {
 
 }
 
-ElasticPPcpp::~ElasticPPcpp()
+ElasticPPcpp::~ElasticPPcpp ()
 {
-  // does nothing
+    // does nothing
 }
 
-int 
-ElasticPPcpp::setTrialStrain(double strain, double strainRate)
+int
+ElasticPPcpp::setTrialStrain (double strain, double strainRate)
 {
-    if (fabs(trialStrain - strain) < DBL_EPSILON)
-      return 0;
+    if (fabs (trialStrain - strain) < DBL_EPSILON)
+        return 0;
 
     trialStrain = strain;
 
-    double sigtrial;	// trial stress
-    double f;		// yield function
+    double sigtrial;            // trial stress
+    double f;                   // yield function
 
     // compute trial stress
-    sigtrial = E * ( trialStrain - ezero - ep );
+    sigtrial = E * (trialStrain - ezero - ep);
 
     //sigtrial  = E * trialStrain;
     //sigtrial -= E * ezero;
     //sigtrial -= E *  ep;
 
     // evaluate yield function
-    if ( sigtrial >= 0.0 )
-	f =  sigtrial - fyp;
+    if (sigtrial >= 0.0)
+        f = sigtrial - fyp;
     else
-	f = -sigtrial + fyn;
+        f = -sigtrial + fyn;
 
-    double fYieldSurface = - E * DBL_EPSILON;
-    if ( f <= fYieldSurface ) {
+    double fYieldSurface = -E * DBL_EPSILON;
+    if (f <= fYieldSurface)
+      {
 
-      // elastic
-      trialStress = sigtrial;
-      trialTangent = E;
+          // elastic
+          trialStress = sigtrial;
+          trialTangent = E;
 
-    } else {
-
-      // plastic
-      if ( sigtrial > 0.0 ) {
-	trialStress = fyp;
-      } else {
-	trialStress = fyn;
       }
+    else
+      {
 
-      trialTangent = 0.0;
-    }
+          // plastic
+          if (sigtrial > 0.0)
+            {
+                trialStress = fyp;
+            }
+          else
+            {
+                trialStress = fyn;
+            }
+
+          trialTangent = 0.0;
+      }
 
     return 0;
 }
 
-double 
-ElasticPPcpp::getStrain(void)
+double
+ElasticPPcpp::getStrain (void)
 {
-  return trialStrain;
+    return trialStrain;
 }
 
-double 
-ElasticPPcpp::getStress(void)
+double
+ElasticPPcpp::getStress (void)
 {
-  return trialStress;
+    return trialStress;
 }
 
 
-double 
-ElasticPPcpp::getTangent(void)
+double
+ElasticPPcpp::getTangent (void)
 {
-  return trialTangent;
+    return trialTangent;
 }
 
-int 
-ElasticPPcpp::commitState(void)
+int
+ElasticPPcpp::commitState (void)
 {
-    double sigtrial;	// trial stress
-    double f;		// yield function
+    double sigtrial;            // trial stress
+    double f;                   // yield function
 
     // compute trial stress
-    sigtrial = E * ( trialStrain - ezero - ep );
+    sigtrial = E * (trialStrain - ezero - ep);
 
     // evaluate yield function
-    if ( sigtrial >= 0.0 )
-	f =  sigtrial - fyp;
+    if (sigtrial >= 0.0)
+        f = sigtrial - fyp;
     else
-	f = -sigtrial + fyn;
+        f = -sigtrial + fyn;
 
-    double fYieldSurface = - E * DBL_EPSILON;
-    if ( f > fYieldSurface ) {
-      // plastic
-      if ( sigtrial > 0.0 ) {
-	ep += f / E;
-      } else {
-	ep -= f / E;
+    double fYieldSurface = -E * DBL_EPSILON;
+    if (f > fYieldSurface)
+      {
+          // plastic
+          if (sigtrial > 0.0)
+            {
+                ep += f / E;
+            }
+          else
+            {
+                ep -= f / E;
+            }
       }
-    }
 
     commitStrain = trialStrain;
-    commitTangent=trialTangent;
+    commitTangent = trialTangent;
     commitStress = trialStress;
 
     return 0;
-}	
-
-
-int 
-ElasticPPcpp::revertToLastCommit(void)
-{
-  trialStrain = commitStrain;
-  trialTangent = commitTangent;
-  trialStress = commitStress;
-
-  return 0;
 }
 
 
-int 
-ElasticPPcpp::revertToStart(void)
+int
+ElasticPPcpp::revertToLastCommit (void)
 {
-  trialStrain = commitStrain = 0.0;
-  trialTangent = commitTangent = E;
-  trialStress = commitStress = 0.0;
+    trialStrain = commitStrain;
+    trialTangent = commitTangent;
+    trialStress = commitStress;
 
-  ep = 0.0;
+    return 0;
+}
 
-  return 0;
+
+int
+ElasticPPcpp::revertToStart (void)
+{
+    trialStrain = commitStrain = 0.0;
+    trialTangent = commitTangent = E;
+    trialStress = commitStress = 0.0;
+
+    ep = 0.0;
+
+    return 0;
 }
 
 
 UniaxialMaterial *
-ElasticPPcpp::getCopy(void)
+ElasticPPcpp::getCopy (void)
 {
-  ElasticPPcpp *theCopy =
-    new ElasticPPcpp(this->getTag(),E,fyp/E);
-  theCopy->ep = this->ep;
-  
-  return theCopy;
+    ElasticPPcpp *theCopy = new ElasticPPcpp (this->getTag (), E, fyp / E);
+    theCopy->ep = this->ep;
+
+    return theCopy;
 }
 
 
-int 
-ElasticPPcpp::sendSelf(int cTag, Channel &theChannel)
+int
+ElasticPPcpp::sendSelf (int cTag, Channel & theChannel)
 {
-  int res = 0;
-  static Vector data(9);
-  data(0) = this->getTag();
-  data(1) = ep;
-  data(2) = E;
-  data(3) = ezero;
-  data(4) = fyp;
-  data(5) = fyn;
-  data(6) = commitStrain;
-  data(7) = commitStress;
-  data(8) = commitTangent;
+    int res = 0;
+    static Vector data (9);
+    data (0) = this->getTag ();
+    data (1) = ep;
+    data (2) = E;
+    data (3) = ezero;
+    data (4) = fyp;
+    data (5) = fyn;
+    data (6) = commitStrain;
+    data (7) = commitStress;
+    data (8) = commitTangent;
 
-  res = theChannel.sendVector(this->getDbTag(), cTag, data);
-  if (res < 0) 
-    opserr << "ElasticPPcpp::sendSelf() - failed to send data\n";
+    res = theChannel.sendVector (this->getDbTag (), cTag, data);
+    if (res < 0)
+        opserr << "ElasticPPcpp::sendSelf() - failed to send data\n";
 
-  return res;
+    return res;
 }
 
-int 
-ElasticPPcpp::recvSelf(int cTag, Channel &theChannel, 
-				 FEM_ObjectBroker &theBroker)
+int
+ElasticPPcpp::recvSelf (int cTag, Channel & theChannel,
+                        FEM_ObjectBroker & theBroker)
 {
-  int res = 0;
-  static Vector data(9);
-  res = theChannel.recvVector(this->getDbTag(), cTag, data);
-  if (res < 0) 
-    opserr << "ElasticPPcpp::recvSelf() - failed to recv data\n";
-  else {
-    this->setTag(data(0));
-    ep    = data(1);
-    E     = data(2);
-    ezero = data(3);
-    fyp   = data(4);
-    fyn   = data(5);  
-    commitStrain=data(6);
-    commitStress=data(7);
-    commitTangent=data(8);
-    trialStrain = commitStrain;
-    trialTangent = commitTangent;
-    trialStress = commitStress;
-  }
+    int res = 0;
+    static Vector data (9);
+    res = theChannel.recvVector (this->getDbTag (), cTag, data);
+    if (res < 0)
+        opserr << "ElasticPPcpp::recvSelf() - failed to recv data\n";
+    else
+      {
+          this->setTag (data (0));
+          ep = data (1);
+          E = data (2);
+          ezero = data (3);
+          fyp = data (4);
+          fyn = data (5);
+          commitStrain = data (6);
+          commitStress = data (7);
+          commitTangent = data (8);
+          trialStrain = commitStrain;
+          trialTangent = commitTangent;
+          trialStress = commitStress;
+      }
 
-  return res;
+    return res;
 }
 
-void 
-ElasticPPcpp::Print(OPS_Stream &s, int flag)
+void
+ElasticPPcpp::Print (OPS_Stream & s, int flag)
 {
-  s << "ElasticPPcpp tag: " << this->getTag() << endln;
-  s << "  E: " << E << endln;
-  s << "  ep: " << ep << endln;
-  s << "  stress: " << trialStress << " tangent: " << trialTangent << endln;
+    s << "ElasticPPcpp tag: " << this->getTag () << endln;
+    s << "  E: " << E << endln;
+    s << "  ep: " << ep << endln;
+    s << "  stress: " << trialStress << " tangent: " << trialTangent << endln;
 }
-
-

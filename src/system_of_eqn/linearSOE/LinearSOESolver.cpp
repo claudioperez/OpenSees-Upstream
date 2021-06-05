@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2009-05-11 20:52:21 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/LinearSOESolver.cpp,v $
@@ -37,17 +37,13 @@
 #include <LinearSOESolver.h>
 
 
-LinearSOESolver::LinearSOESolver(int classtag)
-:MovableObject(classtag)
+LinearSOESolver::LinearSOESolver (int classtag):
+MovableObject (classtag)
 {
-    
+
 }
 
-LinearSOESolver::~LinearSOESolver()
+LinearSOESolver::~LinearSOESolver ()
 {
-    
+
 }
-
-
-
-

@@ -19,15 +19,14 @@
 #include <EigenSolver.h>
 
 
-EigenSolver::EigenSolver(int classTag)
-  :MovableObject(classTag)
+EigenSolver::EigenSolver (int classTag):
+MovableObject (classTag)
 {
 
 }
 
 
-EigenSolver::~EigenSolver()
+EigenSolver::~EigenSolver ()
 {
 
 }
-

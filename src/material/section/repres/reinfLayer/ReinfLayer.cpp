@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:22 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/section/repres/reinfLayer/ReinfLayer.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ReinfLayer.C
 // Written by Remo M. de Souza
 // December 1998
@@ -31,14 +31,13 @@
 #include <ReinfLayer.h>
 
 
-ReinfLayer::ReinfLayer(void)
+ReinfLayer::ReinfLayer (void)
 {
 
 }
 
 
-ReinfLayer::~ReinfLayer(void)
+ReinfLayer::~ReinfLayer (void)
 {
 
 }
-

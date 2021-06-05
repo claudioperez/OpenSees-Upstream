@@ -30,7 +30,7 @@
 #include <LimitCurve.h>
 #include <Matrix.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
 class WrapperLimitCurve : public LimitCurve
 {

@@ -266,33 +266,33 @@
 //tempout
 //##########################################################################
 //##########################################################################
-skymatrix::skymatrix(int Number_of_DOFs, int *MAXA, double *initval)
-  {
- // create the structure:
-    pc_skymatrix_rep = new skymatrix_rep; // this 'new' is overloaded
+skymatrix::skymatrix (int Number_of_DOFs, int *MAXA, double *initval)
+{
+    // create the structure:
+    pc_skymatrix_rep = new skymatrix_rep;       // this 'new' is overloaded
 
     pc_skymatrix_rep->square_dim = Number_of_DOFs;
 
 // get space for the MAXA vector
-    pc_skymatrix_rep->maxa = new int[Number_of_DOFs+1];
+    pc_skymatrix_rep->maxa = new int[Number_of_DOFs + 1];
 // put all maxa's in the MAXA
-    for ( int j=0 ; j<=Number_of_DOFs ; j++ )  
+    for (int j = 0; j <= Number_of_DOFs; j++)
 //      pc_skymatrix_rep->maxa[0] = 1;
 //    for ( int j=1 ; j<=Number_of_DOFs+1 ; j++ )  
-      pc_skymatrix_rep->maxa[j] = MAXA[j];
+        pc_skymatrix_rep->maxa[j] = MAXA[j];
 
-   int Total_K_length = pc_skymatrix_rep->maxa[Number_of_DOFs];
- // allocate memory for the actual skymatrix as skymatrix
-    pc_skymatrix_rep->data = new double [(size_t) Total_K_length];
-      if (!pc_skymatrix_rep->data)
-        {
-          ::printf("\a\nInsufficient memory for skymatrix_rep\n");
-          ::exit(1);
-        }
+    int Total_K_length = pc_skymatrix_rep->maxa[Number_of_DOFs];
+    // allocate memory for the actual skymatrix as skymatrix
+    pc_skymatrix_rep->data = new double[(size_t) Total_K_length];
+    if (!pc_skymatrix_rep->data)
+      {
+          ::printf ("\a\nInsufficient memory for skymatrix_rep\n");
+          ::exit (1);
+      }
 
-    for ( int i=0 ; i<Total_K_length ; i++ )
-      pc_skymatrix_rep->data[i] = initval[i];
-  }
+    for (int i = 0; i < Total_K_length; i++)
+        pc_skymatrix_rep->data[i] = initval[i];
+}
 
 //outOLD//##############################################################################
 //outOLDskymatrix::skymatrix(const skymatrix & x)   // copy initializer
@@ -320,13 +320,14 @@ skymatrix::skymatrix(int Number_of_DOFs, int *MAXA, double *initval)
 //oldDestructor}
 
 //##########################################################################
-skymatrix::~skymatrix()
-  {
-        ::printf(" ------------  skymatrix::~skymatrix()   \n ");
-         delete [] pc_skymatrix_rep->columnheight;
-         delete [] pc_skymatrix_rep->maxa;
-         delete [] pc_skymatrix_rep->data;
-  }
+skymatrix::~skymatrix ()
+{
+    ::printf (" ------------  skymatrix::~skymatrix()   \n ");
+    delete[]pc_skymatrix_rep->columnheight;
+    delete[]pc_skymatrix_rep->maxa;
+    delete[]pc_skymatrix_rep->data;
+}
+
 //outOLD////##########################################################################
 //outOLDskymatrix & skymatrix::operator=(const skymatrix & rval)
 //outOLD  {
@@ -362,16 +363,18 @@ skymatrix::~skymatrix()
 //      }
 
 //##########################################################################
-int skymatrix::dimension_of_sky_M(void) const   // dimension of  sky matrix
-  {
+int
+skymatrix::dimension_of_sky_M (void) const      // dimension of  sky matrix
+{
     return pc_skymatrix_rep->square_dim;
-  }
+}
 
 //##########################################################################
-int * skymatrix::get_MAXA(void) const  // get pointer to array of
-  {                                 // Locations of Diagonals
+int *
+skymatrix::get_MAXA (void) const        // get pointer to array of
+{                               // Locations of Diagonals
     return pc_skymatrix_rep->maxa;
-  }
+}
 
 
 //outOLD//##############################################################################
@@ -584,21 +587,22 @@ int * skymatrix::get_MAXA(void) const  // get pointer to array of
 //outOLD  }
 
 //##########################################################################
-double & skymatrix::mval(int row, int col) const
-  {
-    if( row>col )         // Now we can call the matrix
-      {                   // as if it is full matrix.
-        int temp = row;   // This makes small overhead
-        row = col;        // and it will be removed latter on.
-        col = temp;
+double &
+skymatrix::mval (int row, int col) const
+{
+    if (row > col)              // Now we can call the matrix
+      {                         // as if it is full matrix.
+          int temp = row;       // This makes small overhead
+          row = col;            // and it will be removed latter on.
+          col = temp;
       }
-    int diagonal_member_n = *(pc_skymatrix_rep->maxa+col-1);  //-1:starts from 0
-   int member_of_sky_n = diagonal_member_n + col - row -1; //-1:starts from 0
-    double * member_of_sky = &(pc_skymatrix_rep->data[member_of_sky_n]) ;
-    return( * member_of_sky );
+    int diagonal_member_n = *(pc_skymatrix_rep->maxa + col - 1);        //-1:starts from 0
+    int member_of_sky_n = diagonal_member_n + col - row - 1;    //-1:starts from 0
+    double *member_of_sky = &(pc_skymatrix_rep->data[member_of_sky_n]);
+    return (*member_of_sky);
 // put this latter after debugging
 //          return(*( ps_sky_m_rep->pd_nDdata[*(ps_sky_m_rep->p_maxa+col)+col-row-1]));
-  }
+}
 
 
 
@@ -607,33 +611,36 @@ double & skymatrix::mval(int row, int col) const
 // float matrix. The function will calculate position inside sky matrix
 // and return appropriate number if row and col are bellow skyline or
 // return zero (0) if row and col are above sky line
-double skymatrix::full_val(int row, int col) const
-  {
-    if( row>col )
+double
+skymatrix::full_val (int row, int col) const
+{
+    if (row > col)
       {
-        int temp = row;
-        row = col;
-        col = temp;
+          int temp = row;
+          row = col;
+          col = temp;
       }
-  int total_column_height = col;
-  int actual_column_position = total_column_height - row + 1;
-  int real_column_height = pc_skymatrix_rep->maxa[col]-pc_skymatrix_rep->maxa[col-1]; 
-  int how_much_above_skyline=actual_column_position-real_column_height; //  adding -1 -Zhaohui
-  if ( how_much_above_skyline > 0 )
-    {
-      double back = 0.0;    ////    // not very smart ???????
-      return ( back );
-    }
-  else
-    {
-      int diagonal_member_n = *(pc_skymatrix_rep->maxa+col-1);  //-1:starts from 0 // deleting -1 --Zhaohui
-      int member_of_sky_n = diagonal_member_n + col - row-1 ; //-1:starts from 0 // deleting -1  --Zhaohui
-      double member_of_sky = pc_skymatrix_rep->data[member_of_sky_n] ;
-      return( member_of_sky );
+    int total_column_height = col;
+    int actual_column_position = total_column_height - row + 1;
+    int real_column_height =
+        pc_skymatrix_rep->maxa[col] - pc_skymatrix_rep->maxa[col - 1];
+    int how_much_above_skyline = actual_column_position - real_column_height;   //  adding -1 -Zhaohui
+    if (how_much_above_skyline > 0)
+      {
+          double back = 0.0;    ////    // not very smart ???????
+          return (back);
+      }
+    else
+      {
+          int diagonal_member_n = *(pc_skymatrix_rep->maxa + col - 1);  //-1:starts from 0 // deleting -1 --Zhaohui
+          int member_of_sky_n = diagonal_member_n + col - row - 1;      //-1:starts from 0 // deleting -1  --Zhaohui
+          double member_of_sky = pc_skymatrix_rep->data[member_of_sky_n];
+          return (member_of_sky);
 // put this latter after debugging
 //        return(*( ps_sky_m_rep->pd_nDdata[*(ps_sky_m_rep->p_maxa+col)+col-row-1]));
-    }
-  }
+      }
+}
+
      // used by skymatrix functions which KNOW they aren't
      // exceeding the boundaries
 
@@ -642,68 +649,74 @@ double skymatrix::full_val(int row, int col) const
 
 
 //##########################################################################
-double & skymatrix::val(int row, int col)
-  {
+double &
+skymatrix::val (int row, int col)
+{
 //    double zero=0.0;
-    if ( row<=0 && row>=dimension_of_sky_M() && col>=dimension_of_sky_M() )
+    if (row <= 0 && row >= dimension_of_sky_M ()
+        && col >= dimension_of_sky_M ())
       {
-        error("index out of range");
+          error ("index out of range");
 //        return zero;
       }
 //    else
-      return (mval(row,col));
-  }
+    return (mval (row, col));
+}
 
 //##########################################################################
-double skymatrix::cval(int row, int col) const
-  {
-    double zero=0.0;
-    if ( row<=0 && row>=dimension_of_sky_M() && col>=dimension_of_sky_M() )
+double
+skymatrix::cval (int row, int col) const
+{
+    double zero = 0.0;
+    if (row <= 0 && row >= dimension_of_sky_M ()
+        && col >= dimension_of_sky_M ())
       {
-        error("index out of range");
-        return zero;
+          error ("index out of range");
+          return zero;
       }
 //    else
-      return (mval(row,col));
-  }
+    return (mval (row, col));
+}
 
 
 //##########################################################################
-double skymatrix::mmin()
-  {
+double
+skymatrix::mmin ()
+{
     double temp = 0.0;
-    if ( dimension_of_sky_M()<=0 )
+    if (dimension_of_sky_M () <= 0)
       {
-        error("bad skymatrix size for min ()");
-        return 0.0;
+          error ("bad skymatrix size for min ()");
+          return 0.0;
       }
-    double minimum = mval(1,1);
-    for ( int row=1 ; row<=dimension_of_sky_M() ; row++ )
-      for ( int col=1 ; col<=dimension_of_sky_M() ; col++ )
-        if ( (temp=mval(row,col)) < minimum )
-          minimum = temp;
+    double minimum = mval (1, 1);
+    for (int row = 1; row <= dimension_of_sky_M (); row++)
+        for (int col = 1; col <= dimension_of_sky_M (); col++)
+            if ((temp = mval (row, col)) < minimum)
+                minimum = temp;
     return minimum;
-  }
+}
 
 //##########################################################################
-double skymatrix::mmax()
-  {
+double
+skymatrix::mmax ()
+{
     double temp = 0.0;
-    if( dimension_of_sky_M()<=0 )
+    if (dimension_of_sky_M () <= 0)
       {
-        error("bad skymatrix size for max()");
-        double zero=0.0;
-        return zero;
+          error ("bad skymatrix size for max()");
+          double zero = 0.0;
+          return zero;
       }
-    double maximum = mval(1,1);
-    for ( int row=1 ; row<=dimension_of_sky_M() ; row++ )
-      for ( int col=1 ; col<=dimension_of_sky_M() ; col++ )
-        {
-          if ( (temp=mval(row,col)) > maximum )
-          maximum = temp;
-        }
+    double maximum = mval (1, 1);
+    for (int row = 1; row <= dimension_of_sky_M (); row++)
+        for (int col = 1; col <= dimension_of_sky_M (); col++)
+          {
+              if ((temp = mval (row, col)) > maximum)
+                  maximum = temp;
+          }
     return maximum;
-  }
+}
 
 //outOLD//##########################################################################
 //outOLDdouble skymatrix::mean()
@@ -719,80 +732,93 @@ double skymatrix::mmax()
 //outOLD
 //outOLD
 //##########################################################################
-void skymatrix::lower_print(char *msg)
-  {
-    if (*msg) printf("%s\n",msg);
-    for ( int row=1 ; row<=dimension_of_sky_M() ; row++ )
+void
+skymatrix::lower_print (char *msg)
+{
+    if (*msg)
+        printf ("%s\n", msg);
+    for (int row = 1; row <= dimension_of_sky_M (); row++)
       {
-        int total_column_height = row;
-        int real_column_height = pc_skymatrix_rep->maxa[row] - pc_skymatrix_rep->maxa[row-1];
-        int numb_of_voids = total_column_height - real_column_height;
-        int n_of_voids_to_reach_number = numb_of_voids;
-        for ( int col=1 ; col<=row ; col++ )
-          {
-            if( n_of_voids_to_reach_number > 0 )
-              {
-                 for(int void_count=1; void_count<=numb_of_voids; void_count++)
+          int total_column_height = row;
+          int real_column_height =
+              pc_skymatrix_rep->maxa[row] - pc_skymatrix_rep->maxa[row - 1];
+          int numb_of_voids = total_column_height - real_column_height;
+          int n_of_voids_to_reach_number = numb_of_voids;
+          for (int col = 1; col <= row; col++)
+            {
+                if (n_of_voids_to_reach_number > 0)
                   {
-                    printf("********* ");
-                    col++;
-                    n_of_voids_to_reach_number--;
+                      for (int void_count = 1; void_count <= numb_of_voids;
+                           void_count++)
+                        {
+                            printf ("********* ");
+                            col++;
+                            n_of_voids_to_reach_number--;
+                        }
                   }
-              }
-            printf( "%+6.2e ", cval(row,col) );
-          }
-        printf("\n");
+                printf ("%+6.2e ", cval (row, col));
+            }
+          printf ("\n");
       }
-  }
+}
 
 //##########################################################################
-void skymatrix::upper_print(char *msg)
-  {
-    if (*msg) printf("%s\n",msg);
-    for ( int row=1 ; row<=dimension_of_sky_M() ; row++ )
+void
+skymatrix::upper_print (char *msg)
+{
+    if (*msg)
+        printf ("%s\n", msg);
+    for (int row = 1; row <= dimension_of_sky_M (); row++)
       {
-        for ( int voids=0 ; voids<row-1 ; voids++ ) printf("        ");
-        for ( int col=row ; col<=dimension_of_sky_M() ; col++ )
-          {
-            int total_column_height = col;
-            int actual_column_position = total_column_height - row + 1;
-            int real_column_height = pc_skymatrix_rep->maxa[col] - pc_skymatrix_rep->maxa[col-1];
-            int how_much_above_skyline=actual_column_position-real_column_height;
-            if ( how_much_above_skyline > 0 )
-              {
-                printf("********* ");
-              }
-            else
-              {
-                printf( "%+6.2e ", cval(col,row) );
-              }
-          }
-        printf("\n");
+          for (int voids = 0; voids < row - 1; voids++)
+              printf ("        ");
+          for (int col = row; col <= dimension_of_sky_M (); col++)
+            {
+                int total_column_height = col;
+                int actual_column_position = total_column_height - row + 1;
+                int real_column_height =
+                    pc_skymatrix_rep->maxa[col] - pc_skymatrix_rep->maxa[col -
+                                                                         1];
+                int how_much_above_skyline =
+                    actual_column_position - real_column_height;
+                if (how_much_above_skyline > 0)
+                  {
+                      printf ("********* ");
+                  }
+                else
+                  {
+                      printf ("%+6.2e ", cval (col, row));
+                  }
+            }
+          printf ("\n");
       }
-  }
+}
 
 
 //##########################################################################
-void skymatrix::full_print(char *msg)
-  {
-    if (*msg) printf("%s\n",msg);
-    for ( int row=1 ; row<=dimension_of_sky_M() ; row++ )
+void
+skymatrix::full_print (char *msg)
+{
+    if (*msg)
+        printf ("%s\n", msg);
+    for (int row = 1; row <= dimension_of_sky_M (); row++)
       {
-        for ( int col=1 ; col<=dimension_of_sky_M() ; col++ )
-          {
-            printf( "%+6.2e ", full_val(row,col) );
-          }
-        printf("\n");
+          for (int col = 1; col <= dimension_of_sky_M (); col++)
+            {
+                printf ("%+6.2e ", full_val (row, col));
+            }
+          printf ("\n");
       }
-  }
+}
 
 
 //##########################################################################
-void skymatrix::error(char * msg1, char * msg2) const
-  {
-    ::fprintf(stderr,"skymatrix error: %s %s\n", msg1, msg2);
-    exit( 1 );
-  }
+void
+skymatrix::error (char *msg1, char *msg2) const
+{
+    ::fprintf (stderr, "skymatrix error: %s %s\n", msg1, msg2);
+    exit (1);
+}
 
 
 
@@ -949,74 +975,96 @@ void skymatrix::error(char * msg1, char * msg2) const
 ///* 12. November  1992. Boulder CU ( home)       4. revision           */
 ///* 28. May       1999. Clarkson, Potsdam)       5. revision           */
 ///*....................................................................*/
-skymatrix & skymatrix::v_ldl_factorize()
+skymatrix & skymatrix::v_ldl_factorize ()
 {
-  int kn  = 0;
-  int kl  = 0;
-  int ku  = 0;
-  int kh  = 0;
-  int k   = 0;
-  int ic  = 0;
-  int klt = 0;
-  int ki  = 0;
-  int nd  = 0;
-  int kk  = 0;
-  int n   = 0;
-  int j   = 0;
-  int l   = 0;
-  double c = 0.0;
-  double b = 0.0;
-  ::printf(" \n\n* * * Equations to factorize : ");
-  for ( n=1 ; n<=pc_skymatrix_rep->square_dim ; n++ )
-    {
-      printf(" %5d\b\b\b\b\b", pc_skymatrix_rep->square_dim - n);
-      kn=*(pc_skymatrix_rep->maxa-1+n);
-      kl=kn+1;
-      ku=*(pc_skymatrix_rep->maxa-1+n+1)-1;
-      kh=ku-kl;         // changes ######## from colsol.c
-      if ( kh>0 )       // *(pd_ldl_a. . . ) --> *(pc_skymatrix_rep->pd_nDdata-1. . . )
-        {               // *(pi_ldl_maxa. . . ) --> *(pc_skymatrix_rep->p_maxa-1. . .)
-          k=n-kh;       // *(pi_ldl_nn) --> pc_skymatrix_rep->square_dim
-          ic=0;
-          klt=ku;
-          for ( j=1 ; j<=kh ; j++ )
-            {
-              ic=ic+1;
-              klt=klt-1;
-              ki=*(pc_skymatrix_rep->maxa-1+k);
-              nd=*(pc_skymatrix_rep->maxa-1+k+1)-ki-1;
-              if ( nd>0 )
-                {
-                  kk=( (ic<nd) ? ic : nd );
-                  c=0.0;
-                  for ( l=1 ; l<=kk ; l++ )
-                    c=c+(*(pc_skymatrix_rep->data-1+ki+l))*(*(pc_skymatrix_rep->data-1+klt+l));
-                  *(pc_skymatrix_rep->data-1+klt)=*(pc_skymatrix_rep->data-1+klt)-c;
-                }
-              k=k+1;
+    int
+        kn = 0;
+    int
+        kl = 0;
+    int
+        ku = 0;
+    int
+        kh = 0;
+    int
+        k = 0;
+    int
+        ic = 0;
+    int
+        klt = 0;
+    int
+        ki = 0;
+    int
+        nd = 0;
+    int
+        kk = 0;
+    int
+        n = 0;
+    int
+        j = 0;
+    int
+        l = 0;
+    double
+        c = 0.0;
+    double
+        b = 0.0;
+    ::printf (" \n\n* * * Equations to factorize : ");
+    for (n = 1; n <= pc_skymatrix_rep->square_dim; n++)
+      {
+          printf (" %5d\b\b\b\b\b", pc_skymatrix_rep->square_dim - n);
+          kn = *(pc_skymatrix_rep->maxa - 1 + n);
+          kl = kn + 1;
+          ku = *(pc_skymatrix_rep->maxa - 1 + n + 1) - 1;
+          kh = ku - kl;         // changes ######## from colsol.c
+          if (kh > 0)           // *(pd_ldl_a. . . ) --> *(pc_skymatrix_rep->pd_nDdata-1. . . )
+            {                   // *(pi_ldl_maxa. . . ) --> *(pc_skymatrix_rep->p_maxa-1. . .)
+                k = n - kh;     // *(pi_ldl_nn) --> pc_skymatrix_rep->square_dim
+                ic = 0;
+                klt = ku;
+                for (j = 1; j <= kh; j++)
+                  {
+                      ic = ic + 1;
+                      klt = klt - 1;
+                      ki = *(pc_skymatrix_rep->maxa - 1 + k);
+                      nd = *(pc_skymatrix_rep->maxa - 1 + k + 1) - ki - 1;
+                      if (nd > 0)
+                        {
+                            kk = ((ic < nd) ? ic : nd);
+                            c = 0.0;
+                            for (l = 1; l <= kk; l++)
+                                c = c +
+                                    (*(pc_skymatrix_rep->data - 1 + ki + l)) *
+                                    (*(pc_skymatrix_rep->data - 1 + klt + l));
+                            *(pc_skymatrix_rep->data - 1 + klt) =
+                                *(pc_skymatrix_rep->data - 1 + klt) - c;
+                        }
+                      k = k + 1;
+                  }
             }
-        }
-      if ( kh>=0 )
-        {
-          k=n;
-          b=0.0;
-          for ( kk=kl ; kk<=ku ; kk++ )
+          if (kh >= 0)
             {
-              k=k-1;
-              ki=*(pc_skymatrix_rep->maxa-1+k);
-              c=(*(pc_skymatrix_rep->data-1+kk))/(*(pc_skymatrix_rep->data-1+ki));
-              b=b+c*(*(pc_skymatrix_rep->data-1+kk));
-              *(pc_skymatrix_rep->data-1+kk)=c;
+                k = n;
+                b = 0.0;
+                for (kk = kl; kk <= ku; kk++)
+                  {
+                      k = k - 1;
+                      ki = *(pc_skymatrix_rep->maxa - 1 + k);
+                      c = (*(pc_skymatrix_rep->data - 1 + kk)) /
+                          (*(pc_skymatrix_rep->data - 1 + ki));
+                      b = b + c * (*(pc_skymatrix_rep->data - 1 + kk));
+                      *(pc_skymatrix_rep->data - 1 + kk) = c;
+                  }
+                *(pc_skymatrix_rep->data - 1 + kn) =
+                    *(pc_skymatrix_rep->data - 1 + kn) - b;
             }
-          *(pc_skymatrix_rep->data-1+kn)=*(pc_skymatrix_rep->data-1+kn)-b;
-        }
-      if ( *(pc_skymatrix_rep->data-1+kn)<=0 )
-        {
-          printf("\n Colsol Stoped - Stiffness Matrix not positive definite \n");
-          printf(" non positive pivot for equation, %d\n ", n);
-          printf(" pivot, %.12e \n", *(pc_skymatrix_rep->data-1+kn) );
-          exit(1);
-        }
+          if (*(pc_skymatrix_rep->data - 1 + kn) <= 0)
+            {
+                printf
+                    ("\n Colsol Stoped - Stiffness Matrix not positive definite \n");
+                printf (" non positive pivot for equation, %d\n ", n);
+                printf (" pivot, %.12e \n",
+                        *(pc_skymatrix_rep->data - 1 + kn));
+                exit (1);
+            }
 //  printf("--------------------------  %d\n",n);
 //  for( int i=0 ; i<=11 ; i++ )
 //    {
@@ -1025,9 +1073,9 @@ skymatrix & skymatrix::v_ldl_factorize()
 //  getch();
 
 
-  }
-  printf("\n");
-  return(*this);
+      }
+    printf ("\n");
+    return (*this);
 }
 
 ///****************************************************************************
@@ -1057,34 +1105,37 @@ skymatrix & skymatrix::v_ldl_factorize()
 ///* 01. february  1991. E.P. Beograd         3. revision               */
 ///* 12. November  1992. Boulder CU ( home)   4. revision               */
 ///*....................................................................*/
-double * skymatrix::d_reduce_r_h_s_l_v ( double *pd_rhs )
+double *
+skymatrix::d_reduce_r_h_s_l_v (double *pd_rhs)
 {
-  int kl = 0;
-  int ku = 0;
-  int k  = 0;
-  int n  = 0;
-  int kk = 0;
-  double c = 0.0;
-  printf("\n * * * Right hand side loads to reduce :");
-  for ( n=1 ; n<=pc_skymatrix_rep->square_dim ; n++ )
-    {
-      printf(" %5d\b\b\b\b\b", pc_skymatrix_rep->square_dim - n);
-      kl=*(pc_skymatrix_rep->maxa-1+n)+1;
-      ku=*(pc_skymatrix_rep->maxa-1+n+1)-1;  // changes ######## from colsol.c
-      if ( ku>=kl )             // *(pd_red_a. . . ) --> *(pc_skymatrix_rep->pd_nDdata-1. . . )
-        {                       // *(pi_red_maxa. . . ) --> *(pc_skymatrix_rep->p_maxa-1. . .)
-          k=n;                  // *(pi_red_nn) --> pc_skymatrix_rep->square_dim
-          c=0.0;                // *(pd_rhs. . .) --> *(pd_rhs-1 . . . )
-          for ( kk=kl ; kk<=ku ; kk++ )
-            {
-              k=k-1;
-              c=c+(*(pc_skymatrix_rep->data-1+kk))*(*(pd_rhs-1+k));
+    int kl = 0;
+    int ku = 0;
+    int k = 0;
+    int n = 0;
+    int kk = 0;
+    double c = 0.0;
+    printf ("\n * * * Right hand side loads to reduce :");
+    for (n = 1; n <= pc_skymatrix_rep->square_dim; n++)
+      {
+          printf (" %5d\b\b\b\b\b", pc_skymatrix_rep->square_dim - n);
+          kl = *(pc_skymatrix_rep->maxa - 1 + n) + 1;
+          ku = *(pc_skymatrix_rep->maxa - 1 + n + 1) - 1;       // changes ######## from colsol.c
+          if (ku >= kl)         // *(pd_red_a. . . ) --> *(pc_skymatrix_rep->pd_nDdata-1. . . )
+            {                   // *(pi_red_maxa. . . ) --> *(pc_skymatrix_rep->p_maxa-1. . .)
+                k = n;          // *(pi_red_nn) --> pc_skymatrix_rep->square_dim
+                c = 0.0;        // *(pd_rhs. . .) --> *(pd_rhs-1 . . . )
+                for (kk = kl; kk <= ku; kk++)
+                  {
+                      k = k - 1;
+                      c = c +
+                          (*(pc_skymatrix_rep->data - 1 + kk)) *
+                          (*(pd_rhs - 1 + k));
+                  }
+                *(pd_rhs - 1 + n) = *(pd_rhs - 1 + n) - c;      //pd_rhs[-1+n]==*(pd_rhs-1+n)
             }
-          *(pd_rhs-1+n)=*(pd_rhs-1+n)-c;   //pd_rhs[-1+n]==*(pd_rhs-1+n)
-        }
-    }
-  printf("\n");
-  return( pd_rhs );
+      }
+    printf ("\n");
+    return (pd_rhs);
 }
 
 ///****************************************************************************
@@ -1117,40 +1168,46 @@ double * skymatrix::d_reduce_r_h_s_l_v ( double *pd_rhs )
 ///* 01. february  1991. E.P. Beograd        3.  revision               */
 ///* 12. November  1992. Boulder CU ( home)  4. revision                */
 ///*....................................................................*/
-double * skymatrix::d_back_substitute ( double *pd_rhs )
+double *
+skymatrix::d_back_substitute (double *pd_rhs)
 {
-  int k  = 0;
-  int n  = 0;
-  int kl = 0;
-  int ku = 0;
-  int l  = 0;
-  int kk = 0;
-  printf(" \n * * * Equations to back substitute :");
-  for ( n=1 ; n<=pc_skymatrix_rep->square_dim ; n++ )
-    {
-      printf(" %5d\b\b\b\b\b", pc_skymatrix_rep->square_dim - n);
-      k=*(pc_skymatrix_rep->maxa-1+n);
-      *(pd_rhs-1+n)=(*(pd_rhs-1+n))/(*(pc_skymatrix_rep->data-1+k));
-    }
-  if ( pc_skymatrix_rep->square_dim==1 ) return(pd_rhs);
-  n=pc_skymatrix_rep->square_dim ;
-  for ( l=2 ; l<=pc_skymatrix_rep->square_dim ; l++ )
-    {                            // changes ######## from colsol.c
-      kl=*(pc_skymatrix_rep->maxa-1+n)+1;     // *(pd_bac_a. . . ) --> *(pc_skymatrix_rep->pd_nDdata-1. . . )
-      ku=*(pc_skymatrix_rep->maxa-1+n+1)-1;   // *(pi_bac_maxa. . . ) --> *(pc_skymatrix_rep->p_maxa-1. . .)
-      if( ku>=kl )               // *(pi_bac_nn) --> pc_skymatrix_rep->square_dim
-        {                        // *(pd_rhs. . .) --> *(pd_rhs-1 . . . )
-          k=n;
-          for ( kk=kl ; kk<=ku ; kk++ )
-            {
-              k=k-1;
-              *(pd_rhs-1+k)=*(pd_rhs-1+k)-(*(pc_skymatrix_rep->data-1+kk))*(*(pd_rhs-1+n));
+    int k = 0;
+    int n = 0;
+    int kl = 0;
+    int ku = 0;
+    int l = 0;
+    int kk = 0;
+    printf (" \n * * * Equations to back substitute :");
+    for (n = 1; n <= pc_skymatrix_rep->square_dim; n++)
+      {
+          printf (" %5d\b\b\b\b\b", pc_skymatrix_rep->square_dim - n);
+          k = *(pc_skymatrix_rep->maxa - 1 + n);
+          *(pd_rhs - 1 + n) =
+              (*(pd_rhs - 1 + n)) / (*(pc_skymatrix_rep->data - 1 + k));
+      }
+    if (pc_skymatrix_rep->square_dim == 1)
+        return (pd_rhs);
+    n = pc_skymatrix_rep->square_dim;
+    for (l = 2; l <= pc_skymatrix_rep->square_dim; l++)
+      {                         // changes ######## from colsol.c
+          kl = *(pc_skymatrix_rep->maxa - 1 + n) + 1;   // *(pd_bac_a. . . ) --> *(pc_skymatrix_rep->pd_nDdata-1. . . )
+          ku = *(pc_skymatrix_rep->maxa - 1 + n + 1) - 1;       // *(pi_bac_maxa. . . ) --> *(pc_skymatrix_rep->p_maxa-1. . .)
+          if (ku >= kl)         // *(pi_bac_nn) --> pc_skymatrix_rep->square_dim
+            {                   // *(pd_rhs. . .) --> *(pd_rhs-1 . . . )
+                k = n;
+                for (kk = kl; kk <= ku; kk++)
+                  {
+                      k = k - 1;
+                      *(pd_rhs - 1 + k) =
+                          *(pd_rhs - 1 + k) -
+                          (*(pc_skymatrix_rep->data - 1 + kk)) *
+                          (*(pd_rhs - 1 + n));
+                  }
+                n = n - 1;
             }
-          n=n-1;
-        }
-    }
-  printf("\n");
-  return (pd_rhs);
+      }
+    printf ("\n");
+    return (pd_rhs);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1250,4 +1307,3 @@ double * skymatrix::d_back_substitute ( double *pd_rhs )
 //outOLD
 
 #endif
-

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:17 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/integrator/Integrator.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/integrator/Integrator.C
 // 
 // Written: fmk 
@@ -36,8 +36,10 @@
 #include <Integrator.h>
 #include <Vector.h>
 
- Integrator::Integrator(int clasTag)
-     :MovableObject(clasTag), analysisTypeTag(0), SensitivityKey(false)
+Integrator::Integrator (int clasTag):
+MovableObject (clasTag),
+analysisTypeTag (0),
+SensitivityKey (false)
 {
 }
 
@@ -48,87 +50,89 @@
 
 
 
-Integrator::~Integrator()
+Integrator::~Integrator ()
 {
 
 }
 
 int
-Integrator::domainChanged()
+Integrator::domainChanged ()
 {
     return 0;
 }
 
 
 int
-Integrator::formSensitivityRHS(int gradNum)
+Integrator::formSensitivityRHS (int gradNum)
 {
     return 0;
 }
 
 int
-Integrator::formIndependentSensitivityRHS()
+Integrator::formIndependentSensitivityRHS ()
 {
     return 0;
 }
 
 int
-Integrator::saveSensitivity(const Vector& v, int gradNum, int numGrads)
+Integrator::saveSensitivity (const Vector & v, int gradNum, int numGrads)
 {
     return 0;
 }
 
 int
-Integrator::commitSensitivity(int gradNum, int numGrads)
+Integrator::commitSensitivity (int gradNum, int numGrads)
 {
     return 0;
 }
+
 ///////////////////////Abbas///////////////////////////////////////////
 
- int Integrator:: formEleTangentSensitivity(FE_Element 
-      *theEle, int gradNumber)
+int
+Integrator::formEleTangentSensitivity (FE_Element * theEle, int gradNumber)
 {
-return 0;
+    return 0;
 }
 
-double 
-Integrator::getLambdaSensitivity(int gradNumber)
+double
+Integrator::getLambdaSensitivity (int gradNumber)
 {
-return 0.0;
+    return 0.0;
 
 
 }
 
 
 int
-Integrator::computeSensitivities()
+Integrator::computeSensitivities ()
 {
 
 //should not be called
-return 0;
+    return 0;
 
 }
-int 
-Integrator::sensitivityDomainChanged()
+
+int
+Integrator::sensitivityDomainChanged ()
 {
 // I do not think I need it
-return 0;
+    return 0;
 }
 
 bool
-Integrator::computeSensitivityAtEachIteration()
+Integrator::computeSensitivityAtEachIteration ()
 {
-  return false ;
+    return false;
 }
 
-bool 
-Integrator::shouldComputeAtEachStep(void)
+bool
+Integrator::shouldComputeAtEachStep (void)
 {
-  return (analysisTypeTag == 1);
+    return (analysisTypeTag == 1);
 }
 
 void
-Integrator::setComputeType(int flag)
+Integrator::setComputeType (int flag)
 {
     analysisTypeTag = flag;
 }

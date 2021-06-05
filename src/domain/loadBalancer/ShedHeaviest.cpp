@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:00:58 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/loadBalancer/ShedHeaviest.cpp,v $
-                                                                        
-                                                                        
+
+
  // File: ~/domain/loadBalancer/ShedHeaviest.C
 // 
 // Written: fmk 
@@ -38,62 +38,68 @@
 #include <Graph.h>
 #include <VertexIter.h>
 #include <Vertex.h>
- 
-ShedHeaviest::ShedHeaviest()
- :numReleases(1),factorGreater(1.0),disallowDisconnectedGraphs(true)
+
+ShedHeaviest::ShedHeaviest ():numReleases (1), factorGreater (1.0),
+disallowDisconnectedGraphs (true)
 {
-    
+
 }
 
-ShedHeaviest::ShedHeaviest(double fact, int releases, bool disallowDisconnected)
- :numReleases(releases),
-  factorGreater(fact),
-  disallowDisconnectedGraphs(disallowDisconnected)
+ShedHeaviest::ShedHeaviest (double fact, int releases,
+                            bool disallowDisconnected):
+numReleases (releases),
+factorGreater (fact),
+disallowDisconnectedGraphs (disallowDisconnected)
 {
     if (releases < 0)
-	numReleases = 0;
+        numReleases = 0;
 }
 
-ShedHeaviest::~ShedHeaviest()
+ShedHeaviest::~ShedHeaviest ()
 {
-    
+
 }
 
 int
-ShedHeaviest::balance(Graph &theWeightedGraph)
+ShedHeaviest::balance (Graph & theWeightedGraph)
 {
     // check to see a domain partitioner has been set
-    DomainPartitioner *thePartitioner = this->getDomainPartitioner();
-    if (thePartitioner == 0) {
-	opserr << "ShedHeaviest::balance - No DomainPartitioner has been set\n";
-	return -1;
-    }
+    DomainPartitioner *thePartitioner = this->getDomainPartitioner ();
+    if (thePartitioner == 0)
+      {
+          opserr <<
+              "ShedHeaviest::balance - No DomainPartitioner has been set\n";
+          return -1;
+      }
 
     // determine the max loaded partition
-    VertexIter &theVertices = theWeightedGraph.getVertices();
-    Vertex *vertexPtr = theVertices();
-    int maxPartition = vertexPtr->getTag();
-    double maxLoad = vertexPtr->getWeight();
-    while ((vertexPtr = theVertices()) != 0)
-	if (vertexPtr->getWeight() > maxLoad) {
-	    maxLoad = vertexPtr->getWeight();
-	    maxPartition = vertexPtr->getTag();
-	}
-    
+    VertexIter & theVertices = theWeightedGraph.getVertices ();
+    Vertex *vertexPtr = theVertices ();
+    int maxPartition = vertexPtr->getTag ();
+    double maxLoad = vertexPtr->getWeight ();
+    while ((vertexPtr = theVertices ()) != 0)
+        if (vertexPtr->getWeight () > maxLoad)
+          {
+              maxLoad = vertexPtr->getWeight ();
+              maxPartition = vertexPtr->getTag ();
+          }
+
     // release the boundary numReleases times
     int res = 0;
-    for (int j=0; j<numReleases; j++) {
-	res = thePartitioner->
-	    releaseBoundary(maxPartition,theWeightedGraph,
-			    true,factorGreater);  
-	
-	if (res < 0) {
-	    opserr << "WARNING ShedHeaviest::balance() ";
-	    opserr << " - DomainPartitioner::releaseBoundary returned ";
-	    opserr << res << endln;
-	    j = numReleases;
-	}
-    }
-    
+    for (int j = 0; j < numReleases; j++)
+      {
+          res =
+              thePartitioner->releaseBoundary (maxPartition, theWeightedGraph,
+                                               true, factorGreater);
+
+          if (res < 0)
+            {
+                opserr << "WARNING ShedHeaviest::balance() ";
+                opserr << " - DomainPartitioner::releaseBoundary returned ";
+                opserr << res << endln;
+                j = numReleases;
+            }
+      }
+
     return res;
 }

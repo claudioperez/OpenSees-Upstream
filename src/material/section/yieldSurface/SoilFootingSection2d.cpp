@@ -20,80 +20,90 @@
 
 #include <classTags.h>
 
-ID SoilFootingSection2d::code(3);
+ID
+SoilFootingSection2d::code (3);
 
 
 
 // default constructor
 
-SoilFootingSection2d::SoilFootingSection2d(void)
-   :SectionForceDeformation(0, SEC_TAG_SoilFooting2d),
-    e(3), s(3),eCommit(3), sCommit(3), deModel(3), ks(3,3), ksE(3,3), ini_size(3)
+SoilFootingSection2d::SoilFootingSection2d (void):
+SectionForceDeformation (0, SEC_TAG_SoilFooting2d),
+e (3),
+s (3),
+eCommit (3),
+sCommit (3),
+deModel (3),
+ks (3, 3),
+ksE (3, 3),
+ini_size (3)
 {
-   code(0) = SECTION_RESPONSE_P;   // vertical load
-   code(1) = SECTION_RESPONSE_VY;  // shear
-   code(2) = SECTION_RESPONSE_MZ;  // moment
+    code (0) = SECTION_RESPONSE_P;      // vertical load
+    code (1) = SECTION_RESPONSE_VY;     // shear
+    code (2) = SECTION_RESPONSE_MZ;     // moment
 }
 
 
 // constructor
 
 SoilFootingSection2d::SoilFootingSection2d
-   (int tag, double fs, double vult, double l, double kv, double kh, double rv, double deltaL)
-   :SectionForceDeformation(tag, SEC_TAG_SoilFooting2d),
-   e(3), s(3), eCommit(3), sCommit(3), deModel(3), ks(3,3), ksE(3,3), ini_size(3), 
-   FS(fs), Vult(vult), L(l), Kv(kv), Kh(kh), Rv(rv), dL(deltaL)
+    (int tag, double fs, double vult, double l, double kv, double kh,
+     double rv, double deltaL):
+SectionForceDeformation (tag, SEC_TAG_SoilFooting2d), e (3), s (3),
+eCommit (3), sCommit (3), deModel (3), ks (3, 3), ksE (3, 3), ini_size (3),
+FS (fs), Vult (vult), L (l), Kv (kv), Kh (kh), Rv (rv),
+dL (deltaL)
 {
-   if (FS <= 1.0)
-   {
-      opserr <<"SoilFootingSection:: Invalid input for FS\n"
-             <<"FS should satisfy: FS > 1.0\n";
-   }
+    if (FS <= 1.0)
+      {
+          opserr << "SoilFootingSection:: Invalid input for FS\n"
+              << "FS should satisfy: FS > 1.0\n";
+      }
 
-   code(0) = SECTION_RESPONSE_P;   // axial load
-   code(1) = SECTION_RESPONSE_VY;  // shear
-   code(2) = SECTION_RESPONSE_MZ;  // moment
+    code (0) = SECTION_RESPONSE_P;      // axial load
+    code (1) = SECTION_RESPONSE_VY;     // shear
+    code (2) = SECTION_RESPONSE_MZ;     // moment
 
-   V = Vult / FS;
-   qult = Vult/L;
-   ecc = 0.0;
-   dTheta = 0.0;
-   dThetaPrev = 0.0;
-   dVtemp = 0.0;
-   tolerance = 0.0001 * (1.0/FS);
-   tolerance = 0.01;
-   Kt = Kv*pow(L, 3.0)/12.0;
+    V = Vult / FS;
+    qult = Vult / L;
+    ecc = 0.0;
+    dTheta = 0.0;
+    dThetaPrev = 0.0;
+    dVtemp = 0.0;
+    tolerance = 0.0001 * (1.0 / FS);
+    tolerance = 0.01;
+    Kt = Kv * pow (L, 3.0) / 12.0;
 
-   incr = 0;
-   noNodes = (int)(ceil(L/dL))+1;
+    incr = 0;
+    noNodes = (int) (ceil (L / dL)) + 1;
 
-   c1 = 0;
-   c1T = 0;
-   c2 = noNodes;
-   c2T = noNodes;
+    c1 = 0;
+    c1T = 0;
+    c2 = noNodes;
+    c2T = noNodes;
 
-   c1Commit = c1;
-   c1TCommit = c1T;
-   c2Commit = c2;
-   c2TCommit = c2T;
+    c1Commit = c1;
+    c1TCommit = c1T;
+    c2Commit = c2;
+    c2TCommit = c2T;
 
-   eccCommit = ecc;
+    eccCommit = ecc;
 
-   hPrev = -10.0;
-   hCurr = -10.0;
-   dVtemp = 0.0;
-   Mmaxpast = 0.0;
-   Mult = 0.0;
-   Melastic = 0.0;
-
-
-   initializeBoundingSurface();
-   initializeInternalVariables();
+    hPrev = -10.0;
+    hCurr = -10.0;
+    dVtemp = 0.0;
+    Mmaxpast = 0.0;
+    Mult = 0.0;
+    Melastic = 0.0;
 
 
-   isOver = 0;
-   isdV = 0;
-   isElastic = 1;
+    initializeBoundingSurface ();
+    initializeInternalVariables ();
+
+
+    isOver = 0;
+    isdV = 0;
+    isElastic = 1;
 
 }
 
@@ -102,26 +112,26 @@ SoilFootingSection2d::SoilFootingSection2d
 // destructor
 
 
-SoilFootingSection2d::~SoilFootingSection2d(void)
+SoilFootingSection2d::~SoilFootingSection2d (void)
 {
-   if (foot != 0)
-      for (int i = 0; i <= noNodes; i++)
-         delete [] foot[i];
-   if (soilMin != 0)
-      for (int i = 0; i <= noNodes; i++)
-         delete [] soilMin[i];
-   if (soilMax != 0)
-      for (int i = 0; i <= noNodes; i++)
-         delete [] soilMax[i];
-   if (pressure != 0)
-      for (int i = 0; i <= noNodes; i++)
-         delete [] pressure[i];
-   if (pressMax != 0)
-      for (int i = 0; i <= noNodes; i++)
-         delete [] pressMax[i];
+    if (foot != 0)
+        for (int i = 0; i <= noNodes; i++)
+            delete[]foot[i];
+    if (soilMin != 0)
+        for (int i = 0; i <= noNodes; i++)
+            delete[]soilMin[i];
+    if (soilMax != 0)
+        for (int i = 0; i <= noNodes; i++)
+            delete[]soilMax[i];
+    if (pressure != 0)
+        for (int i = 0; i <= noNodes; i++)
+            delete[]pressure[i];
+    if (pressMax != 0)
+        for (int i = 0; i <= noNodes; i++)
+            delete[]pressMax[i];
 
 
-}    
+}
 
 
 // initializing the bounding surface
@@ -129,26 +139,26 @@ SoilFootingSection2d::~SoilFootingSection2d(void)
 void
 SoilFootingSection2d::initializeBoundingSurface (void)
 {
-   a = 0.32;
-   b = 0.37;
-   ccc = 0.25;
-   d = 0.55;   
-   eee = 0.8;
-   f = 0.8;   
+    a = 0.32;
+    b = 0.37;
+    ccc = 0.25;
+    d = 0.55;
+    eee = 0.8;
+    f = 0.8;
 
-   Fv = V/Vult;  
-   A = a * pow(Fv, ccc) * pow(1-Fv, d);
-   B = b * pow(Fv, eee) * pow(1-Fv, f);
-   
-   beta = (A * h) / (pow(A*A*h*h + B*B*L*L, 0.5));
-   
-   if (beta < 0.0)
-      beta *= (-1.0);
-   
-   alpha = Fv / (1 - beta*(1-Fv));
-   pult = alpha;
-   
-   qult *= alpha;
+    Fv = V / Vult;
+    A = a * pow (Fv, ccc) * pow (1 - Fv, d);
+    B = b * pow (Fv, eee) * pow (1 - Fv, f);
+
+    beta = (A * h) / (pow (A * A * h * h + B * B * L * L, 0.5));
+
+    if (beta < 0.0)
+        beta *= (-1.0);
+
+    alpha = Fv / (1 - beta * (1 - Fv));
+    pult = alpha;
+
+    qult *= alpha;
 
 
 }
@@ -161,53 +171,53 @@ SoilFootingSection2d::initializeInternalVariables (void)
 {
 
 
-   foot = new double* [noNodes+1];
-   soilMin = new double* [noNodes+1];
-   soilMax = new double* [noNodes+1];
-   pressure = new double* [noNodes+1];
-   pressMax = new double* [noNodes+1];
-      
-   for (int j = 0; j <= noNodes; j++)
-   {
-      foot[j] = new double [ini_size];
-      soilMin[j] = new double [ini_size];
-      soilMax[j] = new double [ini_size];
-      pressure[j] = new double [ini_size];
-      pressMax[j] = new double [ini_size];
-   }
+    foot = new double *[noNodes + 1];
+    soilMin = new double *[noNodes + 1];
+    soilMax = new double *[noNodes + 1];
+    pressure = new double *[noNodes + 1];
+    pressMax = new double *[noNodes + 1];
 
-
-   for (int i = 0; i <= noNodes; i++)
-      for (int j = 0; j < ini_size; j++)
+    for (int j = 0; j <= noNodes; j++)
       {
-         foot[i][j] = V/Kv;
-         soilMin[i][j] = V/Kv;
-         soilMax[i][j] = V/Kv;
-         pressure[i][j] = 1.0/FS;
-         pressMax[i][j] = 1.0/FS;
+          foot[j] = new double[ini_size];
+          soilMin[j] = new double[ini_size];
+          soilMax[j] = new double[ini_size];
+          pressure[j] = new double[ini_size];
+          pressMax[j] = new double[ini_size];
       }
 
 
-   e.Zero();
-   s.Zero();
-   eCommit.Zero();
-   sCommit.Zero();
-   ks.Zero();
-   ksE.Zero();
+    for (int i = 0; i <= noNodes; i++)
+        for (int j = 0; j < ini_size; j++)
+          {
+              foot[i][j] = V / Kv;
+              soilMin[i][j] = V / Kv;
+              soilMax[i][j] = V / Kv;
+              pressure[i][j] = 1.0 / FS;
+              pressMax[i][j] = 1.0 / FS;
+          }
 
-   ks(0,0) = Kv;
-   ks(1,1) = Kh;
-   ks(2,2) = Kt;
-   ksE = ks;
 
-   dTh = 0.0;
-   dThP = 0.0;
+    e.Zero ();
+    s.Zero ();
+    eCommit.Zero ();
+    sCommit.Zero ();
+    ks.Zero ();
+    ksE.Zero ();
 
-   Mlimit = V*L/6.0;
-   thetaPlus = Mlimit / (Kv * pow(L, 2.0) / 12.0);
-   thetaMinus = -1.0 * Mlimit / (Kv * pow(L, 2.0) / 12.0);
+    ks (0, 0) = Kv;
+    ks (1, 1) = Kh;
+    ks (2, 2) = Kt;
+    ksE = ks;
 
-   thetaRange = 2 * thetaPlus;
+    dTh = 0.0;
+    dThP = 0.0;
+
+    Mlimit = V * L / 6.0;
+    thetaPlus = Mlimit / (Kv * pow (L, 2.0) / 12.0);
+    thetaMinus = -1.0 * Mlimit / (Kv * pow (L, 2.0) / 12.0);
+
+    thetaRange = 2 * thetaPlus;
 
 
 
@@ -225,214 +235,222 @@ SoilFootingSection2d::tempFunction (void)
 //  updating committed forces and displacements and internal variables
 
 int
-SoilFootingSection2d::commitState(void)
+SoilFootingSection2d::commitState (void)
 {
 
 
-   incr++;  
+    incr++;
 
 
 //         cout<<"d/din = "<<Mmaxpast<<endl; 
 
 
-         if (fabs(s(2)) > Mmaxpast)
-            Mmaxpast = fabs(s(2)); 
+    if (fabs (s (2)) > Mmaxpast)
+        Mmaxpast = fabs (s (2));
 
-         if (Mmaxpast > Melastic)
-            isElastic = 0;
-
-
-      thetaPlusPrev = thetaPlus;
-      thetaMinusPrev = thetaMinus;
+    if (Mmaxpast > Melastic)
+        isElastic = 0;
 
 
-   double e_2 = e(2);
+    thetaPlusPrev = thetaPlus;
+    thetaMinusPrev = thetaMinus;
 
 
-           if (e(2) > thetaPlus)
-           {
-              thetaPlus = e_2;
-              thetaMinus = thetaPlus - thetaRange;
-           }
-
-           if (e(2) < thetaMinus)
-           {
-              thetaMinus = e_2;
-              thetaPlus = thetaMinus + thetaRange;
-           }
+    double e_2 = e (2);
 
 
-   HPrevCommit = sCommit(1);
-   MPrevCommit = sCommit(2);
-
-
-   eCommit = e;
-   sCommit = s;
-   ksE = ks;
-   dThetaPrev = dTheta;
-
-   c1Commit = c1;
-   c1TCommit = c1T;
-   c2Commit = c2;
-   c2TCommit = c2T;
-
-   eccCommit = ecc;
-
-   hPrev = hCurr;
-
-   for (int i = 0; i <= noNodes; i++)
-      for (int j = 2; j > 0; j--)
-      {     
-         foot[i][j] = foot[i][j-1];
-         soilMin[i][j] = soilMin[i][j-1];
-         soilMax[i][j] = soilMax[i][j-1];
-         pressure[i][j] = pressure[i][j-1];
-         pressMax[i][j] = pressMax[i][j-1];
+    if (e (2) > thetaPlus)
+      {
+          thetaPlus = e_2;
+          thetaMinus = thetaPlus - thetaRange;
       }
 
-   tolerance = 0.0000000000001 * (1/FS);
+    if (e (2) < thetaMinus)
+      {
+          thetaMinus = e_2;
+          thetaPlus = thetaMinus + thetaRange;
+      }
 
 
-   isOver = 1;
-   isdV = 0;
-   return 0;
+    HPrevCommit = sCommit (1);
+    MPrevCommit = sCommit (2);
+
+
+    eCommit = e;
+    sCommit = s;
+    ksE = ks;
+    dThetaPrev = dTheta;
+
+    c1Commit = c1;
+    c1TCommit = c1T;
+    c2Commit = c2;
+    c2TCommit = c2T;
+
+    eccCommit = ecc;
+
+    hPrev = hCurr;
+
+    for (int i = 0; i <= noNodes; i++)
+        for (int j = 2; j > 0; j--)
+          {
+              foot[i][j] = foot[i][j - 1];
+              soilMin[i][j] = soilMin[i][j - 1];
+              soilMax[i][j] = soilMax[i][j - 1];
+              pressure[i][j] = pressure[i][j - 1];
+              pressMax[i][j] = pressMax[i][j - 1];
+          }
+
+    tolerance = 0.0000000000001 * (1 / FS);
+
+
+    isOver = 1;
+    isdV = 0;
+    return 0;
 }
 
 
 // going back to the last committed values
 
 int
-SoilFootingSection2d::revertToLastCommit(void)
+SoilFootingSection2d::revertToLastCommit (void)
 {
-  
-   thetaPlus = thetaPlusPrev;
-   thetaMinus = thetaMinusPrev;
 
-   e = eCommit;
-   s = sCommit;
-   ks = ksE;
-   dTheta = dThetaPrev;
+    thetaPlus = thetaPlusPrev;
+    thetaMinus = thetaMinusPrev;
 
-   c1 = c1Commit;
-   c1T = c1TCommit;
-   c2 = c2Commit;
-   c2T = c2TCommit;
-   ecc = eccCommit;
+    e = eCommit;
+    s = sCommit;
+    ks = ksE;
+    dTheta = dThetaPrev;
 
-   hCurr = hPrev;
+    c1 = c1Commit;
+    c1T = c1TCommit;
+    c2 = c2Commit;
+    c2T = c2TCommit;
+    ecc = eccCommit;
 
-   for (int i = 0; i <= noNodes; i++)
-   {
-      foot[i][1] = foot[i][2];
-      soilMin[i][1] = soilMin[i][2];
-      soilMax[i][1] = soilMax[i][2];
-      pressure[i][1] = pressure[i][2];
-      pressMax[i][1] = pressMax[i][2];
-   }
+    hCurr = hPrev;
 
-   return 0;
+    for (int i = 0; i <= noNodes; i++)
+      {
+          foot[i][1] = foot[i][2];
+          soilMin[i][1] = soilMin[i][2];
+          soilMax[i][1] = soilMax[i][2];
+          pressure[i][1] = pressure[i][2];
+          pressMax[i][1] = pressMax[i][2];
+      }
+
+    return 0;
 }
 
 
 // going back to the initial conditions 
 
 int
-SoilFootingSection2d::revertToStart(void)
+SoilFootingSection2d::revertToStart (void)
 {
 
-   eCommit.Zero();
-   sCommit.Zero();
+    eCommit.Zero ();
+    sCommit.Zero ();
 
-   c1 = 0;
-   c1T = 0;
-   c2 = noNodes;
-   c2T = noNodes;
+    c1 = 0;
+    c1T = 0;
+    c2 = noNodes;
+    c2T = noNodes;
 
-   c1Commit = c1;
-   c1TCommit = c1T;
-   c2Commit = c2;
-   c2TCommit = c2T;
-   eccCommit = ecc;
+    c1Commit = c1;
+    c1TCommit = c1T;
+    c2Commit = c2;
+    c2TCommit = c2T;
+    eccCommit = ecc;
 
-   dTheta = 0.0;
-   dThetaPrev = 0.0;
+    dTheta = 0.0;
+    dThetaPrev = 0.0;
 
-   for (int i = 0; i <= noNodes; i++)
-      for (int j = 0; j < ini_size; j++)
-      {
-         foot[i][j] = V/Kv;
-         soilMin[i][j] = V/Kv;
-         soilMax[i][j] = V/Kv;
-         pressure[i][j] = 1/FS;
-         pressMax[i][j] = 1/FS;
-      }
+    for (int i = 0; i <= noNodes; i++)
+        for (int j = 0; j < ini_size; j++)
+          {
+              foot[i][j] = V / Kv;
+              soilMin[i][j] = V / Kv;
+              soilMax[i][j] = V / Kv;
+              pressure[i][j] = 1 / FS;
+              pressMax[i][j] = 1 / FS;
+          }
 
 
-   return 0;
+    return 0;
 }
 
 
 
 
-SectionForceDeformation* SoilFootingSection2d::getCopy()
+SectionForceDeformation *
+SoilFootingSection2d::getCopy ()
 {
 
-   SoilFootingSection2d *theCopy =
-   new SoilFootingSection2d (this->getTag(), FS, Vult, L, Kv, Kh, Rv, dL);
+    SoilFootingSection2d *theCopy =
+        new SoilFootingSection2d (this->getTag (), FS, Vult, L, Kv, Kh, Rv,
+                                  dL);
 
-   return theCopy;
-}   
+    return theCopy;
+}
 
 
 // most important method in the class !!
 // this function is called at the beginning of and at the middle of iterations
 
 int
-SoilFootingSection2d::setTrialSectionDeformation (const Vector &def)
+SoilFootingSection2d::setTrialSectionDeformation (const Vector & def)
 {
 
-   int temp = 0;
-   Vector de(3), ds(3);
-   double epsilon = pow(10.0, -20.0);
+    int temp = 0;
+    Vector de (3), ds (3);
+    double epsilon = pow (10.0, -20.0);
 
 
 
-   e = def;
-   de = e - eCommit;
+    e = def;
+    de = e - eCommit;
 
 
 
-   if (fabs(de(0)) < epsilon) de(0) = 0.0;
-   if (fabs(de(1)) < epsilon) de(1) = 0.0;
-   if (fabs(de(2)) < epsilon) de(2) = 0.0;
+    if (fabs (de (0)) < epsilon)
+        de (0) = 0.0;
+    if (fabs (de (1)) < epsilon)
+        de (1) = 0.0;
+    if (fabs (de (2)) < epsilon)
+        de (2) = 0.0;
 
 
 
-   deModel.Zero();
+    deModel.Zero ();
 
-   dThP = dTh;
-   dTh = de(2);
+    dThP = dTh;
+    dTh = de (2);
 
-   if (de(0) == 0.0 && de(1) == 0.0 && de(2) == 0.0)
-   {
+    if (de (0) == 0.0 && de (1) == 0.0 && de (2) == 0.0)
+      {
 
-   // give out the previous ks rather than ks_elastic
+          // give out the previous ks rather than ks_elastic
 
-   }
-   else
-      temp = applyLoading(de);
-
-
-   ds = ks * deModel;
-
-   if (fabs(ds(0)) < epsilon) ds(0) = 0.0;
-   if (fabs(ds(1)) < epsilon) ds(1) = 0.0;
-   if (fabs(ds(2)) < epsilon) ds(2) = 0.0;
+      }
+    else
+        temp = applyLoading (de);
 
 
-   s = sCommit + ds;
+    ds = ks * deModel;
 
-   return 0;
+    if (fabs (ds (0)) < epsilon)
+        ds (0) = 0.0;
+    if (fabs (ds (1)) < epsilon)
+        ds (1) = 0.0;
+    if (fabs (ds (2)) < epsilon)
+        ds (2) = 0.0;
+
+
+    s = sCommit + ds;
+
+    return 0;
 }
 
 
@@ -441,626 +459,656 @@ SoilFootingSection2d::setTrialSectionDeformation (const Vector &def)
 // applyLoading method
 
 int
-SoilFootingSection2d::applyLoading(Vector de)
+SoilFootingSection2d::applyLoading (Vector de)
 {
 
-   int c, nn = 0, switch1;
-   double area1, area2, area1Prev = 0.0;
-   double s_recover = Rv;
-   double q_recover = 1.0 / L;
-   double LcOverL;
+    int c, nn = 0, switch1;
+    double area1, area2, area1Prev = 0.0;
+    double s_recover = Rv;
+    double q_recover = 1.0 / L;
+    double LcOverL;
 
 
 
-   soilFree = 0.0;
+    soilFree = 0.0;
 
-   double ds, du, dTheta1, dss, theta;
-   double dVt, dHt, dMt, dHt1;
-   double Vinit, dMcal;
-   double epsilon = pow(10.0, -20.0);
-   char tempKey;
-   double detKs;
-   double expo = 0;
-   double n_load, n_unload;
-   double e_2;
- 
-   if (fabs(de(0)) < epsilon) de(0) = 0.0;
-   if (fabs(de(1)) < epsilon) de(1) = 0.0;
-   if (fabs(de(2)) < epsilon) de(2) = 0.0;
+    double ds, du, dTheta1, dss, theta;
+    double dVt, dHt, dMt, dHt1;
+    double Vinit, dMcal;
+    double epsilon = pow (10.0, -20.0);
+    char tempKey;
+    double detKs;
+    double expo = 0;
+    double n_load, n_unload;
+    double e_2;
 
-
-   du = de(1);
-   dTheta = de(2);
-   dTheta1 = de(2);
-   theta = eCommit(2);
-   dss = 0.0;
+    if (fabs (de (0)) < epsilon)
+        de (0) = 0.0;
+    if (fabs (de (1)) < epsilon)
+        de (1) = 0.0;
+    if (fabs (de (2)) < epsilon)
+        de (2) = 0.0;
 
 
-   c1 = c1Commit;
-   c1T = c1TCommit;
-   c2 = c2Commit;
-   c2T = c2TCommit;
-   ecc = eccCommit;
-
-  
-
- 
-   double *footTemp = new double[noNodes+1];
-   double *soilMinTemp = new double[noNodes+1];
-   double *soilMaxTemp = new double[noNodes+1];
-   double *pressureTemp = new double[noNodes+1];
-   double *pressMaxTemp = new double[noNodes+1];
-
-   double *ddH = new double[200];
-
-   // for shear sliding model
-
-   double deltaIn, delta;
-   double a11, b11, c11, gr;
-   double Fh1, Fh2, Fm1, Fm2;
-   double ptFh1, ptFh2, ptFm1, ptFm2;
-   double dist1, dist2, factor;
-   double hNew, hNew1, uH, uM, dVt1;
-   int ii;
+    du = de (1);
+    dTheta = de (2);
+    dTheta1 = de (2);
+    theta = eCommit (2);
+    dss = 0.0;
 
 
-   Vector tempLoad(3);
-
-   // extracting the forces - 
-   // should be close enough to the actual applied external loads
-
-   tempLoad = ks * de;
-
-   dVt = tempLoad(0);
-   dHt = tempLoad(1);
-   dMt = tempLoad(2);
+    c1 = c1Commit;
+    c1T = c1TCommit;
+    c2 = c2Commit;
+    c2T = c2TCommit;
+    ecc = eccCommit;
 
 
-   if (fabs(dVt) < epsilon) dVt = 0.0;
-   if (fabs(dHt) < epsilon) dHt = 0.0;
-   if (fabs(dMt) < epsilon) dMt = 0.0;
+
+
+    double *footTemp = new double[noNodes + 1];
+    double *soilMinTemp = new double[noNodes + 1];
+    double *soilMaxTemp = new double[noNodes + 1];
+    double *pressureTemp = new double[noNodes + 1];
+    double *pressMaxTemp = new double[noNodes + 1];
+
+    double *ddH = new double[200];
+
+    // for shear sliding model
+
+    double deltaIn, delta;
+    double a11, b11, c11, gr;
+    double Fh1, Fh2, Fm1, Fm2;
+    double ptFh1, ptFh2, ptFm1, ptFm2;
+    double dist1, dist2, factor;
+    double hNew, hNew1, uH, uM, dVt1;
+    int ii;
+
+
+    Vector tempLoad (3);
+
+    // extracting the forces - 
+    // should be close enough to the actual applied external loads
+
+    tempLoad = ks * de;
+
+    dVt = tempLoad (0);
+    dHt = tempLoad (1);
+    dMt = tempLoad (2);
+
+
+    if (fabs (dVt) < epsilon)
+        dVt = 0.0;
+    if (fabs (dHt) < epsilon)
+        dHt = 0.0;
+    if (fabs (dMt) < epsilon)
+        dMt = 0.0;
 
 
 // set-up the state of switch depending on external loading
 
-   switch1 = -1;
+    switch1 = -1;
 
-   if (dVt == 0.0)
-      if (dHt == 0.0)
-         switch1 = (dMt == 0) ? 0 : 1; 
-      else
-         switch1 = (dMt == 0) ? 2 : 3; 
-   else
-      if (dHt == 0.0)
-         switch1 = (dMt == 0) ? 4 : 5; 
-      else
-         switch1 = (dMt == 0) ? 6 : 7; 
-
+    if (dVt == 0.0)
+        if (dHt == 0.0)
+            switch1 = (dMt == 0) ? 0 : 1;
+        else
+            switch1 = (dMt == 0) ? 2 : 3;
+    else if (dHt == 0.0)
+        switch1 = (dMt == 0) ? 4 : 5;
+    else
+        switch1 = (dMt == 0) ? 6 : 7;
 
 
-   if (isOver == 0)
-      switch1 = 7;
+
+    if (isOver == 0)
+        switch1 = 7;
 
 
-   ds = 0.0;
-   deModel.Zero();
-   ks.Zero();
+    ds = 0.0;
+    deModel.Zero ();
+    ks.Zero ();
 
 
-      for (int i = 0; i <= noNodes; i++)
+    for (int i = 0; i <= noNodes; i++)
       {
-         footTemp[i] = foot[i][1];
-         soilMinTemp[i] = soilMin[i][1];
-         soilMaxTemp[i] = soilMax[i][1];
-         pressureTemp[i] = pressure[i][1];
-         pressMaxTemp[i] = pressMax[i][1];
+          footTemp[i] = foot[i][1];
+          soilMinTemp[i] = soilMin[i][1];
+          soilMaxTemp[i] = soilMax[i][1];
+          pressureTemp[i] = pressure[i][1];
+          pressMaxTemp[i] = pressMax[i][1];
       }
 
-      for (int j = 0; j < 190; j++)
-         ddH[j] = 0.0;
+    for (int j = 0; j < 190; j++)
+        ddH[j] = 0.0;
 
 
-      Vinit = sCommit(0);
+    Vinit = sCommit (0);
 
 
 
 
-   if (switch1 == 0)
-   {
-      // ALL ZERO !
+    if (switch1 == 0)
+      {
+          // ALL ZERO !
 
-      ks(0,0) = epsilon;
-      ks(1,1) = epsilon;
-      ks(2,2) = epsilon;
+          ks (0, 0) = epsilon;
+          ks (1, 1) = epsilon;
+          ks (2, 2) = epsilon;
 
-      ks(0,0) = Kv;
-      ks(1,1) = Kh;
-      ks(2,2) = Kt;
-
-
-      ks(0,0) = 1.0;
-      ks(1,1) = 1.0;
-      ks(2,2) = 1.0;
+          ks (0, 0) = Kv;
+          ks (1, 1) = Kh;
+          ks (2, 2) = Kt;
 
 
-      deModel(0) = de(0);
-      deModel(1) = de(1);
-      deModel(2) = de(2);
-
-      return 0;
-   }
-
-   else if (switch1 == 4)
-   {
-      // ONLY dVt
-            
-      deModel(0) = dVt / Kv;
-      
-      ks(0,0) = Kv;
-      ks(1,1) = Kh;
-      ks(2,2) = Kt;
-
-      return 0;
-   }
-
-   else
-   {
-      // APPLY dVt in any case
+          ks (0, 0) = 1.0;
+          ks (1, 1) = 1.0;
+          ks (2, 2) = 1.0;
 
 
-   if (dVt == 0.0)
-      if (dHt == 0.0)
-         switch1 = (dMt == 0) ? 0 : 1; 
-      else
-         switch1 = (dMt == 0) ? 2 : 3; 
+          deModel (0) = de (0);
+          deModel (1) = de (1);
+          deModel (2) = de (2);
 
-   if (isOver == 0)
-      switch1 = 7;
+          return 0;
+      }
 
-   
+    else if (switch1 == 4)
+      {
+          // ONLY dVt
 
-         if (isOver != 0)
-            isOver++;
+          deModel (0) = dVt / Kv;
+
+          ks (0, 0) = Kv;
+          ks (1, 1) = Kh;
+          ks (2, 2) = Kt;
+
+          return 0;
+      }
+
+    else
+      {
+          // APPLY dVt in any case
 
 
-     dVt = 0.0;
+          if (dVt == 0.0)
+              if (dHt == 0.0)
+                  switch1 = (dMt == 0) ? 0 : 1;
+              else
+                  switch1 = (dMt == 0) ? 2 : 3;
+
+          if (isOver == 0)
+              switch1 = 7;
+
+
+
+          if (isOver != 0)
+              isOver++;
+
+
+          dVt = 0.0;
 
 //     do {
-     
-      dVt1 = dVt;
-      Vinit = sCommit(0)+dVt1;
+
+          dVt1 = dVt;
+          Vinit = sCommit (0) + dVt1;
 
 
-     if (sCommit(1) != 0.0)
-        hCurr = sCommit(2)/sCommit(1);
+          if (sCommit (1) != 0.0)
+              hCurr = sCommit (2) / sCommit (1);
 //     else if (dHt != 0.0)
 //        hCurr = dMt / dHt;
-     else
-        hCurr = hPrev;
+          else
+              hCurr = hPrev;
 
 
 
 
-         if (hCurr < 0.01 && hCurr >= 0.0)
-            hCurr = 0.01;
-         if (hCurr > -0.01 && hCurr <= 0.0)
-            hCurr = -0.01;
+          if (hCurr < 0.01 && hCurr >= 0.0)
+              hCurr = 0.01;
+          if (hCurr > -0.01 && hCurr <= 0.0)
+              hCurr = -0.01;
 
 
 
-         FS = Vult/Vinit;
-         Fv = Vinit/Vult;
+          FS = Vult / Vinit;
+          Fv = Vinit / Vult;
 
 
-     LcOverL = 1.0 / (FS * alpha);
-     s_recover = Rv * (1.0 - LcOverL);
+          LcOverL = 1.0 / (FS * alpha);
+          s_recover = Rv * (1.0 - LcOverL);
 
 
 
 
-         A = a * pow(Fv, ccc) * pow(1-Fv, d);
-         B = b * pow(Fv, eee) * pow(1-Fv, f);
-         
-         beta = (A * hCurr) / (pow(A*A*hCurr*hCurr + B*B*L*L, 0.5));
-         
-         if (beta < 0.0)
-            beta *= (-1.0);
-          
-         // if no shear
-         if (switch1 == 1 || switch1 == 5)
-            beta = 1.0;  
+          A = a * pow (Fv, ccc) * pow (1 - Fv, d);
+          B = b * pow (Fv, eee) * pow (1 - Fv, f);
 
-         alpha = Fv / (1 - beta*(1-Fv));   
-         pult = alpha;
+          beta =
+              (A * hCurr) /
+              (pow (A * A * hCurr * hCurr + B * B * L * L, 0.5));
 
-         Mult = (Vinit*L/2.0) * beta * (1.0 - Fv);
+          if (beta < 0.0)
+              beta *= (-1.0);
 
-         Melastic = Mult / (3.0 * (1.0 - Fv));
+          // if no shear
+          if (switch1 == 1 || switch1 == 5)
+              beta = 1.0;
+
+          alpha = Fv / (1 - beta * (1 - Fv));
+          pult = alpha;
+
+          Mult = (Vinit * L / 2.0) * beta * (1.0 - Fv);
+
+          Melastic = Mult / (3.0 * (1.0 - Fv));
 
 
-            // apply M-Theta model
-        
+          // apply M-Theta model
 
-         
-            if (dTheta > 0.0)
+
+
+          if (dTheta > 0.0)
             {
-               c = c1;
+                c = c1;
 
 
-               if (c > noNodes)
-               c = noNodes;
+                if (c > noNodes)
+                    c = noNodes;
 
 
-               do // check for Vinit
-               {
-				   int i;
-                  for (i = 0; i <= noNodes; i++)
+                do              // check for Vinit
                   {
-                     ds = (i-c)*(L/noNodes)*tan(dTheta);
+                      int i;
+                      for (i = 0; i <= noNodes; i++)
+                        {
+                            ds = (i - c) * (L / noNodes) * tan (dTheta);
 
-                     foot[i][0] = footTemp[i] + ds;
+                            foot[i][0] = footTemp[i] + ds;
 
-                     if (foot[i][0] >= soilMaxTemp[i])
-                        soilMax[i][0] = foot[i][0];
-                     else
-                        soilMax[i][0] = soilMaxTemp[i];
-            
-                     if (foot[i][0] >= soilMinTemp[i])
-                        soilMin[i][0] = foot[i][0];
-                     else
-                        soilMin[i][0] = soilMinTemp[i];
+                            if (foot[i][0] >= soilMaxTemp[i])
+                                soilMax[i][0] = foot[i][0];
+                            else
+                                soilMax[i][0] = soilMaxTemp[i];
+
+                            if (foot[i][0] >= soilMinTemp[i])
+                                soilMin[i][0] = foot[i][0];
+                            else
+                                soilMin[i][0] = soilMinTemp[i];
+                        }
+
+                      c1 = c2 = -1;
+
+                      for (i = 0; i <= noNodes; i++)
+                          if (foot[i][0] >= soilMax[i][0])
+                            {
+                                c1 = i;
+                                break;
+                            }
+
+                      for (i = noNodes; i >= 0; i--)
+                          if (foot[i][0] >= soilMax[i][0])
+                            {
+                                c2 = i;
+                                break;
+                            }
+
+
+
+                      if ((c1 == -1) && (c2 == -1))
+                        {
+
+                            if ((c >= 0) && (c <= noNodes))
+                                c1 = c2 = c;
+                            else
+                                c1 = c2 = c1T;
+                        }
+
+
+                      for (i = 0; i <= c1; i++)
+                        {
+                            soilMin[i][0] = soilMax[i][0]
+                                - (soilMax[i][0] - soilFree) * s_recover;
+                            if (foot[i][0] >= soilMin[i][0])
+                                soilMin[i][0] = foot[i][0];
+                        }
+
+                      for (i = 0; i <= noNodes; i++)
+                          if (foot[i][0] >= soilMin[i][0])
+                            {
+                                c1T = i;
+                                break;
+                            }
+
+                      for (i = noNodes; i >= 0; i--)
+                          if (foot[i][0] >= soilMin[i][0])
+                            {
+                                c2T = i;
+                                break;
+                            }
+
+                      if (c1 == 0)
+                          c1T = 0;
+                      if (c2 == noNodes)
+                          c2T = noNodes;
+
+                      if (c1T != 0)
+                          for (int i = 0; i <= c1T; i++)
+                              pressure[i][0] = 0.0;
+
+                      for (i = c1; i <= c2; i++)
+                          pressure[i][0] = pressureTemp[i] +
+                              (soilMax[i][0] -
+                               soilMin[i][1]) * q_recover * Kv / Vult;
+
+
+                      expo = ((10.0 - 0.5) / (0.66 * noNodes)) * c1T + 0.5;
+
+                      n_load = 0.5;
+                      n_unload = 10.0;
+
+                      e_2 = eCommit (2);
+                      n_load =
+                          9.5 * pow ((thetaPlus - e_2) / thetaRange,
+                                     1.0) + 0.5;
+                      n_unload =
+                          9.5 * pow ((e_2 - thetaMinus) / thetaRange,
+                                     1.0) + 0.5;
+
+
+
+
+                      if (c1 != c1T)
+                          for (int i = c1T; i <= c1; i++)
+                              pressure[i][0] =
+                                  pow ((double) (i - c1T) / (c1 - c1T),
+                                       n_unload) * pressure[c1][0];
+
+
+                      if (c2 != c2T)
+                          for (int i = c2; i <= c2T; i++)
+                              pressure[i][0] =
+                                  pow ((double) (c2T - i) / (c2T - c2),
+                                       n_load) * pressure[c2][0];
+
+                      for (i = c2T + 1; i <= noNodes; i++)
+                          pressure[i][0] = 0.0;
+
+                      int a;
+
+                      for (a = 0; a <= noNodes; a++)
+                        {
+                            if (pressure[a][0] > pult)
+                                pressure[a][0] = pult;
+                            if (pressure[a][0] < 0.0)
+                                pressure[a][0] = 0.0;
+                        }
+
+                      area1 = 0.0;
+                      for (a = 0; a <= noNodes; a++)
+                          area1 += pressure[a][0];
+                      area1 *= (L / noNodes);
+
+                      area2 = 0.0;
+                      for (a = 0; a <= noNodes; a++)
+                          area2 += (pressure[a][0] * (L / noNodes)
+                                    * (a - noNodes / 2) * (L / noNodes));
+
+                      for (a = 0; a <= noNodes; a++)
+                          if (pressure[a][0] > pressMax[a][1])
+                              pressMax[a][0] = pressure[a][0];
+                          else
+                              pressMax[a][0] = pressMax[a][1];
+
+                      ecc = area2 / area1;
+                      area1 *= cos (theta);
+
+                      if ((area1 / L) > (Vinit / Vult))
+                          c += 1;
+                      else
+                          nn = -2;
+
+
+                      if (c >= noNodes)
+                          nn = -2;
+                      if (c <= 0)
+                          nn = -2;
+
+
+                      nn++;
+                      if ((area1 / L - Vinit / Vult < 0.0)
+                          && (area1Prev / L - Vinit / Vult > 0.0))
+                        {
+                            tempKey = 'y';
+                            if (tempKey == 'y' || tempKey == 'Y')
+                              {
+
+                                  tolerance *= 2.0;
+                              }
+                            else
+                              {
+                              }
+                        }
+
+                      area1Prev = area1;
+
                   }
-            
-                  c1 = c2 = -1;
-
-                  for (i = 0; i <= noNodes; i++)
-                     if (foot[i][0] >= soilMax[i][0])
-                     {
-                        c1 = i;
-                        break;
-                     }
-              
-                  for (i = noNodes; i >= 0; i--)
-                     if (foot[i][0] >= soilMax[i][0])  
-                     {
-                        c2 = i;
-                        break;
-                     }
-
-
-
-                  if ((c1 == -1) && (c2 == -1))
-                  {
-
-                     if ((c >= 0) && (c <= noNodes))
-                        c1 = c2 = c;
-                     else
-                        c1 = c2 = c1T;
-                  }
-
-
-                  for (i = 0; i <= c1; i++)
-                  {
-                     soilMin[i][0] = soilMax[i][0]
-                                   - (soilMax[i][0] - soilFree)*s_recover;
-                     if (foot[i][0] >= soilMin[i][0])
-                        soilMin[i][0] = foot[i][0];
-                  }
- 
-                  for (i = 0; i <= noNodes; i++) 
-                     if (foot[i][0] >= soilMin[i][0])
-                     {
-                        c1T = i;
-                        break;
-                     }
-              
-                  for (i = noNodes; i >= 0; i--)
-                  if (foot[i][0] >= soilMin[i][0])
-                  {
-                     c2T = i;
-                     break;
-                  }
-                             
-                  if (c1 == 0)
-                     c1T = 0;
-                  if (c2 == noNodes)
-                     c2T = noNodes;
-                 
-                  if (c1T != 0) 
-                     for (int i = 0; i <= c1T; i++)
-                        pressure[i][0] = 0.0;
-
-                  for (i = c1; i <= c2; i++)
-                     pressure[i][0] = pressureTemp[i] +
-                               (soilMax[i][0]-soilMin[i][1])*q_recover* Kv/ Vult;
-
-
-                  expo = ((10.0 - 0.5)/(0.66*noNodes))*c1T + 0.5;
-
-           n_load = 0.5;
-           n_unload = 10.0;
-                 
-           e_2 = eCommit(2);
-           n_load = 9.5 * pow((thetaPlus-e_2)/thetaRange, 1.0) + 0.5;
-           n_unload = 9.5 * pow((e_2-thetaMinus)/thetaRange, 1.0) + 0.5;
-
-
-
-                             
-                  if (c1 != c1T)
-                     for (int i = c1T; i <= c1; i++)
-                        pressure[i][0] = pow((double)(i-c1T)/(c1-c1T), n_unload)
-                                       * pressure[c1][0];  
-
-
-                  if (c2 != c2T)
-                     for (int i = c2; i <= c2T; i++)
-                        pressure[i][0] = pow((double)(c2T-i)/(c2T-c2), n_load)
-                                       * pressure[c2][0];
-                 
-                  for (i = c2T+1; i <= noNodes; i++)
-                     pressure[i][0] = 0.0;
-
-				  int a;
-
-                  for (a = 0; a <= noNodes; a++)
-                  {
-                     if (pressure[a][0] > pult)
-                        pressure[a][0] = pult;
-                     if (pressure[a][0] < 0.0)
-                        pressure[a][0] = 0.0;
-                  }
-                             
-                  area1 = 0.0;
-                  for (a = 0; a <= noNodes; a++)
-                     area1 += pressure[a][0];
-                  area1 *= (L/noNodes);
-           
-                  area2 = 0.0;
-                  for (a = 0; a <= noNodes; a++)
-                     area2 += (pressure[a][0] * (L/noNodes)
-                           * (a - noNodes/2)*(L/noNodes));
-  
-                  for (a = 0; a <= noNodes; a++)
-                     if (pressure[a][0] > pressMax[a][1])
-                        pressMax[a][0] = pressure[a][0];
-                     else
-                        pressMax[a][0] = pressMax[a][1];
-                
-                  ecc = area2/area1;
-                  area1 *= cos(theta);
-                     
-                  if ((area1/L) > (Vinit/Vult))
-                     c += 1;
-                  else
-                     nn = -2; 
-
-                    
-                  if (c >= noNodes)
-                     nn = -2;
-                 if (c <= 0)
-                     nn = -2;
-
-
-                  nn++;
-                  if ((area1/L-Vinit/Vult < 0.0) && (area1Prev/L-Vinit/Vult > 0.0))
-                  {
-                   tempKey = 'y'; 
-                    if (tempKey == 'y' || tempKey == 'Y')
-                    {
-
-                          tolerance *= 2.0;
-                    }
-                    else
-                    {
-                    }  
-                  }
-
-                  area1Prev = area1;
-
-               } while ((fabs(area1/L - Vinit/Vult) > tolerance) && (nn != -1));
+                while ((fabs (area1 / L - Vinit / Vult) > tolerance)
+                       && (nn != -1));
 
             }
 
-            else if (dTheta < 0.0)
-            {  
+          else if (dTheta < 0.0)
+            {
 
 
-               c = c2;
+                c = c2;
 
 
-               if (c < 0)
-                  c = 0;
+                if (c < 0)
+                    c = 0;
 
 
-               do // check for Vinit
-               {  int i;            
-                  for (i = 0; i <= noNodes; i++)
+                do              // check for Vinit
                   {
-                     ds = (i-c)*(L/noNodes)*tan(dTheta);
+                      int i;
+                      for (i = 0; i <= noNodes; i++)
+                        {
+                            ds = (i - c) * (L / noNodes) * tan (dTheta);
 
-        
-                     foot[i][0] = footTemp[i] + ds;
 
-                     if (foot[i][0] >= soilMaxTemp[i])
-                        soilMax[i][0] = foot[i][0];
-                     else
-                        soilMax[i][0] = soilMaxTemp[i];
-                 
-                     if (foot[i][0] >= soilMinTemp[i])
-                        soilMin[i][0] = foot[i][0];
-                     else
-                        soilMin[i][0] = soilMinTemp[i];
+                            foot[i][0] = footTemp[i] + ds;
+
+                            if (foot[i][0] >= soilMaxTemp[i])
+                                soilMax[i][0] = foot[i][0];
+                            else
+                                soilMax[i][0] = soilMaxTemp[i];
+
+                            if (foot[i][0] >= soilMinTemp[i])
+                                soilMin[i][0] = foot[i][0];
+                            else
+                                soilMin[i][0] = soilMinTemp[i];
+                        }
+
+                      c1 = c2 = -1;
+
+                      for (i = 0; i <= noNodes; i++)
+                          if (foot[i][0] >= soilMax[i][0])
+                            {
+                                c1 = i;
+                                break;
+                            }
+
+                      for (i = noNodes; i >= 0; i--)
+                          if (foot[i][0] >= soilMax[i][0])
+                            {
+                                c2 = i;
+                                break;
+                            }
+
+                      if ((c1 == -1) && (c2 == -1))
+                        {
+
+                            if ((c >= 0) && (c <= noNodes))
+                                c1 = c2 = c;
+                            else
+                                c1 = c2 = c2T;
+                        }
+
+
+                      for (i = c2; i <= noNodes; i++)
+                        {
+                            soilMin[i][0] = soilMax[i][0]
+                                - (soilMax[i][0] - soilFree) * s_recover;
+                            if (foot[i][0] >= soilMin[i][0])
+                                soilMin[i][0] = foot[i][0];
+                        }
+
+                      for (i = 0; i <= noNodes; i++)
+                          if (foot[i][0] >= soilMin[i][0])
+                            {
+                                c1T = i;
+                                break;
+                            }
+
+                      for (i = noNodes; i >= 0; i--)
+                          if (foot[i][0] >= soilMin[i][0])
+                            {
+                                c2T = i;
+                                break;
+                            }
+
+                      if (c1 <= 0)
+                          c1T = 0;
+                      if (c2 >= noNodes)
+                          c2T = noNodes;
+
+
+                      if (c1T != 0)
+                          for (int i = 0; i <= c1T; i++)
+                              pressure[i][0] = 0.0;
+
+                      for (i = c1; i <= c2; i++)
+                          pressure[i][0] = pressureTemp[i] +
+                              (soilMax[i][0] -
+                               soilMin[i][1]) * q_recover * Kv / Vult;
+
+
+                      expo =
+                          ((10.0 - 0.5) / (0.66 * noNodes)) * (noNodes -
+                                                               c2T) + 0.5;
+
+
+                      n_load = 0.5;
+                      n_unload = 10.0;
+
+                      e_2 = eCommit (2);
+                      n_unload =
+                          9.5 * pow ((thetaPlus - e_2) / thetaRange,
+                                     1.0) + 0.5;
+                      n_load =
+                          9.5 * pow ((e_2 - thetaMinus) / thetaRange,
+                                     1.0) + 0.5;
+
+
+
+                      if (c2 != c2T)
+                          for (int i = c2; i <= c2T; i++)
+                              pressure[i][0] =
+                                  pow ((double) (c2T - i) / (c2T - c2),
+                                       n_unload) * pressure[c2][0];
+
+                      if (c1 != c1T)
+                          for (int i = c1T; i <= c1; i++)
+                              pressure[i][0] =
+                                  pow ((double) (i - c1T) / (c1 - c1T),
+                                       n_load) * pressure[c1][0];
+
+                      for (i = c2T + 1; i <= noNodes; i++)
+                          pressure[i][0] = 0.0;
+                      int a;
+                      for (a = 0; a <= noNodes; a++)
+                        {
+                            if (pressure[a][0] > pult)
+                                pressure[a][0] = pult;
+                            if (pressure[a][0] < 0.0)
+                                pressure[a][0] = 0.0;
+                        }
+
+                      area1 = 0.0;
+                      for (a = 0; a <= noNodes; a++)
+                          area1 += pressure[a][0];
+                      area1 *= (L / noNodes);
+
+                      area2 = 0.0;
+                      for (a = 0; a <= noNodes; a++)
+                          area2 += (pressure[a][0] * (L / noNodes)
+                                    * (a - noNodes / 2) * (L / noNodes));
+
+
+                      for (a = 0; a <= noNodes; a++)
+                          if (pressure[a][0] > pressMax[a][1])
+                              pressMax[a][0] = pressure[a][0];
+                          else
+                              pressMax[a][0] = pressMax[a][1];
+
+                      ecc = area2 / area1;
+                      area1 *= cos (theta);
+
+                      if ((area1 / L) > (Vinit / Vult))
+                          c -= 1;
+                      else
+                          nn = -2;
+
+
+                      if (c <= 0)
+                          nn = -2;
+                      if (c >= noNodes)
+                          nn = -2;
+
+
+
+
+                      nn++;
+                      if ((area1 / L - Vinit / Vult < 0.0)
+                          && (area1Prev / L - Vinit / Vult > 0.0))
+                        {
+                            tempKey = 'y';
+
+                            if (tempKey == 'y' || tempKey == 'Y')
+                              {
+
+                                  tolerance *= 2.0;
+                              }
+                            else
+                              {
+                              }
+                        }
+
+                      area1Prev = area1;
+
+
                   }
-  
-                  c1 = c2 = -1;
-         
-                  for (i = 0; i <= noNodes; i++)
-                     if (foot[i][0] >= soilMax[i][0])
-                     {  
-                        c1 = i;
-                        break;
-                     }
-
-                  for (i = noNodes; i >= 0; i--)   
-                     if (foot[i][0] >= soilMax[i][0])
-                     {   
-                        c2 = i;
-                        break;
-                     }  
-              
-                  if ((c1 == -1) && (c2 == -1))
-                  {
-
-                     if ((c >= 0) && (c <= noNodes))
-                        c1 = c2 = c;
-                     else
-                        c1 = c2 = c2T;
-                  }  
-
-
-                  for (i = c2; i <= noNodes; i++)
-                  {
-                     soilMin[i][0] = soilMax[i][0]
-                                   - (soilMax[i][0] - soilFree)*s_recover;
-                     if (foot[i][0] >= soilMin[i][0])
-                        soilMin[i][0] = foot[i][0];
-                  }
-
-                  for (i = 0; i <= noNodes; i++)
-                     if (foot[i][0] >= soilMin[i][0])
-                     {
-                        c1T = i;
-                        break;
-                     }
-               
-                  for (i = noNodes; i >= 0; i--)
-                     if (foot[i][0] >= soilMin[i][0])
-                     {
-                        c2T = i;
-                        break;
-                     }
-              
-                  if (c1 <= 0)
-                     c1T = 0;
-                  if (c2 >= noNodes)
-                     c2T = noNodes;
-
-                 
-                  if (c1T != 0)
-                     for (int i = 0; i <= c1T; i++) 
-                        pressure[i][0] = 0.0;
-
-                  for (i = c1; i <= c2; i++)
-                     pressure[i][0] = pressureTemp[i] +
-                                    (soilMax[i][0]-soilMin[i][1])*q_recover* Kv/ Vult;
-
-
-                  expo = ((10.0 - 0.5)/(0.66*noNodes))*(noNodes - c2T) + 0.5;
-
-
-           n_load = 0.5;
-           n_unload = 10.0;
-
-           e_2 = eCommit(2);            
-           n_unload = 9.5 * pow((thetaPlus-e_2)/thetaRange, 1.0) + 0.5;
-           n_load = 9.5 * pow((e_2-thetaMinus)/thetaRange, 1.0) + 0.5;
-
-
-
-                  if (c2 != c2T)
-                     for (int i = c2; i <= c2T; i++)
-                        pressure[i][0] = pow((double)(c2T-i)/(c2T-c2), n_unload)
-                                         * pressure[c2][0];
-
-                  if (c1 != c1T)
-                     for (int i = c1T; i <= c1; i++)
-                        pressure[i][0] = pow((double)(i-c1T)/(c1-c1T), n_load)
-                                       * pressure[c1][0];  
-                          
-                  for (i = c2T+1; i <= noNodes; i++)
-                     pressure[i][0] = 0.0;	
-				   int a;
-                  for (a = 0; a <= noNodes; a++)
-                  {
-                     if (pressure[a][0] > pult)
-                        pressure[a][0] = pult;
-                     if (pressure[a][0] < 0.0)
-                        pressure[a][0] = 0.0;
-                  }
-                             
-                  area1 = 0.0;
-                  for (a = 0; a <= noNodes; a++)
-                     area1 += pressure[a][0];
-                  area1 *= (L/noNodes);
-           
-                  area2 = 0.0;
-                  for (a = 0; a <= noNodes; a++)
-                     area2 += (pressure[a][0] * (L/noNodes)
-                           * (a - noNodes/2)*(L/noNodes));
-
-
-                  for (a = 0; a <= noNodes; a++)
-                     if (pressure[a][0] > pressMax[a][1])
-                        pressMax[a][0] = pressure[a][0];
-                     else      
-                        pressMax[a][0] = pressMax[a][1];
-                       
-                  ecc = area2/area1;
-                  area1 *= cos(theta);
-        
-                  if ((area1/L) > (Vinit/Vult))
-                     c -= 1;
-                  else
-                     nn = -2;
-
-               
-                  if (c <= 0)
-                     nn = -2; 
-                  if (c >= noNodes)
-                     nn = -2;
-
-
-
-
-                  nn++;
-                  if ((area1/L-Vinit/Vult < 0.0) && (area1Prev/L-Vinit/Vult > 0.0))
-                  {
-                    tempKey = 'y'; 
-
-                     if (tempKey == 'y' || tempKey == 'Y')
-                     {
-
-                          tolerance *= 2.0;
-                     }
-                     else
-                     {
-                     }   
-                  }
-
-                  area1Prev = area1;
-
-
-               } while ((fabs(area1/L - Vinit/Vult) > tolerance) && (nn != -1));
+                while ((fabs (area1 / L - Vinit / Vult) > tolerance)
+                       && (nn != -1));
 
             }
 
-            else
-            { 
-               dMcal = 0.0;
+          else
+            {
+                dMcal = 0.0;
             }
 
-            // Update Moment
+          // Update Moment
 
-            M = Vinit * ecc;
-            dMcal = M - sCommit(2); 
+          M = Vinit * ecc;
+          dMcal = M - sCommit (2);
 
-            if (dTheta == 0.0) 
-               dMcal = 0.0;
+          if (dTheta == 0.0)
+              dMcal = 0.0;
 
 
-            dMt = dMcal;
-            ds = foot[noNodes/2][0] - foot[noNodes/2][1];
+          dMt = dMcal;
+          ds = foot[noNodes / 2][0] - foot[noNodes / 2][1];
 
 
 /*
@@ -1072,17 +1120,17 @@ SoilFootingSection2d::applyLoading(Vector de)
 */
 
 
-        if (isOver == 0)
-           ds = 0.0;
+          if (isOver == 0)
+              ds = 0.0;
 
-        dVt = Kv * (de(0) - ds);
+          dVt = Kv * (de (0) - ds);
 //        dVt = 1.0 * (de(0) - ds);
 
 
-        if (sCommit(0)+dVt > Vult)
-           dVt = 0.99*Vult - sCommit(0);
-        if (sCommit(0)+dVt < 0.0)
-           dVt = -1.0*sCommit(0) + 0.01*Vult;
+          if (sCommit (0) + dVt > Vult)
+              dVt = 0.99 * Vult - sCommit (0);
+          if (sCommit (0) + dVt < 0.0)
+              dVt = -1.0 * sCommit (0) + 0.01 * Vult;
 
 
 //      } while ((fabs(dVt - dVt1) > 1.0) && (isOver != 0));
@@ -1091,30 +1139,35 @@ SoilFootingSection2d::applyLoading(Vector de)
 
 ///////////////////////////////
 
-      Fm2 = (sCommit(2)+dMt)/Vult/L;
+          Fm2 = (sCommit (2) + dMt) / Vult / L;
 
-      if (Fm2 > B)
-      {
-            dMt = 0.0;
+          if (Fm2 > B)
+            {
+                dMt = 0.0;
 //            exit(0);
-      }
+            }
 
 
-   for (int i = 0; i <= 180; i++)
-   {        
+          for (int i = 0; i <= 180; i++)
+            {
 
 
-      Fm2 = (sCommit(2)+dMt)/Vult/L;
+                Fm2 = (sCommit (2) + dMt) / Vult / L;
 
 
-      if (A*A*B*B - Fm2*Fm2*A*A > 0.0)
-      {
-         hNew = fabs(pow((A*A*B*B - Fm2*Fm2*A*A)/(B*B), 0.5)*Vult);
-         dHt = -1.0 * hNew + (2.0*hNew/180.0)*i - sCommit(1);
-      } 
+                if (A * A * B * B - Fm2 * Fm2 * A * A > 0.0)
+                  {
+                      hNew =
+                          fabs (pow
+                                ((A * A * B * B -
+                                  Fm2 * Fm2 * A * A) / (B * B), 0.5) * Vult);
+                      dHt =
+                          -1.0 * hNew + (2.0 * hNew / 180.0) * i -
+                          sCommit (1);
+                  }
 
-      else
-      {
+                else
+                  {
 /*
          if (isOver != 0)
          {
@@ -1125,140 +1178,155 @@ SoilFootingSection2d::applyLoading(Vector de)
             exit(0);
          }
 */
-       }
-      
+                  }
+
 //      dHt = -1.0 * hNew + (2.0*hNew/180.0)*i - sCommit(1);
 
-         Fh1 = sCommit(1)/Vult;
-         Fm1 = sCommit(2)/Vult/L;
-         Fh2 = (sCommit(1)+dHt)/Vult;
-         Fm2 = (sCommit(2)+dMt)/Vult/L;
+                Fh1 = sCommit (1) / Vult;
+                Fm1 = sCommit (2) / Vult / L;
+                Fh2 = (sCommit (1) + dHt) / Vult;
+                Fm2 = (sCommit (2) + dMt) / Vult / L;
 
 
-         if (Fh1 != Fh2)
-         {
-            gr = (Fm2 - Fm1)/(Fh2 - Fh1);
-    
-            a11 = B*B + A*A*gr*gr;
-            b11 = 2.0*gr*A*A * (Fm1 - gr*Fh1);
-            c11 = A*A * (Fh1*Fh1*gr*gr + Fm1*Fm1 - 2.0*gr*Fh1*Fm1 - B*B);
-      
-            factor = b11*b11 - 4.0*a11*c11;
-         
-            if (factor < 0.0)
-               factor = 0.0;
+                if (Fh1 != Fh2)
+                  {
+                      gr = (Fm2 - Fm1) / (Fh2 - Fh1);
+
+                      a11 = B * B + A * A * gr * gr;
+                      b11 = 2.0 * gr * A * A * (Fm1 - gr * Fh1);
+                      c11 =
+                          A * A * (Fh1 * Fh1 * gr * gr + Fm1 * Fm1 -
+                                   2.0 * gr * Fh1 * Fm1 - B * B);
+
+                      factor = b11 * b11 - 4.0 * a11 * c11;
+
+                      if (factor < 0.0)
+                          factor = 0.0;
 
 
-            if (factor >= 0.0)
-            {
-               ptFh1 = (-b11 + pow(factor, 0.5)) / 2.0 / a11;
-               ptFh2 = (-b11 - pow(factor, 0.5)) / 2.0 / a11;
-               ptFm1 = gr*(ptFh1 - Fh1) + Fm1;
-               ptFm2 = gr*(ptFh2 - Fh1) + Fm1;
-            }
-            else
-            {
-          
-            }
-         }
-         else
-         {
-      
-            ptFh1 = fabs(Fh1);
-            ptFh2 = -1.0 * fabs(Fh1);  
-            if ((A*A*B*B-B*B*Fh1*Fh1)/(A*A) < 0.0)
-               ptFm1 = ptFm2 = 0.0;
-            else
-            {  
-               ptFm1 = pow((A*A*B*B-B*B*Fh1*Fh1)/(A*A), 0.5);
-               ptFm2 = -1.0 * pow((A*A*B*B-B*B*Fh1*Fh1)/(A*A), 0.5);
-            }
-         }
-   
-     
-         if (fabs(ptFh1) > 0.25 || fabs(ptFh2) > 0.25 ||
-             fabs(ptFm1) > 0.15 || fabs(ptFm2) > 0.15 )
-         {
-         }
+                      if (factor >= 0.0)
+                        {
+                            ptFh1 = (-b11 + pow (factor, 0.5)) / 2.0 / a11;
+                            ptFh2 = (-b11 - pow (factor, 0.5)) / 2.0 / a11;
+                            ptFm1 = gr * (ptFh1 - Fh1) + Fm1;
+                            ptFm2 = gr * (ptFh2 - Fh1) + Fm1;
+                        }
+                      else
+                        {
+
+                        }
+                  }
+                else
+                  {
+
+                      ptFh1 = fabs (Fh1);
+                      ptFh2 = -1.0 * fabs (Fh1);
+                      if ((A * A * B * B - B * B * Fh1 * Fh1) / (A * A) < 0.0)
+                          ptFm1 = ptFm2 = 0.0;
+                      else
+                        {
+                            ptFm1 =
+                                pow ((A * A * B * B -
+                                      B * B * Fh1 * Fh1) / (A * A), 0.5);
+                            ptFm2 =
+                                -1.0 *
+                                pow ((A * A * B * B -
+                                      B * B * Fh1 * Fh1) / (A * A), 0.5);
+                        }
+                  }
+
+
+                if (fabs (ptFh1) > 0.25 || fabs (ptFh2) > 0.25 ||
+                    fabs (ptFm1) > 0.15 || fabs (ptFm2) > 0.15)
+                  {
+                  }
 
 
 ////////////////////////////////////////////////////////////////////////////
 // One way to make sure that d <= din is to make Fh1 <= ptFh1 .... and so on
 /////////////////////////////////////////////////////////////////////////////
-      
-         if (ptFh1 > ptFh2)
-         {
-            if (Fh1 > ptFh1)
-               Fh1 = ptFh1;
-            if (Fh2 > ptFh1)
-               Fh2 = ptFh1;
-            if (Fh1 < ptFh2)
-               Fh1 = ptFh2;
-            if (Fh2 < ptFh2)
-               Fh2 = ptFh2;
-         }
-         else
-         {  
-            if (Fh1 < ptFh1)
-               Fh1 = ptFh1;
-            if (Fh2 < ptFh1)
-               Fh2 = ptFh1;
-            if (Fh1 > ptFh2)
-               Fh1 = ptFh2;
-            if (Fh2 > ptFh2)
-               Fh2 = ptFh2;
-         }
 
-         if (ptFm1 > ptFm2)
-         {  
-            if (Fm1 > ptFm1)
-               Fm1 = ptFm1;
-            if (Fm2 > ptFm1)
-               Fm2 = ptFm1; 
-            if (Fm1 < ptFm2)
-               Fm1 = ptFm2; 
-            if (Fm2 < ptFm2)
-               Fm2 = ptFm2;
-         }
-         else
-         {
-            if (Fm1 < ptFm1)
-               Fm1 = ptFm1;
-            if (Fm2 < ptFm1)
-               Fm2 = ptFm1;
-            if (Fm1 > ptFm2)
-               Fm1 = ptFm2;
-            if (Fm2 > ptFm2)
-               Fm2 = ptFm2;
-         }
+                if (ptFh1 > ptFh2)
+                  {
+                      if (Fh1 > ptFh1)
+                          Fh1 = ptFh1;
+                      if (Fh2 > ptFh1)
+                          Fh2 = ptFh1;
+                      if (Fh1 < ptFh2)
+                          Fh1 = ptFh2;
+                      if (Fh2 < ptFh2)
+                          Fh2 = ptFh2;
+                  }
+                else
+                  {
+                      if (Fh1 < ptFh1)
+                          Fh1 = ptFh1;
+                      if (Fh2 < ptFh1)
+                          Fh2 = ptFh1;
+                      if (Fh1 > ptFh2)
+                          Fh1 = ptFh2;
+                      if (Fh2 > ptFh2)
+                          Fh2 = ptFh2;
+                  }
+
+                if (ptFm1 > ptFm2)
+                  {
+                      if (Fm1 > ptFm1)
+                          Fm1 = ptFm1;
+                      if (Fm2 > ptFm1)
+                          Fm2 = ptFm1;
+                      if (Fm1 < ptFm2)
+                          Fm1 = ptFm2;
+                      if (Fm2 < ptFm2)
+                          Fm2 = ptFm2;
+                  }
+                else
+                  {
+                      if (Fm1 < ptFm1)
+                          Fm1 = ptFm1;
+                      if (Fm2 < ptFm1)
+                          Fm2 = ptFm1;
+                      if (Fm1 > ptFm2)
+                          Fm1 = ptFm2;
+                      if (Fm2 > ptFm2)
+                          Fm2 = ptFm2;
+                  }
 
 
-         deltaIn = pow(pow(ptFm2-ptFm1, 2.0) + pow(ptFh2-ptFh1, 2.0), 0.5);
+                deltaIn =
+                    pow (pow (ptFm2 - ptFm1, 2.0) + pow (ptFh2 - ptFh1, 2.0),
+                         0.5);
 
-         deltaIn = fabs(2*A);
-      
-         dist1 = pow(pow(ptFm1-Fm1, 2.0) + pow(ptFh1-Fh1, 2.0), 0.5);
-         dist2 = pow(pow(ptFm1-Fm2, 2.0) + pow(ptFh1-Fh2, 2.0), 0.5);
-      
-      
-         if (dist2 < dist1)
-            delta = dist2;
-         else
-            delta = pow(pow(ptFm2-Fm2, 2.0) + pow(ptFh2-Fh2, 2.0), 0.5);
-      
-         if (dist1 == dist2)
-            delta = 0.0;
-         
-         if (deltaIn - delta <= 0.0)
-         {
+                deltaIn = fabs (2 * A);
+
+                dist1 =
+                    pow (pow (ptFm1 - Fm1, 2.0) + pow (ptFh1 - Fh1, 2.0),
+                         0.5);
+                dist2 =
+                    pow (pow (ptFm1 - Fm2, 2.0) + pow (ptFh1 - Fh2, 2.0),
+                         0.5);
+
+
+                if (dist2 < dist1)
+                    delta = dist2;
+                else
+                    delta =
+                        pow (pow (ptFm2 - Fm2, 2.0) + pow (ptFh2 - Fh2, 2.0),
+                             0.5);
+
+                if (dist1 == dist2)
+                    delta = 0.0;
+
+                if (deltaIn - delta <= 0.0)
+                  {
 //            exit (0); 
 
-            if (deltaIn != delta)
-            {
-            }
+                      if (deltaIn != delta)
+                        {
+                        }
 
-            deltaIn = delta + 0.0001;
-         }
+                      deltaIn = delta + 0.0001;
+                  }
 
 /*
          if (dist2 < dist1)
@@ -1268,24 +1336,31 @@ SoilFootingSection2d::applyLoading(Vector de)
 */
 
 
-      if (delta/deltaIn > 0.05)
-      {
-         uM = (2.0 * L * (dTheta) * (L/hCurr)*pow(B/A, 2.0))/((delta/(deltaIn-delta))/0.05);
-         uM = (2.0 * L * (dTheta) * (L/hCurr)*pow(B/A, 2.0)) * pow(1.0 - delta/deltaIn, 2.0);
+                if (delta / deltaIn > 0.05)
+                  {
+                      uM = (2.0 * L * (dTheta) * (L / hCurr) *
+                            pow (B / A,
+                                 2.0)) / ((delta / (deltaIn - delta)) / 0.05);
+                      uM = (2.0 * L * (dTheta) * (L / hCurr) *
+                            pow (B / A, 2.0)) * pow (1.0 - delta / deltaIn,
+                                                     2.0);
 //         uM = 0.0;
-         uH = de(1) - uM;
-         dHt1 = Kh * uH * pow(delta/(deltaIn), 1.0);           
-         dHt1 = Kh * uH;           
-      }
-      else
-      {
-         uM = (2.0 * L * (dTheta) * (L/hCurr)*pow(B/A, 2.0));
-         uM = (2.0 * L * (dTheta) * (L/hCurr)*pow(B/A, 2.0)) * pow(1.0 - delta/deltaIn, 2.0);
+                      uH = de (1) - uM;
+                      dHt1 = Kh * uH * pow (delta / (deltaIn), 1.0);
+                      dHt1 = Kh * uH;
+                  }
+                else
+                  {
+                      uM = (2.0 * L * (dTheta) * (L / hCurr) *
+                            pow (B / A, 2.0));
+                      uM = (2.0 * L * (dTheta) * (L / hCurr) *
+                            pow (B / A, 2.0)) * pow (1.0 - delta / deltaIn,
+                                                     2.0);
 //         uM = 0.0;
-         uH = de(1) - uM;
-         dHt1 = Kh * uH * pow(delta/(deltaIn), 1.0);           
-         dHt1 = Kh * uH;           
-      }
+                      uH = de (1) - uM;
+                      dHt1 = Kh * uH * pow (delta / (deltaIn), 1.0);
+                      dHt1 = Kh * uH;
+                  }
 
 
 /*
@@ -1302,24 +1377,24 @@ SoilFootingSection2d::applyLoading(Vector de)
 
 */
 
-      
-     ddH[i] = fabs(dHt - dHt1);
+
+                ddH[i] = fabs (dHt - dHt1);
 
 
 
-   } // for loop for finding dHt ends here
+            }                   // for loop for finding dHt ends here
 
 
-   dHt1 = 100000000000.0;
+          dHt1 = 100000000000.0;
 
-   for (int j = 0; j <= 180; j++)
-   {
-      if (ddH[j] <= dHt1)
-      {
-         dHt1 = ddH[j];
-         ii = j;         
-      }
-   }
+          for (int j = 0; j <= 180; j++)
+            {
+                if (ddH[j] <= dHt1)
+                  {
+                      dHt1 = ddH[j];
+                      ii = j;
+                  }
+            }
 
 
 
@@ -1327,14 +1402,17 @@ SoilFootingSection2d::applyLoading(Vector de)
 //////////////////////////
 
 
-      if (A*A*B*B - Fm2*Fm2*A*A > 0.0)
-      {
-         hNew = fabs(pow((A*A*B*B - Fm2*Fm2*A*A)/(B*B), 0.5)*Vult);
-         dHt = -1.0 * hNew + (2.0*hNew/180.0)*ii - sCommit(1);
-      }
+          if (A * A * B * B - Fm2 * Fm2 * A * A > 0.0)
+            {
+                hNew =
+                    fabs (pow
+                          ((A * A * B * B - Fm2 * Fm2 * A * A) / (B * B),
+                           0.5) * Vult);
+                dHt = -1.0 * hNew + (2.0 * hNew / 180.0) * ii - sCommit (1);
+            }
 
-      else
-      {
+          else
+            {
 /*
          if (isOver != 0)
          {
@@ -1343,41 +1421,42 @@ SoilFootingSection2d::applyLoading(Vector de)
             exit(0);
          }
 */
-      }
+            }
 
 //         dHt = -1.0 * hNew + (2.0*hNew/180.0)*ii - sCommit(1);
 
-     if (sCommit(1) != 0.0)
-        hCurr = sCommit(2)/sCommit(1);
+          if (sCommit (1) != 0.0)
+              hCurr = sCommit (2) / sCommit (1);
 //     else if (dHt != 0.0)
 //        hCurr = dMt / dHt;
-     else
-        hCurr = hPrev;
-
-
-         
-         if (hCurr < 0.01 && hCurr >= 0.0)
-            hCurr = 0.01;
-         if (hCurr > -0.01 && hCurr <= 0.0)
-            hCurr = -0.01;
+          else
+              hCurr = hPrev;
 
 
 
-         hNew = 0.0;
+          if (hCurr < 0.01 && hCurr >= 0.0)
+              hCurr = 0.01;
+          if (hCurr > -0.01 && hCurr <= 0.0)
+              hCurr = -0.01;
 
-         int gate = 1;
-         dHt = dMt / ((hCurr+hPrev)/2.0);
-         dHt1 = dMt / ((hCurr+hPrev)/2.0);
 
 
-         do {
+          hNew = 0.0;
+
+          int gate = 1;
+          dHt = dMt / ((hCurr + hPrev) / 2.0);
+          dHt1 = dMt / ((hCurr + hPrev) / 2.0);
+
+
+          do
+            {
 
 //            dHt = (dHt + dHt1)/2.0;
 //            dHt = dHt/2.0;
 //            dHt = dHt1;
 
 
-        hNew = dHt - dHt1;
+                hNew = dHt - dHt1;
 
 /*
         if (dHt1 > dHt)
@@ -1386,31 +1465,34 @@ SoilFootingSection2d::applyLoading(Vector de)
            dHt -= 10.0;
 */
 
-           dHt = (dHt + dHt1)/2.0;
+                dHt = (dHt + dHt1) / 2.0;
 
-         dHt = dMt / hCurr;
+                dHt = dMt / hCurr;
 
 
 //         cout <<"dHt assumed = "<<dHt<<endl;
 
 
-         Fh1 = sCommit(1)/Vult;
-         Fm1 = sCommit(2)/Vult/L;
-         Fh2 = (sCommit(1)+dHt)/Vult;
-         Fm2 = (sCommit(2)+dMt)/Vult/L;
+                Fh1 = sCommit (1) / Vult;
+                Fm1 = sCommit (2) / Vult / L;
+                Fh2 = (sCommit (1) + dHt) / Vult;
+                Fm2 = (sCommit (2) + dMt) / Vult / L;
 
 
-         dHt1 = fabs(pow((A*A*B*B - Fm2*Fm2*A*A)/(B*B), 0.5));
-         if (Fh2 > dHt1)
-            dHt = dHt1*Vult - sCommit(1);         
-         if (Fh2 < -1.0*dHt1)
-            dHt = -1.0*dHt1*Vult - sCommit(1);         
+                dHt1 =
+                    fabs (pow
+                          ((A * A * B * B - Fm2 * Fm2 * A * A) / (B * B),
+                           0.5));
+                if (Fh2 > dHt1)
+                    dHt = dHt1 * Vult - sCommit (1);
+                if (Fh2 < -1.0 * dHt1)
+                    dHt = -1.0 * dHt1 * Vult - sCommit (1);
 
 
 
 
-         if (Fh2*Fh2/A/A + Fm2*Fm2/B/B - 1.0 > 0.0)
-         {
+                if (Fh2 * Fh2 / A / A + Fm2 * Fm2 / B / B - 1.0 > 0.0)
+                  {
 
 /*
 //            if (dHt > 0.0)
@@ -1437,149 +1519,166 @@ SoilFootingSection2d::applyLoading(Vector de)
             exit(0); 
 */
 
-         }
+                  }
 
 
-         Fh2 = (sCommit(1)+dHt)/Vult;
-         Fm2 = (sCommit(2)+dMt)/Vult/L;
+                Fh2 = (sCommit (1) + dHt) / Vult;
+                Fm2 = (sCommit (2) + dMt) / Vult / L;
 
 
-      
-         if (Fh1 != Fh2)
-         {
-            gr = (Fm2 - Fm1)/(Fh2 - Fh1);
-    
-            a11 = B*B + A*A*gr*gr;
-            b11 = 2.0*gr*A*A * (Fm1 - gr*Fh1);
-            c11 = A*A * (Fh1*Fh1*gr*gr + Fm1*Fm1 - 2.0*gr*Fh1*Fm1 - B*B);
-      
-            factor = b11*b11 - 4.0*a11*c11;
-         
-            if (factor < 0.0)
-               factor = 0.0;
+
+                if (Fh1 != Fh2)
+                  {
+                      gr = (Fm2 - Fm1) / (Fh2 - Fh1);
+
+                      a11 = B * B + A * A * gr * gr;
+                      b11 = 2.0 * gr * A * A * (Fm1 - gr * Fh1);
+                      c11 =
+                          A * A * (Fh1 * Fh1 * gr * gr + Fm1 * Fm1 -
+                                   2.0 * gr * Fh1 * Fm1 - B * B);
+
+                      factor = b11 * b11 - 4.0 * a11 * c11;
+
+                      if (factor < 0.0)
+                          factor = 0.0;
 
 
-            if (factor >= 0.0)
-            {
-               ptFh1 = (-b11 + pow(factor, 0.5)) / 2.0 / a11;
-               ptFh2 = (-b11 - pow(factor, 0.5)) / 2.0 / a11;
-               ptFm1 = gr*(ptFh1 - Fh1) + Fm1;
-               ptFm2 = gr*(ptFh2 - Fh1) + Fm1;
-            }
-            else
-            {
-          
-            }
-         }
-         else
-         {
-      
-            ptFh1 = fabs(Fh1);
-            ptFh2 = -1.0 * fabs(Fh1);  
-            if ((A*A*B*B-B*B*Fh1*Fh1)/(A*A) < 0.0)
-               ptFm1 = ptFm2 = 0.0;
-            else
-            {  
-               ptFm1 = pow((A*A*B*B-B*B*Fh1*Fh1)/(A*A), 0.5);
-               ptFm2 = -1.0 * pow((A*A*B*B-B*B*Fh1*Fh1)/(A*A), 0.5);
-            }
-         }
-   
-     
-         if (fabs(ptFh1) > 0.25 || fabs(ptFh2) > 0.25 ||
-             fabs(ptFm1) > 0.15 || fabs(ptFm2) > 0.15 )
-         {
-         }
+                      if (factor >= 0.0)
+                        {
+                            ptFh1 = (-b11 + pow (factor, 0.5)) / 2.0 / a11;
+                            ptFh2 = (-b11 - pow (factor, 0.5)) / 2.0 / a11;
+                            ptFm1 = gr * (ptFh1 - Fh1) + Fm1;
+                            ptFm2 = gr * (ptFh2 - Fh1) + Fm1;
+                        }
+                      else
+                        {
+
+                        }
+                  }
+                else
+                  {
+
+                      ptFh1 = fabs (Fh1);
+                      ptFh2 = -1.0 * fabs (Fh1);
+                      if ((A * A * B * B - B * B * Fh1 * Fh1) / (A * A) < 0.0)
+                          ptFm1 = ptFm2 = 0.0;
+                      else
+                        {
+                            ptFm1 =
+                                pow ((A * A * B * B -
+                                      B * B * Fh1 * Fh1) / (A * A), 0.5);
+                            ptFm2 =
+                                -1.0 *
+                                pow ((A * A * B * B -
+                                      B * B * Fh1 * Fh1) / (A * A), 0.5);
+                        }
+                  }
+
+
+                if (fabs (ptFh1) > 0.25 || fabs (ptFh2) > 0.25 ||
+                    fabs (ptFm1) > 0.15 || fabs (ptFm2) > 0.15)
+                  {
+                  }
 
 
 ////////////////////////////////////////////////////////////////////////////
 // One way to make sure that d <= din is to make Fh1 <= ptFh1 .... and so on
 /////////////////////////////////////////////////////////////////////////////
-      
-         if (ptFh1 > ptFh2)
-         {
-            if (Fh1 > ptFh1)
-               Fh1 = ptFh1;
-            if (Fh2 > ptFh1)
-               Fh2 = ptFh1;
-            if (Fh1 < ptFh2)
-               Fh1 = ptFh2;
-            if (Fh2 < ptFh2)
-               Fh2 = ptFh2;
-         }
-         else
-         {  
-            if (Fh1 < ptFh1)
-               Fh1 = ptFh1;
-            if (Fh2 < ptFh1)
-               Fh2 = ptFh1;
-            if (Fh1 > ptFh2)
-               Fh1 = ptFh2;
-            if (Fh2 > ptFh2)
-               Fh2 = ptFh2;
-         }
 
-         if (ptFm1 > ptFm2)
-         {  
-            if (Fm1 > ptFm1)
-               Fm1 = ptFm1;
-            if (Fm2 > ptFm1)
-               Fm2 = ptFm1; 
-            if (Fm1 < ptFm2)
-               Fm1 = ptFm2; 
-            if (Fm2 < ptFm2)
-               Fm2 = ptFm2;
-         }
-         else
-         {
-            if (Fm1 < ptFm1)
-               Fm1 = ptFm1;
-            if (Fm2 < ptFm1)
-               Fm2 = ptFm1;
-            if (Fm1 > ptFm2)
-               Fm1 = ptFm2;
-            if (Fm2 > ptFm2)
-               Fm2 = ptFm2;
-         }
+                if (ptFh1 > ptFh2)
+                  {
+                      if (Fh1 > ptFh1)
+                          Fh1 = ptFh1;
+                      if (Fh2 > ptFh1)
+                          Fh2 = ptFh1;
+                      if (Fh1 < ptFh2)
+                          Fh1 = ptFh2;
+                      if (Fh2 < ptFh2)
+                          Fh2 = ptFh2;
+                  }
+                else
+                  {
+                      if (Fh1 < ptFh1)
+                          Fh1 = ptFh1;
+                      if (Fh2 < ptFh1)
+                          Fh2 = ptFh1;
+                      if (Fh1 > ptFh2)
+                          Fh1 = ptFh2;
+                      if (Fh2 > ptFh2)
+                          Fh2 = ptFh2;
+                  }
+
+                if (ptFm1 > ptFm2)
+                  {
+                      if (Fm1 > ptFm1)
+                          Fm1 = ptFm1;
+                      if (Fm2 > ptFm1)
+                          Fm2 = ptFm1;
+                      if (Fm1 < ptFm2)
+                          Fm1 = ptFm2;
+                      if (Fm2 < ptFm2)
+                          Fm2 = ptFm2;
+                  }
+                else
+                  {
+                      if (Fm1 < ptFm1)
+                          Fm1 = ptFm1;
+                      if (Fm2 < ptFm1)
+                          Fm2 = ptFm1;
+                      if (Fm1 > ptFm2)
+                          Fm1 = ptFm2;
+                      if (Fm2 > ptFm2)
+                          Fm2 = ptFm2;
+                  }
 
 
 
-         deltaIn = pow(pow(ptFm2-ptFm1, 2.0) + pow(ptFh2-ptFh1, 2.0), 0.5);
-         deltaIn = fabs(2.0*A);
+                deltaIn =
+                    pow (pow (ptFm2 - ptFm1, 2.0) + pow (ptFh2 - ptFh1, 2.0),
+                         0.5);
+                deltaIn = fabs (2.0 * A);
 //         deltaIn = 0.184;
-      
-         
-         dist1 = pow(pow(ptFm1-Fm1, 2.0) + pow(ptFh1-Fh1, 2.0), 0.5);
-         dist2 = pow(pow(ptFm1-Fm2, 2.0) + pow(ptFh1-Fh2, 2.0), 0.5);
 
-      
-         if (dist2 < dist1)
-         {
+
+                dist1 =
+                    pow (pow (ptFm1 - Fm1, 2.0) + pow (ptFh1 - Fh1, 2.0),
+                         0.5);
+                dist2 =
+                    pow (pow (ptFm1 - Fm2, 2.0) + pow (ptFh1 - Fh2, 2.0),
+                         0.5);
+
+
+                if (dist2 < dist1)
+                  {
 //            delta = dist2;
 //            delta = (dist1+dist2)/2.0;
-            delta = dist1;
+                      delta = dist1;
 
-         delta = pow(pow(ptFh1-Fh1, 2.0), 0.5);
+                      delta = pow (pow (ptFh1 - Fh1, 2.0), 0.5);
 
 
-         }
-         else
-         {
+                  }
+                else
+                  {
 //            delta = pow(pow(ptFm2-Fm2, 2.0) + pow(ptFh2-Fh2, 2.0), 0.5);
-            dist1 = pow(pow(ptFm2-Fm1, 2.0) + pow(ptFh2-Fh1, 2.0), 0.5);
-            dist2 = pow(pow(ptFm2-Fm2, 2.0) + pow(ptFh2-Fh2, 2.0), 0.5);
+                      dist1 =
+                          pow (pow (ptFm2 - Fm1, 2.0) +
+                               pow (ptFh2 - Fh1, 2.0), 0.5);
+                      dist2 =
+                          pow (pow (ptFm2 - Fm2, 2.0) +
+                               pow (ptFh2 - Fh2, 2.0), 0.5);
 //            delta = (dist1+dist2)/2.0;
-            delta = dist1;
+                      delta = dist1;
 
-            delta = pow(pow(ptFh2-Fh1, 2.0), 0.5);
+                      delta = pow (pow (ptFh2 - Fh1, 2.0), 0.5);
 
 
-         }     
+                  }
 
 //         if (dist1 == dist2)
 //            delta = 0.0;
 //            delta = deltaIn;
-  
+
 
 
 /*
@@ -1594,18 +1693,18 @@ SoilFootingSection2d::applyLoading(Vector de)
 
 */
 
-       
-         if (deltaIn - delta <= 0.0)
-         {
+
+                if (deltaIn - delta <= 0.0)
+                  {
 
 //           exit(0);
 
-            if (deltaIn != delta)
-            {
-            }
+                      if (deltaIn != delta)
+                        {
+                        }
 
-            deltaIn = delta + 0.0001;
-         }
+                      deltaIn = delta + 0.0001;
+                  }
 
 /*
        if (incr > 910)
@@ -1641,7 +1740,7 @@ SoilFootingSection2d::applyLoading(Vector de)
 //         cout <<"BOT\n";
       }
 
-*/      
+*/
 
 
 //      if (delta/deltaIn < 0.1) 
@@ -1651,47 +1750,48 @@ SoilFootingSection2d::applyLoading(Vector de)
 //         delta = deltaIn;
 
 
-      Mmaxpast = delta/deltaIn;
-      
-      if (delta/deltaIn > 1.0)
-         uM = 0.0;
-      else
-         uM = (L * (dTheta-dMt/Kt) * (L/hCurr)*pow(B/A, 2.0)) 
+                Mmaxpast = delta / deltaIn;
+
+                if (delta / deltaIn > 1.0)
+                    uM = 0.0;
+                else
+                    uM = (L * (dTheta - dMt / Kt) * (L / hCurr) *
+                          pow (B / A, 2.0))
 //                       * (pow(1.0 - delta/deltaIn, 4.0));
-                       * (pow(1.0 - delta/deltaIn, 10.0));
+                        * (pow (1.0 - delta / deltaIn, 10.0));
 
 
 
 //         uM = 0.0; 
 
-      uH = de(1) - uM;
+                uH = de (1) - uM;
 //      dHt1 = Kh * uH * pow((delta+0.0001)/(deltaIn - delta), 1.0);
 //      dHt1 = Kh * uH * pow(0.0 + delta/deltaIn, 0.2);
 //      dHt1 = Kh * uH * pow(epsilon + delta/deltaIn, 2.0);
 //      dHt1 = Kh * uH * pow(delta/deltaIn, 2.0);
 //      dHt1 = Kh * uH * pow(delta/(deltaIn-delta), 2.0);
-      dHt1 = Kh * uH * (delta/deltaIn);
-      dHt1 = Kh * uH;
-      dHt1 = Kh* ((double)(c2-c1)/noNodes) * uH;
+                dHt1 = Kh * uH * (delta / deltaIn);
+                dHt1 = Kh * uH;
+                dHt1 = Kh * ((double) (c2 - c1) / noNodes) * uH;
 
 
 //      if (uH == 0.0) exit(0);
-      
+
 
 //      cout <<"dMt and dHt = "<<dMt<<" "<<dHt<<endl; 
 //      cout <<"delta and deltaIn = "<<delta<<" "<<deltaIn<<endl; 
-      
+
 
 //       if (dHt1 == 0.0) 
 //          dHt1 = de(1);  
 
 
-         Fh2 = (sCommit(1)+dHt1)/Vult;
-         Fm2 = (sCommit(2)+dMt)/Vult/L;
+                Fh2 = (sCommit (1) + dHt1) / Vult;
+                Fm2 = (sCommit (2) + dMt) / Vult / L;
 
 //         if (Fh2*Fh2/A/A + Fm2*Fm2/B/B - 1.0 >= 0.0)
-         if (Fh2*Fh2/A/A + Fm2*Fm2/B/B - 1.0 > 0.01)
-         {
+                if (Fh2 * Fh2 / A / A + Fm2 * Fm2 / B / B - 1.0 > 0.01)
+                  {
 //            gate = 1;
 /*
             cout <<"dHt1 = "<<dHt1<<endl;
@@ -1743,9 +1843,9 @@ SoilFootingSection2d::applyLoading(Vector de)
 
 
 //          gate = 0;
-         }
-         else
-            gate = 101;
+                  }
+                else
+                    gate = 101;
 
 
 //            cout <<"gate = "<<gate<<endl;
@@ -1774,9 +1874,9 @@ SoilFootingSection2d::applyLoading(Vector de)
 */
 
 
-   
-       if ((dHt - dHt1 > 0.0) && (hNew < 0.0))
-            gate = 0;
+
+                if ((dHt - dHt1 > 0.0) && (hNew < 0.0))
+                    gate = 0;
 
 
 
@@ -1809,28 +1909,30 @@ SoilFootingSection2d::applyLoading(Vector de)
 
 
 //         if (fabs(dHt) > 100000) gate = 0;
-       
-     
+
+
 //      } while ((fabs(dHt-dHt1) > 100.0) && (gate));
-      } while (0);
+            }
+          while (0);
 
 //       if (dHt1 != 0.0)
-          dHt = dHt1;  
+          dHt = dHt1;
 
 
 
 
-         Fh2 = (sCommit(1)+dHt)/Vult;
-         Fm2 = (sCommit(2)+dMt)/Vult/L;
+          Fh2 = (sCommit (1) + dHt) / Vult;
+          Fm2 = (sCommit (2) + dMt) / Vult / L;
 
 
 
 
-         dHt1 = fabs(pow((A*A*B*B - Fm2*Fm2*A*A)/(B*B), 0.5));
-         if (Fh2 > dHt1)
-            dHt = dHt1*Vult - sCommit(1);         
-         if (Fh2 < -1.0*dHt1)
-            dHt = -1.0*dHt1*Vult - sCommit(1);         
+          dHt1 =
+              fabs (pow ((A * A * B * B - Fm2 * Fm2 * A * A) / (B * B), 0.5));
+          if (Fh2 > dHt1)
+              dHt = dHt1 * Vult - sCommit (1);
+          if (Fh2 < -1.0 * dHt1)
+              dHt = -1.0 * dHt1 * Vult - sCommit (1);
 
 
 /*
@@ -1844,16 +1946,16 @@ SoilFootingSection2d::applyLoading(Vector de)
 
 
 
-         if (du == 0.0)
-            dHt = 0.0;
+          if (du == 0.0)
+              dHt = 0.0;
 
 
 
 
 
 
-         if (Fh2*Fh2/A/A + Fm2*Fm2/B/B - 1.0 > 0.0)
-         {
+          if (Fh2 * Fh2 / A / A + Fm2 * Fm2 / B / B - 1.0 > 0.0)
+            {
 
 /*
 
@@ -1880,9 +1982,9 @@ SoilFootingSection2d::applyLoading(Vector de)
             cout <<"sCommit(0) and dVt = "<<sCommit(0)<<" "<<dVt<<endl;
 //            exit(0);
 
-*/ 
+*/
 
-         }
+            }
 
 
 
@@ -1906,19 +2008,19 @@ SoilFootingSection2d::applyLoading(Vector de)
 */
 
 
-        if (isOver == 0)
+          if (isOver == 0)
 
-               for (int i = 0; i <= noNodes; i++)
-               {
+              for (int i = 0; i <= noNodes; i++)
+                {
 
-                  foot[i][0] = de(0);
-                  soilMin[i][0] = de(0);
-                  soilMax[i][0] = de(0);
-                  pressure[i][0] = dVt/Vult;
-                  pressMax[i][0] = dVt/Vult;
-               }
+                    foot[i][0] = de (0);
+                    soilMin[i][0] = de (0);
+                    soilMax[i][0] = de (0);
+                    pressure[i][0] = dVt / Vult;
+                    pressMax[i][0] = dVt / Vult;
+                }
 
-    }
+      }
 
 
 
@@ -1927,151 +2029,150 @@ SoilFootingSection2d::applyLoading(Vector de)
 // setup the stiffness matrix      
 
     deModel = de;
-    ks.Zero();
+    ks.Zero ();
 
 
-    if (de(0)-ds != 0.0)
-       ks(0,0) = dVt/(de(0)-ds);
+    if (de (0) - ds != 0.0)
+        ks (0, 0) = dVt / (de (0) - ds);
     else
-       ks(0,0) = Kv;
- 
+        ks (0, 0) = Kv;
+
 //    if (ks(0,0) == 0.0)
 //       ks(0,0) = 1.0;
 
-    if ((dTheta != 0.0) && (de(0)-ds != 0.0))
-       ks(0,2) = -1.0 * (ds/dTheta) * (dVt/(de(0)-ds));
+    if ((dTheta != 0.0) && (de (0) - ds != 0.0))
+        ks (0, 2) = -1.0 * (ds / dTheta) * (dVt / (de (0) - ds));
     else if (dTheta != 0.0)
-       ks(0,2) = -1.0 * Kv * (de(0)/dTheta);
+        ks (0, 2) = -1.0 * Kv * (de (0) / dTheta);
     else
-       ks(0,2) = 0.0;
+        ks (0, 2) = 0.0;
 
 
     if (isOver != 0)
-    {
-       if (uH != 0.0)
-          ks(1,1) = dHt/uH;
-       else
-       {
-          ks(1,1) = Kh;
-       }
-    }
+      {
+          if (uH != 0.0)
+              ks (1, 1) = dHt / uH;
+          else
+            {
+                ks (1, 1) = Kh;
+            }
+      }
     else
-    {
-       if (de(1) != 0.0)
-          ks(1,1) = dHt/de(1);
-       else
-       {
-          ks(1,1) = Kh;
-       }
-    }
-    
+      {
+          if (de (1) != 0.0)
+              ks (1, 1) = dHt / de (1);
+          else
+            {
+                ks (1, 1) = Kh;
+            }
+      }
+
 
 
     if ((dTheta != 0.0) && (uH != 0.0))
-       ks(1,2) = -1.0 * (uM/uH) * (dHt/dTheta);
+        ks (1, 2) = -1.0 * (uM / uH) * (dHt / dTheta);
     else if (dTheta != 0.0)
-       ks(1,2) = -1.0 * Kh * (de(1)/dTheta);
+        ks (1, 2) = -1.0 * Kh * (de (1) / dTheta);
     else
-       ks(1,2) = 0.0;
+        ks (1, 2) = 0.0;
 
 
 
-    if (de(2) != 0.0)
-       ks(2,2) = dMt/de(2);
+    if (de (2) != 0.0)
+        ks (2, 2) = dMt / de (2);
     else
-       ks(2,2) = Kt;
+        ks (2, 2) = Kt;
 
 
 
 
- // make sure det|ks| is non-zero
+    // make sure det|ks| is non-zero
 
-   detKs = ks(0,0) * (ks(1,1)*ks(2,2) - ks(1,2)*ks(2,1))
-         + ks(0,1) * (ks(2,0)*ks(1,2) - ks(1,0)*ks(2,2))
-         + ks(0,2) * (ks(1,0)*ks(2,1) - ks(2,0)*ks(1,1));
-
-
+    detKs = ks (0, 0) * (ks (1, 1) * ks (2, 2) - ks (1, 2) * ks (2, 1))
+        + ks (0, 1) * (ks (2, 0) * ks (1, 2) - ks (1, 0) * ks (2, 2))
+        + ks (0, 2) * (ks (1, 0) * ks (2, 1) - ks (2, 0) * ks (1, 1));
 
 
 
-   delete [] footTemp;
-   delete [] soilMinTemp;
-   delete [] soilMaxTemp;
-   delete [] pressureTemp;
-   delete [] pressMaxTemp;
 
-   delete [] ddH;
 
-   return 0;           
+    delete[]footTemp;
+    delete[]soilMinTemp;
+    delete[]soilMaxTemp;
+    delete[]pressureTemp;
+    delete[]pressMaxTemp;
+
+    delete[]ddH;
+
+    return 0;
 }
 
 
 const Vector &
 SoilFootingSection2d::getSectionDeformation (void)
 {
-  return e;
+    return e;
 }
 
 const Vector &
 SoilFootingSection2d::getStressResultant (void)
 {
-  return s;
+    return s;
 }
 
 const Matrix &
-SoilFootingSection2d::getSectionTangent(void)
+SoilFootingSection2d::getSectionTangent (void)
 {
-  return ks;
+    return ks;
 }
 
 const Matrix &
 SoilFootingSection2d::getSectionFlexibility (void)
 {
-  static Matrix fs(3,3);
+    static Matrix fs (3, 3);
 //  invert2by2Matrix(ks, fs);
-  
-  return fs;
+
+    return fs;
 }
 
-const ID&
+const ID &
 SoilFootingSection2d::getType ()
 {
-  return code;
+    return code;
 }
 
 int
 SoilFootingSection2d::getOrder () const
 {
-  return 3;
+    return 3;
 }
 
 
-const Matrix& 
-SoilFootingSection2d::getInitialTangent()
+const Matrix &
+SoilFootingSection2d::getInitialTangent ()
 {
-  static Matrix IniTan(3,3);
-                 
-  return IniTan;
-}
+    static Matrix IniTan (3, 3);
 
-int
-SoilFootingSection2d::sendSelf(int commitTag, Channel &theChannel)
-{
-  return -1;
+    return IniTan;
 }
 
 int
-SoilFootingSection2d::recvSelf(int commitTag, Channel &theChannel,
-				FEM_ObjectBroker &theBroker)
+SoilFootingSection2d::sendSelf (int commitTag, Channel & theChannel)
 {
-  return -1;
+    return -1;
+}
+
+int
+SoilFootingSection2d::recvSelf (int commitTag, Channel & theChannel,
+                                FEM_ObjectBroker & theBroker)
+{
+    return -1;
 }
 
 void
-SoilFootingSection2d::Print(OPS_Stream &s, int flag)
+SoilFootingSection2d::Print (OPS_Stream & s, int flag)
 {
-  s << "YieldSurfaceSection2d, tag: " << this->getTag() << endln;
-  s << "\tSection Force:" << sCommit;
-  s << "\tSection Defom:" << eCommit;
+    s << "YieldSurfaceSection2d, tag: " << this->getTag () << endln;
+    s << "\tSection Force:" << sCommit;
+    s << "\tSection Defom:" << eCommit;
 }
-

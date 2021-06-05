@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:17 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/model/simple/SimpleDOF_Iter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/model/simple/SimpleDOF_Iter.C
 //
 // Written: fmk 
@@ -38,20 +38,20 @@
 
 
 // SimpleDOF_Iter(AnalysisModel *theModel):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SimpleDOF_Iter::SimpleDOF_Iter(AnalysisModel &theModel)
-  :myModel(theModel), currIndex(0), numDone(0)
+SimpleDOF_Iter::SimpleDOF_Iter (AnalysisModel & theModel):myModel (theModel), currIndex (0),
+numDone (0)
 {
 }
 
 
-SimpleDOF_Iter::~SimpleDOF_Iter()
+SimpleDOF_Iter::~SimpleDOF_Iter ()
 {
-}    
+}
 
 void
-SimpleDOF_Iter::reset(void)
+SimpleDOF_Iter::reset (void)
 {
     currIndex = 0;
     numDone = 0;
@@ -59,27 +59,25 @@ SimpleDOF_Iter::reset(void)
 
 
 DOF_Group *
-SimpleDOF_Iter::operator()(void)
+SimpleDOF_Iter::operator () (void)
 {
-  // check if we still have elements in the model
-  // if not return 0, indicating we are done
+    // check if we still have elements in the model
+    // if not return 0, indicating we are done
 
-  if (numDone >= myModel.numDOF_Grp)
-    return 0;
+    if (numDone >= myModel.numDOF_Grp)
+        return 0;
 
-  // search through domains ele list till we find the next element
-  while ((currIndex < myModel.sizeDOF) 
-	 && (myModel.theDOFs[currIndex] == 0))
-      currIndex++;
+    // search through domains ele list till we find the next element
+    while ((currIndex < myModel.sizeDOF) && (myModel.theDOFs[currIndex] == 0))
+        currIndex++;
 
-  // if not at the end of the list return the element
-  if (currIndex < myModel.sizeDOF) {
-      DOF_Group *result = myModel.theDOFs[currIndex];
-      numDone++; currIndex++;
-      return(result);
-  }
-  return (0);
+    // if not at the end of the list return the element
+    if (currIndex < myModel.sizeDOF)
+      {
+          DOF_Group *result = myModel.theDOFs[currIndex];
+          numDone++;
+          currIndex++;
+          return (result);
+      }
+    return (0);
 }
-
-    
-    

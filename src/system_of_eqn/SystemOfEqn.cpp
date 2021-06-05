@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:27 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/SystemOfEqn.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/system_of_eqn/SystemOfEqn.C
 //
 // Written: fmk 
@@ -36,16 +36,14 @@
 #include <SystemOfEqn.h>
 #include <AnalysisModel.h>
 
-SystemOfEqn::SystemOfEqn(int clasTag)
-:MovableObject(clasTag)
+SystemOfEqn::SystemOfEqn (int clasTag):
+MovableObject (clasTag)
 {
 
 }
 
 
-SystemOfEqn::~SystemOfEqn()
+SystemOfEqn::~SystemOfEqn ()
 {
 
 }
-
-

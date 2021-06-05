@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2006-01-12 23:39:21 $
 // $Source: /usr/local/cvs/OpenSees/SRC/graph/numberer/SimpleNumberer.cpp,v $
-                                                                        
-                                                                        
+
+
 
 // Written: fmk 
 // Revision: A
@@ -43,18 +43,17 @@
 #include <FEM_ObjectBroker.h>
 
 // Constructor
-SimpleNumberer::SimpleNumberer()
-:GraphNumberer(GraphNUMBERER_TAG_SimpleNumberer),
- numVertex(-1), theRefResult(0)
+SimpleNumberer::SimpleNumberer ():GraphNumberer (GraphNUMBERER_TAG_SimpleNumberer),
+numVertex (-1), theRefResult (0)
 {
 
 }
 
 // Destructor
-SimpleNumberer::~SimpleNumberer()
+SimpleNumberer::~SimpleNumberer ()
 {
     if (theRefResult != 0)
-	delete theRefResult;
+        delete theRefResult;
 }
 
 // const ID &number(Graph &theGraph)
@@ -62,67 +61,72 @@ SimpleNumberer::~SimpleNumberer()
 
 
 const ID &
-SimpleNumberer::number(Graph &theGraph, int lastVertex)
+SimpleNumberer::number (Graph & theGraph, int lastVertex)
 {
     // first check our size, if not same make new
-    
-    if (numVertex != theGraph.getNumVertex()) {
 
-	if (theRefResult != 0)
-	    delete theRefResult;
-	
-	numVertex = theGraph.getNumVertex();
-	theRefResult = new ID(numVertex);
+    if (numVertex != theGraph.getNumVertex ())
+      {
 
-	if (theRefResult == 0) {
-	    opserr << "ERROR:  SimpleNumberer::number - Out of Memory\n";
-	    theRefResult = new ID(0);
-	    numVertex = 0;
-	    return *theRefResult;
-	}
-    }
+          if (theRefResult != 0)
+              delete theRefResult;
+
+          numVertex = theGraph.getNumVertex ();
+          theRefResult = new ID (numVertex);
+
+          if (theRefResult == 0)
+            {
+                opserr << "ERROR:  SimpleNumberer::number - Out of Memory\n";
+                theRefResult = new ID (0);
+                numVertex = 0;
+                return *theRefResult;
+            }
+      }
 
     // see if we can do quick return
-    
-    if (numVertex == 0) 
-	return *theRefResult;
-	    
+
+    if (numVertex == 0)
+        return *theRefResult;
+
 
     // Now we go through the iter and assign the numbers
 
-    if (lastVertex != -1) {
-	opserr << "WARNING:  SimpleNumberer::number -";
-	opserr << " - does not deal with lastVertex";
-    }
-    
-    Vertex *vertexPtr;
-    VertexIter &vertexIter = theGraph.getVertices();
-    int count = 0;
-    
-    while ((vertexPtr = vertexIter()) != 0) {
+    if (lastVertex != -1)
+      {
+          opserr << "WARNING:  SimpleNumberer::number -";
+          opserr << " - does not deal with lastVertex";
+      }
 
-	(*theRefResult)(count++) = vertexPtr->getTag();
-	vertexPtr->setTmp(count);
-    }
-    
+    Vertex *vertexPtr;
+    VertexIter & vertexIter = theGraph.getVertices ();
+    int count = 0;
+
+    while ((vertexPtr = vertexIter ()) != 0)
+      {
+
+          (*theRefResult) (count++) = vertexPtr->getTag ();
+          vertexPtr->setTmp (count);
+      }
+
     return *theRefResult;
 }
 
 
 int
-SimpleNumberer::sendSelf(int commitTag, Channel &theChannel)
+SimpleNumberer::sendSelf (int commitTag, Channel & theChannel)
 {
     return 0;
 }
 
 int
-SimpleNumberer::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+SimpleNumberer::recvSelf (int commitTag, Channel & theChannel,
+                          FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
 const ID &
-SimpleNumberer::number(Graph &theGraph, const ID &startVertices)
+SimpleNumberer::number (Graph & theGraph, const ID & startVertices)
 {
-    return this->number(theGraph);
+    return this->number (theGraph);
 }

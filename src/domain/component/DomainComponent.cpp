@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2006-09-05 19:47:54 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/component/DomainComponent.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/domain/component//DomainComponent.C
 //
 // Written: fmk 11/95
@@ -36,21 +36,23 @@
 #include <Domain.h>
 #include <DomainComponent.h>
 
-DomainComponent::DomainComponent(int tag, int clasTag)
-  :TaggedObject(tag), MovableObject(clasTag), theDomain(0)
+DomainComponent::DomainComponent (int tag, int clasTag):
+TaggedObject (tag),
+MovableObject (clasTag),
+theDomain (0)
 {
     // does nothing else
 }
 
 
-DomainComponent::~DomainComponent()
+DomainComponent::~DomainComponent ()
 {
     // does nothing
 }
 
 
 void
-DomainComponent::setDomain(Domain *model)
+DomainComponent::setDomain (Domain * model)
 {
     // sets the pointer 
     theDomain = model;
@@ -58,14 +60,15 @@ DomainComponent::setDomain(Domain *model)
 
 
 Domain *
-DomainComponent::getDomain(void) const
+DomainComponent::getDomain (void) const
 {
     // returns the current pointer
     return theDomain;
 }
 
-int 
-DomainComponent::displaySelf(Renderer &theViewer, int mode, float fact, const char **displayModes, int numModes)
+int
+DomainComponent::displaySelf (Renderer & theViewer, int mode, float fact,
+                              const char **displayModes, int numModes)
 {
-  return 0;
+    return 0;
 }

@@ -14,13 +14,13 @@ target_sources(recorder
       FilePlotter.cpp
       GSA_Recorder.cpp
       GmshRecorder.cpp
-      MPCORecorder.cpp
+      #MPCORecorder.cpp
       MaxNodeDispRecorder.cpp
       NodeRecorder.cpp
       NodeRecorderRMS.cpp
       NormElementRecorder.cpp
       NormEnvelopeElementRecorder.cpp
-      PVDRecorder.cpp
+      #PVDRecorder.cpp
       PatternRecorder.cpp
       Recorder.cpp
       RemoveRecorder.cpp
@@ -38,13 +38,13 @@ target_sources(recorder
       FilePlotter.h
       GSA_Recorder.h
       GmshRecorder.h
-      MPCORecorder.h
+      #MPCORecorder.h
       MaxNodeDispRecorder.h
       NodeRecorder.h
       NodeRecorderRMS.h
       NormElementRecorder.h
       NormEnvelopeElementRecorder.h
-      PVDRecorder.h
+      #PVDRecorder.h
       PatternRecorder.h
       Recorder.h
       RemoveRecorder.h

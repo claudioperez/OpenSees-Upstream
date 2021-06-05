@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:22 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/section/repres/section/SectionRepres.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: SectionRepres.C
 //
 // Written by Remo M. de Souza
@@ -34,47 +34,38 @@
 
 static MapOfTaggedObjects theSectionRepresObjects;
 
-bool OPS_addSectionRepres(SectionRepres *newComponent)
+bool
+OPS_addSectionRepres (SectionRepres * newComponent)
 {
-    return theSectionRepresObjects.addComponent(newComponent);
+    return theSectionRepresObjects.addComponent (newComponent);
 }
 
-SectionRepres *OPS_getSectionRepres(int tag)
+SectionRepres *
+OPS_getSectionRepres (int tag)
 {
-    TaggedObject *theResult = theSectionRepresObjects.getComponentPtr(tag);
-    if(theResult == 0) {
-	return 0;
-    }
-    SectionRepres *theRep = (SectionRepres *)theResult;
+    TaggedObject *theResult = theSectionRepresObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          return 0;
+      }
+    SectionRepres *theRep = (SectionRepres *) theResult;
 
     return theRep;
 }
 
-void OPS_clearAllSectionRepres(void)
+void
+OPS_clearAllSectionRepres (void)
 {
-    theSectionRepresObjects.clearAll();
+    theSectionRepresObjects.clearAll ();
 }
 
-SectionRepres::SectionRepres(int tag):
-                 TaggedObject(tag)
-{
-   
-}
-   
-SectionRepres::~SectionRepres(void)
+SectionRepres::SectionRepres (int tag):
+TaggedObject (tag)
 {
 
 }
 
+SectionRepres::~SectionRepres (void)
+{
 
-
-
-
-
-
-
-
-
-
-
-
+}

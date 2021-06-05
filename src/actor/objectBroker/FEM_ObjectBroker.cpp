@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.48 $
 // $Date: 2009-05-14 22:52:04 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/objectBroker/FEM_ObjectBroker.cpp,v $
-                                                                        
-                                                                        
+
+
 // Written: fmk
 // Revision: A
 //
@@ -37,38 +37,37 @@
 #include <FEM_ObjectBroker.h>
 
 
-FEM_ObjectBroker::FEM_ObjectBroker()
-:lastDomainSolver(0)
+FEM_ObjectBroker::FEM_ObjectBroker ():lastDomainSolver (0)
 {
 
 }
 
 
-FEM_ObjectBroker::~FEM_ObjectBroker()
+FEM_ObjectBroker::~FEM_ObjectBroker ()
 {
 
 }
 
 
 Actor *
-FEM_ObjectBroker::getNewActor(int classTag, Channel *theChannel)
+FEM_ObjectBroker::getNewActor (int classTag, Channel * theChannel)
 {
-  return 0;
+    return 0;
 }
 
 
-PartitionedModelBuilder          *
-FEM_ObjectBroker::getPtrNewPartitionedModelBuilder(Subdomain &theSubdomain,
-						   int classTag)
+PartitionedModelBuilder *
+FEM_ObjectBroker::getPtrNewPartitionedModelBuilder (Subdomain & theSubdomain,
+                                                    int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 GraphNumberer *
-FEM_ObjectBroker::getPtrNewGraphNumberer(int classTag)
+FEM_ObjectBroker::getPtrNewGraphNumberer (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 /*****************************************
@@ -78,145 +77,145 @@ FEM_ObjectBroker::getPtrNewGraphNumberer(int classTag)
  *****************************************/
 
 
-Element       *
-FEM_ObjectBroker::getNewElement(int classTag)
+Element *
+FEM_ObjectBroker::getNewElement (int classTag)
 {
-  return 0;
+    return 0;
 }
-				
-Node          *
-FEM_ObjectBroker::getNewNode(int classTag)
+
+Node *
+FEM_ObjectBroker::getNewNode (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 MP_Constraint *
-FEM_ObjectBroker::getNewMP(int classTag)
+FEM_ObjectBroker::getNewMP (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 SP_Constraint *
-FEM_ObjectBroker::getNewSP(int classTag)
+FEM_ObjectBroker::getNewSP (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 Pressure_Constraint *
-FEM_ObjectBroker::getNewPC(int classTag)
+FEM_ObjectBroker::getNewPC (int classTag)
 {
-  return 0;
+    return 0;
 }
 
-NodalLoad     *
-FEM_ObjectBroker::getNewNodalLoad(int classTag)
+NodalLoad *
+FEM_ObjectBroker::getNewNodalLoad (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 ElementalLoad *
-FEM_ObjectBroker::getNewElementalLoad(int classTag)
+FEM_ObjectBroker::getNewElementalLoad (int classTag)
 {
-  return 0;
+    return 0;
 }
 
-CrdTransf*
-FEM_ObjectBroker::getNewCrdTransf(int classTag)
+CrdTransf *
+FEM_ObjectBroker::getNewCrdTransf (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 BeamIntegration *
-FEM_ObjectBroker::getNewBeamIntegration(int classTag)
+FEM_ObjectBroker::getNewBeamIntegration (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 UniaxialMaterial *
-FEM_ObjectBroker::getNewUniaxialMaterial(int classTag)
+FEM_ObjectBroker::getNewUniaxialMaterial (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 SectionForceDeformation *
-FEM_ObjectBroker::getNewSection(int classTag)
+FEM_ObjectBroker::getNewSection (int classTag)
 {
-  return 0;
+    return 0;
 }
 
-NDMaterial*
-FEM_ObjectBroker::getNewNDMaterial(int classTag)
+NDMaterial *
+FEM_ObjectBroker::getNewNDMaterial (int classTag)
 {
-  return 0;   
+    return 0;
 }
 
-Fiber*
-FEM_ObjectBroker::getNewFiber(int classTag)
+Fiber *
+FEM_ObjectBroker::getNewFiber (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 FrictionModel *
-FEM_ObjectBroker::getNewFrictionModel(int classTag)
+FEM_ObjectBroker::getNewFrictionModel (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 ConvergenceTest *
-FEM_ObjectBroker::getNewConvergenceTest(int classTag)
+FEM_ObjectBroker::getNewConvergenceTest (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 LoadPattern *
-FEM_ObjectBroker::getNewLoadPattern(int classTag)
+FEM_ObjectBroker::getNewLoadPattern (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 GroundMotion *
-FEM_ObjectBroker::getNewGroundMotion(int classTag)
+FEM_ObjectBroker::getNewGroundMotion (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 TimeSeries *
-FEM_ObjectBroker::getNewTimeSeries(int classTag)
+FEM_ObjectBroker::getNewTimeSeries (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 TimeSeriesIntegrator *
-FEM_ObjectBroker::getNewTimeSeriesIntegrator(int classTag)
+FEM_ObjectBroker::getNewTimeSeriesIntegrator (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
-Matrix	  *
-FEM_ObjectBroker::getPtrNewMatrix(int classTag, int noRows, int noCols)
+Matrix *
+FEM_ObjectBroker::getPtrNewMatrix (int classTag, int noRows, int noCols)
 {
-  return 0;
+    return 0;
 }
 
 
-Vector	  *
-FEM_ObjectBroker::getPtrNewVector(int classTag, int size)
+Vector *
+FEM_ObjectBroker::getPtrNewVector (int classTag, int size)
 {
-  return 0;
+    return 0;
 }
 
 
-ID	          *
-FEM_ObjectBroker::getPtrNewID(int classTag, int size)
+ID *
+FEM_ObjectBroker::getPtrNewID (int classTag, int size)
 {
-  return 0;
+    return 0;
 }
 
 /*****************************************
@@ -226,15 +225,15 @@ FEM_ObjectBroker::getPtrNewID(int classTag, int size)
  *****************************************/
 
 OPS_Stream *
-FEM_ObjectBroker::getPtrNewStream(int classTag)
+FEM_ObjectBroker::getPtrNewStream (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 Recorder *
-FEM_ObjectBroker::getPtrNewRecorder(int classTag)
+FEM_ObjectBroker::getPtrNewRecorder (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
@@ -245,129 +244,127 @@ FEM_ObjectBroker::getPtrNewRecorder(int classTag)
  *
  *****************************************/
 
-ConstraintHandler   *
-FEM_ObjectBroker::getNewConstraintHandler(int classTag)
+ConstraintHandler *
+FEM_ObjectBroker::getNewConstraintHandler (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
-DOF_Numberer        *
-FEM_ObjectBroker::getNewNumberer(int classTag)
+DOF_Numberer *
+FEM_ObjectBroker::getNewNumberer (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
-AnalysisModel       *
-FEM_ObjectBroker::getNewAnalysisModel(int classTag)
+AnalysisModel *
+FEM_ObjectBroker::getNewAnalysisModel (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
-EquiSolnAlgo        *
-FEM_ObjectBroker::getNewEquiSolnAlgo(int classTag)
+EquiSolnAlgo *
+FEM_ObjectBroker::getNewEquiSolnAlgo (int classTag)
 {
-  return 0;
+    return 0;
 }
 
-Accelerator        *
-FEM_ObjectBroker::getAccelerator(int classTag)
+Accelerator *
+FEM_ObjectBroker::getAccelerator (int classTag)
 {
-  return 0;
-}
-
-
-LineSearch        *
-FEM_ObjectBroker::getLineSearch(int classTag)
-{
-  return 0;
+    return 0;
 }
 
 
-DomainDecompAlgo    *
-FEM_ObjectBroker::getNewDomainDecompAlgo(int classTag)
+LineSearch *
+FEM_ObjectBroker::getLineSearch (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
-StaticIntegrator    *
-FEM_ObjectBroker::getNewStaticIntegrator(int classTag)
+DomainDecompAlgo *
+FEM_ObjectBroker::getNewDomainDecompAlgo (int classTag)
 {
-  return 0;
+    return 0;
+}
+
+
+StaticIntegrator *
+FEM_ObjectBroker::getNewStaticIntegrator (int classTag)
+{
+    return 0;
 }
 
 
 TransientIntegrator *
-FEM_ObjectBroker::getNewTransientIntegrator(int classTag)
+FEM_ObjectBroker::getNewTransientIntegrator (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 
 IncrementalIntegrator *
-FEM_ObjectBroker::getNewIncrementalIntegrator(int classTag)
+FEM_ObjectBroker::getNewIncrementalIntegrator (int classTag)
 {
-  return 0;
+    return 0;
 }
 
 LinearSOE *
-FEM_ObjectBroker::getNewLinearSOE(int classTagSOE)
+FEM_ObjectBroker::getNewLinearSOE (int classTagSOE)
 {
-  return 0;		 
+    return 0;
 }
 
 
 EigenSOE *
-FEM_ObjectBroker::getNewEigenSOE(int classTagSOE)
-{
-  return 0;		 
-}
-
-DomainSolver *
-FEM_ObjectBroker::getNewDomainSolver(void)
+FEM_ObjectBroker::getNewEigenSOE (int classTagSOE)
 {
     return 0;
 }
-    
-LinearSOE *
-FEM_ObjectBroker::getPtrNewDDLinearSOE(int classTagSOE, 
-				       int classTagDDSolver)
+
+DomainSolver *
+FEM_ObjectBroker::getNewDomainSolver (void)
 {
-  return 0;		 
+    return 0;
+}
+
+LinearSOE *
+FEM_ObjectBroker::getPtrNewDDLinearSOE (int classTagSOE, int classTagDDSolver)
+{
+    return 0;
 }
 
 
 DomainDecompositionAnalysis *
-FEM_ObjectBroker::getNewDomainDecompAnalysis(int classTag, 
-						Subdomain &theSubdomain)
-{
-  return 0;
-}
-
-
-Subdomain 	  *
-FEM_ObjectBroker::getSubdomainPtr(int classTag)
+FEM_ObjectBroker::getNewDomainDecompAnalysis (int classTag,
+                                              Subdomain & theSubdomain)
 {
     return 0;
 }
 
 
-int 
-FEM_ObjectBroker::addUniaxialMaterial(int classTag, 
-				      const char *lib, 
-				      const char *funcName, 
-				      UniaxialMaterial *(*funcPtr)(void))
+Subdomain *
+FEM_ObjectBroker::getSubdomainPtr (int classTag)
 {
-  return 0;
+    return 0;
+}
+
+
+int
+FEM_ObjectBroker::addUniaxialMaterial (int classTag,
+                                       const char *lib,
+                                       const char *funcName,
+                                       UniaxialMaterial * (*funcPtr) (void))
+{
+    return 0;
 }
 
 
 Parameter *
-FEM_ObjectBroker::getParameter(int classTag)
+FEM_ObjectBroker::getParameter (int classTag)
 {
-  return 0;
+    return 0;
 }
-

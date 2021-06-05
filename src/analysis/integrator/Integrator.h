@@ -39,7 +39,7 @@
 // What: "@(#) Integrator.h, revA"
 
 #include <MovableObject.h>
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 class FE_Element;
 class DOF_Group;
 class Vector;

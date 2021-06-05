@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2006-08-03 23:34:32 $
 // $Source: /usr/local/cvs/OpenSees/SRC/handler/DummyStream.cpp,v $
@@ -26,16 +26,19 @@
 #include <Vector.h>
 #include <iostream>
 #include <iomanip>
-using std::cerr;
-using std::ios;
-using std::setiosflags;
+using
+    std::cerr;
+using
+    std::ios;
+using
+    std::setiosflags;
 
-DummyStream::DummyStream()
-  :OPS_Stream(OPS_STREAM_TAGS_DummyStream) 
+DummyStream::DummyStream ():OPS_Stream (OPS_STREAM_TAGS_DummyStream)
 {
 
 }
-DummyStream::~DummyStream()
+
+DummyStream::~DummyStream ()
 {
 
 }

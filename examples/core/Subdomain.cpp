@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.17 $
 // $Date: 2009-08-26 20:33:10 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/subdomain/Subdomain.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Revision: A
 // Revision: B 03/98 - revised to allow parallel model generation
@@ -60,107 +60,122 @@
 #include <FEM_ObjectBroker.h>
 
 
-Matrix Subdomain::badResult(1,1); // for returns from getStiff, getMass and getDamp
+Matrix
+Subdomain::badResult (1, 1);    // for returns from getStiff, getMass and getDamp
 
 
-Subdomain::Subdomain(int tag)
-:Element(tag,ELE_TAG_Subdomain),
- Domain(),
- mapBuilt(false),map(0),mappedVect(0),mappedMatrix(0),
- realCost(0.0),cpuCost(0),pageCost(0),
- theAnalysis(0), extNodes(0), theFEele(0) 
+Subdomain::Subdomain (int tag):
+Element (tag, ELE_TAG_Subdomain),
+Domain (),
+mapBuilt (false),
+map (0),
+mappedVect (0),
+mappedMatrix (0),
+realCost (0.0),
+cpuCost (0),
+pageCost (0),
+theAnalysis (0),
+extNodes (0),
+theFEele (0)
 {
 
-  //thePartitionedModelBuilder = 0;
+    //thePartitionedModelBuilder = 0;
     // init the arrays.
-    internalNodes = new MapOfTaggedObjects();
-    externalNodes = new MapOfTaggedObjects();
+    internalNodes = new MapOfTaggedObjects ();
+    externalNodes = new MapOfTaggedObjects ();
     //    realExternalNodes = new MapOfTaggedObjects();    
-    
-    internalNodeIter = new SingleDomNodIter(internalNodes);
-    externalNodeIter = new SingleDomNodIter(externalNodes);    
-    theNodIter = new SubdomainNodIter(*this);
+
+    internalNodeIter = new SingleDomNodIter (internalNodes);
+    externalNodeIter = new SingleDomNodIter (externalNodes);
+    theNodIter = new SubdomainNodIter (*this);
 
     // check that space was available
     if (internalNodes == 0 || externalNodes == 0 ||
-	internalNodeIter == 0 || externalNodeIter == 0 ||
-	theNodIter == 0) {
-      
-      opserr << "Subdomain::Subdomain() - ran out of memory\n";
-      exit(-1);
-    }
+        internalNodeIter == 0 || externalNodeIter == 0 || theNodIter == 0)
+      {
+
+          opserr << "Subdomain::Subdomain() - ran out of memory\n";
+          exit (-1);
+      }
 }
 
 
-Subdomain::Subdomain(int tag, 
-		     TaggedObjectStorage &theInternalNodeStorage,
-		     TaggedObjectStorage &theExternalNodeStorage,
-		     TaggedObjectStorage &theElementsStorage,
-		     TaggedObjectStorage &theLoadPatternsStorage,	      
-		     TaggedObjectStorage &theMPsStorage,
-		     TaggedObjectStorage &theSPsStorage)
-  :Element(tag,ELE_TAG_Subdomain), 
-   Domain(theExternalNodeStorage, theElementsStorage,
-	  theLoadPatternsStorage, 
-	  theMPsStorage,theSPsStorage),
-   mapBuilt(false),map(0),mappedVect(0),mappedMatrix(0),
-   internalNodes(&theInternalNodeStorage),
-   externalNodes(&theExternalNodeStorage), 
-   realCost(0.0),cpuCost(0),pageCost(0),
-   theAnalysis(0), extNodes(0), theFEele(0)
+Subdomain::Subdomain (int tag,
+                      TaggedObjectStorage & theInternalNodeStorage,
+                      TaggedObjectStorage & theExternalNodeStorage,
+                      TaggedObjectStorage & theElementsStorage,
+                      TaggedObjectStorage & theLoadPatternsStorage,
+                      TaggedObjectStorage & theMPsStorage,
+                      TaggedObjectStorage & theSPsStorage):
+Element (tag, ELE_TAG_Subdomain),
+Domain (theExternalNodeStorage, theElementsStorage,
+        theLoadPatternsStorage, theMPsStorage, theSPsStorage),
+mapBuilt (false),
+map (0),
+mappedVect (0),
+mappedMatrix (0),
+internalNodes (&theInternalNodeStorage),
+externalNodes (&theExternalNodeStorage),
+realCost (0.0),
+cpuCost (0),
+pageCost (0),
+theAnalysis (0),
+extNodes (0),
+theFEele (0)
 {
-  //thePartitionedModelBuilder = 0;
-  //    realExternalNodes = new MapOfTaggedObjects(256);    
-    
-    internalNodeIter = new SingleDomNodIter(internalNodes);
-    externalNodeIter = new SingleDomNodIter(externalNodes);    
+    //thePartitionedModelBuilder = 0;
+    //    realExternalNodes = new MapOfTaggedObjects(256);    
+
+    internalNodeIter = new SingleDomNodIter (internalNodes);
+    externalNodeIter = new SingleDomNodIter (externalNodes);
 
     // check that space was available
     if (internalNodes == 0 || externalNodes == 0 ||
-	internalNodeIter == 0 || externalNodeIter == 0 ||
-	theNodIter == 0) {
-	
-	opserr << "Subdomain::Subdomain() - ran out of memory\n";
-	exit(-1);
-    }    
+        internalNodeIter == 0 || externalNodeIter == 0 || theNodIter == 0)
+      {
 
-}    
+          opserr << "Subdomain::Subdomain() - ran out of memory\n";
+          exit (-1);
+      }
+
+}
 
 
-Subdomain::~Subdomain()
+Subdomain::~Subdomain ()
 {
-  if (internalNodes != 0)
-    delete internalNodes;
+    if (internalNodes != 0)
+        delete internalNodes;
 
-  if (externalNodes != 0)
-    delete externalNodes;
-  
-  if (internalNodeIter != 0)
-    delete internalNodeIter;
-  
-  if (externalNodeIter != 0)
-    delete externalNodeIter;
+    if (externalNodes != 0)
+        delete externalNodes;
 
-  if (map != 0)
-    delete map;
-  if (mappedVect != 0)
-    delete mappedVect;
-  if (mappedMatrix != 0)
-    delete mappedMatrix;
+    if (internalNodeIter != 0)
+        delete internalNodeIter;
+
+    if (externalNodeIter != 0)
+        delete externalNodeIter;
+
+    if (map != 0)
+        delete map;
+    if (mappedVect != 0)
+        delete mappedVect;
+    if (mappedMatrix != 0)
+        delete mappedMatrix;
 }
 
 
 void
-Subdomain::clearAll(void) 
+Subdomain::clearAll (void)
 {
-  this->Domain::clearAll();
+    this->Domain::clearAll ();
 
-  if (internalNodes != 0)
-    internalNodes->clearAll();
+    if (internalNodes != 0)
+        internalNodes->clearAll ();
 
-  if (externalNodes != 0)
-    externalNodes->clearAll();
+    if (externalNodes != 0)
+        externalNodes->clearAll ();
 }
+
 /*
 int 
 Subdomain::buildSubdomain(int numSubdomains, PartitionedModelBuilder &theBuilder)
@@ -176,12 +191,12 @@ Subdomain::buildSubdomain(int numSubdomains, PartitionedModelBuilder &theBuilder
 
 
 // void addNode(Node *);
-//	Method to add a Node to the model.
+//      Method to add a Node to the model.
 
 bool
-Subdomain::addNode(Node * node)
+Subdomain::addNode (Node * node)
 {
-#ifdef _G3DEBUG  
+#ifdef _G3DEBUG
 //  int nodTag = node->getTag();
 //  // check no other node exists with same tag
 //  Node *nodePtr = this->getNodePtr(nodTag);
@@ -190,395 +205,413 @@ Subdomain::addNode(Node * node)
 //      
 //      // MISSING CODE
 #endif
-  
-  bool result = internalNodes->addComponent(node);
-  if (result == true) {
-      node->setDomain(this);
-      this->domainChange();    
-  }
 
-  return result;
+    bool result = internalNodes->addComponent (node);
+    if (result == true)
+      {
+          node->setDomain (this);
+          this->domainChange ();
+      }
+
+    return result;
 }
 
-bool 
-Subdomain::addExternalNode(Node *thePtr)
+bool
+Subdomain::addExternalNode (Node * thePtr)
 {
 #ifdef _G3DEBUG
-  // check to see it has not alredy been added
-	
-  int nodTag = thePtr->getTag();
-  TaggedObject *other = externalNodes->getComponentPtr(nodTag);
-  if (other != 0)
-    return false;
-  
-  other = internalNodes->getComponentPtr(nodTag);
-  if (other != 0)
-    return false;
-	
+    // check to see it has not alredy been added
+
+    int nodTag = thePtr->getTag ();
+    TaggedObject *other = externalNodes->getComponentPtr (nodTag);
+    if (other != 0)
+        return false;
+
+    other = internalNodes->getComponentPtr (nodTag);
+    if (other != 0)
+        return false;
+
 #endif
     // create a dummy Node & try adding it to the external nodes
-    Node *newDummy = new Node(*thePtr, false);
+    Node *newDummy = new Node (*thePtr, false);
     if (newDummy == 0)
-	return false;
+        return false;
 
-    bool result = externalNodes->addComponent(newDummy);
-    if (result == true) {
-      //	result = realExternalNodes->addComponent(thePtr);
-	newDummy->setDomain(this);
-	this->domainChange();    
-    }
-    
+    bool result = externalNodes->addComponent (newDummy);
+    if (result == true)
+      {
+          //        result = realExternalNodes->addComponent(thePtr);
+          newDummy->setDomain (this);
+          this->domainChange ();
+      }
+
     return result;
 }
 
 
 
 Node *
-Subdomain::removeNode(int tag)
+Subdomain::removeNode (int tag)
 {
-  TaggedObject *object = internalNodes->removeComponent(tag);
-  if (object == 0) {
-      object = externalNodes->removeComponent(tag);      
-      if (object != 0) {
-        //	  Node *dummy = (Node *)object;
-	//	  object = realExternalNodes->removeComponent(tag);      	  
-	Node *result = (Node *)object;
-	this->domainChange();          
-	//	  delete dummy;
-	return result;	  
+    TaggedObject *object = internalNodes->removeComponent (tag);
+    if (object == 0)
+      {
+          object = externalNodes->removeComponent (tag);
+          if (object != 0)
+            {
+                //        Node *dummy = (Node *)object;
+                //        object = realExternalNodes->removeComponent(tag);               
+                Node *result = (Node *) object;
+                this->domainChange ();
+                //        delete dummy;
+                return result;
+            }
       }
-  }
-  else {
-      this->domainChange();          
-      Node *result = (Node *)object;
-      return result;	  
-  }
-  
-  return 0;  
+    else
+      {
+          this->domainChange ();
+          Node *result = (Node *) object;
+          return result;
+      }
+
+    return 0;
 }
 
-NodeIter &
-Subdomain::getNodes()
+NodeIter & Subdomain::getNodes ()
 {
-    theNodIter->reset();
+    theNodIter->reset ();
     return *theNodIter;
 }
 
 Node **
-Subdomain::getNodePtrs(void)
+Subdomain::getNodePtrs (void)
 {
-  opserr << "Subdomain::getNodePtrs() - should not be called\n";
-  return 0;
+    opserr << "Subdomain::getNodePtrs() - should not be called\n";
+    return 0;
 }
 
 
 Node *
-Subdomain::getNode(int tag) 
+Subdomain::getNode (int tag)
 {
 
-  TaggedObject *object = internalNodes->getComponentPtr(tag);
-  if (object == 0) {
-      object = externalNodes->getComponentPtr(tag);
-      if (object != 0) {
-	  Node *result = (Node *)object;
-	  return result;
+    TaggedObject *object = internalNodes->getComponentPtr (tag);
+    if (object == 0)
+      {
+          object = externalNodes->getComponentPtr (tag);
+          if (object != 0)
+            {
+                Node *result = (Node *) object;
+                return result;
+            }
       }
-  }
-  else {
-      Node *result = (Node *)object;
-      return result;
-  }
+    else
+      {
+          Node *result = (Node *) object;
+          return result;
+      }
 
-  return 0;  
+    return 0;
 }
 
 bool
-Subdomain::hasNode(int tag) 
+Subdomain::hasNode (int tag)
 {
-  if (this->getNode(tag) != 0)
-    return true;
-  else
-    return false;
-}  
+    if (this->getNode (tag) != 0)
+        return true;
+    else
+        return false;
+}
 
 bool
-Subdomain::hasElement(int tag) 
+Subdomain::hasElement (int tag)
 {
-  if (this->getElement(tag) != 0)
-    return true;
-  else
-    return false;
-}  
+    if (this->getElement (tag) != 0)
+        return true;
+    else
+        return false;
+}
 
 
-int 
-Subdomain::getNumNodes(void) const
+int
+Subdomain::getNumNodes (void) const
 {
-    return internalNodes->getNumComponents() +
-	externalNodes->getNumComponents();
+    return internalNodes->getNumComponents () +
+        externalNodes->getNumComponents ();
 }
 
 int
-Subdomain::commit(void) 
+Subdomain::commit (void)
 {
-    this->Domain::commit();
-    
-    NodeIter &theNodes = this->getNodes();
+    this->Domain::commit ();
+
+    NodeIter & theNodes = this->getNodes ();
     Node *nodePtr;
-    while ((nodePtr = theNodes()) != 0)
-	nodePtr->commitState();
+    while ((nodePtr = theNodes ()) != 0)
+        nodePtr->commitState ();
 
     return 0;
 }
 
 int
-Subdomain::revertToLastCommit(void) 
+Subdomain::revertToLastCommit (void)
 {
-    this->Domain::revertToLastCommit();
-    
-    NodeIter &theNodes = this->getNodes();
+    this->Domain::revertToLastCommit ();
+
+    NodeIter & theNodes = this->getNodes ();
     Node *nodePtr;
-    while ((nodePtr = theNodes()) != 0)
-	nodePtr->revertToLastCommit();
+    while ((nodePtr = theNodes ()) != 0)
+        nodePtr->revertToLastCommit ();
 
     return 0;
 }
 
 int
-Subdomain::revertToStart(void) 
+Subdomain::revertToStart (void)
 {
-    this->Domain::revertToLastCommit();
+    this->Domain::revertToLastCommit ();
 
-    NodeIter &theNodes = this->getNodes();
+    NodeIter & theNodes = this->getNodes ();
     Node *nodePtr;
-    while ((nodePtr = theNodes()) != 0)
-	nodePtr->revertToStart();
+    while ((nodePtr = theNodes ()) != 0)
+        nodePtr->revertToStart ();
 
     return 0;
 }
 
 int
-Subdomain::update(void)
+Subdomain::update (void)
 {
-  return this->Domain::update();
+    return this->Domain::update ();
 }
 
 int
-Subdomain::update(double newTime, double dT)
+Subdomain::update (double newTime, double dT)
 {
-    return this->Domain::update(newTime, dT);
+    return this->Domain::update (newTime, dT);
 }
 
 void
-Subdomain::Print(OPS_Stream &s, int flag)
+Subdomain::Print (OPS_Stream & s, int flag)
 {
-  s << "Current Subdomain Information for Subdomain: ";
-  s << this->getTag() << "\n";
+    s << "Current Subdomain Information for Subdomain: ";
+    s << this->getTag () << "\n";
 
-  s << "\nINTERNAL NODE DATA: NumNodes: ";
-  s << internalNodes->getNumComponents() << "\n"; 
-  internalNodes->Print(s);
+    s << "\nINTERNAL NODE DATA: NumNodes: ";
+    s << internalNodes->getNumComponents () << "\n";
+    internalNodes->Print (s);
 
-  s << "\nEXTERNAL NODE DATA: NumNodes: ";
-  s << externalNodes->getNumComponents() << "\n"; 
-  externalNodes->Print(s);
+    s << "\nEXTERNAL NODE DATA: NumNodes: ";
+    s << externalNodes->getNumComponents () << "\n";
+    externalNodes->Print (s);
 
-  this->Domain::Print(s);
-  s << "\nEnd Subdomain Information\n";
+    this->Domain::Print (s);
+    s << "\nEnd Subdomain Information\n";
 }
 
 
-void Subdomain::Print(OPS_Stream &s, ID *nodeTags, ID *eleTags, int flag)
+void
+Subdomain::Print (OPS_Stream & s, ID * nodeTags, ID * eleTags, int flag)
 {
-  if (nodeTags != 0) {
-    int numNodes = nodeTags->Size();
-    for (int i=0; i<numNodes; i++) {
-      int nodeTag = (*nodeTags)(i);
-      TaggedObject *theNode = internalNodes->getComponentPtr(nodeTag);
-      if (theNode != 0)
-	theNode->Print(s, flag);
-      else {
-	TaggedObject *theNode = externalNodes->getComponentPtr(nodeTag);
-	if (theNode != 0)
-	  theNode->Print(s, flag);
+    if (nodeTags != 0)
+      {
+          int numNodes = nodeTags->Size ();
+          for (int i = 0; i < numNodes; i++)
+            {
+                int nodeTag = (*nodeTags) (i);
+                TaggedObject *theNode =
+                    internalNodes->getComponentPtr (nodeTag);
+                if (theNode != 0)
+                    theNode->Print (s, flag);
+                else
+                  {
+                      TaggedObject *theNode =
+                          externalNodes->getComponentPtr (nodeTag);
+                      if (theNode != 0)
+                          theNode->Print (s, flag);
+                  }
+            }
       }
-    }
-  }
 
-  /*
-  if (eleTags != 0) {
-    int numEles = eleTags->Size();
-    for (int i=0; i<numEles; i++) {
-      int eleTag = (*eleTags)(i);
-      Element *theEle = this->getElement(eleTag);
-      if (theEle != 0)
-	theEle->Print(s, flag);
-    }
-  }
-  */
+    /*
+       if (eleTags != 0) {
+       int numEles = eleTags->Size();
+       for (int i=0; i<numEles; i++) {
+       int eleTag = (*eleTags)(i);
+       Element *theEle = this->getElement(eleTag);
+       if (theEle != 0)
+       theEle->Print(s, flag);
+       }
+       }
+     */
 
-  this->Domain::Print(s, 0, eleTags, flag);
+    this->Domain::Print (s, 0, eleTags, flag);
 }
 
 
 
-NodeIter &
-Subdomain::getInternalNodeIter(void)
+NodeIter & Subdomain::getInternalNodeIter (void)
 {
-    internalNodeIter->reset();
+    internalNodeIter->reset ();
     return *internalNodeIter;
 }
 
 
-NodeIter &
-Subdomain::getExternalNodeIter(void)
+NodeIter & Subdomain::getExternalNodeIter (void)
 {
-    externalNodeIter->reset();
+    externalNodeIter->reset ();
     return *externalNodeIter;
 }
 
 
 
 void
-Subdomain::wipeAnalysis(void)
+Subdomain::wipeAnalysis (void)
 {
-  if (theAnalysis != 0) {
-    theAnalysis->clearAll();
-    delete theAnalysis;
-  }
-  theAnalysis = 0;
+    if (theAnalysis != 0)
+      {
+          theAnalysis->clearAll ();
+          delete theAnalysis;
+      }
+    theAnalysis = 0;
 }
 
 void
-Subdomain::setDomainDecompAnalysis(DomainDecompositionAnalysis &theNewAnalysis)
+Subdomain::
+setDomainDecompAnalysis (DomainDecompositionAnalysis & theNewAnalysis)
 {
     theAnalysis = &theNewAnalysis;
 //    this->Domain::setAnalysis(theNewAnalysis);
 }
 
 
-int 
-Subdomain::setAnalysisAlgorithm(EquiSolnAlgo &theAlgorithm)
+int
+Subdomain::setAnalysisAlgorithm (EquiSolnAlgo & theAlgorithm)
 {
-  if (theAnalysis != 0)
-    return theAnalysis->setAlgorithm(theAlgorithm);
+    if (theAnalysis != 0)
+        return theAnalysis->setAlgorithm (theAlgorithm);
 
-  return 0;
-}
-
-int 
-Subdomain::setAnalysisIntegrator(IncrementalIntegrator &theIntegrator)
-{
-  if (theAnalysis != 0)
-    return theAnalysis->setIntegrator(theIntegrator);
-  return 0;
-}
-
-int 
-Subdomain::setAnalysisLinearSOE(LinearSOE &theSOE)
-{
-  if (theAnalysis != 0)
-    return theAnalysis->setLinearSOE(theSOE);
-
-  return 0;
-}
-
-
-int 
-Subdomain::setAnalysisEigenSOE(EigenSOE &theSOE)
-{
-  if (theAnalysis != 0)
-    return theAnalysis->setEigenSOE(theSOE);
-
-  return 0;
-}
-
-int 
-Subdomain::setAnalysisConvergenceTest(ConvergenceTest &theTest)
-{
-  if (theAnalysis != 0)
-    return theAnalysis->setConvergenceTest(theTest);
-  return 0;
+    return 0;
 }
 
 int
-Subdomain::invokeChangeOnAnalysis(void)
+Subdomain::setAnalysisIntegrator (IncrementalIntegrator & theIntegrator)
+{
+    if (theAnalysis != 0)
+        return theAnalysis->setIntegrator (theIntegrator);
+    return 0;
+}
+
+int
+Subdomain::setAnalysisLinearSOE (LinearSOE & theSOE)
+{
+    if (theAnalysis != 0)
+        return theAnalysis->setLinearSOE (theSOE);
+
+    return 0;
+}
+
+
+int
+Subdomain::setAnalysisEigenSOE (EigenSOE & theSOE)
+{
+    if (theAnalysis != 0)
+        return theAnalysis->setEigenSOE (theSOE);
+
+    return 0;
+}
+
+int
+Subdomain::setAnalysisConvergenceTest (ConvergenceTest & theTest)
+{
+    if (theAnalysis != 0)
+        return theAnalysis->setConvergenceTest (theTest);
+    return 0;
+}
+
+int
+Subdomain::invokeChangeOnAnalysis (void)
 {
     int result = 0;
     if (theAnalysis != 0)
-	result = theAnalysis->domainChanged();
-    
+        result = theAnalysis->domainChanged ();
+
     mapBuilt = false;
     return result;
 }
 
 
-int 
-Subdomain::getNumExternalNodes(void) const    
+int
+Subdomain::getNumExternalNodes (void) const
 {
-    return externalNodes->getNumComponents();
+    return externalNodes->getNumComponents ();
 }
 
 const ID &
-Subdomain::getExternalNodes()
+Subdomain::getExternalNodes ()
 {
     // first we check that extNodes exists and is of correct size
-    int numExt = externalNodes->getNumComponents();
-    if (extNodes == 0) {
-	extNodes = new ID(numExt);
-	if (extNodes == 0 || extNodes->Size() != numExt) {
-	    opserr << "Subdomain::getExternalNodes(): ";
-	    opserr << " - ran out of memory for size " << numExt <<endln;
-	    exit(-1);
-	}
-    }
-    
-    if (extNodes->Size() != numExt) {
-	delete extNodes;
-	extNodes = new ID(numExt);
-	if (extNodes == 0 || extNodes->Size() != numExt) {
-	    opserr << "Subdomain::getExternalNodes(): ";
-	    opserr << " - ran out of memory for size " << numExt <<endln;
-	    exit(-1);
-	}
-    }
+    int numExt = externalNodes->getNumComponents ();
+    if (extNodes == 0)
+      {
+          extNodes = new ID (numExt);
+          if (extNodes == 0 || extNodes->Size () != numExt)
+            {
+                opserr << "Subdomain::getExternalNodes(): ";
+                opserr << " - ran out of memory for size " << numExt << endln;
+                exit (-1);
+            }
+      }
+
+    if (extNodes->Size () != numExt)
+      {
+          delete extNodes;
+          extNodes = new ID (numExt);
+          if (extNodes == 0 || extNodes->Size () != numExt)
+            {
+                opserr << "Subdomain::getExternalNodes(): ";
+                opserr << " - ran out of memory for size " << numExt << endln;
+                exit (-1);
+            }
+      }
 
     // we now set the values of extNodes to be the node tags of the 
     // external nodes
 
-    NodeIter &theExtNodes = this->getExternalNodeIter();
+    NodeIter & theExtNodes = this->getExternalNodeIter ();
     Node *nodPtr;
     int cnt = 0;
-    
-    while ((nodPtr = theExtNodes()) != 0) 
-	(*extNodes)(cnt++) = nodPtr->getTag();
+
+    while ((nodPtr = theExtNodes ()) != 0)
+        (*extNodes) (cnt++) = nodPtr->getTag ();
 
     // done
-    ID &res = *extNodes;
+    ID & res = *extNodes;
     return res;
 }
 
 
 
-int 
-Subdomain::getNumDOF(void)
-{
-  if (theAnalysis != 0)
-    return theAnalysis->getNumExternalEqn();
-  else  {
-    //   opserr << "Subdomain::getNumDOF() - no StaticAnalysis has been set\n";
-    return 0;
-  }
-}
-    
 int
-Subdomain::commitState(void)    
+Subdomain::getNumDOF (void)
 {
-    return this->commit();
+    if (theAnalysis != 0)
+        return theAnalysis->getNumExternalEqn ();
+    else
+      {
+          //   opserr << "Subdomain::getNumDOF() - no StaticAnalysis has been set\n";
+          return 0;
+      }
+}
+
+int
+Subdomain::commitState (void)
+{
+    return this->commit ();
 }
 
 const Matrix &
-Subdomain::getTangentStiff(void)
+Subdomain::getTangentStiff (void)
 {
     opserr << "Subdomain::getTangentStiff(void)";
     opserr << "DOES NOT DO ANYTHING";
@@ -586,7 +619,7 @@ Subdomain::getTangentStiff(void)
 }
 
 const Matrix &
-Subdomain::getInitialStiff(void)
+Subdomain::getInitialStiff (void)
 {
     opserr << "Subdomain::getSecantStiff(void)";
     opserr << "DOES NOT DO ANYTHING";
@@ -594,167 +627,177 @@ Subdomain::getInitialStiff(void)
 }
 
 const Matrix &
-Subdomain::getDamp(void)
+Subdomain::getDamp (void)
 {
     opserr << "Subdomain::getDamp(void)";
-    opserr << "DOES NOT DO ANYTHING";    
+    opserr << "DOES NOT DO ANYTHING";
     return badResult;
 }
 
 const Matrix &
-Subdomain::getMass(void)
+Subdomain::getMass (void)
 {
     opserr << "Subdomain::getMass(void)";
-    opserr << "DOES NOT DO ANYTHING";    
+    opserr << "DOES NOT DO ANYTHING";
     return badResult;
 }
 
 
 
 
-void  
-Subdomain::zeroLoad(void)
+void
+Subdomain::zeroLoad (void)
 {
     opserr << "Subdomain::zeroLoad() - should not be called\n";
 }
 
 
-int	  
-Subdomain::addLoad(ElementalLoad *theLoad, double loadFactor)
+int
+Subdomain::addLoad (ElementalLoad * theLoad, double loadFactor)
 {
     opserr << "Subdomain::addLoad() - should not be called\n";
     return 0;
 }
 
-int	  
-Subdomain::addInertiaLoadToUnbalance(const Vector &accel)
+int
+Subdomain::addInertiaLoadToUnbalance (const Vector & accel)
 {
-  return 0;
+    return 0;
 }
 
 
 const Vector &
-Subdomain::getResistingForce(void)    
+Subdomain::getResistingForce (void)
 {
-    if (theAnalysis == 0) {
-	opserr << "Subdomain::getResistingForce() ";
-	opserr << " - no StaticCondensationAnalysis has been set\n";
-	exit(-1);
-    }
-    
+    if (theAnalysis == 0)
+      {
+          opserr << "Subdomain::getResistingForce() ";
+          opserr << " - no StaticCondensationAnalysis has been set\n";
+          exit (-1);
+      }
+
     if (mapBuilt == false)
-	this->buildMap();
-      
-    ID &theMap = *map;
-    const Vector &anaResidual = theAnalysis->getResidual();
-    int numDOF = this->getNumDOF();
-    for (int i=0; i<numDOF; i++)
-	(*mappedVect)(i) = anaResidual(theMap(i));
+        this->buildMap ();
+
+    ID & theMap = *map;
+    const Vector & anaResidual = theAnalysis->getResidual ();
+    int numDOF = this->getNumDOF ();
+    for (int i = 0; i < numDOF; i++)
+        (*mappedVect) (i) = anaResidual (theMap (i));
     //opserr << "Subdomain::getResidual() : " << *mappedVect;
     return *mappedVect;
 }
 
 
 const Vector &
-Subdomain::getResistingForceIncInertia(void)    
+Subdomain::getResistingForceIncInertia (void)
 {
     opserr << "Subdomain::getResistingForceWithInertia() ";
     opserr << " - should not be called\n";
 
-    return this->getResistingForce();
+    return this->getResistingForce ();
 }
 
 
 
-bool 
-Subdomain::isSubdomain(void)
+bool
+Subdomain::isSubdomain (void)
 {
     return true;
 }
 
 
-int 
-Subdomain::setRayleighDampingFactors(double alphaM, double betaK, double betaK0, double betaKc)
+int
+Subdomain::setRayleighDampingFactors (double alphaM, double betaK,
+                                      double betaK0, double betaKc)
 {
-  return this->Domain::setRayleighDampingFactors(alphaM, betaK, betaK0, betaKc);
+    return this->Domain::setRayleighDampingFactors (alphaM, betaK, betaK0,
+                                                    betaKc);
 }
 
-int 
-Subdomain::computeTang(void)
-{   
-  if (theAnalysis != 0) {
-    //    theTimer.start();
-    
-    int res =0;
-    res = theAnalysis->formTangent();
-    
-    return res;
-    
-  } else {
-    opserr << "Subdomain::getcomputeTang() ";
-    opserr << " - no StaticCondensationAnalysis has been set\n";
-    return 0;
-  }
-}
-
-
-
-int 
-Subdomain::computeResidual(void)
+int
+Subdomain::computeTang (void)
 {
-  if (theAnalysis != 0) {
-    //    theTimer.start();
-    
-    int res =0;
-    res = theAnalysis->formResidual();
-    
-    //theTimer.pause();
-    //    realCost += theTimer.getReal();
-    //    cpuCost += theTimer.getCPU();
-    //    pageCost += theTimer.getNumPageFaults();
-    
-    return res;
-    
-    } else {
-      opserr << "Subdomain::computeResidual() ";
-      opserr << " - no StaticCondensationAnalysis has been set\n";
-      return 0;
-    }
+    if (theAnalysis != 0)
+      {
+          //    theTimer.start();
+
+          int res = 0;
+          res = theAnalysis->formTangent ();
+
+          return res;
+
+      }
+    else
+      {
+          opserr << "Subdomain::getcomputeTang() ";
+          opserr << " - no StaticCondensationAnalysis has been set\n";
+          return 0;
+      }
 }
-    
+
+
+
+int
+Subdomain::computeResidual (void)
+{
+    if (theAnalysis != 0)
+      {
+          //    theTimer.start();
+
+          int res = 0;
+          res = theAnalysis->formResidual ();
+
+          //theTimer.pause();
+          //    realCost += theTimer.getReal();
+          //    cpuCost += theTimer.getCPU();
+          //    pageCost += theTimer.getNumPageFaults();
+
+          return res;
+
+      }
+    else
+      {
+          opserr << "Subdomain::computeResidual() ";
+          opserr << " - no StaticCondensationAnalysis has been set\n";
+          return 0;
+      }
+}
+
 
 const Matrix &
-Subdomain::getTang(void)    
+Subdomain::getTang (void)
 {
-    if (theAnalysis == 0) {
-	opserr << "Subdomain::getTang() ";
-	opserr << " - no StaticCondensationAnalysis has been set\n";
-	exit(-1);
-    }	
+    if (theAnalysis == 0)
+      {
+          opserr << "Subdomain::getTang() ";
+          opserr << " - no StaticCondensationAnalysis has been set\n";
+          exit (-1);
+      }
 
     if (mapBuilt == false)
-	this->buildMap();
+        this->buildMap ();
 
-    ID &theMap = *map;
-    const Matrix &anaTang = theAnalysis->getTangent();
-    int numDOF = this->getNumDOF();
-    for (int i=0; i<numDOF; i++)
-	for (int j=0; j<numDOF; j++)
-	    (*mappedMatrix)(i,j) = anaTang(theMap(i),theMap(j));
+    ID & theMap = *map;
+    const Matrix & anaTang = theAnalysis->getTangent ();
+    int numDOF = this->getNumDOF ();
+    for (int i = 0; i < numDOF; i++)
+        for (int j = 0; j < numDOF; j++)
+            (*mappedMatrix) (i, j) = anaTang (theMap (i), theMap (j));
 
     return *mappedMatrix;
 }
 
 
 void
-Subdomain::setFE_ElementPtr(FE_Element *theFE_Ele)
+Subdomain::setFE_ElementPtr (FE_Element * theFE_Ele)
 {
     theFEele = theFE_Ele;
 }
 
 
 FE_Element *
-Subdomain::getFE_ElementPtr(void)
+Subdomain::getFE_ElementPtr (void)
 {
     return theFEele;
 }
@@ -762,112 +805,121 @@ Subdomain::getFE_ElementPtr(void)
 
 
 const Vector &
-Subdomain::getLastExternalSysResponse(void)
+Subdomain::getLastExternalSysResponse (void)
 {
-    if (theFEele == 0) {
-	opserr << "FATAL ERROR: Subdomain::getLastExternalSysResponse() :";
-	opserr << " - no FE_Element *exists for a subdomain\n";
-	opserr << " This is the responsibilty of the FE_ELement constructor\n";
-	exit(0);
-    }
+    if (theFEele == 0)
+      {
+          opserr << "FATAL ERROR: Subdomain::getLastExternalSysResponse() :";
+          opserr << " - no FE_Element *exists for a subdomain\n";
+          opserr <<
+              " This is the responsibilty of the FE_ELement constructor\n";
+          exit (0);
+      }
 
     // get the response from the FE_ele for the nodal
     // quantities - WARNING this is expressed in global dof
 
     if (mapBuilt == false)
-      this->buildMap();
+        this->buildMap ();
 
-    ID &theMap = *map;
-    const Vector &localResponse = theFEele->getLastResponse();
-    int numDOF = this->getNumDOF();
-    for (int i=0; i<numDOF; i++)
-      (*mappedVect)(theMap(i)) = localResponse(i);
+    ID & theMap = *map;
+    const Vector & localResponse = theFEele->getLastResponse ();
+    int numDOF = this->getNumDOF ();
+    for (int i = 0; i < numDOF; i++)
+        (*mappedVect) (theMap (i)) = localResponse (i);
 
     return *mappedVect;
-}
-    
-
-int 
-Subdomain::computeNodalResponse(void)
-{
-    int res =0;
-    if (theAnalysis != 0) {
-	res = theAnalysis->computeInternalResponse();
-	return res;
-    }
-    else {
-	opserr << "Subdomain::computeNodalResponse() ";
-	opserr << "- no StaticAnalysis has been set\n"; 
-	return 0;
-    }
-}
-
-
-int 
-Subdomain::analysisStep(double dT)
-{
-  if (theAnalysis != 0)
-    return theAnalysis->analysisStep(dT);
-
-  return 0;
 }
 
 
 int
-Subdomain::eigenAnalysis(int numMode, bool generalized, bool findSmallest)
+Subdomain::computeNodalResponse (void)
 {
-  if (theAnalysis != 0)
-    return theAnalysis->eigenAnalysis(numMode, generalized, findSmallest);
-  return 0;
+    int res = 0;
+    if (theAnalysis != 0)
+      {
+          res = theAnalysis->computeInternalResponse ();
+          return res;
+      }
+    else
+      {
+          opserr << "Subdomain::computeNodalResponse() ";
+          opserr << "- no StaticAnalysis has been set\n";
+          return 0;
+      }
+}
+
+
+int
+Subdomain::analysisStep (double dT)
+{
+    if (theAnalysis != 0)
+        return theAnalysis->analysisStep (dT);
+
+    return 0;
+}
+
+
+int
+Subdomain::eigenAnalysis (int numMode, bool generalized, bool findSmallest)
+{
+    if (theAnalysis != 0)
+        return theAnalysis->eigenAnalysis (numMode, generalized,
+                                           findSmallest);
+    return 0;
 }
 
 
 bool
-Subdomain::doesIndependentAnalysis(void)
+Subdomain::doesIndependentAnalysis (void)
 {
-  if (theAnalysis != 0)
-    return theAnalysis->doesIndependentAnalysis();
-  else
-    return true;
+    if (theAnalysis != 0)
+        return theAnalysis->doesIndependentAnalysis ();
+    else
+        return true;
 }
 
 
-int 
-Subdomain::sendSelf(int cTag, Channel &theChannel)
+int
+Subdomain::sendSelf (int cTag, Channel & theChannel)
 {
-    int dataTag = this->getDbTag();
-    if (theAnalysis != 0) {
-	ID data(2);
-	data(0) = theAnalysis->getClassTag();
-	data(1) = 0;
-	theChannel.sendID(dataTag, cTag, data);
-        
-	return theAnalysis->sendSelf(cTag, theChannel);
-    }
-    else {
-	opserr << "Subdomain::sendSelf - no analysis set\n";
-    
-    }
+    int dataTag = this->getDbTag ();
+    if (theAnalysis != 0)
+      {
+          ID data (2);
+          data (0) = theAnalysis->getClassTag ();
+          data (1) = 0;
+          theChannel.sendID (dataTag, cTag, data);
+
+          return theAnalysis->sendSelf (cTag, theChannel);
+      }
+    else
+      {
+          opserr << "Subdomain::sendSelf - no analysis set\n";
+
+      }
     return -1;
 }
 
-int 
-Subdomain::recvSelf(int cTag, Channel &theChannel, 
-		    FEM_ObjectBroker &theBroker)
+int
+Subdomain::recvSelf (int cTag, Channel & theChannel,
+                     FEM_ObjectBroker & theBroker)
 {
-    int dataTag = this->getDbTag();
-    ID data(2);
-    theChannel.recvID(dataTag, cTag, data);
-    if (data(1) == 0) {
-      theAnalysis = theBroker.getNewDomainDecompAnalysis(data(0),*this);
-      if (theAnalysis != 0)
-	return theAnalysis->recvSelf(cTag, theChannel,theBroker);
-    }
+    int dataTag = this->getDbTag ();
+    ID data (2);
+    theChannel.recvID (dataTag, cTag, data);
+    if (data (1) == 0)
+      {
+          theAnalysis =
+              theBroker.getNewDomainDecompAnalysis (data (0), *this);
+          if (theAnalysis != 0)
+              return theAnalysis->recvSelf (cTag, theChannel, theBroker);
+      }
     return -1;
 }
 
-double    
-Subdomain::getCost(void) 
+double
+Subdomain::getCost (void)
 {
     double lastRealCost = realCost;
 
@@ -880,75 +932,82 @@ Subdomain::getCost(void)
 
 
 int
-Subdomain::buildMap(void)
+Subdomain::buildMap (void)
 {
-  if (mapBuilt == false) {
-	// determine the mapping between local dof and subdomain ana dof
-        int numDOF = this->getNumDOF();
-	if (map == 0) 
-	  map = new ID(numDOF);
-	if (map->Size() != numDOF) {
-	  delete map;
-	  map = new ID(numDOF);
-	}
+    if (mapBuilt == false)
+      {
+          // determine the mapping between local dof and subdomain ana dof
+          int numDOF = this->getNumDOF ();
+          if (map == 0)
+              map = new ID (numDOF);
+          if (map->Size () != numDOF)
+            {
+                delete map;
+                map = new ID (numDOF);
+            }
 
-	//	int numExt = theAnalysis->getNumExternalEqn();
-	int numInt = theAnalysis->getNumInternalEqn();
+          //      int numExt = theAnalysis->getNumExternalEqn();
+          int numInt = theAnalysis->getNumInternalEqn ();
 
-	const ID &theExtNodes = this->getExternalNodes();
-	int numExtNodes = theExtNodes.Size();
-	int locInMap =0;
-	for (int i=0; i<numExtNodes; i++) {
-	  Node *nodePtr = this->getNode(theExtNodes(i));
-	  int numNodeDOF = nodePtr->getNumberDOF();
-	  DOF_Group *theDOF = nodePtr->getDOF_GroupPtr();
-	  const ID &theLocalID = theDOF->getID();
-	  for (int j=0; j<numNodeDOF; j++){
-	    int locInSubdomainExt = theLocalID(j)-numInt;
-	    (*map)(locInMap)=locInSubdomainExt;
-	    locInMap++;
-	  }
-	}
-	mapBuilt = true;
+          const ID & theExtNodes = this->getExternalNodes ();
+          int numExtNodes = theExtNodes.Size ();
+          int locInMap = 0;
+          for (int i = 0; i < numExtNodes; i++)
+            {
+                Node *nodePtr = this->getNode (theExtNodes (i));
+                int numNodeDOF = nodePtr->getNumberDOF ();
+                DOF_Group *theDOF = nodePtr->getDOF_GroupPtr ();
+                const ID & theLocalID = theDOF->getID ();
+                for (int j = 0; j < numNodeDOF; j++)
+                  {
+                      int locInSubdomainExt = theLocalID (j) - numInt;
+                      (*map) (locInMap) = locInSubdomainExt;
+                      locInMap++;
+                  }
+            }
+          mapBuilt = true;
 
-	if (mappedVect == 0) 
-	  mappedVect = new Vector(numDOF);
-	if (mappedVect->Size() != numDOF) {
-	  delete mappedVect;
-	  mappedVect = new Vector(numDOF);
-	}
+          if (mappedVect == 0)
+              mappedVect = new Vector (numDOF);
+          if (mappedVect->Size () != numDOF)
+            {
+                delete mappedVect;
+                mappedVect = new Vector (numDOF);
+            }
 
-	if (mappedMatrix == 0) 
-	  mappedMatrix = new Matrix(numDOF,numDOF);
-	if (mappedMatrix->noRows() != numDOF) {
-	  delete mappedMatrix;
-	  mappedMatrix = new Matrix(numDOF,numDOF);
-	}
-  }
-  
-  return 0;
+          if (mappedMatrix == 0)
+              mappedMatrix = new Matrix (numDOF, numDOF);
+          if (mappedMatrix->noRows () != numDOF)
+            {
+                delete mappedMatrix;
+                mappedMatrix = new Matrix (numDOF, numDOF);
+            }
+      }
+
+    return 0;
 }
 
 
 DomainDecompositionAnalysis *
-Subdomain::getDDAnalysis(void)
+Subdomain::getDDAnalysis (void)
 {
-  return theAnalysis;
+    return theAnalysis;
 }
 
-int 
-Subdomain::addResistingForceToNodalReaction(bool inclInertia)
+int
+Subdomain::addResistingForceToNodalReaction (bool inclInertia)
 {
-  return 0;
+    return 0;
 }
 
-int  
-Subdomain::updateParameter(int tag, int value){
-  return this->Domain::updateParameter(tag, value);
+int
+Subdomain::updateParameter (int tag, int value)
+{
+    return this->Domain::updateParameter (tag, value);
 }
 
-int  
-Subdomain::updateParameter(int tag, double value)
+int
+Subdomain::updateParameter (int tag, double value)
 {
-  return this->Domain::updateParameter(tag, value);
+    return this->Domain::updateParameter (tag, value);
 }

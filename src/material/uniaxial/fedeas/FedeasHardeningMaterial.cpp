@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-07-15 21:36:46 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/fedeas/FedeasHardeningMaterial.cpp,v $
-                                                                      
+
 // Written: MHS
 // Created: Jan 2001
 //
@@ -32,73 +32,77 @@
 #include <stdlib.h>
 #include <FedeasHardeningMaterial.h>
 
-FedeasHardeningMaterial::FedeasHardeningMaterial(int tag,
-					 double E, double sigmaY, double Hiso, double Hkin):
+FedeasHardeningMaterial::FedeasHardeningMaterial (int tag,
+                                                  double E, double sigmaY,
+                                                  double Hiso, double Hkin):
 // 3 history variables and 4 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasHardening, 3, 4)
+FedeasMaterial (tag, MAT_TAG_FedeasHardening, 3, 4)
 {
-	// Fill in material parameters
-	data[0] = E;
-	data[1] = sigmaY;
-	data[2] = Hiso;
-	data[3] = Hkin;
+    // Fill in material parameters
+    data[0] = E;
+    data[1] = sigmaY;
+    data[2] = Hiso;
+    data[3] = Hkin;
 
-	tangentP = E;
-	tangent = tangentP;
+    tangentP = E;
+    tangent = tangentP;
 }
 
-FedeasHardeningMaterial::FedeasHardeningMaterial(int tag, const Vector &d):
+FedeasHardeningMaterial::FedeasHardeningMaterial (int tag, const Vector & d):
 // 3 history variables and 4 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasHardening, 3, 4)
+FedeasMaterial (tag, MAT_TAG_FedeasHardening, 3, 4)
 {
-  if (d.Size() != numData) {
-    opserr << "FedeasHardeningMaterial::FedeasHardeningMaterial -- not enough input arguments\n";
-    exit(-1);	
-  }
+    if (d.Size () != numData)
+      {
+          opserr <<
+              "FedeasHardeningMaterial::FedeasHardeningMaterial -- not enough input arguments\n";
+          exit (-1);
+      }
 
-  for (int i = 0; i < numData; i++)
-    data[i] = d(i);
+    for (int i = 0; i < numData; i++)
+        data[i] = d (i);
 
-  tangentP = data[0];
-  tangent = tangentP;
+    tangentP = data[0];
+    tangent = tangentP;
 }
 
-FedeasHardeningMaterial::FedeasHardeningMaterial(void):
-FedeasMaterial(0, MAT_TAG_FedeasHardening, 3, 4)
+FedeasHardeningMaterial::FedeasHardeningMaterial (void):
+FedeasMaterial (0, MAT_TAG_FedeasHardening, 3, 4)
 {
-	// Does nothing
+    // Does nothing
 }
 
-FedeasHardeningMaterial::~FedeasHardeningMaterial(void)
+FedeasHardeningMaterial::~FedeasHardeningMaterial (void)
 {
-	// Does nothing
+    // Does nothing
 }
 
-UniaxialMaterial*
-FedeasHardeningMaterial::getCopy(void)
+UniaxialMaterial *
+FedeasHardeningMaterial::getCopy (void)
 {
-  Vector d(data, numData);
+    Vector d (data, numData);
 
-  FedeasHardeningMaterial *theCopy = new FedeasHardeningMaterial(this->getTag(), d);
-  
-  // Copy history variables
-  for (int i = 0; i < 2*numHstv; i++)
-    theCopy->hstv[i] = hstv[i];
-  
-  theCopy->epsilonP = epsilonP;
-  theCopy->sigmaP   = sigmaP;
-  theCopy->tangentP = tangentP;
+    FedeasHardeningMaterial *theCopy =
+        new FedeasHardeningMaterial (this->getTag (), d);
 
-  theCopy->epsilon = epsilonP;
-  theCopy->sigma = sigmaP;
-  theCopy->tangent = tangentP;  
-  
-  return theCopy;
+    // Copy history variables
+    for (int i = 0; i < 2 * numHstv; i++)
+        theCopy->hstv[i] = hstv[i];
+
+    theCopy->epsilonP = epsilonP;
+    theCopy->sigmaP = sigmaP;
+    theCopy->tangentP = tangentP;
+
+    theCopy->epsilon = epsilonP;
+    theCopy->sigma = sigmaP;
+    theCopy->tangent = tangentP;
+
+    return theCopy;
 }
 
 double
-FedeasHardeningMaterial::getInitialTangent(void)
+FedeasHardeningMaterial::getInitialTangent (void)
 {
-	//return E;
-	return data[0];
+    //return E;
+    return data[0];
 }

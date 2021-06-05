@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:15 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/address/MPI_ChannelAddress.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/actor/MPI_ChannelAddress.C
 //
 // Written: fmk 11/95
@@ -35,20 +35,23 @@
 
 #include <MPI_ChannelAddress.h>
 
-MPI_ChannelAddress::MPI_ChannelAddress(int other)
-:ChannelAddress(MPI_TYPE), otherTag(other), otherComm(MPI_COMM_WORLD)
+MPI_ChannelAddress::MPI_ChannelAddress (int other):
+ChannelAddress (MPI_TYPE),
+otherTag (other),
+otherComm (MPI_COMM_WORLD)
 {
 
 }
 
-MPI_ChannelAddress::MPI_ChannelAddress(int other, MPI_Comm otherC)
-:ChannelAddress(MPI_TYPE), otherTag(other), otherComm(otherC)
+MPI_ChannelAddress::MPI_ChannelAddress (int other, MPI_Comm otherC):
+ChannelAddress (MPI_TYPE),
+otherTag (other),
+otherComm (otherC)
 {
 
 }
 
-MPI_ChannelAddress::~MPI_ChannelAddress()
+MPI_ChannelAddress::~MPI_ChannelAddress ()
 {
 
 }
-

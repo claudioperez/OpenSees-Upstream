@@ -1,22 +1,42 @@
-# OpenSees Source Code Repository
+# `libG3`
 
-This git repository contains all revisions to OpenSees source code since Version 2.3.2.
+## Outline
 
-Older revisions of the code are available upon request.
+- `libOpenSees`
+- `libOpenSeesPy`
+- `anabel.OpenSeesModel`
 
-If you plan on collaborating or even using OpenSees as your base code it is highly recommended that
-you FORK this repo to your own account and work on it there. We will not allow anybody to write to
-this repo. Only PULL requests will be considered. To fork the repo click on the FORK at the top of this page.
+## Goals
 
-For a brief outline on forking we suggest:
-https://www.atlassian.com/git/tutorials/comparing-workflows/forking-workflow
+- Stateless / Thread safe
+- High code quality / consistency
 
-For a brief introduction to using your new FORK we suggest:
-https://www.atlassian.com/git/tutorials/saving-changes
+## Requirements
 
-## Documentation
-The documentation for OpenSees is being moved to a parellel github repo:
-https://github.com/OpenSees/OpenSeesDocumentation
+- Thread safe
+- 0 Compiler warnings
+- Consistent newlines [Bilin.cpp]
 
-The documentation (in its present form) can be viewed in the browser using the following url:
-https://OpenSees.github.io/OpenSeesDocumentation
+## Root Organization
+
+- [`api/`](./api) API definition files
+- [`include/`](./include) Project-wide header files
+- [`ext/`](./ext) external libraries
+- [`lib/`](./lib)
+- [`src/`](./src)
+
+## Modules
+
+### `base/domain/Domain.h`
+
+### `base/component/DomainComponent.h`
+
+### `base/node/Node.h`
+
+- `element/OPS_Element`
+- `element/XLA_Element`
+- `element/FEAP_Element`
+
+- `element/material/`
+
+

@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2009-07-29 21:57:42 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/eigenAlgo/FrequencyAlgo.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/algorithm/eigenAlgo/FrequencyAlgo.C
 //
 // Written: Jun Peng
@@ -48,77 +48,79 @@
 #include <FEM_ObjectBroker.h>
 #include <Timer.h>
 
-FrequencyAlgo::FrequencyAlgo()
-  :EigenAlgorithm(EigenALGORITHM_TAGS_Frequency)
+FrequencyAlgo::FrequencyAlgo ():EigenAlgorithm (EigenALGORITHM_TAGS_Frequency)
 {
     // do nothing here.
 }
 
-FrequencyAlgo::~FrequencyAlgo()
+FrequencyAlgo::~FrequencyAlgo ()
 {
     // do nothing here.
 }
 
-int 
-FrequencyAlgo::solveCurrentStep(int numModes)
+int
+FrequencyAlgo::solveCurrentStep (int numModes)
 {
-    AnalysisModel *theModel = this->getAnalysisModelPtr();
-    EigenSOE *theSOE = this->getEigenSOEptr();
-    EigenIntegrator *theIntegrator = this->getEigenIntegratorPtr();
+    AnalysisModel *theModel = this->getAnalysisModelPtr ();
+    EigenSOE *theSOE = this->getEigenSOEptr ();
+    EigenIntegrator *theIntegrator = this->getEigenIntegratorPtr ();
 
-    if ((theModel == 0) || (theIntegrator == 0) || (theSOE == 0)) {
-       opserr << "WARNING FrequencyAlgo::solverCurrentStep() - ";
-       opserr << "setLinks() has not been called. \n";
-       return -1;
-    }
+    if ((theModel == 0) || (theIntegrator == 0) || (theSOE == 0))
+      {
+          opserr << "WARNING FrequencyAlgo::solverCurrentStep() - ";
+          opserr << "setLinks() has not been called. \n";
+          return -1;
+      }
 
-    if (theIntegrator->formK() < 0) {
-       opserr << "WARNING FrequencyAlgo::solverCurrentStep() - ";
-       opserr << "the Integrator failed in formK().\n";
-       return -2;
-    }
+    if (theIntegrator->formK () < 0)
+      {
+          opserr << "WARNING FrequencyAlgo::solverCurrentStep() - ";
+          opserr << "the Integrator failed in formK().\n";
+          return -2;
+      }
 
-    if (theIntegrator->formM() < 0) {
-       opserr << "WARNING FrequencyAlgo::solverCurrentStep() - ";
-       opserr << "the Integrator failed in formK().\n";
-       return -3;
-    }
+    if (theIntegrator->formM () < 0)
+      {
+          opserr << "WARNING FrequencyAlgo::solverCurrentStep() - ";
+          opserr << "the Integrator failed in formK().\n";
+          return -3;
+      }
 
-    if (theSOE->solve(numModes, true) < 0) {
-       opserr << "Warning FrequencyAlgo::solveCurrentStep() - ";
-       opserr << "the EigenSOE failed in solve().\n";
-       return -4;
-    }
+    if (theSOE->solve (numModes, true) < 0)
+      {
+          opserr << "Warning FrequencyAlgo::solveCurrentStep() - ";
+          opserr << "the EigenSOE failed in solve().\n";
+          return -4;
+      }
 
     // now set the eigenvalues and eigenvectors in the model
-    theModel->setNumEigenvectors(numModes);
-    Vector theEigenvalues(numModes);
-    for (int i=1; i<=numModes; i++) {
-	theEigenvalues[i-1] = theSOE->getEigenvalue(i);
-	theModel->setEigenvector(i, theSOE->getEigenvector(i));
-    }    
-    theModel->setEigenvalues(theEigenvalues);
-    
+    theModel->setNumEigenvectors (numModes);
+    Vector theEigenvalues (numModes);
+    for (int i = 1; i <= numModes; i++)
+      {
+          theEigenvalues[i - 1] = theSOE->getEigenvalue (i);
+          theModel->setEigenvector (i, theSOE->getEigenvector (i));
+      }
+    theModel->setEigenvalues (theEigenvalues);
+
     return 0;
 }
 
-int 
-FrequencyAlgo::sendSelf(int cTag, Channel &theChannel)
+int
+FrequencyAlgo::sendSelf (int cTag, Channel & theChannel)
 {
     return 0;
 }
 
-int 
-FrequencyAlgo::recvSelf(int cTag, Channel &theChannel,
-			FEM_ObjectBroker &theBroker)
+int
+FrequencyAlgo::recvSelf (int cTag, Channel & theChannel,
+                         FEM_ObjectBroker & theBroker)
 {
     return 0;
 }
 
-void 
-FrequencyAlgo::Print(OPS_Stream &s, int flag)
+void
+FrequencyAlgo::Print (OPS_Stream & s, int flag)
 {
     s << "\t Eigen Algorithm \n";
 }
-
-

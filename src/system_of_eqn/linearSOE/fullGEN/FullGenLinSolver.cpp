@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:29 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/fullGEN/FullGenLinSolver.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/system_of_eqn/linearSOE/FullGEN/FullGenLinSolver.C
 //
 // Written: fmk 
@@ -40,22 +40,21 @@
 #include <FullGenLinSolver.h>
 #include <FullGenLinSOE.h>
 
-FullGenLinSolver::FullGenLinSolver(int theClassTag)    
-:LinearSOESolver(theClassTag),
- theSOE(0)
+FullGenLinSolver::FullGenLinSolver (int theClassTag):
+LinearSOESolver (theClassTag),
+theSOE (0)
 {
 
-}    
+}
 
-FullGenLinSolver::~FullGenLinSolver()    
+FullGenLinSolver::~FullGenLinSolver ()
 {
 
-}    
+}
 
-int 
-FullGenLinSolver::setLinearSOE(FullGenLinSOE &theFullGenSOE)
+int
+FullGenLinSolver::setLinearSOE (FullGenLinSOE & theFullGenSOE)
 {
     theSOE = &theFullGenSOE;
     return 0;
 }
-

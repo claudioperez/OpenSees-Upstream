@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:21 $
 // $Source: /usr/local/cvs/OpenSees/SRC/graph/graph/FE_VertexIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/model/simple/FE_VertexIter.C
 //
 // Written: fmk 
@@ -39,50 +39,45 @@
 #include <Vertex.h>
 
 // FE_VertexIter(FE_Graph &theGraph):
-//	constructor that takes the graph, just the basic iter
+//      constructor that takes the graph, just the basic iter
 
-FE_VertexIter::FE_VertexIter(FE_Graph &theGraph)
-  :myGraph(theGraph), currIndex(0), numDone(0)
+FE_VertexIter::FE_VertexIter (FE_Graph & theGraph):myGraph (theGraph), currIndex (0),
+numDone (0)
 {
 }
 
 
-FE_VertexIter::~FE_VertexIter()
+FE_VertexIter::~FE_VertexIter ()
 {
-}    
+}
 
 void
-FE_VertexIter::reset(void)
+FE_VertexIter::reset (void)
 {
     currIndex = 0;
     numDone = 0;
 }
 
 Vertex *
-FE_VertexIter::operator()(void)
+FE_VertexIter::operator () (void)
 {
-  // check if we still have vertices in the Graph
-  // if not return 0, indicating we are done
-  if (numDone >= myGraph.numVertex)
-    return 0;
+    // check if we still have vertices in the Graph
+    // if not return 0, indicating we are done
+    if (numDone >= myGraph.numVertex)
+        return 0;
 
-  // search through domains ele list till we find the next element
-  while ((currIndex < myGraph.sizeVertices) 
-	 && (myGraph.theVertices[currIndex] == 0))
-      currIndex++;
+    // search through domains ele list till we find the next element
+    while ((currIndex < myGraph.sizeVertices)
+           && (myGraph.theVertices[currIndex] == 0))
+        currIndex++;
 
-  // if not at the end of the list return the element
-  if (currIndex < myGraph.sizeVertices) {
-      Vertex *result = myGraph.theVertices[currIndex];
-      numDone++; currIndex++;
-      return(result);
-  }
-  return (0);
+    // if not at the end of the list return the element
+    if (currIndex < myGraph.sizeVertices)
+      {
+          Vertex *result = myGraph.theVertices[currIndex];
+          numDone++;
+          currIndex++;
+          return (result);
+      }
+    return (0);
 }
-
-    
-    
-
-
-
-

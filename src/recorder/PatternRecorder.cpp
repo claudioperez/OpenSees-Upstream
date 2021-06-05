@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-11-24 22:45:28 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/PatternRecorder.cpp,v $
@@ -40,135 +40,153 @@
 #include <FE_Datastore.h>
 
 #include <fstream>
-using std::ifstream;
+using
+    std::ifstream;
 
 #include <iomanip>
-using std::ios;
+using
+    std::ios;
 
-PatternRecorder::PatternRecorder(int pattern,
-				 Domain &theDom,
-				 const char *theFileName,
-				 double dT,
-				 int startFlag)
-  :Recorder(RECORDER_TAGS_PatternRecorder),
-   thePattern(pattern), theDomain(&theDom),
-   flag(startFlag), deltaT(dT), nextTimeStampToRecord(0.0)
+PatternRecorder::PatternRecorder (int pattern,
+                                  Domain & theDom,
+                                  const char *theFileName,
+                                  double dT, int startFlag):
+Recorder (RECORDER_TAGS_PatternRecorder),
+thePattern (pattern),
+theDomain (&theDom),
+flag (startFlag),
+deltaT (dT),
+nextTimeStampToRecord (0.0)
 {
-  // create char array to store file name
-  int fileNameLength = strlen(theFileName) + 1;
-  fileName = new char[fileNameLength];
-  if (fileName == 0) {
-    opserr << "PatternRecorder::PatternRecorder - out of memory creating string" << endln;
-  }
-  
-  // copy the strings
-  strcpy(fileName, theFileName);    
-  
-  // open the file
-  theFile.open(fileName, ios::out);
-  if (theFile.bad()) {
-    opserr << "WARNING - PatternRecorder::PatternRecorder()";
-    opserr << " - could not open file " << fileName << endln;
-  }
-  //theFile << setiosflags(ios::scientific) << setprecision(15);
+    // create char array to store file name
+    int fileNameLength = strlen (theFileName) + 1;
+    fileName = new char[fileNameLength];
+    if (fileName == 0)
+      {
+          opserr <<
+              "PatternRecorder::PatternRecorder - out of memory creating string"
+              << endln;
+      }
+
+    // copy the strings
+    strcpy (fileName, theFileName);
+
+    // open the file
+    theFile.open (fileName, ios::out);
+    if (theFile.bad ())
+      {
+          opserr << "WARNING - PatternRecorder::PatternRecorder()";
+          opserr << " - could not open file " << fileName << endln;
+      }
+    //theFile << setiosflags(ios::scientific) << setprecision(15);
 }
 
-PatternRecorder::~PatternRecorder()
+PatternRecorder::~PatternRecorder ()
 {
-  if (!theFile)
-    theFile.close();
-  
-  if (fileName != 0)
-    delete [] fileName;
-}
+    if (!theFile)
+        theFile.close ();
 
-int 
-PatternRecorder::record(int commitTag, double timeStamp)
-{
-  double value = 0.0;
-  
-  if (deltaT == 0.0 || timeStamp >= nextTimeStampToRecord) {
-    
-    if (deltaT != 0.0)
-      nextTimeStampToRecord = timeStamp + deltaT;
-    
-    LoadPattern *pattern = theDomain->getLoadPattern(thePattern);
-    if (pattern != 0) {
-      value = pattern->getLoadFactor();
-    }
-  }
-  
-  // write them to the file
-  if (flag == 1)
-    theFile << timeStamp << " ";
-  else if (flag == 2)
-    theFile << timeStamp << " ";
-  
-  theFile << value << " ";
-  
-  theFile << endln;
-  theFile.flush();
-  
-  return 0;
-}
-
-int 
-PatternRecorder::playback(int commitTag)
-{
-  if (theFile.bad())
-    return 0;
-  
-  // close o/p file to ensure all buffered data gets written to file
-  theFile.close(); 
-  
-  // open a stream for reading from the file
-  ifstream inputFile;
-  inputFile.open(fileName, ios::in);
-  if (inputFile.bad()) {
-    opserr << "WARNING - PatternRecorder::playback() - could not open file ";
-    opserr << fileName << endln;
-    return -1;
-  }   
-  
-  double data;
-  // read file up until line we want
-  for (int i=0; i<(commitTag-1); i++)
-    // now read in a line
-    if (flag == 1 || flag == 2) {
-      inputFile >> data;
-      inputFile >> data;
-    }
-  
-  // now read in our line and print out
-  if (flag == 1 || flag == 2) {
-    inputFile >> data;
-    opserr << data << " ";
-    inputFile >> data;
-    opserr << data << " ";
-    opserr << endln;
-  }
-  inputFile.close();
-  
-  // open file again for writing
-  theFile.open(fileName, ios::app);
-  if (theFile.bad()) {
-    opserr << "WARNING - PatternRecorder::playback() - could not open file ";
-    opserr << fileName << endln;
-    return -1;
-  }    
-  
-  // does nothing
-  return 0;
+    if (fileName != 0)
+        delete[]fileName;
 }
 
 int
-PatternRecorder::restart(void)
+PatternRecorder::record (int commitTag, double timeStamp)
 {
-  theFile.close();
-  theFile.open(fileName, ios::out);
-  if (theFile.bad()) {
-    opserr << "WARNING - PatternRecorder::restart() - could not open file ";
-    opserr << fileName << endln;
-  }
-  return 0;
+    double value = 0.0;
+
+    if (deltaT == 0.0 || timeStamp >= nextTimeStampToRecord)
+      {
+
+          if (deltaT != 0.0)
+              nextTimeStampToRecord = timeStamp + deltaT;
+
+          LoadPattern *pattern = theDomain->getLoadPattern (thePattern);
+          if (pattern != 0)
+            {
+                value = pattern->getLoadFactor ();
+            }
+      }
+
+    // write them to the file
+    if (flag == 1)
+        theFile << timeStamp << " ";
+    else if (flag == 2)
+        theFile << timeStamp << " ";
+
+    theFile << value << " ";
+
+    theFile << endln;
+    theFile.flush ();
+
+    return 0;
+}
+
+int
+PatternRecorder::playback (int commitTag)
+{
+    if (theFile.bad ())
+        return 0;
+
+    // close o/p file to ensure all buffered data gets written to file
+    theFile.close ();
+
+    // open a stream for reading from the file
+    ifstream inputFile;
+    inputFile.open (fileName, ios::in);
+    if (inputFile.bad ())
+      {
+          opserr <<
+              "WARNING - PatternRecorder::playback() - could not open file ";
+          opserr << fileName << endln;
+          return -1;
+      }
+
+    double data;
+    // read file up until line we want
+    for (int i = 0; i < (commitTag - 1); i++)
+        // now read in a line
+        if (flag == 1 || flag == 2)
+          {
+              inputFile >> data;
+              inputFile >> data;
+          }
+
+    // now read in our line and print out
+    if (flag == 1 || flag == 2)
+      {
+          inputFile >> data;
+          opserr << data << " ";
+          inputFile >> data;
+          opserr << data << " ";
+          opserr << endln;
+      }
+    inputFile.close ();
+
+    // open file again for writing
+    theFile.open (fileName, ios::app);
+    if (theFile.bad ())
+      {
+          opserr <<
+              "WARNING - PatternRecorder::playback() - could not open file ";
+          opserr << fileName << endln;
+          return -1;
+      }
+
+    // does nothing
+    return 0;
+}
+
+int
+PatternRecorder::restart (void)
+{
+    theFile.close ();
+    theFile.open (fileName, ios::out);
+    if (theFile.bad ())
+      {
+          opserr <<
+              "WARNING - PatternRecorder::restart() - could not open file ";
+          opserr << fileName << endln;
+      }
+    return 0;
 }

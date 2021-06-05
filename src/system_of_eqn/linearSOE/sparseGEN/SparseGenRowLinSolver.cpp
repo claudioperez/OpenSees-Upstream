@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2005-04-08 02:38:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/sparseGEN/SparseGenRowLinSolver.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: 04/05
 //
@@ -32,29 +32,21 @@
 #include <SparseGenRowLinSolver.h>
 #include <SparseGenRowLinSOE.h>
 
-SparseGenRowLinSolver::SparseGenRowLinSolver(int theClassTag)    
-:LinearSOESolver(theClassTag),
- theSOE(0)
+SparseGenRowLinSolver::SparseGenRowLinSolver (int theClassTag):
+LinearSOESolver (theClassTag),
+theSOE (0)
 {
 
-}    
+}
 
-SparseGenRowLinSolver::~SparseGenRowLinSolver()    
+SparseGenRowLinSolver::~SparseGenRowLinSolver ()
 {
 
-}    
+}
 
-int 
-SparseGenRowLinSolver::setLinearSOE(SparseGenRowLinSOE &theSparseGenRowSOE)
+int
+SparseGenRowLinSolver::setLinearSOE (SparseGenRowLinSOE & theSparseGenRowSOE)
 {
     theSOE = &theSparseGenRowSOE;
     return 0;
 }
-
-
-
-
-
-
-
-

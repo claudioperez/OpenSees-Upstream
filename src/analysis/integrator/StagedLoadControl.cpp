@@ -53,7 +53,7 @@
 #include <Parameter.h>
 #include <ParameterIter.h>
 #include <EquiSolnAlgo.h>
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 #include <iostream>
 
 #ifdef _PARALLEL_PROCESSING
@@ -68,147 +68,159 @@
 #define SEQUENTIAL_SECTION_END } MPI_Barrier(MPI_COMM_WORLD);}
 
 
-void* OPS_StagedLoadControlIntegrator()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_StagedLoadControlIntegrator ()
 {
-    if (OPS_GetNumRemainingInputArgs() < 1) {
-        opserr << "insufficient arguments\n";
-        return 0;
-    }
+    if (OPS_GetNumRemainingInputArgs () < 1)
+      {
+          opserr << "insufficient arguments\n";
+          return 0;
+      }
 
     double lambda;
     int numData = 1;
-    if (OPS_GetDoubleInput(&numData, &lambda) < 0) {
-        opserr << "WARNING failed to read double lambda\n";
-        return 0;
-    }
+    if (OPS_GetDoubleInput (&numData, &lambda) < 0)
+      {
+          opserr << "WARNING failed to read double lambda\n";
+          return 0;
+      }
 
     int numIter = 1;
-    double mLambda[2] = {lambda, lambda};
-    if (OPS_GetNumRemainingInputArgs() > 2) {
-        if (OPS_GetIntInput(&numData, &numIter) < 0) {
-            opserr << "WARNING failed to read int numIter\n";
-            return 0;
-        }
-        numData = 2;
-        if (OPS_GetDoubleInput(&numData, &mLambda[0]) < 0) {
-            opserr << "WARNING failed to read double min and max\n";
-            return 0;
-        }
-    }
+    double mLambda[2] = { lambda, lambda };
+    if (OPS_GetNumRemainingInputArgs () > 2)
+      {
+          if (OPS_GetIntInput (&numData, &numIter) < 0)
+            {
+                opserr << "WARNING failed to read int numIter\n";
+                return 0;
+            }
+          numData = 2;
+          if (OPS_GetDoubleInput (&numData, &mLambda[0]) < 0)
+            {
+                opserr << "WARNING failed to read double min and max\n";
+                return 0;
+            }
+      }
 
-    return new StagedLoadControl(lambda, numIter, mLambda[0], mLambda[1]);
+    return new StagedLoadControl (lambda, numIter, mLambda[0], mLambda[1]);
 }
+#endif
 
 
-StagedLoadControl::StagedLoadControl()
-    : LoadControl(0, 0, 0, 0, INTEGRATOR_TAGS_StagedLoadControl)
+StagedLoadControl::StagedLoadControl ():LoadControl (0, 0, 0, 0,
+             INTEGRATOR_TAGS_StagedLoadControl)
 {
 }
 
 
 
-StagedLoadControl::StagedLoadControl(double dLambda, int numIncr, double min, double max)
-    : LoadControl(dLambda, numIncr, min, max, INTEGRATOR_TAGS_StagedLoadControl)
+StagedLoadControl::StagedLoadControl (double dLambda, int numIncr, double min,
+                                      double max):
+LoadControl (dLambda, numIncr, min, max, INTEGRATOR_TAGS_StagedLoadControl)
 {
 }
 
 
-int StagedLoadControl::formTangent(int statFlag)
+int
+StagedLoadControl::formTangent (int statFlag)
 {
     int rank = 0;
     int nproc = 1;
 
-    #ifdef _PARALLEL_PROCESSING
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
-    #endif
+#ifdef _PARALLEL_PROCESSING
+    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_size (MPI_COMM_WORLD, &nproc);
+#endif
 
     // Run a typocal LoadControl formTangent call
-    int errflag = this->IncrementalIntegrator::formTangent(statFlag);
+    int errflag = this->IncrementalIntegrator::formTangent (statFlag);
 
     if (errflag < 0)
-    {
-        return errflag;
-    }
+      {
+          return errflag;
+      }
 
     // Now detect inactive nodes and add 1 to the tangent diagonal there
 
-    AnalysisModel *theAnalysisModel = this->getAnalysisModel();
-    Domain *theDomain = theAnalysisModel->getDomainPtr();
-    LinearSOE *theSOE = this->getLinearSOE();
-    int numEqn = theSOE->getNumEqn();
+    AnalysisModel *theAnalysisModel = this->getAnalysisModel ();
+    Domain *theDomain = theAnalysisModel->getDomainPtr ();
+    LinearSOE *theSOE = this->getLinearSOE ();
+    int numEqn = theSOE->getNumEqn ();
 
-    int * nodedofs = new int[numEqn + 1];
-    #ifdef _PARALLEL_PROCESSING
-    int * allnodedofs = new int[numEqn + 1];
-    #endif
+    int *nodedofs = new int[numEqn + 1];
+#ifdef _PARALLEL_PROCESSING
+    int *allnodedofs = new int[numEqn + 1];
+#endif
 
     for (int i = 0; i < numEqn; ++i)
-    {
-        nodedofs[i] = 0;
-    #ifdef _PARALLEL_PROCESSING
-        allnodedofs[i] = 0;
-    #endif
-    }
+      {
+          nodedofs[i] = 0;
+#ifdef _PARALLEL_PROCESSING
+          allnodedofs[i] = 0;
+#endif
+      }
 
     FE_Element *elePtr = 0;
 
-    FE_EleIter &theEles = theAnalysisModel->getFEs();
+    FE_EleIter & theEles = theAnalysisModel->getFEs ();
 
-    while ((elePtr = theEles()) != 0) {
-        const ID& elenodedofs = elePtr->getID();
+    while ((elePtr = theEles ()) != 0)
+      {
+          const ID & elenodedofs = elePtr->getID ();
 
-        for (int i = 0; i < elenodedofs.Size(); ++i)
-        {
-            int dof = elenodedofs(i);
-            if (dof > numEqn)
+          for (int i = 0; i < elenodedofs.Size (); ++i)
             {
-                std::cout << "i = " << i << std::endl;
-                std::cout << "numEqn = " << numEqn << std::endl;
-                std::cout << "elenodedofs(i) = " << dof << std::endl;
-                exit(-1);
+                int dof = elenodedofs (i);
+                if (dof > numEqn)
+                  {
+                      std::cout << "i = " << i << std::endl;
+                      std::cout << "numEqn = " << numEqn << std::endl;
+                      std::cout << "elenodedofs(i) = " << dof << std::endl;
+                      exit (-1);
+                  }
+                // std::cout << "i = " << i << " numEqn = " << numEqn << " dof = " << dof << std::endl;
+                if (dof >= 0 && elePtr->isActive ())
+                  {
+
+                      nodedofs[dof] = (int) 1;
+                  }
+
             }
-            // std::cout << "i = " << i << " numEqn = " << numEqn << " dof = " << dof << std::endl;
-            if (dof >= 0 && elePtr->isActive())
-            {
-
-                nodedofs[dof] = (int) 1;
-            }
-            
-        }
-    }
+      }
 
 
-    #ifdef _PARALLEL_PROCESSING
-    MPI_Allreduce(nodedofs, allnodedofs, numEqn, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-    #endif
+#ifdef _PARALLEL_PROCESSING
+    MPI_Allreduce (nodedofs, allnodedofs, numEqn, MPI_INT, MPI_MAX,
+                   MPI_COMM_WORLD);
+#endif
 
 
     for (int i = 0; i < numEqn; ++i)
-    {
-        #ifdef _PARALLEL_PROCESSING
-        bool is_lonely_dof = allnodedofs[i] == 0;
-        #else
-        bool is_lonely_dof = nodedofs[i] == 0;
-        #endif
+      {
+#ifdef _PARALLEL_PROCESSING
+          bool is_lonely_dof = allnodedofs[i] == 0;
+#else
+          bool is_lonely_dof = nodedofs[i] == 0;
+#endif
 
-        if (is_lonely_dof)
-        {
-            // opserr << "i = " << i << " nodedofs(i) = " << nodedofs[i] << endln;
-            double uno = 1.0;
-            static ID dofid(1);
-            static Matrix one(1, 1);
-            one(0, 0) = uno;
-            dofid(0) = i;
-            theSOE->addA(one, dofid);
-        }
-    }
+          if (is_lonely_dof)
+            {
+                // opserr << "i = " << i << " nodedofs(i) = " << nodedofs[i] << endln;
+                double uno = 1.0;
+                static ID dofid (1);
+                static Matrix one (1, 1);
+                one (0, 0) = uno;
+                dofid (0) = i;
+                theSOE->addA (one, dofid);
+            }
+      }
 
-    delete [] nodedofs;
+    delete[]nodedofs;
 
-    #ifdef _PARALLEL_PROCESSING
-    delete [] allnodedofs;
-    #endif
+#ifdef _PARALLEL_PROCESSING
+    delete[]allnodedofs;
+#endif
 
     return errflag;
 }

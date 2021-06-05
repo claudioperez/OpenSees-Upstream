@@ -25,7 +25,7 @@
 #ifndef Parameter_h
 #define Parameter_h
 
-#include <Information.h>
+#include <base/Information.h>
 #include <TaggedObject.h>
 #include <string.h>
 

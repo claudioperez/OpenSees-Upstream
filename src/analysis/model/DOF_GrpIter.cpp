@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2005-11-28 22:07:24 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/model/DOF_GrpIter.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: 10/05
 // Revision: A
@@ -35,44 +35,43 @@
 
 
 // DOF_GrpIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-DOF_GrpIter::DOF_GrpIter(TaggedObjectStorage *theStorage)
-  :myIter(&(theStorage->getComponents()))
+DOF_GrpIter::DOF_GrpIter (TaggedObjectStorage * theStorage):myIter (&
+        (theStorage->
+         getComponents ()))
 {
 
 }
 
 
-DOF_GrpIter::~DOF_GrpIter()
+DOF_GrpIter::~DOF_GrpIter ()
 {
-}    
+}
 
 void
-DOF_GrpIter::reset(void)
+DOF_GrpIter::reset (void)
 {
-    myIter->reset();
+    myIter->reset ();
 
 
 
 
 
-}    
+}
 
 
 DOF_Group *
-DOF_GrpIter::operator()(void)
+DOF_GrpIter::operator () (void)
 {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = (*myIter)();
+    TaggedObject * theComponent = (*myIter) ();
     if (theComponent == 0)
-	return 0;
-    else {
-	DOF_Group *result = (DOF_Group *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          DOF_Group *result = (DOF_Group *) theComponent;
+          return result;
+      }
 }
-
-    
-    

@@ -3,10 +3,12 @@ add_library(matrix "")
 target_sources(matrix
     PRIVATE
       Matrix.cpp
+      MatrixUtil.cpp
       Vector.cpp
       ID.cpp
     PUBLIC
       Matrix.h
+      MatrixUtil.h
       Vector.h
       ID.h
 )

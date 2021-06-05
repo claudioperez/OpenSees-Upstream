@@ -12,7 +12,7 @@ target_sources(analysis
       VariableTimeStepDirectIntegrationAnalysis.cpp
       StaticDomainDecompositionAnalysis.cpp 
       TransientDomainDecompositionAnalysis.cpp 
-      PFEMAnalysis.cpp 
+      #PFEMAnalysis.cpp 
     PUBLIC
       DomainUser.h 
       Analysis.h 
@@ -25,7 +25,7 @@ target_sources(analysis
       VariableTimeStepDirectIntegrationAnalysis.h
       StaticDomainDecompositionAnalysis.h 
       TransientDomainDecompositionAnalysis.h 
-      PFEMAnalysis.h 
+      #PFEMAnalysis.h 
 )
 
 target_include_directories(analysis PUBLIC $(CMAKE_CURRENT_LIST_DIR))

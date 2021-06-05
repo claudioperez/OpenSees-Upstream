@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/single/SingleDomSP_Iter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/domain/SingleDomSP_Iter.C
 //
 // Written: fmk 
@@ -41,42 +41,37 @@
 
 
 // SingleDomSP_Iter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SingleDomSP_Iter::SingleDomSP_Iter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+SingleDomSP_Iter::SingleDomSP_Iter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 }
 
-SingleDomSP_Iter::~SingleDomSP_Iter()
+SingleDomSP_Iter::~SingleDomSP_Iter ()
 {
-}    
+}
 
 
 void
-SingleDomSP_Iter::reset(void)
+SingleDomSP_Iter::reset (void)
 {
-    myIter.reset();
+    myIter.reset ();
 }
 
 
 SP_Constraint *
-SingleDomSP_Iter::operator()(void)
+SingleDomSP_Iter::operator () (void)
 {
     // check if we still have SP_Constraints in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	SP_Constraint *result = (SP_Constraint *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          SP_Constraint *result = (SP_Constraint *) theComponent;
+          return result;
+      }
 }
-
-    
-    
-
-
-    
-    

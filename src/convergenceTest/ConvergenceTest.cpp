@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:17 $
 // $Source: /usr/local/cvs/OpenSees/SRC/convergenceTest/ConvergenceTest.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/convergenceTest/ConvergenceTest.C
 //
 // Written: fmk 
@@ -35,14 +35,13 @@
 
 #include <ConvergenceTest.h>
 
-ConvergenceTest::ConvergenceTest(int clasTag)
-:MovableObject(clasTag)
-{
-    
-}
-
-ConvergenceTest::~ConvergenceTest()
+ConvergenceTest::ConvergenceTest (int clasTag):
+MovableObject (clasTag)
 {
 
 }
 
+ConvergenceTest::~ConvergenceTest ()
+{
+
+}

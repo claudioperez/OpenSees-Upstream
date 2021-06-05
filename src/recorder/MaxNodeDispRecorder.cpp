@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-11-24 22:45:28 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/MaxNodeDispRecorder.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/recorder/MaxNodeDispRecorder.C
 //
 // Written: fmk 
@@ -42,42 +42,48 @@
 #include <Vector.h>
 #include <ID.h>
 
-MaxNodeDispRecorder::MaxNodeDispRecorder(int theDof, 
-					 const ID &nodes, 
-					 Domain &theDom)
-:Recorder(RECORDER_TAGS_MaxNodeDispRecorder), theNodes(nodes), maxDisp(nodes.Size()), 
- dof(theDof), theDomain(&theDom)
+MaxNodeDispRecorder::MaxNodeDispRecorder (int theDof,
+                                          const ID & nodes, Domain & theDom):
+Recorder (RECORDER_TAGS_MaxNodeDispRecorder),
+theNodes (nodes),
+maxDisp (nodes.Size ()),
+dof (theDof),
+theDomain (&theDom)
 {
-    if (dof < 0) dof = 0;
+    if (dof < 0)
+        dof = 0;
 }
 
-MaxNodeDispRecorder::~MaxNodeDispRecorder()
+MaxNodeDispRecorder::~MaxNodeDispRecorder ()
 {
-    
+
 }
 
-int 
-MaxNodeDispRecorder::record(int commitTag, double timeStamp)
+int
+MaxNodeDispRecorder::record (int commitTag, double timeStamp)
 {
-    for (int i=0; i<theNodes.Size(); i++) {
-	Node *theNode = theDomain->getNode(theNodes(i));
-	if (theNode != 0) {
-	    const Vector &theDisp = theNode->getTrialDisp();
-	    if (theDisp.Size() > dof) {
-		double disp = theDisp(dof);
-		if (disp > 0 && disp > maxDisp(i))
-		    maxDisp(i) = disp;
-		else if (disp < 0 && -disp > maxDisp(i))
-		    maxDisp(i) = -disp;
-	    }
-	}
-    }
+    for (int i = 0; i < theNodes.Size (); i++)
+      {
+          Node *theNode = theDomain->getNode (theNodes (i));
+          if (theNode != 0)
+            {
+                const Vector & theDisp = theNode->getTrialDisp ();
+                if (theDisp.Size () > dof)
+                  {
+                      double disp = theDisp (dof);
+                      if (disp > 0 && disp > maxDisp (i))
+                          maxDisp (i) = disp;
+                      else if (disp < 0 && -disp > maxDisp (i))
+                          maxDisp (i) = -disp;
+                  }
+            }
+      }
     return 0;
 }
 
 
-int 
-MaxNodeDispRecorder::playback(int commitTag)
+int
+MaxNodeDispRecorder::playback (int commitTag)
 {
     opserr << "Max Recorded Displacement: " << maxDisp << endln;
     return 0;
@@ -85,9 +91,8 @@ MaxNodeDispRecorder::playback(int commitTag)
 
 
 int
-MaxNodeDispRecorder::restart(void)
+MaxNodeDispRecorder::restart (void)
 {
-    maxDisp.Zero();
+    maxDisp.Zero ();
     return 0;
 }
-

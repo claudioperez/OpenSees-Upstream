@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:01:24 $
 // $Source: /usr/local/cvs/OpenSees/SRC/handler/ConsoleErrorHandler.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/handler/ConsoleErrorHandler.C
 //
 // Written: fmk 
@@ -36,33 +36,32 @@
 #include "ConsoleErrorHandler.h"
 #include <stdlib.h>
 
-ConsoleErrorHandler::ConsoleErrorHandler()
-  :ErrorHandler()
+ConsoleErrorHandler::ConsoleErrorHandler ():ErrorHandler ()
 {
 
 }
 
-ConsoleErrorHandler::~ConsoleErrorHandler()
+ConsoleErrorHandler::~ConsoleErrorHandler ()
 {
     // does nothing
 }
- 
 
-void 
-ConsoleErrorHandler::warning(const char *msg, ...)
-{
-  va_list args;
-  va_start(args, msg);
-  this->outputMessage(std::cerr, msg, args);
-  va_end(args);
-}  
 
-void 
-ConsoleErrorHandler::fatal(const char *msg, ...)
+void
+ConsoleErrorHandler::warning (const char *msg, ...)
 {
-  va_list args;
-  va_start(args, msg);
-  this->outputMessage(std::cerr, msg, args);
-  va_end(args);
-  exit(-1);
+    va_list args;
+    va_start (args, msg);
+    this->outputMessage (std::cerr, msg, args);
+    va_end (args);
+}
+
+void
+ConsoleErrorHandler::fatal (const char *msg, ...)
+{
+    va_list args;
+    va_start (args, msg);
+    this->outputMessage (std::cerr, msg, args);
+    va_end (args);
+    exit (-1);
 }

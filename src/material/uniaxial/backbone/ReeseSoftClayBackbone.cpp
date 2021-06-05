@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2008-11-24 17:12:12 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/backbone/ReeseSoftClayBackbone.cpp,v $
@@ -34,150 +34,158 @@
 
 #include <math.h>
 
-ReeseSoftClayBackbone::ReeseSoftClayBackbone(int tag, double p, double y, double nn):
-  HystereticBackbone(tag,BACKBONE_TAG_ReeseSoftClay),
-  pu(p), y50(y), n(nn)
+ReeseSoftClayBackbone::ReeseSoftClayBackbone (int tag, double p, double y,
+                                              double nn):
+HystereticBackbone (tag, BACKBONE_TAG_ReeseSoftClay),
+pu (p),
+y50 (y),
+n (nn)
 {
 
 }
 
-ReeseSoftClayBackbone::ReeseSoftClayBackbone():
-  HystereticBackbone(0,BACKBONE_TAG_ReeseSoftClay),
-  pu(0.0), y50(0.0), n(0.0)
+ReeseSoftClayBackbone::ReeseSoftClayBackbone ():
+HystereticBackbone (0, BACKBONE_TAG_ReeseSoftClay),
+pu (0.0), y50 (0.0), n (0.0)
 {
-  
+
 }
 
-ReeseSoftClayBackbone::~ReeseSoftClayBackbone()
+ReeseSoftClayBackbone::~ReeseSoftClayBackbone ()
 {
-  
+
 }
 
 double
 ReeseSoftClayBackbone::getTangent (double strain)
 {
-  int signStrain = (strain > 0.0) ? 1 : -1;
-  strain = signStrain*strain;
+    int signStrain = (strain > 0.0) ? 1 : -1;
+    strain = signStrain * strain;
 
-  double exp = 1.0/n;
-  double fac = pow(2.0,n);
+    double exp = 1.0 / n;
+    double fac = pow (2.0, n);
 
-  double minStrain = 0.001*y50;
-  double tangent;
-  if (strain > fac*y50)
-    tangent = 0.001*pu/y50;
-  else if (strain > minStrain)
-    tangent = pu/(2*n*y50)*pow(y50/strain,1-exp);
-  else
-    tangent = pu*0.5*pow(0.001,exp)/minStrain;
+    double minStrain = 0.001 * y50;
+    double tangent;
+    if (strain > fac * y50)
+        tangent = 0.001 * pu / y50;
+    else if (strain > minStrain)
+        tangent = pu / (2 * n * y50) * pow (y50 / strain, 1 - exp);
+    else
+        tangent = pu * 0.5 * pow (0.001, exp) / minStrain;
 
-  return tangent;
+    return tangent;
 }
 
 double
 ReeseSoftClayBackbone::getStress (double strain)
 {
-  int signStrain = (strain > 0.0) ? 1 : -1;
-  strain = signStrain*strain;
+    int signStrain = (strain > 0.0) ? 1 : -1;
+    strain = signStrain * strain;
 
-  double exp = 1.0/n;
-  double fac = pow(2.0,n);
+    double exp = 1.0 / n;
+    double fac = pow (2.0, n);
 
-  double minStrain = 0.001*y50;
-  double stress;
-  if (strain > fac*y50)
-    stress = pu;
-  else if (strain > minStrain)
-    stress = pu*0.5*pow(strain/y50,exp);
-  else
-    stress = pu*0.5*pow(0.001,exp)/minStrain*strain;
+    double minStrain = 0.001 * y50;
+    double stress;
+    if (strain > fac * y50)
+        stress = pu;
+    else if (strain > minStrain)
+        stress = pu * 0.5 * pow (strain / y50, exp);
+    else
+        stress = pu * 0.5 * pow (0.001, exp) / minStrain * strain;
 
-  return signStrain*stress;
+    return signStrain * stress;
 }
 
 double
 ReeseSoftClayBackbone::getEnergy (double strain)
 {
-  return 0.0;
+    return 0.0;
 }
 
 double
-ReeseSoftClayBackbone::getYieldStrain(void)
+ReeseSoftClayBackbone::getYieldStrain (void)
 {
-  return 0.0;
+    return 0.0;
 }
 
-HystereticBackbone*
-ReeseSoftClayBackbone::getCopy(void)
+HystereticBackbone *
+ReeseSoftClayBackbone::getCopy (void)
 {
-  ReeseSoftClayBackbone *theCopy =
-    new ReeseSoftClayBackbone (this->getTag(), pu, y50, n);
-  
-  return theCopy;
+    ReeseSoftClayBackbone *theCopy =
+        new ReeseSoftClayBackbone (this->getTag (), pu, y50, n);
+
+    return theCopy;
 }
 
 void
-ReeseSoftClayBackbone::Print(OPS_Stream &s, int flag)
+ReeseSoftClayBackbone::Print (OPS_Stream & s, int flag)
 {
-  s << "ReeseSoftClayBackbone, tag: " << this->getTag() << endln;
-  s << "\tpu: " << pu << endln;
-  s << "\ty50: " << y50 << endln;
-  s << "\tn: " << n << endln;
+    s << "ReeseSoftClayBackbone, tag: " << this->getTag () << endln;
+    s << "\tpu: " << pu << endln;
+    s << "\ty50: " << y50 << endln;
+    s << "\tn: " << n << endln;
 }
 
 int
 ReeseSoftClayBackbone::setVariable (char *argv)
 {
-  return -1;
+    return -1;
 }
 
 int
 ReeseSoftClayBackbone::getVariable (int varID, double &theValue)
 {
-  return -1;
+    return -1;
 }
 
 int
-ReeseSoftClayBackbone::sendSelf(int commitTag, Channel &theChannel)
+ReeseSoftClayBackbone::sendSelf (int commitTag, Channel & theChannel)
 {
-  int res = 0;
-  
-  static Vector data(4);
-  
-  data(0) = this->getTag();
-  data(1) = pu;
-  data(2) = y50;
-  data(3) = n;
-  
-  res += theChannel.sendVector(this->getDbTag(), commitTag, data);
-  if (res < 0) {
-    opserr << "ReeseSoftClayBackbone::sendSelf -- could not send Vector" << endln;
+    int res = 0;
+
+    static Vector data (4);
+
+    data (0) = this->getTag ();
+    data (1) = pu;
+    data (2) = y50;
+    data (3) = n;
+
+    res += theChannel.sendVector (this->getDbTag (), commitTag, data);
+    if (res < 0)
+      {
+          opserr << "ReeseSoftClayBackbone::sendSelf -- could not send Vector"
+              << endln;
+
+          return res;
+      }
 
     return res;
-  }
-  
-  return res;
 }
 
 int
-ReeseSoftClayBackbone::recvSelf(int commitTag, Channel &theChannel, 
-			     FEM_ObjectBroker &theBroker)
+ReeseSoftClayBackbone::recvSelf (int commitTag, Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
 {
-  int res = 0;
-  
-  static Vector data(4);
-  
-  res += theChannel.recvVector(this->getDbTag(), commitTag, data);
-  if (res < 0) {
-    opserr << "ReeseSoftClayBackbone::recvSelf -- could not receive Vector" << endln;
+    int res = 0;
+
+    static Vector data (4);
+
+    res += theChannel.recvVector (this->getDbTag (), commitTag, data);
+    if (res < 0)
+      {
+          opserr <<
+              "ReeseSoftClayBackbone::recvSelf -- could not receive Vector" <<
+              endln;
+
+          return res;
+      }
+
+    this->setTag (int (data (0)));
+    pu = data (1);
+    y50 = data (2);
+    n = data (3);
 
     return res;
-  }
-  
-  this->setTag(int(data(0)));
-  pu = data(1);
-  y50 = data(2);
-  n = data(3);
-
-  return res;
 }

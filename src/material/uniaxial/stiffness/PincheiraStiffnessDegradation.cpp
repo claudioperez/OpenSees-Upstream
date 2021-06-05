@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $Source$
@@ -38,206 +38,227 @@
 #include <math.h>
 #include <float.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
+#ifdef OPS_API_COMMANDLINE
 void *
-OPS_PincheiraStiffnessDegradation(void)
+OPS_PincheiraStiffnessDegradation (void)
 {
-  StiffnessDegradation *theDegradation = 0;
+    StiffnessDegradation *theDegradation = 0;
 
-  if (OPS_GetNumRemainingInputArgs() < 3) {
-    opserr << "Invalid number of args, want: stiffnessDegradation Pincheira tag? alpha? beta? eta? nu?" << endln;
-    return 0;
-  }
+    if (OPS_GetNumRemainingInputArgs () < 3)
+      {
+          opserr <<
+              "Invalid number of args, want: stiffnessDegradation Pincheira tag? alpha? beta? eta? nu?"
+              << endln;
+          return 0;
+      }
 
-  int iData[1];
-  double dData[4];
-  
-  int numData = 1;
-  if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid tag for stiffnessDegradation Pincheira" << endln;
-    return 0;
-  }
+    int iData[1];
+    double dData[4];
 
-  numData = 4;
-  if (OPS_GetDoubleInput(&numData, dData) != 0) {
-    opserr << "WARNING invalid data for stiffnessDegradation Pincheira" << endln;
-    return 0;
-  }
+    int numData = 1;
+    if (OPS_GetIntInput (&numData, iData) != 0)
+      {
+          opserr << "WARNING invalid tag for stiffnessDegradation Pincheira"
+              << endln;
+          return 0;
+      }
 
-  theDegradation = new PincheiraStiffnessDegradation(iData[0], dData[0], dData[1], dData[2], dData[3]);
-  if (theDegradation == 0) {
-    opserr << "WARNING could not create PincheiraStiffnessDegradation\n";
-    return 0;
-  }
+    numData = 4;
+    if (OPS_GetDoubleInput (&numData, dData) != 0)
+      {
+          opserr << "WARNING invalid data for stiffnessDegradation Pincheira"
+              << endln;
+          return 0;
+      }
 
-  return theDegradation;
+    theDegradation =
+        new PincheiraStiffnessDegradation (iData[0], dData[0], dData[1],
+                                           dData[2], dData[3]);
+    if (theDegradation == 0)
+      {
+          opserr <<
+              "WARNING could not create PincheiraStiffnessDegradation\n";
+          return 0;
+      }
+
+    return theDegradation;
 }
+#endif
 
 PincheiraStiffnessDegradation::PincheiraStiffnessDegradation
-(int tag, double a, double b, double e, double n):
-  StiffnessDegradation(tag,DEG_TAG_STIFF_Pincheira),
-  isNegative(false), alpha(a), beta(b), eta(e), nu(n)
+    (int tag, double a, double b, double e, double n):
+StiffnessDegradation (tag, DEG_TAG_STIFF_Pincheira),
+isNegative (false), alpha (a), beta (b), eta (e),
+nu (n)
 {
-  this->revertToStart();
-  this->revertToLastCommit();
-}
- 
-PincheiraStiffnessDegradation::PincheiraStiffnessDegradation():
-  StiffnessDegradation(0,DEG_TAG_STIFF_Pincheira),
-  isNegative(false), alpha(0.0), beta(0.0), eta(0.0), nu(0.0)
-{
-
+    this->revertToStart ();
+    this->revertToLastCommit ();
 }
 
-PincheiraStiffnessDegradation::~PincheiraStiffnessDegradation()
+PincheiraStiffnessDegradation::PincheiraStiffnessDegradation ():
+StiffnessDegradation (0, DEG_TAG_STIFF_Pincheira),
+isNegative (false), alpha (0.0), beta (0.0), eta (0.0), nu (0.0)
 {
 
 }
 
-const char*
-PincheiraStiffnessDegradation::getMeasure(void)
+PincheiraStiffnessDegradation::~PincheiraStiffnessDegradation ()
 {
-  if (!isNegative)
-    return "negDuctility";
-  else
-    return "posDuctility";
+
+}
+
+const char *
+PincheiraStiffnessDegradation::getMeasure (void)
+{
+    if (!isNegative)
+        return "negDuctility";
+    else
+        return "posDuctility";
 }
 
 int
-PincheiraStiffnessDegradation::setTrialMeasure(double measure)
+PincheiraStiffnessDegradation::setTrialMeasure (double measure)
 {
-  Tductility = measure;
-  
-  return 0;
+    Tductility = measure;
+
+    return 0;
 }
 
 double
-PincheiraStiffnessDegradation::getValue(void)
+PincheiraStiffnessDegradation::getValue (void)
 {
-  TmaxDuctility = CmaxDuctility;
-  TnumCycles = CnumCycles;
-  TcycleFlag = CcycleFlag;
+    TmaxDuctility = CmaxDuctility;
+    TnumCycles = CnumCycles;
+    TcycleFlag = CcycleFlag;
 
-  if (Tductility > CmaxDuctility) {
-    TmaxDuctility = Tductility;
-    TcycleFlag = false;
-    TnumCycles = 0;
-    return 1.0 + beta*(Tductility-alpha);
-  }
-  else if (Tductility > alpha) {
-    TcycleFlag = true;
-    TnumCycles++;
-    return 1.0 + eta*pow(nu,TnumCycles-1)*(Tductility-alpha);
-    //TnumCycles = 1;
-    //return 1.0;
-  }
-  else
-    return 1.0;
+    if (Tductility > CmaxDuctility)
+      {
+          TmaxDuctility = Tductility;
+          TcycleFlag = false;
+          TnumCycles = 0;
+          return 1.0 + beta * (Tductility - alpha);
+      }
+    else if (Tductility > alpha)
+      {
+          TcycleFlag = true;
+          TnumCycles++;
+          return 1.0 + eta * pow (nu, TnumCycles - 1) * (Tductility - alpha);
+          //TnumCycles = 1;
+          //return 1.0;
+      }
+    else
+        return 1.0;
 }
 
 void
-PincheiraStiffnessDegradation::setNegative(bool flag)
+PincheiraStiffnessDegradation::setNegative (bool flag)
 {
-  isNegative = flag;
+    isNegative = flag;
 }
 
 int
-PincheiraStiffnessDegradation::commitState(void)
+PincheiraStiffnessDegradation::commitState (void)
 {
-  CmaxDuctility = TmaxDuctility;
-  CnumCycles = TnumCycles;
-  CcycleFlag = TcycleFlag;
+    CmaxDuctility = TmaxDuctility;
+    CnumCycles = TnumCycles;
+    CcycleFlag = TcycleFlag;
 
-  //opserr << Tductility << ' ' << CmaxDuctility << ' ' << CnumCycles << endln;
+    //opserr << Tductility << ' ' << CmaxDuctility << ' ' << CnumCycles << endln;
 
-  return 0;
-}
- 
-int
-PincheiraStiffnessDegradation::revertToLastCommit(void)
-{
-  TmaxDuctility = CmaxDuctility;
-  TnumCycles = CnumCycles;
-  TcycleFlag = CcycleFlag;
-
-  return 0;
+    return 0;
 }
 
 int
-PincheiraStiffnessDegradation::revertToStart(void)
+PincheiraStiffnessDegradation::revertToLastCommit (void)
 {
-  CmaxDuctility = alpha;
-  CnumCycles = 0;
-  CcycleFlag = false;
-  
-  return 0;
-}
+    TmaxDuctility = CmaxDuctility;
+    TnumCycles = CnumCycles;
+    TcycleFlag = CcycleFlag;
 
-StiffnessDegradation*
-PincheiraStiffnessDegradation::getCopy(void)
-{
-  PincheiraStiffnessDegradation *theCopy =
-    new PincheiraStiffnessDegradation (this->getTag(), alpha, beta, eta, nu);
-
-  theCopy->CmaxDuctility = CmaxDuctility;
-  theCopy->CnumCycles = CnumCycles;
-  theCopy->CcycleFlag = CcycleFlag;
-  
-  return theCopy;
+    return 0;
 }
 
 int
-PincheiraStiffnessDegradation::sendSelf(int commitTag, Channel &theChannel)
+PincheiraStiffnessDegradation::revertToStart (void)
 {
-  static Vector data(7);
-  
-  data(0) = this->getTag();
-  data(1) = alpha;
-  data(2) = beta;
-  data(3) = eta;
-  data(4) = nu;
-  data(5) = CmaxDuctility;
-  data(6) = (isNegative) ? -1.0 : 1.0;
-  
-  int res = theChannel.sendVector(this->getDbTag(), commitTag, data);
-  
-  if (res < 0) 
-    opserr << "PincheiraStiffnessDegradation::sendSelf() - failed to send data\n";
-  
-  return res;
+    CmaxDuctility = alpha;
+    CnumCycles = 0;
+    CcycleFlag = false;
+
+    return 0;
+}
+
+StiffnessDegradation *
+PincheiraStiffnessDegradation::getCopy (void)
+{
+    PincheiraStiffnessDegradation *theCopy =
+        new PincheiraStiffnessDegradation (this->getTag (), alpha, beta, eta,
+                                           nu);
+
+    theCopy->CmaxDuctility = CmaxDuctility;
+    theCopy->CnumCycles = CnumCycles;
+    theCopy->CcycleFlag = CcycleFlag;
+
+    return theCopy;
 }
 
 int
-PincheiraStiffnessDegradation::recvSelf(int commitTag, Channel &theChannel, 
-					FEM_ObjectBroker &theBroker)
+PincheiraStiffnessDegradation::sendSelf (int commitTag, Channel & theChannel)
 {
-  static Vector data(7);
-  int res = theChannel.recvVector(this->getDbTag(), commitTag, data);
-  
-  if (res < 0) {
-    opserr << "DuctilityStiffnessDegradation::recvSelf() - failed to receive data\n";
-    this->setTag(0);      
-  }
-  else {
-    this->setTag(int(data(0)));
-    alpha = data(1);
-    beta = data(2);
-    eta = data(3);
-    nu = data(4);
-    CmaxDuctility = data(5);
-    isNegative = (data(6) < 0.0) ? true : false;
-  }
-  
-  return res;
+    static Vector data (7);
+
+    data (0) = this->getTag ();
+    data (1) = alpha;
+    data (2) = beta;
+    data (3) = eta;
+    data (4) = nu;
+    data (5) = CmaxDuctility;
+    data (6) = (isNegative) ? -1.0 : 1.0;
+
+    int res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+
+    if (res < 0)
+        opserr <<
+            "PincheiraStiffnessDegradation::sendSelf() - failed to send data\n";
+
+    return res;
+}
+
+int
+PincheiraStiffnessDegradation::recvSelf (int commitTag, Channel & theChannel,
+                                         FEM_ObjectBroker & theBroker)
+{
+    static Vector data (7);
+    int res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+
+    if (res < 0)
+      {
+          opserr <<
+              "DuctilityStiffnessDegradation::recvSelf() - failed to receive data\n";
+          this->setTag (0);
+      }
+    else
+      {
+          this->setTag (int (data (0)));
+          alpha = data (1);
+          beta = data (2);
+          eta = data (3);
+          nu = data (4);
+          CmaxDuctility = data (5);
+          isNegative = (data (6) < 0.0) ? true : false;
+      }
+
+    return res;
 }
 
 void
-PincheiraStiffnessDegradation::Print(OPS_Stream &s, int flag)
+PincheiraStiffnessDegradation::Print (OPS_Stream & s, int flag)
 {
-  s << "PincheiraStiffnessDegradation, tag: " << this->getTag() << endln;
-  s << "\talpha: " << alpha << endln;
-  s << "\tbeta: " << beta << endln;
-  s << "\teta: " << eta << endln;
-  s << "\tnu: " << nu << endln;
+    s << "PincheiraStiffnessDegradation, tag: " << this->getTag () << endln;
+    s << "\talpha: " << alpha << endln;
+    s << "\tbeta: " << beta << endln;
+    s << "\teta: " << eta << endln;
+    s << "\tnu: " << nu << endln;
 }

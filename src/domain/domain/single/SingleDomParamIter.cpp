@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2006-12-13 18:17:37 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/single/SingleDomParamIter.cpp,v $
@@ -34,38 +34,37 @@
 
 
 // SingleDomParamIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SingleDomParamIter::SingleDomParamIter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+SingleDomParamIter::SingleDomParamIter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 }
 
 
-SingleDomParamIter::~SingleDomParamIter()
+SingleDomParamIter::~SingleDomParamIter ()
 {
-}    
+}
 
 void
-SingleDomParamIter::reset(void)
+SingleDomParamIter::reset (void)
 {
-    myIter.reset();
-}    
+    myIter.reset ();
+}
 
 
 Parameter *
-SingleDomParamIter::operator()(void)
+SingleDomParamIter::operator () (void)
 {
     // check if we still have parameters in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	Parameter *result = (Parameter *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          Parameter *result = (Parameter *) theComponent;
+          return result;
+      }
 }
-
-    
-    

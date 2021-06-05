@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:15 $
 // $Source: /usr/local/cvs/OpenSees/SRC/actor/address/ChannelAddress.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/actor/ChannelAddress.h
 //
 // Written: fmk 11/95
@@ -38,18 +38,17 @@
 
 
 
-ChannelAddress::ChannelAddress(int type)
-:theType(type)
+ChannelAddress::ChannelAddress (int type):
+theType (type)
 {
 }
 
-ChannelAddress::~ChannelAddress()
+ChannelAddress::~ChannelAddress ()
 {
 }
 
 int
-ChannelAddress::getType(void) const
+ChannelAddress::getType (void) const
 {
     return theType;
 }
-

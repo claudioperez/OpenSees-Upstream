@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2005-11-28 22:07:24 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/model/FE_EleIter.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: 10/05
 // Revision: A
@@ -35,38 +35,37 @@
 
 
 // FE_EleIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-FE_EleIter::FE_EleIter(TaggedObjectStorage *theStorage)
-  :myIter(&(theStorage->getComponents()))
+FE_EleIter::FE_EleIter (TaggedObjectStorage * theStorage):myIter (&
+        (theStorage->
+         getComponents ()))
 {
 }
 
 
-FE_EleIter::~FE_EleIter()
+FE_EleIter::~FE_EleIter ()
 {
-}    
+}
 
 void
-FE_EleIter::reset(void)
+FE_EleIter::reset (void)
 {
-    myIter->reset();
-}    
+    myIter->reset ();
+}
 
 
 FE_Element *
-FE_EleIter::operator()(void)
+FE_EleIter::operator () (void)
 {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = (*myIter)();
+    TaggedObject * theComponent = (*myIter) ();
     if (theComponent == 0)
-	return 0;
-    else {
-	FE_Element *result = (FE_Element *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          FE_Element *result = (FE_Element *) theComponent;
+          return result;
+      }
 }
-
-    
-    

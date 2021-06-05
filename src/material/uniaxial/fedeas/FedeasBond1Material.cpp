@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2004-07-15 21:36:46 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/fedeas/FedeasBond1Material.cpp,v $
-                                                                      
+
 // Written: MHS
 // Created: Jan 2001
 //
@@ -33,83 +33,87 @@
 
 #include <FedeasBond1Material.h>
 
-FedeasBond1Material::FedeasBond1Material(int tag,
-	double u1p, double q1p, double u2p, double u3p, double q3p,
-	double u1n, double q1n, double u2n, double u3n, double q3n,
-	double s0, double bb):
+FedeasBond1Material::FedeasBond1Material (int tag,
+                                          double u1p, double q1p, double u2p,
+                                          double u3p, double q3p, double u1n,
+                                          double q1n, double u2n, double u3n,
+                                          double q3n, double s0, double bb):
 // 6 history variables and 12 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasBond1, 6, 12)
+FedeasMaterial (tag, MAT_TAG_FedeasBond1, 6, 12)
 {
-  // Fill in material parameters
-  data[0]  = u1p;
-  data[1]  = q1p;
-  data[2]  = u2p;
-  data[3]  = u3p;
-  data[4]  = q3p;
-  data[5]  = u1n;
-  data[6]  = q1n;
-  data[7]  = u2n;
-  data[8]  = u3n;
-  data[9]  = q3n;
-  data[10] = s0;
-  data[11] = bb;
-  
-  tangent =  q1p/u1p;
-  tangentP = tangent;
+    // Fill in material parameters
+    data[0] = u1p;
+    data[1] = q1p;
+    data[2] = u2p;
+    data[3] = u3p;
+    data[4] = q3p;
+    data[5] = u1n;
+    data[6] = q1n;
+    data[7] = u2n;
+    data[8] = u3n;
+    data[9] = q3n;
+    data[10] = s0;
+    data[11] = bb;
+
+    tangent = q1p / u1p;
+    tangentP = tangent;
 }
 
-FedeasBond1Material::FedeasBond1Material(int tag, const Vector &d):
+FedeasBond1Material::FedeasBond1Material (int tag, const Vector & d):
 // 6 history variables and 12 material parameters
-FedeasMaterial(tag, MAT_TAG_FedeasBond1, 6, 12)
+FedeasMaterial (tag, MAT_TAG_FedeasBond1, 6, 12)
 {
-  if (d.Size() != numData) {
-    opserr << "FedeasBond1Material::FedeasBond1Material -- not enough input arguments\n";
-    exit(-1);
-  }
-		
-  for (int i = 0; i < numData; i++)
-    data[i] = d(i);
+    if (d.Size () != numData)
+      {
+          opserr <<
+              "FedeasBond1Material::FedeasBond1Material -- not enough input arguments\n";
+          exit (-1);
+      }
 
-  tangent =  data[1]/data[0];
-  tangentP = tangent;
+    for (int i = 0; i < numData; i++)
+        data[i] = d (i);
+
+    tangent = data[1] / data[0];
+    tangentP = tangent;
 }
 
-FedeasBond1Material::FedeasBond1Material(void):
-FedeasMaterial(0, MAT_TAG_FedeasBond1, 6, 12)
+FedeasBond1Material::FedeasBond1Material (void):
+FedeasMaterial (0, MAT_TAG_FedeasBond1, 6, 12)
 {
-	// Does nothing
+    // Does nothing
 }
 
-FedeasBond1Material::~FedeasBond1Material(void)
+FedeasBond1Material::~FedeasBond1Material (void)
 {
-	// Does nothing
+    // Does nothing
 }
 
-UniaxialMaterial*
-FedeasBond1Material::getCopy(void)
+UniaxialMaterial *
+FedeasBond1Material::getCopy (void)
 {
-  Vector d(data, numData);
+    Vector d (data, numData);
 
-  FedeasBond1Material *theCopy = new FedeasBond1Material(this->getTag(), d);
-  
-  // Copy history variables
-  for (int i = 0; i < 2*numHstv; i++)
-    theCopy->hstv[i] = hstv[i];
-  
-  theCopy->epsilonP = epsilonP;
-  theCopy->sigmaP   = sigmaP;
-  theCopy->tangentP = tangentP;
+    FedeasBond1Material *theCopy =
+        new FedeasBond1Material (this->getTag (), d);
 
-  theCopy->epsilon = epsilonP;
-  theCopy->sigma = sigmaP;
-  theCopy->tangent = tangentP;  
-  
-  return theCopy;
+    // Copy history variables
+    for (int i = 0; i < 2 * numHstv; i++)
+        theCopy->hstv[i] = hstv[i];
+
+    theCopy->epsilonP = epsilonP;
+    theCopy->sigmaP = sigmaP;
+    theCopy->tangentP = tangentP;
+
+    theCopy->epsilon = epsilonP;
+    theCopy->sigma = sigmaP;
+    theCopy->tangent = tangentP;
+
+    return theCopy;
 }
 
 double
-FedeasBond1Material::getInitialTangent(void)
+FedeasBond1Material::getInitialTangent (void)
 {
-  //return q1p/u1p;
-  return data[1]/data[0];
+    //return q1p/u1p;
+    return data[1] / data[0];
 }

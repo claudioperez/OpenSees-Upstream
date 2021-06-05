@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.4 $
 // $Date: 2010-04-23 22:47:42 $
 // $Source: /usr/local/cvs/OpenSees/SRC/recorder/Recorder.cpp,v $
-                                                                        
+
 
 // Written: fmk 
 // Created: 11/98
@@ -34,54 +34,56 @@
 #include <Recorder.h>
 #include <OPS_Globals.h>
 
-int Recorder::lastRecorderTag(0);
+int
+Recorder::lastRecorderTag (0);
 
-Recorder::Recorder(int classTag)
-  :MovableObject(classTag), TaggedObject(lastRecorderTag)
+Recorder::Recorder (int classTag):
+MovableObject (classTag),
+TaggedObject (lastRecorderTag)
 {
-  lastRecorderTag++;
+    lastRecorderTag++;
 }
 
-Recorder::~Recorder() 
+Recorder::~Recorder ()
 {
 
 }
 
-int 
-Recorder::restart(void)
+int
+Recorder::restart (void)
 {
-  return 0;
+    return 0;
 }
 
-int 
-Recorder::domainChanged(void)
+int
+Recorder::domainChanged (void)
 {
-  return 0;
+    return 0;
 }
 
-int 
-Recorder::setDomain(Domain &theDomain)
+int
+Recorder::setDomain (Domain & theDomain)
 {
-  return 0;
+    return 0;
 }
 
-int 
-Recorder::sendSelf(int commitTag, Channel &theChannel)
+int
+Recorder::sendSelf (int commitTag, Channel & theChannel)
 {
-  opserr << "Recorder::sendSelf() - not yet implemented\n";
-  return 0;
+    opserr << "Recorder::sendSelf() - not yet implemented\n";
+    return 0;
 }
 
-int 
-Recorder::recvSelf(int commitTag, Channel &theChannel, 
-		   FEM_ObjectBroker &theBroker)
+int
+Recorder::recvSelf (int commitTag, Channel & theChannel,
+                    FEM_ObjectBroker & theBroker)
 {
-  opserr << "Recorder::recvSelf() - not yet implemented\n";
-  return 0;
+    opserr << "Recorder::recvSelf() - not yet implemented\n";
+    return 0;
 }
 
 void
-Recorder::Print(OPS_Stream &s, int flag)
+Recorder::Print (OPS_Stream & s, int flag)
 {
-  return;
+    return;
 }

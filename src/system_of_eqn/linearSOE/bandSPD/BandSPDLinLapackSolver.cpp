@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2009-05-20 17:30:26 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/bandSPD/BandSPDLinLapackSolver.cpp,v $
-                                                                        
-                                                                        
+
+
 // Written: fmk 
 // Created: 11/96
 //
@@ -35,60 +35,60 @@
 //#include <f2c.h>
 #include <math.h>
 
-void* OPS_BandSPDLinLapack()
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_BandSPDLinLapack ()
 {
-    BandSPDLinSolver *theSolver = new BandSPDLinLapackSolver();
-    BandSPDLinSOE *theSOE = new BandSPDLinSOE(*theSolver);
+    BandSPDLinSolver *theSolver = new BandSPDLinLapackSolver ();
+    BandSPDLinSOE *theSOE = new BandSPDLinSOE (*theSolver);
     return theSOE;
 }
+#endif
 
-BandSPDLinLapackSolver::BandSPDLinLapackSolver()
-:BandSPDLinSolver(SOLVER_TAGS_BandSPDLinLapackSolver)
+BandSPDLinLapackSolver::BandSPDLinLapackSolver ():BandSPDLinSolver
+    (SOLVER_TAGS_BandSPDLinLapackSolver)
 {
-    
+
 }
 
-BandSPDLinLapackSolver::~BandSPDLinLapackSolver()
+BandSPDLinLapackSolver::~BandSPDLinLapackSolver ()
 {
-    
+
 }
 
 
 #ifdef _WIN32
-extern "C" int  DPBSV(char *UPLO,
-			      int *N, int *KD, int *NRHS, 
-			      double *A, int *LDA, double *B, int *LDB, 
-			      int *INFO);
+extern "C" int DPBSV (char *UPLO,
+                      int *N, int *KD, int *NRHS,
+                      double *A, int *LDA, double *B, int *LDB, int *INFO);
 
-extern "C" int  DPBTRS(char *UPLO,
-			       int *N, int *KD, int *NRHS, 
-			       double *A, int *LDA, double *B, int *LDB, 
-			       int *INFO);
+extern "C" int DPBTRS (char *UPLO,
+                       int *N, int *KD, int *NRHS,
+                       double *A, int *LDA, double *B, int *LDB, int *INFO);
 #else
 
-extern "C" int dpbsv_(char *UPLO, int *N, int *KD, int *NRHS, 
-		      double *A, int *LDA, double *B, int *LDB, 
-		      int *INFO);
+extern "C" int dpbsv_ (char *UPLO, int *N, int *KD, int *NRHS,
+                       double *A, int *LDA, double *B, int *LDB, int *INFO);
 
-extern "C" int dpbtrs_(char *UPLO, int *N, int *KD, int *NRHS, 
-		       double *A, int *LDA, double *B, int *LDB, 
-		       int *INFO);
+extern "C" int dpbtrs_ (char *UPLO, int *N, int *KD, int *NRHS,
+                        double *A, int *LDA, double *B, int *LDB, int *INFO);
 
 #endif
-		       
+
 
 int
-BandSPDLinLapackSolver::solve(void)
+BandSPDLinLapackSolver::solve (void)
 {
-    if (theSOE == 0) {
-	opserr << "WARNING BandSPDLinLapackSolver::solve(void)- ";
-	opserr << " No LinearSOE object has been set\n";
-	return -1;
-    }
+    if (theSOE == 0)
+      {
+          opserr << "WARNING BandSPDLinLapackSolver::solve(void)- ";
+          opserr << " No LinearSOE object has been set\n";
+          return -1;
+      }
 
     int n = theSOE->size;
-    int kd = theSOE->half_band -1;
-    int ldA = kd +1;
+    int kd = theSOE->half_band - 1;
+    int ldA = kd + 1;
     int nrhs = 1;
     int ldB = n;
     int info;
@@ -97,75 +97,81 @@ BandSPDLinLapackSolver::solve(void)
     double *Bptr = theSOE->B;
 
     // first copy B into X
-    for (int i=0; i<n; i++)
-	*(Xptr++) = *(Bptr++);
+    for (int i = 0; i < n; i++)
+        *(Xptr++) = *(Bptr++);
     Xptr = theSOE->X;
 
     // now solve AX = Y
 
-	
+
 
 #ifdef _WIN32
-    if (theSOE->factored == false) {
-	// factor and solve 	
-	unsigned int sizeC = 1;
-	DPBSV("U", &n,&kd,&nrhs,Aptr,&ldA,Xptr,&ldB,&info);	
+    if (theSOE->factored == false)
+      {
+          // factor and solve     
+          unsigned int sizeC = 1;
+          DPBSV ("U", &n, &kd, &nrhs, Aptr, &ldA, Xptr, &ldB, &info);
+      }
+    else
+      {
+          // solve only using factored matrix       
+          unsigned int sizeC = 1;
+          //DPBTRS("U", sizeC, &n,&kd,&nrhs,Aptr,&ldA,Xptr,&ldB,&info);   
+          DPBTRS ("U", &n, &kd, &nrhs, Aptr, &ldA, Xptr, &ldB, &info);
+      }
+#else
+    {
+        if (theSOE->factored == false)
+            dpbsv_ ("U", &n, &kd, &nrhs, Aptr, &ldA, Xptr, &ldB, &info);
+        else
+            dpbtrs_ ("U", &n, &kd, &nrhs, Aptr, &ldA, Xptr, &ldB, &info);
     }
-      else {
-	// solve only using factored matrix	  
-	unsigned int sizeC = 1;	
-	//DPBTRS("U", sizeC, &n,&kd,&nrhs,Aptr,&ldA,Xptr,&ldB,&info);	
-	DPBTRS("U", &n,&kd,&nrhs,Aptr,&ldA,Xptr,&ldB,&info);
-    }
-#else	
-    { if (theSOE->factored == false)          
-	dpbsv_("U",&n,&kd,&nrhs,Aptr,&ldA,Xptr,&ldB,&info);
-      else
-	dpbtrs_("U",&n,&kd,&nrhs,Aptr,&ldA,Xptr,&ldB,&info);
-    }
-#endif    
+#endif
 
     // check if successful
-    if (info != 0) {
-      if (info > 0) {
-	opserr << "WARNING BandSPDLinLapackSolver::solve() -";
-	opserr << "factorization failed, matrix singular U(i,i) = 0, i= " << info-1 << endln;
-	return -info+1;
-      } else {
-	opserr << "WARNING BandSPDLinLapackSolver::solve() - OpenSees code error\n";
-	return info;
-      }      
-    }
+    if (info != 0)
+      {
+          if (info > 0)
+            {
+                opserr << "WARNING BandSPDLinLapackSolver::solve() -";
+                opserr <<
+                    "factorization failed, matrix singular U(i,i) = 0, i= " <<
+                    info - 1 << endln;
+                return -info + 1;
+            }
+          else
+            {
+                opserr <<
+                    "WARNING BandSPDLinLapackSolver::solve() - OpenSees code error\n";
+                return info;
+            }
+      }
 
     theSOE->factored = true;
     return 0;
 }
-    
+
 
 
 int
-BandSPDLinLapackSolver::setSize()
+BandSPDLinLapackSolver::setSize ()
 {
-  // nothing to do    
-  return 0;
+    // nothing to do    
+    return 0;
 }
 
 int
-BandSPDLinLapackSolver::sendSelf(int cTag,
-				 Channel &theChannel)
+BandSPDLinLapackSolver::sendSelf (int cTag, Channel & theChannel)
 {
-  // nothing to do
-  return 0;
+    // nothing to do
+    return 0;
 }
 
 int
-BandSPDLinLapackSolver::recvSelf(int tag,
-				 Channel &theChannel, 
-				 FEM_ObjectBroker &theBroker)
+BandSPDLinLapackSolver::recvSelf (int tag,
+                                  Channel & theChannel,
+                                  FEM_ObjectBroker & theBroker)
 {
-  // nothing to do
-  return 0;
+    // nothing to do
+    return 0;
 }
-
-
-

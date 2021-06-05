@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:19 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/load/NodalLoadIter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/loadcase/NodalLoadIter.C
 //
 // Written: fmk 
@@ -41,36 +41,37 @@
 
 
 // NodalLoadIter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-NodalLoadIter::NodalLoadIter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+NodalLoadIter::NodalLoadIter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 }
 
 
-NodalLoadIter::~NodalLoadIter()
+NodalLoadIter::~NodalLoadIter ()
 {
-}    
+}
 
 void
-NodalLoadIter::reset(void)
+NodalLoadIter::reset (void)
 {
-    myIter.reset();
-}    
+    myIter.reset ();
+}
 
 
 NodalLoad *
-NodalLoadIter::operator()(void)
+NodalLoadIter::operator () (void)
 {
     // check if we still have elements in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	NodalLoad *result = (NodalLoad *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          NodalLoad *result = (NodalLoad *) theComponent;
+          return result;
+      }
 }
-

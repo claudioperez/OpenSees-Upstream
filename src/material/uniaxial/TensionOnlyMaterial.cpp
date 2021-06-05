@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.6 $
 // $Date: 2010-09-11 00:50:53 $
 // $Source: /usr/local/cvs/OpenSees/SRC/material/uniaxial/TensionOnlyMaterial.cpp,v $
@@ -39,354 +39,411 @@
 
 #include <OPS_Globals.h>
 
-#include <elementAPI.h>
-#define OPS_Export 
+// #include <elementAPI.h> // cmp
+#define OPS_Export
 
-OPS_Export void *
-OPS_TensionOnlyMaterial(void)
+OPS_Export
+#ifdef OPS_API_COMMANDLINE
+void *
+OPS_TensionOnlyMaterial (void)
 {
-  // Pointer to a uniaxial material that will be returned
-  UniaxialMaterial *theMaterial = 0;
-  UniaxialMaterial *theOtherMaterial = 0;
-  double minStrain = -1.0e16;
-  double maxStrain = 1.0e16;
-  int    iData[2];
+    // Pointer to a uniaxial material that will be returned
+    UniaxialMaterial *theMaterial = 0;
+    UniaxialMaterial *theOtherMaterial = 0;
+    double minStrain = -1.0e16;
+    double maxStrain = 1.0e16;
+    int iData[2];
 
-  int argc = OPS_GetNumRemainingInputArgs();
-  if (argc < 2) {
-    opserr << "WARNING invalid uniaxialMaterial TensionOnly $tag $otherTag <-min $minStrain> <-max $maxStrain>" << endln;
-    return 0;
-  }
-
-  int numData = 2;
-  if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid uniaxialMaterial TensionOnly $tag $otherTag" << endln;
-    return 0;
-  }
-
-  theOtherMaterial = OPS_GetUniaxialMaterial(iData[1]);
-  if (theOtherMaterial == 0) {
-    opserr << "WARNING invalid otherTag uniaxialMaterial TensionOnly tag: " << iData[0] << endln;
-    return 0;	
-  }
-
-  argc = OPS_GetNumRemainingInputArgs();  
-  while (argc > 1) {
-    //char argvLoc[10];
-    const char *argvLoc = OPS_GetString();
-    /*    if (OPS_GetString(argvLoc, 10) != 0) {
-      opserr << "WARNING invalid string option uniaxialMaterial TensionOnly tag: " << iData[0] << endln;
-      return 0;
-    }
-    */
-    numData = 1;
-
-    if ((strcmp(argvLoc, "-min") == 0) || (strcmp(argvLoc, "-Min") == 0) || (strcmp(argvLoc, "-MIN") == 0)) {
-      if (OPS_GetDouble(&numData, &minStrain) != 0) {      
-	opserr << "WARNING invalid min value  uniaxialMaterial TensionOnly tag: " << iData[0] << endln;	
-	return 0;
+    int argc = OPS_GetNumRemainingInputArgs ();
+    if (argc < 2)
+      {
+          opserr <<
+              "WARNING invalid uniaxialMaterial TensionOnly $tag $otherTag <-min $minStrain> <-max $maxStrain>"
+              << endln;
+          return 0;
       }
-    } else if ((strcmp(argvLoc, "-max") == 0) || (strcmp(argvLoc, "-Max") == 0) || (strcmp(argvLoc, "-MAX") == 0)) {
-      if (OPS_GetDouble(&numData, &maxStrain) != 0) {      
-	opserr << "WARNING invalid min value  uniaxialMaterial TensionOnly tag: " << iData[0] << endln;  
-	return 0;
+
+    int numData = 2;
+    if (OPS_GetIntInput (&numData, iData) != 0)
+      {
+          opserr <<
+              "WARNING invalid uniaxialMaterial TensionOnly $tag $otherTag" <<
+              endln;
+          return 0;
       }
-    } else {
-      opserr << "WARNING invalid option:" << argvLoc << " uniaxialMaterial TensionOnly tag: " << iData[0] << endln;  
-      return 0;
-    }
-    
-    argc = OPS_GetNumRemainingInputArgs();
-  }
 
-  // Parsing was successful, allocate the material
-  theMaterial = new TensionOnlyMaterial(iData[0], *theOtherMaterial);
+    theOtherMaterial = OPS_GetUniaxialMaterial (iData[1]);
+    if (theOtherMaterial == 0)
+      {
+          opserr <<
+              "WARNING invalid otherTag uniaxialMaterial TensionOnly tag: " <<
+              iData[0] << endln;
+          return 0;
+      }
 
-  if (theMaterial == 0) {
-    opserr << "WARNING could not create uniaxialMaterial of type TensionOnlyMaterial\n";
-    return 0;
-  }
+    argc = OPS_GetNumRemainingInputArgs ();
+    while (argc > 1)
+      {
+          //char argvLoc[10];
+          const char *argvLoc = OPS_GetString ();
+          /*    if (OPS_GetString(argvLoc, 10) != 0) {
+             opserr << "WARNING invalid string option uniaxialMaterial TensionOnly tag: " << iData[0] << endln;
+             return 0;
+             }
+           */
+          numData = 1;
 
-  return theMaterial;
+          if ((strcmp (argvLoc, "-min") == 0)
+              || (strcmp (argvLoc, "-Min") == 0)
+              || (strcmp (argvLoc, "-MIN") == 0))
+            {
+                if (OPS_GetDouble (&numData, &minStrain) != 0)
+                  {
+                      opserr <<
+                          "WARNING invalid min value  uniaxialMaterial TensionOnly tag: "
+                          << iData[0] << endln;
+                      return 0;
+                  }
+            }
+          else if ((strcmp (argvLoc, "-max") == 0)
+                   || (strcmp (argvLoc, "-Max") == 0)
+                   || (strcmp (argvLoc, "-MAX") == 0))
+            {
+                if (OPS_GetDouble (&numData, &maxStrain) != 0)
+                  {
+                      opserr <<
+                          "WARNING invalid min value  uniaxialMaterial TensionOnly tag: "
+                          << iData[0] << endln;
+                      return 0;
+                  }
+            }
+          else
+            {
+                opserr << "WARNING invalid option:" << argvLoc <<
+                    " uniaxialMaterial TensionOnly tag: " << iData[0] <<
+                    endln;
+                return 0;
+            }
+
+          argc = OPS_GetNumRemainingInputArgs ();
+      }
+
+    // Parsing was successful, allocate the material
+    theMaterial = new TensionOnlyMaterial (iData[0], *theOtherMaterial);
+
+    if (theMaterial == 0)
+      {
+          opserr <<
+              "WARNING could not create uniaxialMaterial of type TensionOnlyMaterial\n";
+          return 0;
+      }
+
+    return theMaterial;
+}
+#endif
+
+TensionOnlyMaterial::TensionOnlyMaterial (int tag,
+                                          UniaxialMaterial & material):
+UniaxialMaterial (tag, MAT_TAG_TensionOnly),
+theMaterial (0)
+{
+    theMaterial = material.getCopy ();
+
+    if (theMaterial == 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::TensionOnlyMaterial -- failed to get copy of material\n";
+          exit (-1);
+      }
 }
 
-TensionOnlyMaterial::TensionOnlyMaterial(int tag, UniaxialMaterial &material)
-  :UniaxialMaterial(tag,MAT_TAG_TensionOnly), theMaterial(0)
-{
-  theMaterial = material.getCopy();
-
-  if (theMaterial == 0) {
-    opserr <<  "TensionOnlyMaterial::TensionOnlyMaterial -- failed to get copy of material\n";
-    exit(-1);
-  }
-}
-
-TensionOnlyMaterial::TensionOnlyMaterial()
-  :UniaxialMaterial(0,MAT_TAG_TensionOnly), theMaterial(0)
+TensionOnlyMaterial::TensionOnlyMaterial ():UniaxialMaterial (0, MAT_TAG_TensionOnly),
+theMaterial (0)
 {
 
 }
 
-TensionOnlyMaterial::~TensionOnlyMaterial()
+TensionOnlyMaterial::~TensionOnlyMaterial ()
 {
-  if (theMaterial)
-    delete theMaterial;
+    if (theMaterial)
+        delete theMaterial;
 }
 
-int 
-TensionOnlyMaterial::setTrialStrain(double strain, double strainRate)
+int
+TensionOnlyMaterial::setTrialStrain (double strain, double strainRate)
 {
-  return theMaterial->setTrialStrain(strain, strainRate);
-}
-
-
-int 
-TensionOnlyMaterial::setTrialStrain(double strain, double temp, double strainRate)
-{
-  return theMaterial->setTrialStrain(strain, temp, strainRate);
+    return theMaterial->setTrialStrain (strain, strainRate);
 }
 
 
-double 
-TensionOnlyMaterial::getStress(void)
+int
+TensionOnlyMaterial::setTrialStrain (double strain, double temp,
+                                     double strainRate)
 {
-  double f = theMaterial->getStress();
-  if (f < 0.0)
-    return 0.0001*f;
-  else
-    return f;
+    return theMaterial->setTrialStrain (strain, temp, strainRate);
 }
 
-double 
-TensionOnlyMaterial::getTangent(void)
+
+double
+TensionOnlyMaterial::getStress (void)
 {
-  double E = theMaterial->getTangent();
-  double f = theMaterial->getStress();
-  if (f < 0.0)
-    return 0.0001*E;
-  else
-    return E;
+    double f = theMaterial->getStress ();
+    if (f < 0.0)
+        return 0.0001 * f;
+    else
+        return f;
 }
 
-double 
-TensionOnlyMaterial::getDampTangent(void)
+double
+TensionOnlyMaterial::getTangent (void)
 {
-  double D = theMaterial->getDampTangent();
-  double f = theMaterial->getStress();
-  if (f < 0.0)
-    return 0.0001*D;
-  else
-    return D;
+    double E = theMaterial->getTangent ();
+    double f = theMaterial->getStress ();
+    if (f < 0.0)
+        return 0.0001 * E;
+    else
+        return E;
 }
 
-double 
-TensionOnlyMaterial::getStrain(void)
+double
+TensionOnlyMaterial::getDampTangent (void)
 {
-  return theMaterial->getStrain();
+    double D = theMaterial->getDampTangent ();
+    double f = theMaterial->getStress ();
+    if (f < 0.0)
+        return 0.0001 * D;
+    else
+        return D;
 }
 
-double 
-TensionOnlyMaterial::getStrainRate(void)
+double
+TensionOnlyMaterial::getStrain (void)
 {
-  return theMaterial->getStrainRate();
+    return theMaterial->getStrain ();
 }
 
-int 
-TensionOnlyMaterial::commitState(void)
+double
+TensionOnlyMaterial::getStrainRate (void)
 {
-  double f = theMaterial->getStress();
-  if (f >= 0.0)
-    return theMaterial->commitState();
-  else
-    return 0;
+    return theMaterial->getStrainRate ();
 }
 
-int 
-TensionOnlyMaterial::revertToLastCommit(void)
+int
+TensionOnlyMaterial::commitState (void)
 {
-  return theMaterial->revertToLastCommit();
+    double f = theMaterial->getStress ();
+    if (f >= 0.0)
+        return theMaterial->commitState ();
+    else
+        return 0;
 }
 
-int 
-TensionOnlyMaterial::revertToStart(void)
+int
+TensionOnlyMaterial::revertToLastCommit (void)
 {
-  return theMaterial->revertToStart();
+    return theMaterial->revertToLastCommit ();
+}
+
+int
+TensionOnlyMaterial::revertToStart (void)
+{
+    return theMaterial->revertToStart ();
 }
 
 UniaxialMaterial *
-TensionOnlyMaterial::getCopy(void)
+TensionOnlyMaterial::getCopy (void)
 {
-  TensionOnlyMaterial *theCopy = 
-    new TensionOnlyMaterial(this->getTag(), *theMaterial);
-        
-  return theCopy;
-}
+    TensionOnlyMaterial *theCopy =
+        new TensionOnlyMaterial (this->getTag (), *theMaterial);
 
-int 
-TensionOnlyMaterial::sendSelf(int cTag, Channel &theChannel)
-{
-  int dbTag = this->getDbTag();
-
-  static ID dataID(3);
-  dataID(0) = this->getTag();
-  dataID(1) = theMaterial->getClassTag();
-  int matDbTag = theMaterial->getDbTag();
-  if ( matDbTag == 0) {
-    matDbTag = theChannel.getDbTag();
-    theMaterial->setDbTag(matDbTag);
-  }
-  dataID(2) = matDbTag;
-  if (theChannel.sendID(dbTag, cTag, dataID) < 0) {
-    opserr << "TensionOnlyMaterial::sendSelf() - failed to send the ID\n";
-    return -1;
-  }
-
-  static Vector dataVec(3);
-  dataVec(0) = 0.0;//minStrain;
-  dataVec(1) = 0.0;//maxStrain;
-  /*
-  if (Cfailed == true)
-    dataVec(2) = 1.0;
-  else
-    dataVec(2) = 0.0;
-  */
-  
-  if (theChannel.sendVector(dbTag, cTag, dataVec) < 0) {
-    opserr << "TensionOnlyMaterial::sendSelf() - failed to send the Vector\n";
-    return -2;
-  }
-
-  if (theMaterial->sendSelf(cTag, theChannel) < 0) {
-    opserr << "TensionOnlyMaterial::sendSelf() - failed to send the Material\n";
-    return -3;
-  }
-
-  return 0;
-}
-
-int 
-TensionOnlyMaterial::recvSelf(int cTag, Channel &theChannel, 
-			 FEM_ObjectBroker &theBroker)
-{
-  int dbTag = this->getDbTag();
-
-  static ID dataID(3);
-  if (theChannel.recvID(dbTag, cTag, dataID) < 0) {
-    opserr << "TensionOnlyMaterial::recvSelf() - failed to get the ID\n";
-    return -1;
-  }
-  this->setTag(int(dataID(0)));
-
-  // as no way to change material, don't have to check classTag of the material 
-  if (theMaterial == 0) {
-    int matClassTag = int(dataID(1));
-    theMaterial = theBroker.getNewUniaxialMaterial(matClassTag);
-    if (theMaterial == 0) {
-      opserr << "TensionOnlyMaterial::recvSelf() - failed to create Material with classTag " 
-	   << dataID(0) << endln;
-      return -2;
-    }
-  }
-  theMaterial->setDbTag(dataID(2));
-
-  static Vector dataVec(3);
-  if (theChannel.recvVector(dbTag, cTag, dataVec) < 0) {
-    opserr << "TensionOnlyMaterial::recvSelf() - failed to get the Vector\n";
-    return -3;
-  }
-
-  /*
-  minStrain = dataVec(0);
-  maxStrain = dataVec(1);
-  
-  if (dataVec(2) == 1.0)
-    Cfailed = true;
-  else
-    Cfailed = false;
-
-  Tfailed = Cfailed;
-  */
-  
-  if (theMaterial->recvSelf(cTag, theChannel, theBroker) < 0) {
-    opserr << "TensionOnlyMaterial::recvSelf() - failed to get the Material\n";
-    return -4;
-  }
-  return 0;
-}
-
-void 
-TensionOnlyMaterial::Print(OPS_Stream &s, int flag)
-{
-    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL) {
-        s << "TensionOnlyMaterial, tag: " << this->getTag() << endln;
-        s << "  material: " << theMaterial->getTag() << endln;
-    }
-    
-    if (flag == OPS_PRINT_PRINTMODEL_JSON) {
-        s << "\t\t\t{";
-        s << "\"name\": \"" << this->getTag() << "\", ";
-        s << "\"type\": \"TensionOnlMaterial\", ";
-        s << "\"material\": \"" << theMaterial->getTag() << "\", ";
-    }
+    return theCopy;
 }
 
 int
-TensionOnlyMaterial::setParameter(const char **argv, int argc, Parameter &param)
+TensionOnlyMaterial::sendSelf (int cTag, Channel & theChannel)
 {
-  return theMaterial->setParameter(argv, argc, param);
-}
+    int dbTag = this->getDbTag ();
 
-int
-TensionOnlyMaterial::updateParameter(int parameterID, Information &info)
-{
-  return 0;
-}
+    static ID dataID (3);
+    dataID (0) = this->getTag ();
+    dataID (1) = theMaterial->getClassTag ();
+    int matDbTag = theMaterial->getDbTag ();
+    if (matDbTag == 0)
+      {
+          matDbTag = theChannel.getDbTag ();
+          theMaterial->setDbTag (matDbTag);
+      }
+    dataID (2) = matDbTag;
+    if (theChannel.sendID (dbTag, cTag, dataID) < 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::sendSelf() - failed to send the ID\n";
+          return -1;
+      }
 
-double
-TensionOnlyMaterial::getStressSensitivity(int gradIndex, bool conditional)
-{
-  double f = theMaterial->getStress();
-  if (f < 0.0)
-    return 0.0;
-  else 
-    return theMaterial->getStressSensitivity(gradIndex, conditional);
-}
+    static Vector dataVec (3);
+    dataVec (0) = 0.0;          //minStrain;
+    dataVec (1) = 0.0;          //maxStrain;
+    /*
+       if (Cfailed == true)
+       dataVec(2) = 1.0;
+       else
+       dataVec(2) = 0.0;
+     */
 
-double
-TensionOnlyMaterial::getStrainSensitivity(int gradIndex)
-{
-  return theMaterial->getStrainSensitivity(gradIndex);
-}
+    if (theChannel.sendVector (dbTag, cTag, dataVec) < 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::sendSelf() - failed to send the Vector\n";
+          return -2;
+      }
 
-double
-TensionOnlyMaterial::getInitialTangentSensitivity(int gradIndex)
-{
-  return theMaterial->getInitialTangentSensitivity(gradIndex);
-}
+    if (theMaterial->sendSelf (cTag, theChannel) < 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::sendSelf() - failed to send the Material\n";
+          return -3;
+      }
 
-double
-TensionOnlyMaterial::getDampTangentSensitivity(int gradIndex)
-{
-  double f = theMaterial->getStress();
-  if (f < 0.0)
-    return 0.0;
-  else
-    return theMaterial->getDampTangentSensitivity(gradIndex);
-}
-
-double
-TensionOnlyMaterial::getRhoSensitivity(int gradIndex)
-{
-  return theMaterial->getRhoSensitivity(gradIndex);
-}
-
-int   
-TensionOnlyMaterial::commitSensitivity(double strainGradient,
-				       int gradIndex, int numGrads)
-{
-  double f = theMaterial->getStress();
-  if (f >= 0.0)
-    return theMaterial->commitSensitivity(strainGradient, gradIndex, numGrads);
-  else
     return 0;
+}
+
+int
+TensionOnlyMaterial::recvSelf (int cTag, Channel & theChannel,
+                               FEM_ObjectBroker & theBroker)
+{
+    int dbTag = this->getDbTag ();
+
+    static ID dataID (3);
+    if (theChannel.recvID (dbTag, cTag, dataID) < 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::recvSelf() - failed to get the ID\n";
+          return -1;
+      }
+    this->setTag (int (dataID (0)));
+
+    // as no way to change material, don't have to check classTag of the material 
+    if (theMaterial == 0)
+      {
+          int matClassTag = int (dataID (1));
+          theMaterial = theBroker.getNewUniaxialMaterial (matClassTag);
+          if (theMaterial == 0)
+            {
+                opserr <<
+                    "TensionOnlyMaterial::recvSelf() - failed to create Material with classTag "
+                    << dataID (0) << endln;
+                return -2;
+            }
+      }
+    theMaterial->setDbTag (dataID (2));
+
+    static Vector dataVec (3);
+    if (theChannel.recvVector (dbTag, cTag, dataVec) < 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::recvSelf() - failed to get the Vector\n";
+          return -3;
+      }
+
+    /*
+       minStrain = dataVec(0);
+       maxStrain = dataVec(1);
+
+       if (dataVec(2) == 1.0)
+       Cfailed = true;
+       else
+       Cfailed = false;
+
+       Tfailed = Cfailed;
+     */
+
+    if (theMaterial->recvSelf (cTag, theChannel, theBroker) < 0)
+      {
+          opserr <<
+              "TensionOnlyMaterial::recvSelf() - failed to get the Material\n";
+          return -4;
+      }
+    return 0;
+}
+
+void
+TensionOnlyMaterial::Print (OPS_Stream & s, int flag)
+{
+    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL)
+      {
+          s << "TensionOnlyMaterial, tag: " << this->getTag () << endln;
+          s << "  material: " << theMaterial->getTag () << endln;
+      }
+
+    if (flag == OPS_PRINT_PRINTMODEL_JSON)
+      {
+          s << "\t\t\t{";
+          s << "\"name\": \"" << this->getTag () << "\", ";
+          s << "\"type\": \"TensionOnlMaterial\", ";
+          s << "\"material\": \"" << theMaterial->getTag () << "\", ";
+      }
+}
+
+int
+TensionOnlyMaterial::setParameter (const char **argv, int argc,
+                                   Parameter & param)
+{
+    return theMaterial->setParameter (argv, argc, param);
+}
+
+int
+TensionOnlyMaterial::updateParameter (int parameterID, Information & info)
+{
+    return 0;
+}
+
+double
+TensionOnlyMaterial::getStressSensitivity (int gradIndex, bool conditional)
+{
+    double f = theMaterial->getStress ();
+    if (f < 0.0)
+        return 0.0;
+    else
+        return theMaterial->getStressSensitivity (gradIndex, conditional);
+}
+
+double
+TensionOnlyMaterial::getStrainSensitivity (int gradIndex)
+{
+    return theMaterial->getStrainSensitivity (gradIndex);
+}
+
+double
+TensionOnlyMaterial::getInitialTangentSensitivity (int gradIndex)
+{
+    return theMaterial->getInitialTangentSensitivity (gradIndex);
+}
+
+double
+TensionOnlyMaterial::getDampTangentSensitivity (int gradIndex)
+{
+    double f = theMaterial->getStress ();
+    if (f < 0.0)
+        return 0.0;
+    else
+        return theMaterial->getDampTangentSensitivity (gradIndex);
+}
+
+double
+TensionOnlyMaterial::getRhoSensitivity (int gradIndex)
+{
+    return theMaterial->getRhoSensitivity (gradIndex);
+}
+
+int
+TensionOnlyMaterial::commitSensitivity (double strainGradient,
+                                        int gradIndex, int numGrads)
+{
+    double f = theMaterial->getStress ();
+    if (f >= 0.0)
+        return theMaterial->commitSensitivity (strainGradient, gradIndex,
+                                               numGrads);
+    else
+        return 0;
 }

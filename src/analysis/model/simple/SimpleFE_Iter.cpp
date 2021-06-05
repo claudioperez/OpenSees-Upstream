@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:17 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/model/simple/SimpleFE_Iter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/model/simple/SimpleFE_Iter.C
 //
 // Written: fmk 
@@ -39,46 +39,44 @@
 
 
 // SimpleFE_Iter(AnalysisModel &theModel):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SimpleFE_Iter::SimpleFE_Iter(AnalysisModel &theModel)
-  :myModel(theModel), currIndex(0), numDone(0)
+SimpleFE_Iter::SimpleFE_Iter (AnalysisModel & theModel):myModel (theModel), currIndex (0),
+numDone (0)
 {
 }
 
 
-SimpleFE_Iter::~SimpleFE_Iter()
+SimpleFE_Iter::~SimpleFE_Iter ()
 {
-}    
+}
 
 void
-SimpleFE_Iter::reset(void)
+SimpleFE_Iter::reset (void)
 {
     currIndex = 0;
     numDone = 0;
 }
 
 FE_Element *
-SimpleFE_Iter::operator()(void)
+SimpleFE_Iter::operator () (void)
 {
-  // check if we still have elements in the model
-  // if not return 0, indicating we are done
-  if (numDone >= myModel.numFE_Ele)
-    return 0;
+    // check if we still have elements in the model
+    // if not return 0, indicating we are done
+    if (numDone >= myModel.numFE_Ele)
+        return 0;
 
-  // search through domains ele list till we find the next element
-  while ((currIndex < myModel.sizeEle) 
-	 && (myModel.theFEs[currIndex] == 0))
-      currIndex++;
+    // search through domains ele list till we find the next element
+    while ((currIndex < myModel.sizeEle) && (myModel.theFEs[currIndex] == 0))
+        currIndex++;
 
-  // if not at the end of the list return the element
-  if (currIndex < myModel.sizeEle) {
-      FE_Element *result = myModel.theFEs[currIndex];
-      numDone++; currIndex++;
-      return(result);
-  }
-  return (0);
+    // if not at the end of the list return the element
+    if (currIndex < myModel.sizeEle)
+      {
+          FE_Element *result = myModel.theFEs[currIndex];
+          numDone++;
+          currIndex++;
+          return (result);
+      }
+    return (0);
 }
-
-    
-    

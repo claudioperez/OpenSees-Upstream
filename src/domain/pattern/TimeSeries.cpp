@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.5 $
 // $Date: 2010-02-16 18:57:05 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/pattern/TimeSeries.cpp,v $
-                                                                        
-                                                                        
+
+
 // Written: fmk 
 // Created: 07/99
 // Revision: A
@@ -40,49 +40,63 @@
 
 static MapOfTaggedObjects theTimeSeriesObjects;
 
-bool OPS_addTimeSeries(TimeSeries *newComponent) {
-  return theTimeSeriesObjects.addComponent(newComponent);
+bool
+OPS_addTimeSeries (TimeSeries * newComponent)
+{
+    return theTimeSeriesObjects.addComponent (newComponent);
 }
 
-bool OPS_removeTimeSeries(int tag) {
-    TaggedObject* obj = theTimeSeriesObjects.removeComponent(tag);
-    if (obj != 0) {
-	delete obj;
-	return true;
-    }
+bool
+OPS_removeTimeSeries (int tag)
+{
+    TaggedObject *obj = theTimeSeriesObjects.removeComponent (tag);
+    if (obj != 0)
+      {
+          delete obj;
+          return true;
+      }
     return false;
 }
 
-TimeSeries *OPS_getTimeSeries(int tag) {
+TimeSeries *
+OPS_getTimeSeries (int tag)
+{
 
-  TaggedObject *theResult = theTimeSeriesObjects.getComponentPtr(tag);
-  if (theResult == 0) {
-    opserr << "TimeSeries *getTimeSeries(int tag) - none found with tag: " << tag << endln;
-    return 0;
-  }
-  TimeSeries *theSeries = (TimeSeries *)theResult;
+    TaggedObject *theResult = theTimeSeriesObjects.getComponentPtr (tag);
+    if (theResult == 0)
+      {
+          opserr <<
+              "TimeSeries *getTimeSeries(int tag) - none found with tag: " <<
+              tag << endln;
+          return 0;
+      }
+    TimeSeries *theSeries = (TimeSeries *) theResult;
 
-  return theSeries->getCopy();
+    return theSeries->getCopy ();
 }
 
-void OPS_clearAllTimeSeries(void) {
-  theTimeSeriesObjects.clearAll();
+void
+OPS_clearAllTimeSeries (void)
+{
+    theTimeSeriesObjects.clearAll ();
 }
-    
 
-TimeSeries::TimeSeries(int tag, int classTag)
-  :TaggedObject(tag), MovableObject(classTag)
+
+TimeSeries::TimeSeries (int tag, int classTag):
+TaggedObject (tag),
+MovableObject (classTag)
 {
 
 }
 
-TimeSeries::TimeSeries(int classTag)
-  :TaggedObject(0), MovableObject(classTag)
+TimeSeries::TimeSeries (int classTag):
+TaggedObject (0),
+MovableObject (classTag)
 {
 
 }
 
-TimeSeries::~TimeSeries()
+TimeSeries::~TimeSeries ()
 {
 
 }

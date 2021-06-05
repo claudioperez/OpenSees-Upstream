@@ -31,98 +31,102 @@
 #include <DrainClough2Material.h>
 #include <Vector.h>
 
-DrainClough2Material::DrainClough2Material(int tag,
-	double E, double fyp, double fyn, double alpha,
-	double ecaps, double ecapk, double ecapa, double ecapd,
-	double cs, double ck, double ca, double cd,
-	double capSlope, double capDispP, double capDispN, double res,
-	double b):
+DrainClough2Material::DrainClough2Material (int tag,
+                                            double E, double fyp, double fyn,
+                                            double alpha, double ecaps,
+                                            double ecapk, double ecapa,
+                                            double ecapd, double cs,
+                                            double ck, double ca, double cd,
+                                            double capSlope, double capDispP,
+                                            double capDispN, double res,
+                                            double b):
 // 19 history variables and 16 material parameters
-DrainMaterial(tag, MAT_TAG_DrainClough2, 19, 16, b)
+DrainMaterial (tag, MAT_TAG_DrainClough2, 19, 16, b)
 {
-	data[0]  = E;
-	data[1]  = fyp;
-	data[2]  = fyn;
-	data[3]  = alpha;
-	data[4]  = ecaps;
-	data[5]  = ecapk;
-	data[6]  = ecapa;
-	data[7]  = ecapd;
-	data[8]  = cs;
-	data[9]  = ck;
-	data[10] = ca;
-	data[11] = cd;
-	data[12] = capSlope;
-	data[13] = capDispP;
-	data[14] = capDispN;
-	data[15] = res;
+    data[0] = E;
+    data[1] = fyp;
+    data[2] = fyn;
+    data[3] = alpha;
+    data[4] = ecaps;
+    data[5] = ecapk;
+    data[6] = ecapa;
+    data[7] = ecapd;
+    data[8] = cs;
+    data[9] = ck;
+    data[10] = ca;
+    data[11] = cd;
+    data[12] = capSlope;
+    data[13] = capDispP;
+    data[14] = capDispN;
+    data[15] = res;
 
-	// Initialize history variables
-	this->revertToStart();
+    // Initialize history variables
+    this->revertToStart ();
 }
 
-DrainClough2Material::DrainClough2Material(int tag, const Vector &input, double b):
+DrainClough2Material::DrainClough2Material (int tag, const Vector & input,
+                                            double b):
 // 19 history variables and 16 material parameters
-DrainMaterial(tag, MAT_TAG_DrainClough2, 19, 16, b)
+DrainMaterial (tag, MAT_TAG_DrainClough2, 19, 16, b)
 {
-	for (int i = 0; i < 16; i++)
-		data[i] = input(i);
+    for (int i = 0; i < 16; i++)
+        data[i] = input (i);
 
-	// Initialize history variables
-	this->revertToStart();
+    // Initialize history variables
+    this->revertToStart ();
 }
 
-DrainClough2Material::DrainClough2Material(void):
-DrainMaterial(0, MAT_TAG_DrainClough2, 19, 16)
+DrainClough2Material::DrainClough2Material (void):
+DrainMaterial (0, MAT_TAG_DrainClough2, 19, 16)
 {
-	// Does nothing
+    // Does nothing
 }
 
-DrainClough2Material::~DrainClough2Material(void)
+DrainClough2Material::~DrainClough2Material (void)
 {
-	// Does nothing
+    // Does nothing
 }
 
 int
-DrainClough2Material::revertToStart(void)
+DrainClough2Material::revertToStart (void)
 {
-	double dyp = data[1]/data[0];	// fyp/E
-	double dyn = data[2]/data[0];	// fyn/E
+    double dyp = data[1] / data[0];     // fyp/E
+    double dyn = data[2] / data[0];     // fyn/E
 
-	hstv[0]  = data[0];		// E
-	hstv[1]  = data[0];		// E
-	hstv[2]  = dyp;
-	hstv[3]  = dyn; 
-	hstv[4]  = 0.0;
-	hstv[5]  = dyp;
-	hstv[6]  = dyn;
-	hstv[7]  = data[1];		// fyp
-	hstv[8]  = data[2];		// fyn
-	hstv[9]  = data[13];	// capDispP
-	hstv[10] = data[14];	// capDispN
-	hstv[11] = 0.0;
-	hstv[12] = 0.0;
-	hstv[13] = 0.0;
-	hstv[14] = data[0];		// E
-	hstv[15] = 0.0;
-	hstv[16] = 0.0;
-	hstv[17] = 0.0;
-	hstv[18] = 0.0;
+    hstv[0] = data[0];          // E
+    hstv[1] = data[0];          // E
+    hstv[2] = dyp;
+    hstv[3] = dyn;
+    hstv[4] = 0.0;
+    hstv[5] = dyp;
+    hstv[6] = dyn;
+    hstv[7] = data[1];          // fyp
+    hstv[8] = data[2];          // fyn
+    hstv[9] = data[13];         // capDispP
+    hstv[10] = data[14];        // capDispN
+    hstv[11] = 0.0;
+    hstv[12] = 0.0;
+    hstv[13] = 0.0;
+    hstv[14] = data[0];         // E
+    hstv[15] = 0.0;
+    hstv[16] = 0.0;
+    hstv[17] = 0.0;
+    hstv[18] = 0.0;
 
-	// Set trial history variables to committed values
-	for (int i = 0; i < 19; i++)
-		hstv[i+19] = hstv[i];
+    // Set trial history variables to committed values
+    for (int i = 0; i < 19; i++)
+        hstv[i + 19] = hstv[i];
 
-	return 0;
+    return 0;
 }
 
-UniaxialMaterial*
-DrainClough2Material::getCopy(void)
+UniaxialMaterial *
+DrainClough2Material::getCopy (void)
 {
-	Vector input(data, 16);
+    Vector input (data, 16);
 
-	DrainClough2Material *theCopy =
-		new DrainClough2Material(this->getTag(), input, beto);
+    DrainClough2Material *theCopy =
+        new DrainClough2Material (this->getTag (), input, beto);
 
-	return theCopy;
+    return theCopy;
 }

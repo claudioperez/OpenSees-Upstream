@@ -17,26 +17,32 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.3 $
 // $Date: 2008-02-15 23:43:31 $
 // $Source: /usr/local/cvs/OpenSees/SRC/renderer/main.cpp,v $
-                                                                        
-                                                                        
+
+
 #include <stdlib.h>
 #include <iostream>
-using std::cin;
+using
+    std::cin;
 
 #include <OPS_Globals.h>
 #include <StandardStream.h>
 #include <OPS_Stream.h>
 
-StandardStream sserr;
-OPS_Stream *opserrPtr  = &sserr;
+StandardStream
+    sserr;
+OPS_Stream *
+    opserrPtr = &sserr;
 
-double        ops_Dt = 0;
-Domain       *ops_TheActiveDomain = 0;
-Element      *ops_TheActiveElement = 0;
+double
+    ops_Dt = 0;
+Domain *
+    ops_TheActiveDomain = 0;
+Element *
+    ops_TheActiveElement = 0;
 
 #include <OpenGLRenderer.h>
 #include <PlainMap.h>
@@ -52,78 +58,87 @@ Element      *ops_TheActiveElement = 0;
 
 #endif
 
-static void init(void)
+static void
+init (void)
 {
-  
-   glEnable (GL_BLEND);
-   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   /*
-   glShadeModel (GL_FLAT);
-   glClearColor (0.0, 0.0, 0.0, 0.0);
-   */
+
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    /*
+       glShadeModel (GL_FLAT);
+       glClearColor (0.0, 0.0, 0.0, 0.0);
+     */
 }
 
-static void drawLeftTriangle(void)
+static void
+drawLeftTriangle (void)
 {
-   /* draw yellow triangle on LHS of screen */
+    /* draw yellow triangle on LHS of screen */
 
-   glBegin (GL_TRIANGLES);
-      glColor4f(1.0, 1.0, 0.0, 0.75);
-      glVertex3f(0.1, 0.9, 0.0); 
-      glVertex3f(0.1, 0.1, 0.0); 
-      glVertex3f(0.7, 0.5, 0.0); 
-   glEnd();
+    glBegin (GL_TRIANGLES);
+    glColor4f (1.0, 1.0, 0.0, 0.75);
+    glVertex3f (0.1, 0.9, 0.0);
+    glVertex3f (0.1, 0.1, 0.0);
+    glVertex3f (0.7, 0.5, 0.0);
+    glEnd ();
 }
 
-static void drawRightTriangle(void)
+static void
+drawRightTriangle (void)
 {
-   /* draw cyan triangle on RHS of screen */
+    /* draw cyan triangle on RHS of screen */
 
-   glBegin (GL_TRIANGLES);
-      glColor4f(0.0, 1.0, 1.0, 0.75);
-      glVertex3f(0.9, 0.9, 0.0); 
-      glVertex3f(0.3, 0.5, 0.0); 
-      glVertex3f(0.9, 0.1, 0.0); 
-   glEnd();
+    glBegin (GL_TRIANGLES);
+    glColor4f (0.0, 1.0, 1.0, 0.75);
+    glVertex3f (0.9, 0.9, 0.0);
+    glVertex3f (0.3, 0.5, 0.0);
+    glVertex3f (0.9, 0.1, 0.0);
+    glEnd ();
 }
 
 
-int doImage(Renderer &theRenderer) {
-
-  theRenderer.startImage();
-
-  init();
-  drawLeftTriangle();
-  drawRightTriangle();
-
-  theRenderer.doneImage();
-  return 0;
-}
-
-int main(int argc, char **argv)
+int
+doImage (Renderer & theRenderer)
 {
-  PlainMap theMap;
-  OpenGLRenderer theRenderer1("ONE", 10 , 10 , 100, 200, theMap);
-  OpenGLRenderer theRenderer2("TWO", 100 , 100 , 300, 400, theMap);
 
+    theRenderer.startImage ();
 
-  theRenderer2.setFillMode("fill");
-  doImage(theRenderer1);
-  doImage(theRenderer2);
+    init ();
+    drawLeftTriangle ();
+    drawRightTriangle ();
 
-  char d;
-  opserr << "Enter a char: " ;
-  cin >> d;
-
-  theRenderer2.setFillMode("wire");
-  theRenderer1.setFillMode("fill");
-  doImage(theRenderer1);
-  doImage(theRenderer2);
-
-  opserr << "Enter a char: " ;
-  cin >> d;
-
-  exit(0);
-  return 0;
+    theRenderer.doneImage ();
+    return 0;
 }
 
+int
+main (int argc, char **argv)
+{
+    PlainMap
+        theMap;
+    OpenGLRenderer
+    theRenderer1 ("ONE", 10, 10, 100, 200, theMap);
+    OpenGLRenderer
+    theRenderer2 ("TWO", 100, 100, 300, 400, theMap);
+
+
+    theRenderer2.setFillMode ("fill");
+    doImage (theRenderer1);
+    doImage (theRenderer2);
+
+    char
+        d;
+    opserr << "Enter a char: ";
+    cin >> d;
+
+    theRenderer2.setFillMode ("wire");
+    theRenderer1.setFillMode ("fill");
+    doImage (theRenderer1);
+    doImage (theRenderer2);
+
+    opserr << "Enter a char: ";
+    cin >> d;
+
+    exit (0);
+    return 0;
+}

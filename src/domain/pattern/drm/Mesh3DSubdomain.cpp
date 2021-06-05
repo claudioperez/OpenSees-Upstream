@@ -46,46 +46,46 @@ using namespace std;
 #include <MP_Constraint.h>
 #include <classTags.h>
 //general constructor
-Mesh3DSubdomain::Mesh3DSubdomain(Domain * inpDomain) 
+Mesh3DSubdomain::Mesh3DSubdomain (Domain * inpDomain)
 {
 
-  this->myDomain = inpDomain;
-  this->myLastEle = 0;
-  this->myLastNode = 0;
-  this->myLastStartNodeTag = 0;
+    this->myDomain = inpDomain;
+    this->myLastEle = 0;
+    this->myLastNode = 0;
+    this->myLastStartNodeTag = 0;
 }
 
 //general constructor
-Mesh3DSubdomain::Mesh3DSubdomain() 
+Mesh3DSubdomain::Mesh3DSubdomain ()
 {
 
-  this->myDomain = NULL;
-  this->myLastEle = 0;
-  this->myLastNode = 0;
-  this->myLastStartNodeTag = 0;
+    this->myDomain = NULL;
+    this->myLastEle = 0;
+    this->myLastNode = 0;
+    this->myLastStartNodeTag = 0;
 }
 
 //destructor
-Mesh3DSubdomain::~Mesh3DSubdomain()
-{ 
+Mesh3DSubdomain::~Mesh3DSubdomain ()
+{
 }
 
 int
-Mesh3DSubdomain::lastEle()
+Mesh3DSubdomain::lastEle ()
 {
-  return this->myLastEle;
+    return this->myLastEle;
 }
 
 int
-Mesh3DSubdomain::lastNode()
+Mesh3DSubdomain::lastNode ()
 {
-  return this->myLastNode;
+    return this->myLastNode;
 }
 
 int
-Mesh3DSubdomain::lastStartNode()
+Mesh3DSubdomain::lastStartNode ()
 {
-  return this->myLastStartNodeTag;
+    return this->myLastStartNodeTag;
 }
 
 
@@ -96,95 +96,106 @@ Mesh3DSubdomain::lastStartNode()
   the exterior nodes but the ones at the top surface
 */
 
-void 
-Mesh3DSubdomain::allocate_e_Nodes(double xMin, double xMax, 
-				  double yMin, double yMax,
-				  double zMin, double zMax,
-				  std::map<int,int>& eNodes)
+void
+Mesh3DSubdomain::allocate_e_Nodes (double xMin, double xMax,
+                                   double yMin, double yMax,
+                                   double zMin, double zMax,
+                                   std::map < int, int >&eNodes)
 {
-  Vertex *theVertex;
-  double xCoord, yCoord, zCoord;
-  Graph  & nodeGraph = this->myDomain->getNodeGraph();
-  VertexIter  & theVertices = nodeGraph.getVertices();
-  int count = 0;
-  bool enode_found = false;
-  while ((theVertex = theVertices() ) != 0) {
-    int tag = theVertex->getRef();
+    Vertex *theVertex;
+    double xCoord, yCoord, zCoord;
+    Graph & nodeGraph = this->myDomain->getNodeGraph ();
+    VertexIter & theVertices = nodeGraph.getVertices ();
+    int count = 0;
+    bool enode_found = false;
+    while ((theVertex = theVertices ()) != 0)
+      {
+          int tag = theVertex->getRef ();
 
-    const Vector & coords = this->myDomain->getNode(tag)->getCrds();
-    
-    xCoord = coords(0);
-    yCoord = coords(1);
-    zCoord = coords(2);
-    
-    if ( ((xCoord == xMin) || (xCoord == xMax)) &&
-	 (yCoord >= yMin) && (yCoord<=yMax) &&
-	 (zCoord >= zMin) && (zCoord<=zMax)) 
-      {
-	enode_found = true;
-      }
+          const Vector & coords = this->myDomain->getNode (tag)->getCrds ();
 
-    if ( ((yCoord == yMin) || (yCoord == yMax)) &&
-	 (xCoord >= xMin) && (xCoord<=xMax) &&
-	 (zCoord >= zMin) && (zCoord<=zMax)) 
-      {
-	enode_found = true;
-      }
+          xCoord = coords (0);
+          yCoord = coords (1);
+          zCoord = coords (2);
 
-    if ( ((zCoord == zMin)) && 
-	 (((xCoord >= xMin) && (xCoord<=xMax)) &&
-	  ((yCoord >= yMin) && (yCoord<=yMax)) ))
-      {
-	enode_found = true;
+          if (((xCoord == xMin) || (xCoord == xMax)) &&
+              (yCoord >= yMin) && (yCoord <= yMax) &&
+              (zCoord >= zMin) && (zCoord <= zMax))
+            {
+                enode_found = true;
+            }
+
+          if (((yCoord == yMin) || (yCoord == yMax)) &&
+              (xCoord >= xMin) && (xCoord <= xMax) &&
+              (zCoord >= zMin) && (zCoord <= zMax))
+            {
+                enode_found = true;
+            }
+
+          if (((zCoord == zMin)) &&
+              (((xCoord >= xMin) && (xCoord <= xMax)) &&
+               ((yCoord >= yMin) && (yCoord <= yMax))))
+            {
+                enode_found = true;
+            }
+          if ((zCoord == zMax) &&
+              ((xCoord == xMin) || (xCoord == xMax)) &&
+              ((yCoord >= yMin) && (yCoord <= yMax)))
+            {
+                enode_found = true;
+            }
+          if ((zCoord == zMax) &&
+              ((yCoord == yMin) || (yCoord == yMax)) &&
+              ((xCoord >= xMin) && (xCoord <= xMax)))
+            {
+                enode_found = true;
+            }
+          if (enode_found)
+            {
+                eNodes[tag] = count;
+                count++;
+                enode_found = false;
+            }
       }
-    if ((zCoord == zMax) &&
-	((xCoord == xMin) || (xCoord ==xMax)) &&
-	((yCoord >= yMin) && (yCoord <= yMax)))
-      { 
-	enode_found = true;
-      }
-    if ((zCoord == zMax) &&
-	((yCoord == yMin) || (yCoord==yMax)) &&
-	((xCoord >= xMin) && (xCoord <= xMax)))
-      {
-	enode_found = true;
-      }
-    if (enode_found) {
-      eNodes[tag] = count;
-      count++;
-      enode_found = false;
-    }
-  }
 }
 
 void
-Mesh3DSubdomain::allocateBoundaryLayerElements(double xMin, double xMax,
-					       double yMin, double yMax,
-					       double zMin, double zMax,
-					       std::map<int,Element*>& elements,
-					       std::map<int,Vector*>& storage,
-					       std::map<int,int>& storage2)
+Mesh3DSubdomain::allocateBoundaryLayerElements (double xMin, double xMax,
+                                                double yMin, double yMax,
+                                                double zMin, double zMax,
+                                                std::map < int,
+                                                Element * >&elements,
+                                                std::map < int,
+                                                Vector * >&storage,
+                                                std::map < int,
+                                                int >&storage2)
 {
-  Vertex* theVertex;
+    Vertex *theVertex;
 //  int count =0;
 //  bool ele_found = false;
-  GeometricBrickDecorator* myHelper = new GeometricBrickDecorator();
-  myHelper->setDomain(this->myDomain);
-  Graph& eleGraph = this->myDomain->getElementGraph();
-  VertexIter& theVertices = eleGraph.getVertices();
-  while ((theVertex = theVertices() ) != 0) {
-    int tag = theVertex->getRef();
-    Element* ele = this->myDomain->getElement(tag);
-    if ((ele->getClassTag() == ELE_TAG_EightNode_Brick_u_p) || (ele->getClassTag() == ELE_TAG_Brick) || (ele->getClassTag() == ELE_TAG_FLBrick) ) {
-      myHelper->setBrick(ele);
-      if ( myHelper->isBoundaryLayerEle(xMin, xMax, yMin, yMax, zMin, zMax) ) {
-	Vector* ptr = new Vector(24);
-	ptr->Zero();
-	storage[tag] = ptr; 
-	storage2[tag] = -1;
-	elements[tag] = ele;
+    GeometricBrickDecorator *myHelper = new GeometricBrickDecorator ();
+    myHelper->setDomain (this->myDomain);
+    Graph & eleGraph = this->myDomain->getElementGraph ();
+    VertexIter & theVertices = eleGraph.getVertices ();
+    while ((theVertex = theVertices ()) != 0)
+      {
+          int tag = theVertex->getRef ();
+          Element *ele = this->myDomain->getElement (tag);
+          if ((ele->getClassTag () == ELE_TAG_EightNode_Brick_u_p)
+              || (ele->getClassTag () == ELE_TAG_Brick)
+              || (ele->getClassTag () == ELE_TAG_FLBrick))
+            {
+                myHelper->setBrick (ele);
+                if (myHelper->
+                    isBoundaryLayerEle (xMin, xMax, yMin, yMax, zMin, zMax))
+                  {
+                      Vector *ptr = new Vector (24);
+                      ptr->Zero ();
+                      storage[tag] = ptr;
+                      storage2[tag] = -1;
+                      elements[tag] = ele;
+                  }
+            }
       }
-    }
-  }
-  delete myHelper;
+    delete myHelper;
 }

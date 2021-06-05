@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1 $
 // $Date: 2005-12-06 22:20:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/sparseGEN/DistributedSparseGenRowLinSolver.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: 04/05
 //
@@ -32,29 +32,23 @@
 #include <DistributedSparseGenRowLinSolver.h>
 #include <DistributedSparseGenRowLinSOE.h>
 
-DistributedSparseGenRowLinSolver::DistributedSparseGenRowLinSolver(int theClassTag)    
-:LinearSOESolver(theClassTag),
- theSOE(0)
+DistributedSparseGenRowLinSolver::
+DistributedSparseGenRowLinSolver (int theClassTag):
+LinearSOESolver (theClassTag),
+theSOE (0)
 {
 
-}    
+}
 
-DistributedSparseGenRowLinSolver::~DistributedSparseGenRowLinSolver()    
+DistributedSparseGenRowLinSolver::~DistributedSparseGenRowLinSolver ()
 {
 
-}    
+}
 
-int 
-DistributedSparseGenRowLinSolver::setLinearSOE(DistributedSparseGenRowLinSOE &theDistributedSparseGenRowSOE)
+int
+DistributedSparseGenRowLinSolver::
+setLinearSOE (DistributedSparseGenRowLinSOE & theDistributedSparseGenRowSOE)
 {
     theSOE = &theDistributedSparseGenRowSOE;
     return 0;
 }
-
-
-
-
-
-
-
-

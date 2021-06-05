@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:16 $
 // $Source: /usr/local/cvs/OpenSees/SRC/analysis/algorithm/eigenAlgo/EigenAlgorithm.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/analysis/algorithm/eigenAlgo/EigenAlgorithm.C
 //
 // Written: Jun Peng
@@ -42,23 +42,25 @@
 #include <EigenIntegrator.h>
 #include <EigenSOE.h>
 
-EigenAlgorithm::EigenAlgorithm(int classTag)
-  :SolutionAlgorithm(classTag),
-   theModel(0), theIntegrator(0), theSOE(0)
+EigenAlgorithm::EigenAlgorithm (int classTag):
+SolutionAlgorithm (classTag),
+theModel (0),
+theIntegrator (0),
+theSOE (0)
 {
     // need do nothing here.
 }
 
 
-EigenAlgorithm::~EigenAlgorithm()
+EigenAlgorithm::~EigenAlgorithm ()
 {
     // do nothing here.
 }
 
-void 
-EigenAlgorithm::setLinks(AnalysisModel &theNewModel,
-			 EigenIntegrator &theNewIntegrator,
-			 EigenSOE &theNewSOE)
+void
+EigenAlgorithm::setLinks (AnalysisModel & theNewModel,
+                          EigenIntegrator & theNewIntegrator,
+                          EigenSOE & theNewSOE)
 {
     theModel = &theNewModel;
     theIntegrator = &theNewIntegrator;
@@ -66,20 +68,19 @@ EigenAlgorithm::setLinks(AnalysisModel &theNewModel,
 }
 
 AnalysisModel *
-EigenAlgorithm::getAnalysisModelPtr() const
+EigenAlgorithm::getAnalysisModelPtr () const
 {
     return theModel;
 }
 
 EigenIntegrator *
-EigenAlgorithm::getEigenIntegratorPtr() const
+EigenAlgorithm::getEigenIntegratorPtr () const
 {
     return theIntegrator;
 }
 
 EigenSOE *
-EigenAlgorithm::getEigenSOEptr() const
+EigenAlgorithm::getEigenSOEptr () const
 {
     return theSOE;
 }
-

@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.9 $
 // $Date: 2008-08-26 15:43:43 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/component/DVParameter.cpp,v $
@@ -26,125 +26,133 @@
 #include <DVParameter.h>
 #include <DesignVariable.h>
 
-DVParameter::DVParameter(int passedTag, DesignVariable *theDV, Parameter *theParam)
-  :Parameter(passedTag,1976), myDV(theDV), myParam(theParam), currentValue(0.0)
+DVParameter::DVParameter (int passedTag, DesignVariable * theDV,
+                          Parameter * theParam):
+Parameter (passedTag, 1976),
+myDV (theDV),
+myParam (theParam),
+currentValue (0.0)
 {
-  if (myDV != 0)
-    currentValue = myDV->getValue();
+    if (myDV != 0)
+        currentValue = myDV->getValue ();
 }
 
 
-DVParameter::~DVParameter()
+DVParameter::~DVParameter ()
 {
-  if (myParam != 0)
-    delete myParam;
-}
-
-int
-DVParameter::update(int newValue)
-{
-  currentValue = newValue;
-
-  return 0;
+    if (myParam != 0)
+        delete myParam;
 }
 
 int
-DVParameter::update(double newValue)
+DVParameter::update (int newValue)
 {
-  currentValue = newValue;
+    currentValue = newValue;
 
-  myDV->setValue(newValue);
-
-  if (myParam != 0) {
-    myParam->setValue(newValue);
-    myParam->update(newValue);
-  }
-
-  return 0;
-}
-
-int
-DVParameter::activate(bool active)
-{
-  if (myParam != 0)
-    return myParam->activate(active);
-  else
     return 0;
 }
 
-double
-DVParameter::getValue(void)
+int
+DVParameter::update (double newValue)
 {
-  //return currentValue;
-  return myDV->getValue();
+    currentValue = newValue;
+
+    myDV->setValue (newValue);
+
+    if (myParam != 0)
+      {
+          myParam->setValue (newValue);
+          myParam->update (newValue);
+      }
+
+    return 0;
+}
+
+int
+DVParameter::activate (bool active)
+{
+    if (myParam != 0)
+        return myParam->activate (active);
+    else
+        return 0;
+}
+
+double
+DVParameter::getValue (void)
+{
+    //return currentValue;
+    return myDV->getValue ();
 }
 
 void
-DVParameter::setValue(double newValue)
+DVParameter::setValue (double newValue)
 {
-  currentValue = newValue;
+    currentValue = newValue;
 
-  myDV->setValue(newValue);
+    myDV->setValue (newValue);
 
-  if (myParam != 0) {
-    myParam->setValue(newValue);
-    myParam->update(newValue);
-  }
+    if (myParam != 0)
+      {
+          myParam->setValue (newValue);
+          myParam->update (newValue);
+      }
 }
 
 bool
-DVParameter::isImplicit(void)
+DVParameter::isImplicit (void)
 {
-  return false;
+    return false;
 }
 
 double
-DVParameter::getSensitivity(int index)
+DVParameter::getSensitivity (int index)
 {
-  return Parameter::getSensitivity(index);
+    return Parameter::getSensitivity (index);
 }
 
 double
-DVParameter::getPerturbation(void)
+DVParameter::getPerturbation (void)
 {
-  //return 0.001*myDV->getStdv();
+    //return 0.001*myDV->getStdv();
 
-  // Can probably do something better here
-  return 0.001*(myDV->getUpperBound() - myDV->getLowerBound()); 
+    // Can probably do something better here
+    return 0.001 * (myDV->getUpperBound () - myDV->getLowerBound ());
 }
 
-int 
-DVParameter::getPointerTag(void) 
+int
+DVParameter::getPointerTag (void)
 {
-    return myDV->getTag();
-}
-
-void
-DVParameter::Print(OPS_Stream &s, int flag)  
-{
-  s << "DVParameter, tag = " << this->getTag() << endln;
-  myDV->Print(s, flag);
-  if (myParam != 0) {
-    myParam->Print(s, flag);
-  }
+    return myDV->getTag ();
 }
 
 void
-DVParameter::setDomain(Domain *theDomain)
+DVParameter::Print (OPS_Stream & s, int flag)
 {
-  if (myParam != 0)
-    myParam->setDomain(theDomain);
-  return;
+    s << "DVParameter, tag = " << this->getTag () << endln;
+    myDV->Print (s, flag);
+    if (myParam != 0)
+      {
+          myParam->Print (s, flag);
+      }
 }
 
-int 
-DVParameter::sendSelf(int commitTag, Channel &theChannel)
+void
+DVParameter::setDomain (Domain * theDomain)
 {
-  return 0;
+    if (myParam != 0)
+        myParam->setDomain (theDomain);
+    return;
 }
 
-int 
-DVParameter::recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker &theBroker)
+int
+DVParameter::sendSelf (int commitTag, Channel & theChannel)
 {
-  return 0;
+    return 0;
+}
+
+int
+DVParameter::recvSelf (int commitTag, Channel & theChannel,
+                       FEM_ObjectBroker & theBroker)
+{
+    return 0;
 }

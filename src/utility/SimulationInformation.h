@@ -37,7 +37,7 @@
 #ifndef SimulationInformation_h
 #define SimulationInformation_h
 
-#include <OPS_Globals.h>
+#include <OPS_Globals.h>  
 #include <StringContainer.h>
 #include <File.h>
 

@@ -17,11 +17,11 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2009-03-27 19:18:14 $
 // $Source: /usr/local/cvs/OpenSees/SRC/utility/FileIter.cpp,v $
-                                                                        
+
 // Written: fmk 
 // Created: 09/07
 
@@ -29,29 +29,24 @@
 #include <File.h>
 #include <FileIter.h>
 
-FileIter::FileIter(File &theFilePtr)
-  
+FileIter::FileIter (File & theFilePtr)
 {
-  theDirFiles = &(theFilePtr.dirFiles);
-  iter = theDirFiles->begin();
+    theDirFiles = &(theFilePtr.dirFiles);
+    iter = theDirFiles->begin ();
 }
 
-FileIter::~FileIter()
-  
+FileIter::~FileIter ()
 {
 
 }
 
 
 File *
-FileIter::operator()(void)
+FileIter::operator () (void)
 {
 
-  if (iter != theDirFiles->end()) {
-    File *result = iter->second;
-    iter++;
-    return result;
-  } else
-    return 0;
-}
-
+    if (iter != theDirFiles->end ())
+      {
+       File * result = iter->second; iter++; return result;}
+       else
+       return 0;}

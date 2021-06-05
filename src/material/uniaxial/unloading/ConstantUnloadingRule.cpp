@@ -17,7 +17,7 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision$
 // $Date$
 // $Source$
@@ -37,159 +37,173 @@
 #include <math.h>
 #include <float.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h> // cmp
 
+#ifdef OPS_API_COMMANDLINE
 void *
-OPS_ConstantUnloadingRule(void)
+OPS_ConstantUnloadingRule (void)
 {
-  UnloadingRule *theDegradation = 0;
+    UnloadingRule *theDegradation = 0;
 
-  if (OPS_GetNumRemainingInputArgs() < 3) {
-    opserr << "Invalid number of args, want: unloadingRule Constant tag? alpha? beta?" << endln;
-    return 0;
-  }
+    if (OPS_GetNumRemainingInputArgs () < 3)
+      {
+          opserr <<
+              "Invalid number of args, want: unloadingRule Constant tag? alpha? beta?"
+              << endln;
+          return 0;
+      }
 
-  int iData[1];
-  double dData[2];
-  
-  int numData = 1;
-  if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid tag for unloadingRule Constant" << endln;
-    return 0;
-  }
+    int iData[1];
+    double dData[2];
 
-  numData = 2;
-  if (OPS_GetDoubleInput(&numData, dData) != 0) {
-    opserr << "WARNING invalid data for unloadingRule Constant" << endln;
-    return 0;
-  }
+    int numData = 1;
+    if (OPS_GetIntInput (&numData, iData) != 0)
+      {
+          opserr << "WARNING invalid tag for unloadingRule Constant" << endln;
+          return 0;
+      }
 
-  theDegradation = new ConstantUnloadingRule(iData[0], dData[0], dData[1]);
-  if (theDegradation == 0) {
-    opserr << "WARNING could not create ConstantUnloadingRule\n";
-    return 0;
-  }
+    numData = 2;
+    if (OPS_GetDoubleInput (&numData, dData) != 0)
+      {
+          opserr << "WARNING invalid data for unloadingRule Constant" <<
+              endln;
+          return 0;
+      }
 
-  return theDegradation;
+    theDegradation = new ConstantUnloadingRule (iData[0], dData[0], dData[1]);
+    if (theDegradation == 0)
+      {
+          opserr << "WARNING could not create ConstantUnloadingRule\n";
+          return 0;
+      }
+
+    return theDegradation;
+}
+#endif
+
+ConstantUnloadingRule::ConstantUnloadingRule (int tag, double a, double b):
+UnloadingRule (tag, DEG_TAG_UNLOAD_Constant),
+alpha (a),
+beta (b)
+{
+    this->revertToStart ();
+    this->revertToLastCommit ();
 }
 
-ConstantUnloadingRule::ConstantUnloadingRule(int tag, double a, double b):
-  UnloadingRule(tag,DEG_TAG_UNLOAD_Constant), alpha(a), beta(b)
-{
-  this->revertToStart();
-  this->revertToLastCommit();
-}
-
-ConstantUnloadingRule::ConstantUnloadingRule():
-  UnloadingRule(0,DEG_TAG_UNLOAD_Constant), 
-  alpha(0.0), beta(0.0), Cfactor(0.0)
+ConstantUnloadingRule::ConstantUnloadingRule ():
+UnloadingRule (0, DEG_TAG_UNLOAD_Constant),
+alpha (0.0), beta (0.0), Cfactor (0.0)
 {
 
 }
 
-ConstantUnloadingRule::~ConstantUnloadingRule()
+ConstantUnloadingRule::~ConstantUnloadingRule ()
 {
 
 }
 
-const char*
-ConstantUnloadingRule::getMeasure(void)
+const char *
+ConstantUnloadingRule::getMeasure (void)
 {
-  return "nothing";
+    return "nothing";
 }
 
 int
-ConstantUnloadingRule::setTrialMeasure(double measure)
+ConstantUnloadingRule::setTrialMeasure (double measure)
 {
-  return 0;
+    return 0;
 }
 
 double
-ConstantUnloadingRule::getValue(void)
+ConstantUnloadingRule::getValue (void)
 {
-  Tfactor = alpha*Cfactor + beta;
-  
-  return Tfactor;
+    Tfactor = alpha * Cfactor + beta;
+
+    return Tfactor;
 }
 
 int
-ConstantUnloadingRule::commitState(void)
+ConstantUnloadingRule::commitState (void)
 {
-  Cfactor = Tfactor;
-  
-  return 0;
-}
- 
-int
-ConstantUnloadingRule::revertToLastCommit(void)
-{
-  Tfactor = Cfactor;
-  
-  return 0;
+    Cfactor = Tfactor;
+
+    return 0;
 }
 
 int
-ConstantUnloadingRule::revertToStart(void)
+ConstantUnloadingRule::revertToLastCommit (void)
 {
-  Cfactor = 1.0;
-  
-  return 0;
-}
+    Tfactor = Cfactor;
 
-UnloadingRule*
-ConstantUnloadingRule::getCopy(void)
-{
-  ConstantUnloadingRule *theCopy =
-    new ConstantUnloadingRule (this->getTag(), alpha, beta);
-  
-  theCopy->Cfactor = Cfactor;
-  
-  return theCopy;
+    return 0;
 }
 
 int
-ConstantUnloadingRule::sendSelf(int commitTag, Channel &theChannel)
+ConstantUnloadingRule::revertToStart (void)
 {
-  static Vector data(4);
-  
-  data(0) = this->getTag();
-  data(1) = alpha;
-  data(2) = beta;
-  data(3) = Cfactor;
-  
-  int res = theChannel.sendVector(this->getDbTag(), commitTag, data);
-  
-  if (res < 0) 
-    opserr << "ConstantUnloadingRule::sendSelf() - failed to send data\n";
-  
-  return res;
+    Cfactor = 1.0;
+
+    return 0;
+}
+
+UnloadingRule *
+ConstantUnloadingRule::getCopy (void)
+{
+    ConstantUnloadingRule *theCopy =
+        new ConstantUnloadingRule (this->getTag (), alpha, beta);
+
+    theCopy->Cfactor = Cfactor;
+
+    return theCopy;
 }
 
 int
-ConstantUnloadingRule::recvSelf(int commitTag, Channel &theChannel, 
-				FEM_ObjectBroker &theBroker)
+ConstantUnloadingRule::sendSelf (int commitTag, Channel & theChannel)
 {
-  static Vector data(4);
-  int res = theChannel.recvVector(this->getDbTag(), commitTag, data);
-  
-  if (res < 0) {
-    opserr << "ConstantUnloadingRule::recvSelf() - failed to receive data\n";
-    this->setTag(0);      
-  }
-  else {
-    this->setTag(int(data(0)));
-    alpha = data(1);
-    beta = data(2);
-    Cfactor = data(3);
-  }
-  
-  return res;
+    static Vector data (4);
+
+    data (0) = this->getTag ();
+    data (1) = alpha;
+    data (2) = beta;
+    data (3) = Cfactor;
+
+    int res = theChannel.sendVector (this->getDbTag (), commitTag, data);
+
+    if (res < 0)
+        opserr << "ConstantUnloadingRule::sendSelf() - failed to send data\n";
+
+    return res;
+}
+
+int
+ConstantUnloadingRule::recvSelf (int commitTag, Channel & theChannel,
+                                 FEM_ObjectBroker & theBroker)
+{
+    static Vector data (4);
+    int res = theChannel.recvVector (this->getDbTag (), commitTag, data);
+
+    if (res < 0)
+      {
+          opserr <<
+              "ConstantUnloadingRule::recvSelf() - failed to receive data\n";
+          this->setTag (0);
+      }
+    else
+      {
+          this->setTag (int (data (0)));
+          alpha = data (1);
+          beta = data (2);
+          Cfactor = data (3);
+      }
+
+    return res;
 }
 
 void
-ConstantUnloadingRule::Print(OPS_Stream &s, int flag)
+ConstantUnloadingRule::Print (OPS_Stream & s, int flag)
 {
-  s << "ConstantUnloadingRule, tag: " << this->getTag() << endln;
-  s << "\talpha: " << alpha << endln;
-  s << "\tbeta: " << beta << endln;
+    s << "ConstantUnloadingRule, tag: " << this->getTag () << endln;
+    s << "\talpha: " << alpha << endln;
+    s << "\tbeta: " << beta << endln;
 }

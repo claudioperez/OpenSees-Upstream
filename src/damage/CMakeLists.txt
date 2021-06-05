@@ -7,7 +7,7 @@ target_sources(damage
 	Kratzig.cpp
 	Mehanny.cpp
 	ParkAng.cpp
-	NormalizedPeak.cpp
+	#NormalizedPeak.cpp
 	DamageResponse.cpp
     PUBLIC
 	DamageModel.h
@@ -15,7 +15,7 @@ target_sources(damage
 	Kratzig.h
 	Mehanny.h
 	ParkAng.h
-	NormalizedPeak.h
+	#NormalizedPeak.h
 	DamageResponse.h
 )
 

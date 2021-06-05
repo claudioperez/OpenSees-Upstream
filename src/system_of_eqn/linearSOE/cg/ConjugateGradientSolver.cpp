@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.2 $
 // $Date: 2003-02-14 23:02:01 $
 // $Source: /usr/local/cvs/OpenSees/SRC/system_of_eqn/linearSOE/cg/ConjugateGradientSolver.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/system_of_eqn/linearSOE/cg/ConjugateGradientSolver.C
 //
 // Written: fmk 
@@ -34,126 +34,125 @@
 #include <OPS_Globals.h>
 #include <LinearSOE.h>
 
-ConjugateGradientSolver::ConjugateGradientSolver(int classtag, 
-						 LinearSOE *theSOE,
-						 double tol)
-:LinearSOESolver(classtag),
- r(0),p(0),Ap(0),x(0), 
- theLinearSOE(theSOE), 
- tolerance(tol)
+ConjugateGradientSolver::ConjugateGradientSolver (int classtag,
+                                                  LinearSOE * theSOE,
+                                                  double tol):
+LinearSOESolver (classtag),
+r (0),
+p (0),
+Ap (0),
+x (0),
+theLinearSOE (theSOE),
+tolerance (tol)
 {
-    
+
 }
 
-ConjugateGradientSolver::~ConjugateGradientSolver()
+ConjugateGradientSolver::~ConjugateGradientSolver ()
 {
     if (r != 0)
-	delete r;
+        delete r;
     if (p != 0)
-	delete p;
+        delete p;
     if (Ap != 0)
-	delete Ap;
+        delete Ap;
     if (x != 0)
-	delete x;    
+        delete x;
 }
 
 
-int 
-ConjugateGradientSolver::setSize(void)
+int
+ConjugateGradientSolver::setSize (void)
 {
-    int n = theLinearSOE->getNumEqn();
-    if (n <= 0) {
-	opserr << "ConjugateGradientSolver::setSize() - n < 0 \n";
-	return -1;
-    }
+    int n = theLinearSOE->getNumEqn ();
+    if (n <= 0)
+      {
+          opserr << "ConjugateGradientSolver::setSize() - n < 0 \n";
+          return -1;
+      }
 
     // if old Vector exist and are of incorrect size destroy them
-    if (r != 0) {
-	if (r->Size() != n) {
-	    delete r;
-	    delete p;
-	    delete Ap;	
-	    delete x;		    
-	    r = 0;
-	    p = 0;
-	    Ap = 0;
-	    x = 0;	    
-	}
-    }
+    if (r != 0)
+      {
+          if (r->Size () != n)
+            {
+                delete r;
+                delete p;
+                delete Ap;
+                delete x;
+                r = 0;
+                p = 0;
+                Ap = 0;
+                x = 0;
+            }
+      }
 
     // create new vector of correct size
-    if (r == 0) {
-	r = new Vector(n);
-	p = new Vector(n);
-	Ap = new Vector(n);
-	x = new Vector(n);	
-	if (r == 0 || p == 0 || Ap == 0 || x == 0) {
-	    opserr << "ConjugateGradientSolver::setSize() - out of memory\n";
-	    if (r != 0)
-		delete r;
-	    if (p != 0)
-		delete p;
-	    if (Ap != 0)
-		delete Ap;
-	    if (x != 0)
-		delete x;    	    
-	    r = 0;
-	    p = 0;
-	    Ap = 0;
-	    x = 0;	    	    
-	    return -2;
-	    
-	}
-    }
+    if (r == 0)
+      {
+          r = new Vector (n);
+          p = new Vector (n);
+          Ap = new Vector (n);
+          x = new Vector (n);
+          if (r == 0 || p == 0 || Ap == 0 || x == 0)
+            {
+                opserr <<
+                    "ConjugateGradientSolver::setSize() - out of memory\n";
+                if (r != 0)
+                    delete r;
+                if (p != 0)
+                    delete p;
+                if (Ap != 0)
+                    delete Ap;
+                if (x != 0)
+                    delete x;
+                r = 0;
+                p = 0;
+                Ap = 0;
+                x = 0;
+                return -2;
+
+            }
+      }
     return 0;
 }
 
 
 
 int
-ConjugateGradientSolver::solve(void)
+ConjugateGradientSolver::solve (void)
 {
     // check for successful setSize
     if (r == 0)
-	return -1;
-    
+        return -1;
+
     // initialize
-    x->Zero();    
-    *r = theLinearSOE->getB();
+    x->Zero ();
+    *r = theLinearSOE->getB ();
     *p = *r;
     double rdotr = *r ^ *r;
-    
+
     // lopp till convergence
-    while (r->Norm() > tolerance) {
-	this->formAp(*p, *Ap);
+    while (r->Norm () > tolerance)
+      {
+          this->formAp (*p, *Ap);
 
-	double alpha = rdotr/(*p ^ *Ap);
+          double alpha = rdotr / (*p ^ *Ap);
 
-	// *x += *p * alpha;
-	x->addVector(1.0, *p, alpha);
+          // *x += *p * alpha;
+          x->addVector (1.0, *p, alpha);
 
-	// *r -= *Ap * alpha;
-	r->addVector(1.0, *Ap, -alpha);
+          // *r -= *Ap * alpha;
+          r->addVector (1.0, *Ap, -alpha);
 
-	double oldrdotr = rdotr;
+          double oldrdotr = rdotr;
 
-	rdotr = *r ^ *r;
+          rdotr = *r ^ *r;
 
-	double beta = rdotr / oldrdotr;
+          double beta = rdotr / oldrdotr;
 
-	// *p = *r + *p * beta;
-	p->addVector(beta, *r, 1.0);
-    }
+          // *p = *r + *p * beta;
+          p->addVector (beta, *r, 1.0);
+      }
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-

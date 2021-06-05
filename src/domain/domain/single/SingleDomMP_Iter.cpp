@@ -17,12 +17,12 @@
 **   Filip C. Filippou (filippou@ce.berkeley.edu)                     **
 **                                                                    **
 ** ****************************************************************** */
-                                                                        
+
 // $Revision: 1.1.1.1 $
 // $Date: 2000-09-15 08:23:18 $
 // $Source: /usr/local/cvs/OpenSees/SRC/domain/domain/single/SingleDomMP_Iter.cpp,v $
-                                                                        
-                                                                        
+
+
 // File: ~/OOP/domain/domain/SingleDomMP_Iter.C
 //
 // Written: fmk 
@@ -41,43 +41,38 @@
 
 
 // SingleDomMP_Iter(SingleDomain &theDomain):
-//	constructor that takes the model, just the basic iter
+//      constructor that takes the model, just the basic iter
 
-SingleDomMP_Iter::SingleDomMP_Iter(TaggedObjectStorage *theStorage)
-  :myIter(theStorage->getComponents())
+SingleDomMP_Iter::SingleDomMP_Iter (TaggedObjectStorage * theStorage):myIter (theStorage->
+        getComponents
+        ())
 {
 }
 
-SingleDomMP_Iter::~SingleDomMP_Iter()
+SingleDomMP_Iter::~SingleDomMP_Iter ()
 {
-}    
+}
 
 
 void
-SingleDomMP_Iter::reset(void)
+SingleDomMP_Iter::reset (void)
 {
-    myIter.reset();
+    myIter.reset ();
 }
 
 
 
 MP_Constraint *
-SingleDomMP_Iter::operator()(void)
+SingleDomMP_Iter::operator () (void)
 {
     // check if we still have MP_Constraints in the model
     // if not return 0, indicating we are done
-    TaggedObject *theComponent = myIter();
+    TaggedObject * theComponent = myIter ();
     if (theComponent == 0)
-	return 0;
-    else {
-	MP_Constraint *result = (MP_Constraint *)theComponent;
-	return result;
-    }
+        return 0;
+    else
+      {
+          MP_Constraint *result = (MP_Constraint *) theComponent;
+          return result;
+      }
 }
-
-    
-    
-
-
-    
-    

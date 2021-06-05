@@ -38,9 +38,10 @@
 
 #include <math.h>
 
-#include <elementAPI.h>
+// #include <elementAPI.h>
 
-
+/*
+#ifdef OPS_API_COMMANDLINE
 void *OPS_TrigSeries(void)
 {
     // Pointer to a uniaxial material that will be returned
@@ -115,111 +116,125 @@ void *OPS_TrigSeries(void)
 
     return theSeries;
 }
+#endif
+*/
 
-
-TrigSeries::TrigSeries(int tag,
-    double startTime, 
-    double finishTime,
-    double T, 
-    double phaseshift, 
-    double theFactor,
-    double zeroshift)
-    : TimeSeries(tag, TSERIES_TAG_TrigSeries),
-    tStart(startTime), tFinish(finishTime),
-    period(T), phaseShift(phaseshift),
-    cFactor(theFactor), zeroShift(zeroshift)
+TrigSeries::TrigSeries (int tag,
+                        double startTime,
+                        double finishTime,
+                        double T,
+                        double phaseshift,
+                        double theFactor, double zeroshift):
+TimeSeries (tag, TSERIES_TAG_TrigSeries),
+tStart (startTime),
+tFinish (finishTime),
+period (T),
+phaseShift (phaseshift),
+cFactor (theFactor),
+zeroShift (zeroshift)
 {
-    if (period == 0.0) {
-        opserr << "TrigSeries::TrigSeries -- input period is zero, setting period to PI\n";
-        period = 2*asin(1.0);
-    }
+    if (period == 0.0)
+      {
+          opserr <<
+              "TrigSeries::TrigSeries -- input period is zero, setting period to PI\n";
+          period = 2 * asin (1.0);
+      }
 }
 
 
-TrigSeries::TrigSeries()
-    : TimeSeries(TSERIES_TAG_TrigSeries),
-    tStart(0.0), tFinish(0.0),
-    period(1.0), phaseShift(0.0),
-    cFactor(1.0), zeroShift(0.0)
+TrigSeries::TrigSeries ():TimeSeries (TSERIES_TAG_TrigSeries),
+tStart (0.0), tFinish (0.0),
+period (1.0), phaseShift (0.0), cFactor (1.0), zeroShift (0.0)
 {
     // does nothing
 }
 
 
-TrigSeries::~TrigSeries()
+TrigSeries::~TrigSeries ()
 {
     // does nothing
 }
 
-TimeSeries *TrigSeries::getCopy()
+TimeSeries *
+TrigSeries::getCopy ()
 {
-    return new TrigSeries(this->getTag(), tStart, tFinish, period,
-        phaseShift, cFactor, zeroShift);
+    return new TrigSeries (this->getTag (), tStart, tFinish, period,
+                           phaseShift, cFactor, zeroShift);
 }
 
 
-double TrigSeries::getFactor(double pseudoTime)
+double
+TrigSeries::getFactor (double pseudoTime)
 {
-    static double twopi = 4*asin(1.0);
+    static double twopi = 4 * asin (1.0);
 
-    if (pseudoTime >= tStart && pseudoTime <= tFinish)  {
-        double phi = phaseShift - period/twopi*asin(zeroShift/cFactor);
-        return cFactor*sin(twopi*(pseudoTime-tStart)/period + phi) + zeroShift;
-    }
+    if (pseudoTime >= tStart && pseudoTime <= tFinish)
+      {
+          double phi =
+              phaseShift - period / twopi * asin (zeroShift / cFactor);
+          return cFactor * sin (twopi * (pseudoTime - tStart) / period +
+                                phi) + zeroShift;
+      }
     else
         return 0.0;
 }
 
 
-int TrigSeries::sendSelf(int commitTag, Channel &theChannel)
+int
+TrigSeries::sendSelf (int commitTag, Channel & theChannel)
 {
-    int dbTag = this->getDbTag();
-    Vector data(6);
-    data(0) = cFactor;
-    data(1) = tStart;
-    data(2) = tFinish;
-    data(3) = period;
-    data(4) = phaseShift;
-    data(5) = zeroShift;
+    int dbTag = this->getDbTag ();
+    Vector data (6);
+    data (0) = cFactor;
+    data (1) = tStart;
+    data (2) = tFinish;
+    data (3) = period;
+    data (4) = phaseShift;
+    data (5) = zeroShift;
 
-    int result = theChannel.sendVector(dbTag,commitTag, data);
-    if (result < 0) {
-        opserr << "TrigSeries::sendSelf() - channel failed to send data\n";
-        return result;
-    }
+    int result = theChannel.sendVector (dbTag, commitTag, data);
+    if (result < 0)
+      {
+          opserr << "TrigSeries::sendSelf() - channel failed to send data\n";
+          return result;
+      }
 
     return 0;
 }
 
 
-int TrigSeries::recvSelf(int commitTag, Channel &theChannel, 
-    FEM_ObjectBroker &theBroker)
+int
+TrigSeries::recvSelf (int commitTag, Channel & theChannel,
+                      FEM_ObjectBroker & theBroker)
 {
-    int dbTag = this->getDbTag();
-    Vector data(6);
-    int result = theChannel.recvVector(dbTag,commitTag, data);
-    if (result < 0) {
-        opserr << "TrigSeries::recvSelf() - channel failed to receive data\n";
-        cFactor    = 1.0;
-        tStart     = 0.0;
-        tFinish    = 0.0;
-        period     = 1.0;
-        phaseShift = 0.0;
-        zeroShift  = 0.0;
-        return result;
-    }
-    cFactor    = data(0);
-    tStart     = data(1);
-    tFinish    = data(2);
-    period     = data(3);
-    phaseShift = data(4);
-    zeroShift  = data(5);
+    int dbTag = this->getDbTag ();
+    Vector data (6);
+    int result = theChannel.recvVector (dbTag, commitTag, data);
+    if (result < 0)
+      {
+          opserr <<
+              "TrigSeries::recvSelf() - channel failed to receive data\n";
+          cFactor = 1.0;
+          tStart = 0.0;
+          tFinish = 0.0;
+          period = 1.0;
+          phaseShift = 0.0;
+          zeroShift = 0.0;
+          return result;
+      }
+    cFactor = data (0);
+    tStart = data (1);
+    tFinish = data (2);
+    period = data (3);
+    phaseShift = data (4);
+    zeroShift = data (5);
 
     return 0;
 }
 
 
-void TrigSeries::Print(OPS_Stream &s, int flag)
+void
+TrigSeries::Print (OPS_Stream & s, int flag)
 {
     s << "Trig Series" << endln;
     s << "\tFactor: " << cFactor << endln;
