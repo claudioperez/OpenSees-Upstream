@@ -13,6 +13,7 @@
 - High code quality / consistency
 - streamline build system
 - Facilitate library wrappers which:
+  - Provide meaningful error messages
   - Adapt to natural/idomatic symantics in their host language (e.g., argument passing in OpenSeesPy
   - Allow thread safe interactions with libraries in host language
   - Expose object oriented nature of OpenSees library. Current wrappers essentially flatten-out the architecture of OpenSees into a strict set of commands.

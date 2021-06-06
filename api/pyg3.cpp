@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <domain/domain/Domain.h>
+#include <domain/domain/Element.h>
 #include <domain/node/Node.h>
 
 /* Error streams */
@@ -18,9 +19,13 @@ PYBIND11_MODULE (pyg3, m)
         .def (py::init ())
         .def ("addNode", &Domain::addNode)
         .def ("getNode", &Domain::getNode)
+
+        .def ("getElement", &Domain::getElement)
     ;
 
     py::class_ < Node > (m, "Node")
         .def (py::init<int, int, float, float> ())
+        .def ("getNumberDOF", &Node::getNumberDOF)
+        .def ("getDisp", &Node::getDisp)
     ;
 }
