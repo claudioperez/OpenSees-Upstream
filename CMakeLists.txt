@@ -8,16 +8,19 @@
 # (Copyright and Disclaimer @ http://www.berkeley.edu/OpenSees/copyright.html)
 #
 #------------------------------------------------------------------------------
-# libG3
 #
 #------------------------------------------------------------------------------
 cmake_minimum_required(VERSION 3.13)
 project(LG3)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/etc/cmake)
 set(OPS_EXTERN_SOURCE_DIR ${PROJECT_SOURCE_DIR}/ext/)
+set(OPS_EXTERNALS_DIR ${PROJECT_SOURCE_DIR}/ext/)
 include(OpenSeesFunctions)
-
-
+#------------------------------------------------------------------------------
+#                            Basic Switches
+#
+#
+#------------------------------------------------------------------------------
 option(FMK
     "Special FMK Code"                                       OFF)
 
@@ -25,7 +28,7 @@ option(OPS_THREADSAFE
     "Only build thread safe components"                       ON)
 
 # Interpreter options
-#----------------------------------------------------------
+#--------------------------------------
 option(OPS_INTERPRETER_GLOBAL #TODO
     "Include functionality for using global interpreter"     OFF)
 
@@ -36,7 +39,7 @@ option(OPS_INTERPRETER_PYTHON
     "Use Python interpreter"                                 OFF)
 
 # Parallel options
-#----------------------------------------------------------
+#--------------------------------------
 option(OPS_OPTION_PARALLEL   
     "Build OpenSeesSP"                                       OFF)
 
@@ -44,7 +47,7 @@ option(OPS_PARALLEL_INTERPRETER
     "Build OpenSeesMP"                                       OFF)
 
 # Misc. options
-#----------------------------------------------------------
+#--------------------------------------
 option(OPS_OPTION_RENDERER
     "Include renderer"                                       OFF)
 
@@ -72,8 +75,10 @@ option(OPS_MATERIAL_UNIAXIAL_PY
 option(OPS_MATERIAL_UNIAXIAL_SNAP 
     "Include snap material library"                          OFF)
 
-# External Libraries
-#--------------------------------------
+#----------------------------------------------------------------
+#                      External Libraries
+#
+#----------------------------------------------------------------
 # Synopsis
 # - opensees_load(<PACKAGE> [BUILD|FIND|SEARCH|PATHS] [<PATHS>])
 #
@@ -84,6 +89,7 @@ option(OPS_MATERIAL_UNIAXIAL_SNAP
 #           Version if not found.
 # - PATHS:  Provide specific paths for library.
 #
+#----------------------------------------------------------------
 opensees_load(TCL      FIND)
 
 opensees_load(BLAS   SEARCH)
@@ -95,10 +101,10 @@ opensees_load(ARPACK SEARCH)
 opensees_load(METIS  SEARCH)
 
 
-#----------------------------------------------------------
+#----------------------------------------------------------------
 # Compilers
 #
-#----------------------------------------------------------
+#----------------------------------------------------------------
 
 # Fortran
 #--------------------------------------
@@ -106,6 +112,12 @@ enable_language(Fortran)
 
 # C++
 #--------------------------------------
+
+
+#----------------------------------------------------------------
+# Compilers
+#
+#----------------------------------------------------------------
 
 
 if(FMK)
@@ -211,9 +223,9 @@ include_directories(src
 
 include_directories(include)
 
-include_directories(ext/CSPARSE)
-include_directories(ext/AMD)
-include_directories(ext/UMFPACK)
+#include_directories(ext/CSPARSE)
+#include_directories(ext/AMD)
+#include_directories(ext/UMFPACK)
 
 #
 # build
