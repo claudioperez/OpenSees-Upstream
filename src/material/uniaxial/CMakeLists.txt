@@ -1,6 +1,7 @@
 
 target_sources(material
     PRIVATE
+      MaterialState.cpp
       UniaxialMaterial.cpp
       ElasticMaterial.cpp
       Elastic2Material.cpp
@@ -14,8 +15,9 @@ target_sources(material
       Steel2.cpp
       OriginCentered.cpp
       ConcretewBeta.cpp
+      #Concrete01.cpp
       ConcreteD.cpp
-      ConcreteSakaiKawashima.cpp
+      #ConcreteSakaiKawashima.cpp
       ConcreteCM.cpp
       SteelMPF.cpp
       c14-SK-M.f
@@ -28,14 +30,11 @@ target_sources(material
       BWBN.cpp
       AxialSpHD.cpp
       AxialSp.cpp
-      Neoprene.cpp
+      #Neoprene.cpp
       #Maxwell.cpp # Uses ops_Dt
       #ViscousDamper.cpp
       #BilinearOilDamper.cpp
       #Cast.cpp
-      #HardeningMaterial.cpp
-      #HardeningMaterial2.cpp
-      #Concrete01.cpp
       #Concrete02Thermal.cpp
       #Steel02Thermal.cpp
       #Steel01Thermal.cpp
@@ -61,7 +60,6 @@ target_sources(material
       #DrainMaterial.cpp
       #BoucWenOriginal.cpp
       #BoucWenMaterial.cpp
-      #HardeningMaterial2.cpp
       #Pinching4Material.cpp
       #BarSlipMaterial.cpp
       #FatigueMaterial.cpp
@@ -117,7 +115,6 @@ target_sources(material
       #StainlessECThermal.cpp
       #SteelECThermal.cpp
       #DamperMaterial.cpp
-      #MaterialState.cpp
       #OOHystereticMaterial.cpp
       #SPSW02.cpp
       #TDConcrete.cpp
@@ -126,10 +123,12 @@ target_sources(material
       #TDConcreteMC10NL.cpp
       #DegradingPinchedBW.cpp
     PUBLIC
+      MaterialState.h
       UniaxialMaterial.h
       ElasticMaterial.h
       Elastic2Material.h
       ElasticPowerFunc.h
+
       UVCuniaxial.h
       Bilin.h
       Bilin02.h
@@ -139,8 +138,9 @@ target_sources(material
       Steel2.h
       OriginCentered.h
       ConcretewBeta.h
+      #Concrete01.h
       ConcreteD.h
-      ConcreteSakaiKawashima.h
+      #ConcreteSakaiKawashima.h
       ConcreteCM.h
       SteelMPF.h
       ElasticMultiLinear.h
@@ -152,14 +152,11 @@ target_sources(material
       BWBN.h
       AxialSpHD.h
       AxialSp.h
-      Neoprene.h
+      #Neoprene.h
       #Maxwell.h
       #ViscousDamper.h
       #BilinearOilDamper.h
       #Cast.h
-      #HardeningMaterial.h
-      #HardeningMaterial2.h
-      #Concrete01.h
       #Concrete02Thermal.h
       #Steel02Thermal.h
       #Steel01Thermal.h
@@ -186,7 +183,6 @@ target_sources(material
       #BoucWenOriginal.h
       #BoucWenMaterial.h
       #SecantConcrete.h
-      #HardeningMaterial2.h
       #Pinching4Material.h
       #BarSlipMaterial.h
       #FatigueMaterial.h
@@ -240,7 +236,6 @@ target_sources(material
       #StainlessECThermal.h
       #SteelECThermal.h
       #DamperMaterial.h
-      #MaterialState.h
       #OOHystereticMaterial.h
       #SPSW02.h
       #TDConcrete.h
@@ -249,13 +244,29 @@ target_sources(material
       #TDConcreteMC10NL.h
       #DegradingPinchedBW.h
 )
+if (NOT OPS_THREADSAFE)
+    target_sources(material
+	  PRIVATE
+              HardeningMaterial.cpp
+              HardeningMaterial2.cpp
+	  PUBLIC
+              HardeningMaterial.h
+              HardeningMaterial2.h
+    ) 
+endif()
 
 target_include_directories(material PUBLIC $(CMAKE_CURRENT_LIST_DIR))
 
-#add_subdirectory(PY)
-#add_subdirectory(snap)
 add_subdirectory(backbone)
 add_subdirectory(stiffness)
 add_subdirectory(strength)
 add_subdirectory(unloading)
 add_subdirectory(limitState)
+
+if(OPS_MATERIAL_UNIAXIAL_PY)
+    add_subdirectory(PY)
+endif()
+if(OPS_MATERIAL_UNIAXIAL_SNAP)
+    add_subdirectory(snap)
+endif()
+

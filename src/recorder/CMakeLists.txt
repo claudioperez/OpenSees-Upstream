@@ -2,7 +2,6 @@ add_library(recorder "")
 
 target_sources(recorder
     PRIVATE
-      AlgorithmIncrements.cpp
       DamageRecorder.cpp
       DatastoreRecorder.cpp
       DriftRecorder.cpp
@@ -11,7 +10,6 @@ target_sources(recorder
       EnvelopeDriftRecorder.cpp
       EnvelopeElementRecorder.cpp
       EnvelopeNodeRecorder.cpp
-      FilePlotter.cpp
       GSA_Recorder.cpp
       GmshRecorder.cpp
       #MPCORecorder.cpp
@@ -26,7 +24,6 @@ target_sources(recorder
       RemoveRecorder.cpp
       VTK_Recorder.cpp
     PUBLIC
-      AlgorithmIncrements.h
       DamageRecorder.h
       DatastoreRecorder.h
       DriftRecorder.h
@@ -35,7 +32,6 @@ target_sources(recorder
       EnvelopeDriftRecorder.h
       EnvelopeElementRecorder.h
       EnvelopeNodeRecorder.h
-      FilePlotter.h
       GSA_Recorder.h
       GmshRecorder.h
       #MPCORecorder.h
@@ -50,5 +46,16 @@ target_sources(recorder
       RemoveRecorder.h
       VTK_Recorder.h
 )
-
+if(OPS_OPTION_RENDERER)
+    target_sources(recorder
+	PRIVATE
+             AlgorithmIncrements.cpp
+             FilePlotter.cpp
+	PUBLIC
+             AlgorithmIncrements.h
+             FilePlotter.h
+    )
+endif()
+add_subdirectory(response)
 target_include_directories(recorder PUBLIC $(CMAKE_CURRENT_LIST_DIR))
+

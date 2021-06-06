@@ -8,8 +8,8 @@ target_sources(domain
 	LoadPatternIter.cpp
 	PathSeries.cpp
 	PathTimeSeries.cpp
-	#PathTimeSeriesThermal.cpp
-	#RectangularSeries.cpp
+	PathTimeSeriesThermal.cpp
+	RectangularSeries.cpp
 	TimeSeries.cpp
 	TrigSeries.cpp
 	ConstantSeries.cpp
@@ -30,8 +30,8 @@ target_sources(domain
 	LoadPatternIter.h
 	PathSeries.h
 	PathTimeSeries.h
-	#PathTimeSeriesThermal.h
-	#RectangularSeries.h
+	PathTimeSeriesThermal.h
+	RectangularSeries.h
 	TimeSeries.h
 	TrigSeries.h
 	ConstantSeries.h
