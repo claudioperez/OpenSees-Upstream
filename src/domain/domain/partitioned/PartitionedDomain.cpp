@@ -1372,8 +1372,9 @@ int PartitionedDomain::removeRecorders(void)
     if (this->Domain::removeRecorders() < 0)
         return -1;
 
+#ifdef _PARALLEL_PROCESSING
     this->barrierCheck(1.0);
-
+#endif
     return 0;
 }
 

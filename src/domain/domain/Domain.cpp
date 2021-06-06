@@ -67,7 +67,9 @@
 #include <SingleDomParamIter.h>
 
 #include <UniaxialMaterial.h>
+#ifdef OPS_ND_MATERIAL
 #include <NDMaterial.h>
+#endif
 #include <SectionForceDeformation.h>
 #include <CrdTransf.h>
 
@@ -2304,8 +2306,10 @@ void Domain::Print(OPS_Stream & s, int flag)
 
         OPS_printUniaxialMaterial(s, flag);
         s << ",\n";
+#ifdef OPS_ND_MATERIAL
         OPS_printNDMaterial(s, flag);
         s << ",\n";
+#endif
         OPS_printSectionForceDeformation(s, flag);
         s << ",\n";
         OPS_printCrdTransf(s, flag);

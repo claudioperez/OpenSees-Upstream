@@ -36,8 +36,8 @@
 #ifndef Domain_h
 #define Domain_h
 
-#include <OPS_Stream.h>
-#include <Vector.h>
+#include <handler/OPS_Stream.h>
+#include <matrix/Vector.h>
 
 class Element;
 class Node;
