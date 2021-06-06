@@ -209,7 +209,7 @@ include_directories(src
     src/actor/objectBroker
     src/actor/message)
 
-include_directories(include/)
+include_directories(include)
 
 include_directories(ext/CSPARSE)
 include_directories(ext/AMD)
