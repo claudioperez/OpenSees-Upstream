@@ -6,7 +6,7 @@ all:
 	#ar c liba.a **/*.o
 	c++ -shared -std=c++11 -fPIC \
 	    -Wl,-undefined,dynamic_lookup \
-	    -o pyg3.so \
+	    -o domain.so \
 	    -I../src/ \
 	    -I../include \
 	    $$(python3 -m pybind11 --includes) \
@@ -17,8 +17,8 @@ all:
 	    ~/lib/libSuperLU.a \
 	    ~/lib/libUmfpack.a \
 	    -lamd \
-	    pyg3.cpp
-	ipython -c 'import pyg3'
+	    domain.cpp
+	ipython -c 'import domain'
 	#c++ -shared -std=c++11 -fPIC \
 	#    -I../src/ \
 	#    -I../include \
