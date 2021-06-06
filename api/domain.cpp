@@ -2,15 +2,15 @@
 #include <domain/domain/Domain.h>
 #include <domain/element/Element.h>
 #include <ElementIter.h>
+#include <FEM_ObjectBroker.h>
 #include <Parameter.h>
+#include <Channel.h>
 #include <domain/node/Node.h>
 
 /* Error streams */
 #include <handler/OPS_Stream.h>
 #include <StandardStream.h>
 
-class Channel;
-class DOF_Group;
 
 
 /* Create global error stream */
@@ -47,7 +47,7 @@ PYBIND11_MODULE (domain, m)
         )
         .def ("getNumberDOF", &Node::getNumberDOF)
         .def ("getDisp", &Node::getDisp)
-        // .def ("sendSelf", &Node::sendSelf)
-        // .def ("recvSelf", &Node::recvSelf)
+        .def ("sendSelf", &Node::sendSelf)
+        .def ("recvSelf", &Node::recvSelf)
     ;
 }
