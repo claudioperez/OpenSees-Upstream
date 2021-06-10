@@ -2,13 +2,16 @@
 %What: "@(#) DomainSolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/DomainSolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/DomainSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DomainSolver: public LinearSOESolver  \\
+class DomainSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  MovableObject \\
+ MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent  LinearSOESolver \\
 \indent\indent\indent\indent {\bf DomainSolver} \\
@@ -39,14 +42,16 @@ the domain decomposition methods.  \\
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em DomainSolver(int classsTag);}  \\
+{\em DomainSolver(int classsTag);}  
+
 {\em classTag} is needed by the LinearSOESolver objects constructor. \\
 
 \noindent {\bf Destructor} \\
 \indent {\em virtual~ $\tilde{}$DomainSolver();}\\ 
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual int condenseA(int numInt) =0;} \\
+{\em virtual int condenseA(int numInt) =0;} 
+
 Causes the condenser to form $A_{ee}^* = A_{ee} -A_{ei} A_{ii}^{-1} A_{ie}$, where
 $A_{ii}$ is the first {\em numInt} rows of the $A$ matrix.  The
 original $A$ is changed as a result. $A_{ee}^*$ is to be stored in $A_{ee}$. \\

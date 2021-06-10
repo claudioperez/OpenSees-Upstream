@@ -6,14 +6,18 @@ i.e 1D, 2D and 3d PROBLEMS RETURN MATRICES AND VECTORS .. IF CHANGE,
 INTERFACE FOR UniaxialMaterial MAY THEN CHANGE. \\ 
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/material/Material.h$>$  \\
+\#include $<\tilde{ }$/material/Material.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Material: public TaggedObject, public MovableObject \\
+class Material: public TaggedObject, public MovableObject 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent {\bf Material} \\
 
 \noindent {\bf Description}  \\
@@ -24,13 +28,18 @@ is responsible for keeping track of stress, strain and the
 constitution for a particular point in the domain. \\ 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
-\indent {\em Material (int tag, int classTag);}  \\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$Material ();}\\ \\
+// Constructor 
+
+{\em Material (int tag, int classTag);}  \\ 
+
+// Destructor 
+
+{\em virtual~ $\tilde{}$Material ();}\\ 
+
 
 \noindent {\bf Constructor}  \\
-\indent {\em Material (int tag, int classTag);}  \\
+{\em Material (int tag, int classTag);}  
+
 To construct a Material whose unique integer among Materials in the
 domain is given by {\em tag}, and whose class identifier is given
 by {\em classTag}. These integers are passed to the TaggedObject and

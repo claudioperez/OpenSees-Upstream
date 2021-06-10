@@ -2,14 +2,18 @@
 %What: "@(#) ZeroLengthSection.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/element/zeroLength/ZeroLengthSection.h$>$  \\
+\#include $<\tilde{ }$/element/zeroLength/ZeroLengthSection.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ZeroLengthSection : public Element \\
+class ZeroLengthSection : public Element 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent Element \\
 \indent\indent\indent\indent {\bf ZeroLengthSection} \\
@@ -30,47 +34,66 @@ and {\em x}.
 \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em    ZeroLengthSection(int tag, 			      
 	       int dimension,
 	       int Nd1, int Nd2, 
 	       const Vector\& x,
 	       const Vector\& yprime,
 	       SectionForceDeformation\& theSection);} \\
-\indent {\em    ZeroLengthSection();} \\ \\
-\indent // Destructor \\
-\indent {\em    ~ZeroLengthSection();} \\ \\
-\indent    // public methods to obtain information about dof \& connectivity \\
-\indent {\em    int getNumExternalNodes(void) const;} \\
-\indent {\em    const ID \&getExternalNodes(void);} \\
-\indent {\em    int getNumDOF(void);} \\	
-\indent {\em    void setDomain(Domain *theDomain);} \\
+{\em    ZeroLengthSection();} \\ 
 
-\indent    // public methods to set the state of the element    \\
-\indent {\em    int commitState(void);} \\
+// Destructor 
+
+{\em    ~ZeroLengthSection();} \\ 
+
+   // public methods to obtain information about dof \& connectivity 
+
+{\em    int getNumExternalNodes(void) const;} 
+
+{\em    const ID \&getExternalNodes(void);} 
+
+\indent {\em    int getNumDOF(void);} \\	
+{\em    void setDomain(Domain *theDomain);} 
+
+
+   // public methods to set the state of the element    
+
+{\em    int commitState(void);} 
+
 \indent {\em    int revertToLastCommit(void);} \\        
 \indent {\em    int revertToStart(void);} \\        
 
-\indent    // public methods to obtain stiffness, mass, damping and residual information    \\
-\indent {\em    const Matrix \&getTangentStiff(void);} \\
+   // public methods to obtain stiffness, mass, damping and residual information    
+
+{\em    const Matrix \&getTangentStiff(void);} 
+
 \indent {\em    const Matrix \&getSecantStiff(void);} \\    
 \indent {\em    const Matrix \&getDamp(void);} \\    
 \indent {\em    const Matrix \&getMass(void);} \\    
 
 \indent {\em    void zeroLoad(void);} \\	
-\indent {\em    int addLoad(const Vector \&addP);} \\
+{\em    int addLoad(const Vector \&addP);} 
+
 \indent {\em    int addInertiaLoadToUnbalance(const Vector \&accel);} \\    
-\indent {\em    const Vector \&getResistingForce(void);} \\
+{\em    const Vector \&getResistingForce(void);} 
+
 \indent {\em    const Vector \&getResistingForceIncInertia(void);} \\            
 
-\indent    // public methods for element output \\
-\indent {\em    int sendSelf(int commitTag, Channel \&theChannel);} \\
-\indent {\em    int recvSelf(int commitTag, Channel \&theChannel, FEM\_ObjectBroker \&theBroker);} \\
+   // public methods for element output 
+
+{\em    int sendSelf(int commitTag, Channel \&theChannel);} 
+
+{\em    int recvSelf(int commitTag, Channel \&theChannel, FEM\_ObjectBroker \&theBroker);} 
+
 \indent {\em    int displaySelf(Renderer \&theViewer, int displayMode, float fact);} \\    
 \indent {\em    void Print(OPS_Stream \&s, int flag =0);} \\    
 
-\indent {\em    int setResponse(char **argv, int argc, Information \&eleInformation);} \\
-\indent {\em    int getResponse(int responseID, Information \&eleInformation);} \\
+{\em    int setResponse(char **argv, int argc, Information \&eleInformation);} 
+
+{\em    int getResponse(int responseID, Information \&eleInformation);} 
+
     
 
 
@@ -102,11 +125,13 @@ Element destructor deletes memory for storing the section model pointer.
 \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em    int getNumExternalNodes(void) const;} \\
+{\em    int getNumExternalNodes(void) const;} 
+
 Returns 2.
 \\
 
-\indent {\em    const ID \&getExternalNodes(void);} \\
+{\em    const ID \&getExternalNodes(void);} 
+
 Return {\bf ID} of size $2$ with the node tags defining the element.
 \\
 
@@ -115,13 +140,15 @@ Return the number of DOF for the element, which depends on the dimension of the 
 and the number of DOF associated with each node.
 \\
 
-\indent {\em    void setDomain(Domain *theDomain);} \\
+{\em    void setDomain(Domain *theDomain);} 
+
 Initialize element and define data structures.  Sets up the element
 transformation matrix, $A$, which defines the kinematic relationship between
 nodal displacements and section deformations.
 \\
 
-\indent {\em    int commitState(void);} \\
+{\em    int commitState(void);} 
+
 Commit state of element by committing state of the section.
 Return 0 if successful, !0 otherwise.
 \\
@@ -136,7 +163,8 @@ Revert state of element to initial state by reverting to initial state of the se
 Return 0 if successful, !0 otherwise.
 \\
 
-\indent {\em    const Matrix \&getTangentStiff(void);} \\
+{\em    const Matrix \&getTangentStiff(void);} 
+
 Return tangent stiffness matrix for element.  The element tangent is computed
 from the section tangent matrix, $k_b$, as $K_e = A^T k_b A$.  The section
 tangent is obtained by calling {\em getSectionTangent()}.
@@ -159,7 +187,8 @@ Return a zero mass matrix.
 The element has no loads, so this operation has no effect.
 \\
 
-\indent {\em    int addLoad(const Vector \&addP);} \\
+{\em    int addLoad(const Vector \&addP);} 
+
 The element has no loads, so this operation has no effect and returns 0.
 \\
 
@@ -167,7 +196,8 @@ The element has no loads, so this operation has no effect and returns 0.
 The element has no mass, so this operation has no effect and returns 0.
 \\
 
-\indent {\em    const Vector \&getResistingForce(void);} \\
+{\em    const Vector \&getResistingForce(void);} 
+
 Return resisting force vector for element.  The element resisting force is computed
 from the section stress resultants, $s$, as $P_e = A^T s$.  The section
 stress resulant is obtained by calling {\em getStressResultant()}.
@@ -177,11 +207,13 @@ stress resulant is obtained by calling {\em getStressResultant()}.
 Returns the result of {\em getResistingForce()} as there is no element mass.
 \\
 
-\indent {\em    int sendSelf(int commitTag, Channel \&theChannel);} \\
+{\em    int sendSelf(int commitTag, Channel \&theChannel);} 
+
 Send information about element and the section over a channel.
 \\
 
-\indent {\em    int recvSelf(int commitTag, Channel \&theChannel, FEM\_ObjectBroker \&theBroker);} \\
+{\em    int recvSelf(int commitTag, Channel \&theChannel, FEM\_ObjectBroker \&theBroker);} 
+
 Receive information about element and section from a channel.
 \\
 
@@ -193,11 +225,13 @@ Display element.
 Prints the element node tags and section model to the stream {em s}.
 \\
 
-\indent {\em    int setResponse(char **argv, int argc, Information \&eleInformation);} \\
+{\em    int setResponse(char **argv, int argc, Information \&eleInformation);} 
+
 Currently returns -1.
 \\
 
-\indent {\em    int getResponse(int responseID, Information \&eleInformation);} \\
+{\em    int getResponse(int responseID, Information \&eleInformation);} 
+
 Currently returns -1.
 \\
 

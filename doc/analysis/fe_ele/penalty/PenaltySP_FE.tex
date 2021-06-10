@@ -2,13 +2,16 @@
 %What: "@(#) PenaltySP_FE.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/fe\_ele/penalty/PenaltySP\_FE.h$>$  \\
+\#include $<\tilde{ }$/analysis/fe\_ele/penalty/PenaltySP\_FE.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class PenaltySP\_FE: public FE\_Element ;  \\
+class PenaltySP\_FE: public FE\_Element ;  
+
 
 \noindent {\bf Class Hierarchy}  \\
-\indent FE\_Element \\
+FE\_Element 
+
 \indent\indent {\bf PenaltySP\_FE} \\ 
 
 \noindent {\bf Description}  \\
@@ -51,12 +54,14 @@ printed and program terminates if there is not enough memory or no
 Node associated with the SP\_Constraint exists in the Domain.\\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$PenaltySP\_FE();}  \\
+{\em virtual~ $\tilde{}$PenaltySP\_FE();}  
+
 Invokes the destructor on the Matrix and Vector objects created in the
 constructor. \\
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual void setID(void);} \\
+{\em virtual void setID(void);} 
+
 Causes the PenaltySP\_FE to determine the mapping between it's equation
 numbers and the degrees-of-freedom. From the Node object link, created
 in the constructor, the DOF\_group corresponding to the Node
@@ -69,10 +74,12 @@ Node has no associated DOF\_Group, $-3$ if the constrained DOF
 specified is invalid for this Node and $-4$ if the ID in the
 DOF\_Group is too small for the Node. \\ 
 
-\indent {\em virtual const Matrix \&getTangent(Integrator *theIntegrator);} \\
+{\em virtual const Matrix \&getTangent(Integrator *theIntegrator);} 
+
 Returns the tangent Matrix created in the constructor. \\
 
-\indent {\em virtual const Vector \&getResidual(Integrator *theIntegrator);} \\
+{\em virtual const Vector \&getResidual(Integrator *theIntegrator);} 
+
 Sets the FE\_Elements contribution to the residual to be
 $\alpha * (U_s - U_t)$, where $U_s$ is the specified value of the
 constraint and $U_t$ the current trial displacement at the node

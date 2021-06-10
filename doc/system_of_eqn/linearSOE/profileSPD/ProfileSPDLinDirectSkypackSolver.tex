@@ -2,13 +2,16 @@
 %What: "@(#) ProfileSPDLinDirectSkypackSolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/profileSPD/ProfileSPDLinDirectSkypackSolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/profileSPD/ProfileSPDLinDirectSkypackSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ProfileSPDLinDirectSkypackSolver: public LinearSOESolver  \\
+class ProfileSPDLinDirectSkypackSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent ProfileSPDLinSolver \\
@@ -42,12 +45,14 @@ FEM\_ObjectBroker \&theBroker);}\\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em ProfileSPDLinDirectSkypackSolver();}  \\
+{\em ProfileSPDLinDirectSkypackSolver();}  
+
 A unique class tag (defined in $<$classTags.h$>$) is passed to the
 ProfileSPDLinSolver constructor. Sets {\em mCols} and {\em mRows}
 equal to $0$ and does not try and allocate any memory for the work arrays.\\
 
-\indent {\em ProfileSPDLinDirectSkypackSolver(int mCols, int mRows);}  \\
+{\em ProfileSPDLinDirectSkypackSolver(int mCols, int mRows);}  
+
 A unique class tag (defined in $<$classTags.h$>$) is passed to the
 ProfileSPDLinSolver constructor. Sets {\em mCols} and {\em mRows} and
 allocates space in memory for the work arrays {\em rw}, {\em tw} and
@@ -59,7 +64,8 @@ and {\em mRows} is set equal to $0$ and an error message is printed. \\
 Invokes delete on any work areas that have been constructed. \\
 
 \noindent {\bf Public Member Functions }  \\
-\indent {\em  int solve(void);} \\
+{\em  int solve(void);} 
+
 The solver first copies the B vector into X and then solves the
 BandSPDLinSOE system. If the matrix has not been factored, the matrix
 is first factored using the SKYPACK routine {\em skysf2()}, if {\em
@@ -72,7 +78,8 @@ obtained, i.e. the {\em skyss()} routine returns $0$ in the INFO
 argument, $0$ is returned, otherwise it prints a warning message and
 returns INFO. The solve process changes $A$ and $X$. \\   
 
-\indent {\em  int setSize(void);} \\
+{\em  int setSize(void);} 
+
 Is responsible for setting the {\em block} information required by the
 SKYPACK routines (block[0]=1; block[1]=size, block[2]=1) and for
 creating space for the {\em invD} work array. Returns $0$ if

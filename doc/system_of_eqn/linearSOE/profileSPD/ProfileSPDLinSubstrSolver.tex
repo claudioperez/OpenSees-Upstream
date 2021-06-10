@@ -12,7 +12,8 @@ UNDER CONSTRUCTION
 ProfileSPDLinSubstrSolver  \\ 
 
 \noindent {\bf Class Hierarchy} \\
-\indent  MovableObject \\
+ MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent  LinearSOESolver \\
 \indent\indent\indent\indent  DomainSolver \\
@@ -44,13 +45,15 @@ substructuring operations on a ProfileSPDLinSOE object. EXPAND. \\
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em ProfileSPDLinSubstrSolver(double tol = 1.0e-12);}  \\
+{\em ProfileSPDLinSubstrSolver(double tol = 1.0e-12);}  
+
 
 \noindent {\bf Destructor} \\
 \indent {\em $\tilde{ }$ProfileSPDLinSubstrSolver();}\\ 
 
 \noindent {\bf Public Methods}  \\
-\indent {\em int condenseA(int numInt);} \\
+{\em int condenseA(int numInt);} 
+
 Causes the condenser to form $A_{ee}^* = A_{ee} -A_{ei} A_{ii}^{-1} A_{ie}$, where
 $A_{ii}$ is the first {\em numInt} rows of the $A$ matrix.  The
 original $A$ is changed as a result. $A_{ee}^*$ is to be stored in $A_{ee}$. \\

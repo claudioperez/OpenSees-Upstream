@@ -2,13 +2,16 @@
 %What: "@(#) PlaneFrame.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/modelbuilder/PlaneFrame.h$>$  \\
+\#include $<$/modelbuilder/PlaneFrame.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class PlaneFrame: public ModelBuilder;  \\
+class PlaneFrame: public ModelBuilder;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent ModelBuilder \\
+ModelBuilder 
+
 \indent\indent {\bf PlaneFrame} \\
 
 \noindent {\bf Description} \\ 
@@ -17,11 +20,16 @@ models from an input file of specified format. \\
 
 \noindent {\bf Class Interface} \\ 
 \indent // Constructor \\ 
-\indent {\em PlaneFrame(theDomain \&theDomain);}\\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$PlaneFrame();}\\ \\
-\indent // Public Methods \\
-\indent {\em virtual buildFE\_Model(void) = 0;} \\
+{\em PlaneFrame(theDomain \&theDomain);}\\ 
+
+// Destructor 
+
+{\em virtual~ $\tilde{}$PlaneFrame();}\\ 
+
+// Public Methods 
+
+{\em virtual buildFE\_Model(void) = 0;} 
+
 
 
 \noindent {\bf Constructor} \\ 
@@ -35,7 +43,8 @@ This does nothing. It is the responsibility of the Domain object to delete
 all the domain components when the destructor is called on that object. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em virtual buildFE\_Model(void) = 0;} \\
+{\em virtual buildFE\_Model(void) = 0;} 
+
 The PlaneFrame will construct the Element, Node, Load and Constraint
 objects and add them to the Domain object associated with the PlaneFrame. 
 To do this the PlaneFrame object will prompt the user for the name of 

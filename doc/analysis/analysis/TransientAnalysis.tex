@@ -2,13 +2,16 @@
 %What: "@(#) TransientAnalysis.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/analysis/TransientAnalysis.h$>$  \\
+\#include $<\tilde{ }$/analysis/analysis/TransientAnalysis.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class TransientAnalysis: public Analysis;  \\
+class TransientAnalysis: public Analysis;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Analysis \\
+Analysis 
+
 \indent\indent {\bf TransientAnalysis} \\
 
 \noindent {\bf Description} \\ 
@@ -18,17 +21,26 @@ object is responsible for performing a transient analysis on the domain. \\
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em TransientAnalysis(Domain \&theDomain, double tStart,
 double tFinish);}\\  
-\indent // Destructor \\
-\indent {\em virtual~$\tilde{}$TransientAnalysis();}\\ \\
-\indent // Public Methods\\
-\indent {\em virtual void setTimeStart(double tStart);}\\
-\indent {\em virtual void setTimeFinish(double tFinish);}\\ \\
-\indent // Protected Data \\
-\indent {\em double tStart} \\
-\indent {\em double tFinish} \\
+// Destructor 
+
+{\em virtual~$\tilde{}$TransientAnalysis();}\\ 
+
+// Public Methods
+
+{\em virtual void setTimeStart(double tStart);}
+
+{\em virtual void setTimeFinish(double tFinish);}\\ 
+
+// Protected Data 
+
+{\em double tStart} 
+
+{\em double tFinish} 
+
 
 \noindent {\bf Constructor} \\
 \indent {\em TransientAnalysis(Domain \&theDomain, double tStart,
@@ -42,7 +54,8 @@ transient analysis to {\em tStart} and {\em tFinish}. \\
 Does nothing. \\
 
 \noindent {\bf Pure Virtual Public Member Functions}\\
-\indent {\em virtual int analyze(void) =0;} \\
+{\em virtual int analyze(void) =0;} 
+
 Invoked to perform a dynamic analysis on the model. The type of analysis
 performed, depends on the type of the objects in the analysis
 aggregation. Returns a $0$ if successful, otherwise a negative number

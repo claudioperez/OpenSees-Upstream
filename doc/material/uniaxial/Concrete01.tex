@@ -4,14 +4,18 @@
 UNDER CONSTRUCTION.\\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/material/Concrete01.h$>$  \\
+\#include $<\tilde{ }$/material/Concrete01.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Concrete01: public MaterialModel \\
+class Concrete01: public MaterialModel 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent MaterialModel \\
 \indent\indent\indent UniaxialMaterial \\
 \indent\indent\indent\indent {\bf Concrete01} \\
@@ -30,24 +34,38 @@ argument matTag is used to uniquely identify the material object among
 material objects in the BasicBuilder object. \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em Concrete01(int tag, double fpc, double eco, double fpcu,
 double ecu,double epsmin=NEG\_INF\_STRAIN, double
 epsmax=POS\_INF\_STRAIN);} \\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$Concrete01();}\\ \\
-\indent // Public Methods \\
-\indent {\em int setTrialStrain(double strain); } \\
-\indent {\em double getStress(void); } \\
-\indent {\em double getTangent(void); } \\
-\indent {\em int commitState(void); } \\
-\indent {\em int revertToLastCommit(void); } \\
-\indent {\em int revertToStart(void); } \\
-\indent {\em UniaxialMaterial *getCopy(void); } \\ \\
-\indent // Public Methods for Output\\
-\indent {\em    int sendSelf(int commitTag, Channel \&theChannel); }\\
+// Destructor 
+
+{\em $\tilde{ }$Concrete01();}\\ 
+
+// Public Methods 
+
+{\em int setTrialStrain(double strain); } 
+
+{\em double getStress(void); } 
+
+{\em double getTangent(void); } 
+
+{\em int commitState(void); } 
+
+{\em int revertToLastCommit(void); } 
+
+{\em int revertToStart(void); } 
+
+{\em UniaxialMaterial *getCopy(void); } \\ 
+
+// Public Methods for Output
+
+{\em    int sendSelf(int commitTag, Channel \&theChannel); }
+
 \indent {\em    int recvSelf(int commitTag, Channel \&theChannel, 
 		 FEM\_ObjectBroker \&theBroker); }\\
-\indent {\em    void Print(OPS_Stream \&s, int flag =0);} \\
+{\em    void Print(OPS_Stream \&s, int flag =0);} 
+
 
 

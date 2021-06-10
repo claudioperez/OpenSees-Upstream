@@ -4,13 +4,16 @@
 UNDER CONSTRUCTION
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/partitioner/DomainPartitioner.h$>$  \\
+\#include $<\tilde{ }$/domain/partitioner/DomainPartitioner.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DomainPartitioner \\
+class DomainPartitioner 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf DomainPartitioner} \\
+{\bf DomainPartitioner} 
+
 
 
 \noindent {\bf Description}  \\
@@ -21,32 +24,45 @@ node graph of the domain. The partitioner uses a GraphPartitioner and
 a LoadBalancingAlgo to partition and load balance the domain. \\
 
 \noindent {\bf Class Interface}  \\
-\indent  // Constructors  \\
-\indent {\em DomainPartitioner(GraphPartitioner \&theGraphPartitioner,\\
+ // Constructors  
+
+{\em DomainPartitioner(GraphPartitioner \&theGraphPartitioner,
+
 \indent\indent\indent	LoadBalancer \&theLoadBalancer);} \\
 \indent {\em DomainPartitioner(GraphPartitioner
 \&theGraphPartitioner);}\\ \\
-\indent Destructor  \\
-\indent {\em virtual~ $\tilde{}$DomainPartitioner();}  \\ \\
-\indent // Public Methods  \\
+Destructor  
+
+{\em virtual~ $\tilde{}$DomainPartitioner();}  \\ 
+
+// Public Methods  
+
 \indent{\em virtual void setPartitionedDomain(PartitionedDomain
 \&theDomain);}\\
-\indent {\em virtual int partition(int numParts);}\\
-\indent {\em virtual void balance(Graph \&theWeightedGraph)} \\ \\
-\indent // Public Methods Used by the LoadBalancer  \\
-\indent {\em virtual Graph \&getNumPartitions(void)} \\
-\indent {\em virtual Graph \&getPartitionGraph(void)} \\
-\indent {\em virtual Graph \&getColoredGraph(void); } \\
+{\em virtual int partition(int numParts);}
+
+{\em virtual void balance(Graph \&theWeightedGraph)} \\ 
+
+// Public Methods Used by the LoadBalancer  
+
+{\em virtual Graph \&getNumPartitions(void)} 
+
+{\em virtual Graph \&getPartitionGraph(void)} 
+
+{\em virtual Graph \&getColoredGraph(void); } 
+
 \indent {\em virtual void swapVertex(int from, int to, int vertexTag,
 bool notAdjacentOther = true); } \\ 
 \indent {\em virtual void swapBoundary(int from, int to, bool
 notAdjacentOther = true); } \\ 
-\indent {\em virtual int releaseVertex(int from, \\
+{\em virtual int releaseVertex(int from, 
+
 \indent\indent\indent\indent\indent\indent int vertexTag, \\
 \indent\indent\indent\indent\indent\indent Graph \&theWeightedPartitionGraph, \\
 \indent\indent\indent\indent\indent\indent double factorGreater, \\
 \indent\indent\indent\indent\indent\indent bool adjacentVertexOonly); } \\
-\indent {\em virtual int releaseBoundary(int from, \\
+{\em virtual int releaseBoundary(int from, 
+
 \indent\indent\indent\indent\indent\indent Graph \&theWeightedPartitionGraph, \\
 \indent\indent\indent\indent\indent\indent double factorGreater, \\
 \indent\indent\indent\indent\indent\indent bool adjacentVertexOonly); } \\
@@ -54,7 +70,8 @@ notAdjacentOther = true); } \\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em DomainPartitioner(GraphPartitioner \&theGraphPartitioner,\\
+{\em DomainPartitioner(GraphPartitioner \&theGraphPartitioner,
+
 \indent\indent\indent	LoadBalancer \&theLoadBalancer);} \\
 Constructs a DomainPartitioner which will use {\em
 theGraphPartitioner} to initially partition the PartitionedDomain
@@ -62,14 +79,16 @@ using the element graph and the {\em theLoadBalancer} to load balance
 the PartitionedDomain. The max number of subdomains that the Domain can be 
 partitioned is currently set at 8.\\
 
-\indent {\em DomainPartitioner(GraphPartitioner \&theGraphPartitioner);}\\
+{\em DomainPartitioner(GraphPartitioner \&theGraphPartitioner);}
+
 Constructs a DomainPartitioner which will use {\em
 theGraphPartitioner} to initially partition the PartitionedDomain. The
 max number of subdomains that the Domain can be partitioned is
 currently set at 8.\\ 
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$DomainPartitioner();}  \\
+{\em virtual~ $\tilde{}$DomainPartitioner();}  
+
 
 
 \noindent {\bf Public Member Functions}  \\
@@ -136,10 +155,12 @@ object, where {\em load} is vector of size {\em numParts}
 containing the load of each subdomain. \\ 
 
 \noindent {\bf Public Member Functions Used by the Balancing Algorithm}  \\
-\indent {\em virtual Graph \&getNumPartitions(void)} \\
+{\em virtual Graph \&getNumPartitions(void)} 
+
 Returns the number of partitions in the PartitionedDomain. \\
 
-\indent {\em virtual Graph \&getPartitionGraph(void)} \\
+{\em virtual Graph \&getPartitionGraph(void)} 
+
 Method which returns the partition graph. This is a graph with a
 vertex for every partition and an edge between partitions if there
 exists an element in one partition which is connected to an element

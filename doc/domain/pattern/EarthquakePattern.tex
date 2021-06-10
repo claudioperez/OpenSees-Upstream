@@ -2,17 +2,21 @@
 %What: "@(#) EarthquakePattern.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/pattern/EarthquakePattern.h$>$  \\
+\#include $<\tilde{ }$/domain/pattern/EarthquakePattern.h$>$  
+
 
 NEEDS MODIFICATION TO ALLOW MULTIPLE EARTHQUAKE PATTERNS, SO DON''T
 HAVE TO SET R IN NODES EACH APPLYLOAD.\\
 
 \noindent {\bf Class Declaration}  \\
-\indent class EarthquakePattern: public LoadPattern  \\
+class EarthquakePattern: public LoadPattern  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent LoadPattern \\
 \indent\indent\indent\indent {\bf EarthquakePattern} \\
@@ -27,13 +31,17 @@ the model.\\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em EarthquakePattern(int tag, int classTag);}\\ \\
+{\em EarthquakePattern(int tag, int classTag);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$EarthquakePattern();}\\  \\
+{\em virtual $\tilde{ }$EarthquakePattern();}\\  
+
 \indent // Public Methods \\ 
 \indent {\em virtual void applyLoad(double time);} \\ 
-\indent // Protected Methods \\ \\
-\indent {\em int addMotion(GroundMotion \&theMotion)} \\
+// Protected Methods \\ 
+
+{\em int addMotion(GroundMotion \&theMotion)} 
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em EarthquakePattern(int tag, int classTag);}\\ 
@@ -55,6 +63,7 @@ to the number of GroundMotion objects. For each node in the Domain
 objects. SIMILAR OPERATION WITH VEL and ACCEL NEEDS TO BE INVOKED ON
 ELEMENTS .. NEED TO MODIFY ELEMENT INTERFACE \\
 
-\indent {\em int addMotion(GroundMotion \&theMotion)} \\
+{\em int addMotion(GroundMotion \&theMotion)} 
+
 Adds the GroundMotion, {\em theMotion} to the list of GroundMotion
 objects. \\

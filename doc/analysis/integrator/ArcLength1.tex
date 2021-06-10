@@ -2,13 +2,16 @@
 %What: "@(#) ArcLength1.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/ArcLength1.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/ArcLength1.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ArcLength1: public StaticIntegrator  \\
+class ArcLength1: public StaticIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent StaticIntegrator \\
@@ -162,22 +165,33 @@ be solved for $\Delta \lambda_n^{(i)}$
 
 \end{enumerate}
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
-\indent {\em ArcLength1(double arc, double $\alpha$ = 1.0);}\\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$ArcLength1();}\\  \\
-\indent // Public Methods \\
-\indent {\em int newStep(void);} \\
-\indent {\em int update(const Vector \&$\Delta U$);} \\
-\indent {\em int domainChanged(void); }\\ \\
-\indent // Public Methods for Output\\
+// Constructors 
+
+{\em ArcLength1(double arc, double $\alpha$ = 1.0);}\\ 
+
+// Destructor 
+
+{\em $\tilde{ }$ArcLength1();}\\  
+
+// Public Methods 
+
+{\em int newStep(void);} 
+
+{\em int update(const Vector \&$\Delta U$);} 
+
+{\em int domainChanged(void); }\\ 
+
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 \noindent {\bf Constructors} \\
-\indent {\em ArcLength1(double dS, double alpha = 1.0);}\\ \\
+{\em ArcLength1(double dS, double alpha = 1.0);}\\ 
+
 The integer INTEGRATOR\_TAGS\_ArcLength1 (defined in
 $<$classTags.h$>$) is passed to the StaticIntegrator classes
 constructor. The value of $\alpha$ is set to {\em alpha} and 

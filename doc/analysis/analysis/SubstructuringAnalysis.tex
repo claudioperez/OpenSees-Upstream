@@ -2,14 +2,17 @@
 %What: "@(#) SubstructuringAnalysis.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/analysis/analysis/SubstructuringAnalysis.h$>$  \\
+\#include $<$/analysis/analysis/SubstructuringAnalysis.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class SubstructuringAnalysis: public DomainDecompositionAnalysis;  \\
+class SubstructuringAnalysis: public DomainDecompositionAnalysis;  
+
 
 \noindent {\bf Class Hierarchy} \\
 \indent MovableObject
-\indent Analysis \\
+Analysis 
+
 \indent\indent DomainDecompositionAnalysis \\
 \indent\indent\indent {\bf SubstructuringAnalysis} \\
 
@@ -20,7 +23,8 @@ It differs from the DomainDecompositionAnalysis class only in that the
 constructor ensures that a SubstructuringSolver is given for the Solver.
 
 \noindent {\bf Constructors} \\
-\indent {\em SubstructuringAnalysis(Subdomain \&theDomain, \\
+{\em SubstructuringAnalysis(Subdomain \&theDomain, 
+
 \indent\indent\indent\indent\indent\indent\indent ConstraintHandler \&theHandler, \\
 \indent\indent\indent\indent\indent\indent\indent DOF\_Numberer \&theNumberer, \\
 \indent\indent\indent\indent\indent\indent\indent AnalysisModel \&theModel,\\

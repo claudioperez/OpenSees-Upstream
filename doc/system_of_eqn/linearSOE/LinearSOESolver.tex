@@ -2,13 +2,16 @@
 %What: "@(#) LinearSOESolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/LinearSOESolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/LinearSOESolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class LinearSOESolver: public Solver  \\
+class LinearSOESolver: public Solver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent {\bf LinearSOESolver} \\
 
@@ -28,7 +31,8 @@ satisfied. \\
 \indent\indent {\em virtual int setSize(void) =0;} \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em LinearSOESolver(int classTag);}  \\
+{\em LinearSOESolver(int classTag);}  
+
 The integer {\em classTag} is passed to the Solver. \\
 
 \noindent {\bf Destructor} \\
@@ -36,13 +40,15 @@ The integer {\em classTag} is passed to the Solver. \\
 Does nothing. Provided so the subclasses destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int solve(void) =0;} \\
+{\em virtual int solve(void) =0;} 
+
 Causes the LinearSOESolver to solve the system of equations $Ax=b$ for $x$.
 Returns $0$ if successful , negative number if not; the actual value depending on
 the type of LinearSOESolver. The result of the solve are to be stored
 in the $x$ vector of the LinearSOE by the object.\\
 
-\indent {\em virtual int setSize(void) =0;} \\
+{\em virtual int setSize(void) =0;} 
+
 This is invoked by the {\em LinearSOE} object when {\em setSize()} has
 been invoked on it. Solvers may sometimes need to store additional
 data that needs to be updated if the size of the system of equation

@@ -2,14 +2,18 @@
 %What: "@(#) Element.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/element/truss/Truss.h$>$  \\
+\#include $<\tilde{ }$/element/truss/Truss.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Truss: public Element \\
+class Truss: public Element 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent Element \\
 \indent\indent\indent\indent {\bf Truss} \\
@@ -55,7 +59,8 @@ object. \\
 \indent\indent\indent\indent UniaxialMaterial &theMaterial, \\
 \indent\indent\indent\indent double A, double M=0.0); } \\
 
-\indent {\em Truss();}  \\
+{\em Truss();}  
+
 This is the constructor invoked by an FEM\_ObjectBroker object. It
 constructs an empty Truss element. The {\em recvSelf()} method must be
 invoked on the object for it to set the internal data. \\
@@ -64,14 +69,17 @@ invoked on the object for it to set the internal data. \\
 \indent {\em virtual~ $\tilde{}$Truss();}\\ 
 
 \noindent {\bf Public Methods }  \\
-\indent {\em int getNumExternalNodes(void) const;} \\
+{\em int getNumExternalNodes(void) const;} 
+
 Returns 2; \\
 
-\indent {\em const ID \&getExternalNodes(void);} \\
+{\em const ID \&getExternalNodes(void);} 
+
 Returns an ID object of size $2$ containing the two node identifiers $Nd1$
 and $Nd2$. \\
 
-\indent {\em int getNumDOF(void);}\\
+{\em int getNumDOF(void);}
+
 To return the number of dof associated with the Truss. This depends on
 the dimension of the problem and the number of dof associated with the
 nodes.  \\

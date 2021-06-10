@@ -2,13 +2,16 @@
 %What: "@(#) SystemOfEqn.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/SystemOfEqn.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/SystemOfEqn.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class SystemOfEqn:  public MovableObject \\
+class SystemOfEqn:  public MovableObject 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent {\bf SystemOfEqn} \\
 \indent\indent\indent LinearSOE \\
 \indent\indent\indent EigenSOE \\
@@ -30,7 +33,8 @@ system of equations. \\
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em SystemOfEqn(int classTag);}  \\
+{\em SystemOfEqn(int classTag);}  
+
 The integer {\em classTag} is provided to the constructor for the
 MovableObject.  \\
 
@@ -39,7 +43,8 @@ MovableObject.  \\
 Does nothing. Declared to allow the subclass destructor to be called. \\
 
 \noindent {\bf Public Method }  \\
-\indent {\em virtual int solve(void) =0;} \\
+{\em virtual int solve(void) =0;} 
+
 Invoked to cause the system of equation object to solve itself. To
 return $0$ if successful, negative number if not.
 

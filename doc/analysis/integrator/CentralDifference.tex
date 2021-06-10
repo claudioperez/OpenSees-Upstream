@@ -2,13 +2,16 @@
 %What: "@(#) CentralDifference.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/CentralDifference.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/CentralDifference.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class CentralDifference: public TransientIntegrator  \\
+class CentralDifference: public TransientIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent TransientIntegrator \\
@@ -83,7 +86,8 @@ displacement or acceleration to {\em dispFlag}. \\
 Invokes the destructor on the Vector objects created. \\
 
 \noindent {\bf Public Methods}\\
-\indent {\em int formEleTangent(FE\_Element *theEle);} \\
+{\em int formEleTangent(FE\_Element *theEle);} 
+
 This tangent for each FE\_Element is defined to be $\K_e = c1 \K + c2
 \D + c3 \M$, where c1,c2 and c3 were determined in the last invocation
 of the {\em newStep()} method.  The method returns $0$ after

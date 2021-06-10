@@ -3,15 +3,18 @@
 \noindent {\bf DummyNode} \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<$DummyNode.h$>$  \\
+\#include $<$DummyNode.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DummyNode: public DomainComponent  \\
+class DummyNode: public DomainComponent  
+
 
 
 
 \noindent {\bf Class Hierarchy} \\
-\indent DomainComponent \\
+DomainComponent 
+
 \indent\indent {\bf DummyNode} \\
 
 \noindent {\bf Description}  \\
@@ -23,16 +26,19 @@ calls involving DOF\_Group are handled by the dummy node. \\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em DummyNode(Node &theRealNode);}  \\
+{\em DummyNode(Node &theRealNode);}  
+
 To construct a dummy node which is associated with the node pointed to
 by {\em theRealNode}. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$ DummyNode();} \\
+{\em virtual~$\tilde{}$ DummyNode();} 
+
 
 %%%%%%%% Public Member Functions - In addition to DOMAIN
 \noindent {\bf Public Member Functions }  \\
-\indent {\em virtual void setDOF\_GroupPtr(DOF\_Group *theDOF\_Grp);} \\
+{\em virtual void setDOF\_GroupPtr(DOF\_Group *theDOF\_Grp);} 
+
 Each DummyNode, when involved with a StaticCondensationAnalysis
 analysis, will be associated with a DOF\_Group object. It is the
 DOF\_Group that contains the ID of equation numbers. When invoked this

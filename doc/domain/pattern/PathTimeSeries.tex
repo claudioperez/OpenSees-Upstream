@@ -2,13 +2,16 @@
 %What: "@(#) PathTimeSeries.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$domain/pattern/PathTimeSeries.h$>$  \\
+\#include $<\tilde{ }$domain/pattern/PathTimeSeries.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class PathTimeSeries: public DomainComponent  \\
+class PathTimeSeries: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent TimeSeries \\
 \indent\indent\indent {\bf PathTimeSeries} \\
 
@@ -24,15 +27,20 @@ beyond the last path point a load factor of $0.0$ will be returned.\\
 \indent // Constructors \\ 
 \indent {\em PathTimeSeries(Vector \&thePath, Vector \&time; double cFactor);}\\ 
 \indent {\em PathTimeSeries(char *fileName, Vector \&time; double cFactor);}\\ 
-\indent {\em PathTimeSeries();}\\ \\
+{\em PathTimeSeries();}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$PathTimeSeries();}\\  \\
+{\em virtual $\tilde{ }$PathTimeSeries();}\\  
+
 \indent // Public Methods \\ 
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
-\indent {\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
+{\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}
+
 \indent {\em  virtual int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0);}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0);}
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em PathTimeSeries(Vector \&thePath, Vector \&time; 
@@ -56,7 +64,8 @@ returns. Constructs the two vectors for the data and reads the data
 from the files into the two vectors. Prints a warning message if no
 space is available for the Vectors.\\
 
-\indent {\em PathTimeSeries();}\\ \\
+{\em PathTimeSeries();}\\ 
+
 For a FEM\_ObjectBroker to instantiate an empty PathTimeSeries, recvSelf()
 must be invoked on this object. The tag TSERIES\_TAG\_PathTimeSeries is
 passed to the TimeSeries constructor. \\
@@ -67,7 +76,8 @@ passed to the TimeSeries constructor. \\
 Invokes the destructor on the two Vectors created to hold the data. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
 Determines the load factor based on the {\em pseudoTime} and the data
 points. Returns $0.0$ if {\em pseudoTime} is greater than time of last
 data point, otherwise returns a linear interpolation of the data
@@ -85,7 +95,8 @@ Channel with this newly created Vector object, and then again with the
 FEM\_ObjectBroker \&theBroker);}\\
 Does the mirror image of {\em sendSelf()}. \\
 
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}
+
 Prints the string 'PathTimeSeries', the factor{\em cFactor}, and the time
 increment {\em dT}. If {\em flag} is equal to $1.0$ {\em
 thePath} and {\em time} Vector are also printed\\

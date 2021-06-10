@@ -2,13 +2,16 @@
 %What: "@(#) SparseGenColLinSolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/SparseGen/SparseGenColLinSolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/SparseGen/SparseGenColLinSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class SparseGenColLinSolver: public LinearSOESolver  \\
+class SparseGenColLinSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent {\bf SparseGenColLinSolver} \\
@@ -27,7 +30,8 @@ through the pointer {\em theSOE}, which is a protected pointer. \\
 \indent\indent {\em virtual int setLinearSOE(SparseGenColLinSOE \&theSOE);} \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em SparseGenColLinSolver(int classTag);}  \\
+{\em SparseGenColLinSolver(int classTag);}  
+
 The integer {\em classTag} is passed to the LinearSOESolver classes
 constructor. \\ 
 
@@ -36,7 +40,8 @@ constructor. \\
 Does nothing, provided so the subclasses destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int setLinearSOE(SparseGenColLinSOE \&theSOE);} \\
+{\em virtual int setLinearSOE(SparseGenColLinSOE \&theSOE);} 
+
 Sets the link to the SparseGenColLinSOE object {\em theSOE}. This is the
 object on which the solver will perform the numerical computations. \\
 

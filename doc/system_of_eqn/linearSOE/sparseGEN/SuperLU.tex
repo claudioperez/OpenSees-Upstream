@@ -6,10 +6,12 @@
 }$/system\_of\_eqn/linearSOE/fullGEN/SuperLU.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class SuperLU: public SparseGenColLinSolver  \\
+class SuperLU: public SparseGenColLinSolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  MovableObject \\
+ MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent  SparseGenColLinSolver \\
@@ -27,13 +29,20 @@ factorization; the preordering for sparsity is completely separate
 from the factorization and a number of ordering schemes are provided. \\
 
 \noindent {\bf Interface}  \\
-\indent // Constructor \\
-\indent {\em SuperLU();}  \\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$SuperLU();}\\  \\
-\indent // Public Methods \\
-\indent {\em int solve(void);} \\
-\indent {\em int setSize(void);} \\
+// Constructor 
+
+{\em SuperLU();}  \\ 
+
+// Destructor 
+
+{\em $\tilde{ }$SuperLU();}\\  
+
+// Public Methods 
+
+{\em int solve(void);} 
+
+{\em int setSize(void);} 
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
@@ -67,7 +76,8 @@ Invokes delete on {\em permR}, {\em permC} and {\em etree} arrays. \\
 
 
 \noindent {\bf Public Methods }  \\
-\indent {\em int solve(void);} \\
+{\em int solve(void);} 
+
 First copies $B$ into $X$ and then solves the FullGenLinSOE system 
 it is associated with (pointer kept by parent class) by calling the SeuperLU
 routine {\em dgstrf()}, if the system is marked as not having been factored,
@@ -78,7 +88,8 @@ factored and returns $0$, otherwise it prints a warning message and
 returns INFO. The solve process changes $A$ and $X$ and sets the char
 {\em rafact} to {\em Y}. \\   
 
-\indent {\em int setSize(void);} \\
+{\em int setSize(void);} 
+
 Obtains the size of the system from it's associaed SparseGenColLinSOE
 object. With this information it creates space for the integer arrays
 {\em permR}, {\em permC} and {\em etree}. It then creates the

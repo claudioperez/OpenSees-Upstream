@@ -6,10 +6,12 @@
 }$/analysis/handler/PenaltyConstraintHandler.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class PenaltyConstraintHandler: public ConstraintHandler  \\
+class PenaltyConstraintHandler: public ConstraintHandler  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent ConstraintHandler \\
 \indent\indent\indent {\bf PenaltyConstraintHandler} \\
 
@@ -24,16 +26,22 @@ constraints by moifying the tangent matrix and residual vector. \\
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em PenaltyConstraintHandler(double alphaSP, double
 alphaMP);}\\  \\ 
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$PenaltyConstraintHandler();}\\  \\
-\indent // Public Methods\\
+// Destructor 
+
+{\em virtual~ $\tilde{}$PenaltyConstraintHandler();}\\  
+
+// Public Methods
+
 \indent {\em virtual int handle(const ID *nodeToBeNumberedLast
 =0); } \\ 
-\indent {\em virtual void clearAll(void);} \\ \\
-\indent {\em int sendSelf(int commitTag, Channel \&theChannel); } \\
+{\em virtual void clearAll(void);} \\ 
+
+{\em int sendSelf(int commitTag, Channel \&theChannel); } 
+
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker); } \\
 
@@ -52,7 +60,8 @@ Currently invokes {\em clearAll()}, this will change when {\em
 clearAll()} is rewritten. \\
 
 \noindent {\bf Public Methods }\\
-\indent {\em virtual int handle(const ID *nodeToBeNumberedLast =0) =0;} \\
+{\em virtual int handle(const ID *nodeToBeNumberedLast =0) =0;} 
+
 Determines the number of FE\_Elements and DOF\_Groups needed from the
 Domain (a one to one mapping between Elements and FE\_Elements,
 SP\_Constraints and PenaltySP\_FEs, MP\_Constraints and PenaltyMP\_FEs and

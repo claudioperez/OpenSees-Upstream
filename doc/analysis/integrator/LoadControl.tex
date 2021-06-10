@@ -2,13 +2,16 @@
 %What: "@(#) LoadControl.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/LoadControl.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/LoadControl.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class LoadControl: public StaticIntegrator  \\
+class LoadControl: public StaticIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent StaticIntegrator \\
@@ -50,21 +53,29 @@ results in the following equation:
 \end{equation} 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em LoadControl(double $\delta \lambda_1$, int Jd, 
 double $\delta \lambda_{min}$, double $\delta \lambda_{max}$);}\\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$LoadControl();}\\  \\
-\indent // Public Methods \\
-\indent {\em int newStep(void);} \\
-\indent {\em int update(const Vector \&$\Delta U$);} \\
+// Destructor 
+
+{\em $\tilde{ }$LoadControl();}\\  
+
+// Public Methods 
+
+{\em int newStep(void);} 
+
+{\em int update(const Vector \&$\Delta U$);} 
+
 \indent {\em int setDeltaLambda(double $\delta
 \lambda$;)} \\ \\
-\indent // Public Methods for Output\\
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 \noindent {\bf Constructors} \\
 \indent {\em LoadControl(double $\delta \lambda_1$, int Jd, 
@@ -107,7 +118,8 @@ warning message and a $-1$ is returned if no AnalysisModel is
 associated with the object. \\
 
 
-\indent {\em int setDeltaLambda(double $\delta \lambda$;)} \\
+{\em int setDeltaLambda(double $\delta \lambda$;)} 
+
 Sets the value of the load increment in {\em newStep()} to be $\delta
 \lambda$. Returns $0$.\\
 

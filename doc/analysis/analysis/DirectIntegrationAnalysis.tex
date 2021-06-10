@@ -2,13 +2,16 @@
 %What: "@(#) DirectIntegrationAnalysis.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/analysis/DirectIntegrationAnalysis.h$>$  \\
+\#include $<\tilde{ }$/analysis/analysis/DirectIntegrationAnalysis.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DirectIntegrationAnalysis: public TransientAnalysis;  \\
+class DirectIntegrationAnalysis: public TransientAnalysis;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Analysis \\
+Analysis 
+
 \indent\indent TransientAnalysis \\
 \indent\indent\indent {\bf DirectIntegrationAnalysis} \\
 
@@ -42,7 +45,8 @@ U = P(U).
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor  \\
+// Constructor  
+
 \indent {\em DirectIntegrationAnalysis(double tStart, double tFinal,
 double $\delta t$, \\
 \indent\indent\indent\indent\indent\indent Domain \&theDomain, \\
@@ -53,17 +57,27 @@ double $\delta t$, \\
 \indent\indent\indent\indent\indent\indent LinearSOE \&theSOE, \\
 \indent\indent\indent\indent\indent\indent TransientIntegrator
 \&theIntegrator);}  \\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$DirectIntegrationAnalysis();}\\  \\
-\indent // Public Methods \\
-\indent {\em int analyze(void);} \\
-\indent {\em void clearAll(void);} \\
-\indent {\em void domainChange(void);}\\ \\
-\indent // Public Methods to vary the type of Analysis\\
+// Destructor 
+
+{\em virtual~ $\tilde{}$DirectIntegrationAnalysis();}\\  
+
+// Public Methods 
+
+{\em int analyze(void);} 
+
+{\em void clearAll(void);} 
+
+{\em void domainChange(void);}\\ 
+
+// Public Methods to vary the type of Analysis
+
 \indent {\em void setDeltaT(double $\delta t$);} \\ 
-\indent {\em int setAlgorithm(EquiSolnAlgo \&theAlgorithm);} \\
-\indent {\em int setIntegrator(StaticIntegrator \&theIntegrator);}\\
-\indent {\em int setLinearSOE(LinearSOE \&theSOE);} \\
+{\em int setAlgorithm(EquiSolnAlgo \&theAlgorithm);} 
+
+{\em int setIntegrator(StaticIntegrator \&theIntegrator);}
+
+{\em int setLinearSOE(LinearSOE \&theSOE);} 
+
 
 \noindent {\bf Constructor} \\
 \indent {\em DirectIntegrationAnalysis(double tStart, double tFinal,
@@ -93,7 +107,8 @@ Does nothing. {\em clearAll()} must be invoked if the destructor on
 the objects in the aggregation need to be invoked. \\
 
 \noindent {\bf Public Methods}\\
-\indent {\em int analyze(void);} \\
+{\em int analyze(void);} 
+
 Invoked to perform a transient analysis on the FE\_Model. The method
 checks to see if the domain has changed before it performs the
 analysis. The DirectIntegrationAnalysis object performs the following:
@@ -153,7 +168,8 @@ is returned. \\
 Sets the time increment used in the {\em analyze()} method to $\delta
 t$. Returns $0$.\\
 
-\indent {\em int setAlgorithm(EquiSolnAlgo \&newAlgorithm);}\\
+{\em int setAlgorithm(EquiSolnAlgo \&newAlgorithm);}
+
 To change the algorithm between analysis. It first invokes the
 destructor on the old SolutionAlgorithm object associated with the
 analysis. It then sets the SolutionAlgorithm 
@@ -164,7 +180,8 @@ domainChanged()}, otherwise it invokes {\em domainChanged()} on the
 new SolutionAlgorithm. Returns $0$ if successful, a warning message
 and a negative number if not.\\
 
-\indent {\em int setIntegrator(TransientIntegrator \&newIntegrator);}\\
+{\em int setIntegrator(TransientIntegrator \&newIntegrator);}
+
 To change the integration scheme between analysis. It first invokes the
 destructor on the old Integrator object associated with the
 analysis. It then sets the SolutionAlgorithm 
@@ -176,7 +193,8 @@ invokes {\em domainChanged()}, otherwise it invokes {\em
 domainChanged()} on the new Integrator. Returns $0$ if
 successful, a warning message and a negative number if not.\\
 
-\indent {\em int setLinearSOE(LinearSOE \&newSOE);}\\
+{\em int setLinearSOE(LinearSOE \&newSOE);}
+
 To change the linear system of equation object between analysis. It
 first invokes the destructor on the old LinearSOE object associated
 with the analysis. It then sets the SolutionAlgorithm 

@@ -8,11 +8,14 @@ UNDER CONSTRUCTION
 }$/analysis/analysis/DomainDecompositionAnalysis.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class DomainDecompositionAnalysis: public Analysis, public MovableObject;  \\
+class DomainDecompositionAnalysis: public Analysis, public MovableObject;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Analysis \\
-\indent MovableObject \\
+Analysis 
+
+MovableObject 
+
 \indent\indent {\bf DomainDecompositionAnalysis} \\
 
 \noindent {\bf Description} \\ 
@@ -49,8 +52,10 @@ operations.
 
 
 \noindent {\bf Class Interface} \\
-\indent {\bf Constructors} \\
-\indent {\em DomainDecompositionAnalysis(Subdomain \&theDomain, \\
+{\bf Constructors} 
+
+{\em DomainDecompositionAnalysis(Subdomain \&theDomain, 
+
 \indent\indent\indent\indent\indent\indent\indent ConstraintHandler
 \&theHandler, \\ 
 \indent\indent\indent\indent\indent\indent\indent DOF\_Numberer \&theNumberer, \\
@@ -59,39 +64,63 @@ operations.
 \indent\indent\indent\indent\indent\indent\indent IncrementalIntegrator \&theIntegrator,\\
 \indent\indent\indent\indent\indent\indent\indent LinearSOE \&theSOE, \\
 \indent\indent\indent\indent\indent\indent\indent DomainDecompositionSolver \&theSolver);} \\
-\indent {\em DomainDecompositionAnalysis(Subdomain \&theDomain);} \\
+{\em DomainDecompositionAnalysis(Subdomain \&theDomain);} 
+
 \indent {\em DomainDecompositionAnalysis(int classTag, Subdomain
 \&theDomain);}\\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$DomainDecompositionAnalysis();}\\ \\
-\indent // Public Methods \\
-\indent {\em virtual int analyze(void);} \\
-\indent {\em virtual void domainChanged(void);} \\
-\indent {\em int getNumExternalEqn(void);} \\
-\indent {\em     virtual int  computeInternalResponse(void);}\\
-\indent {\em     virtual int  formTangent(void);}\\
-\indent {\em     virtual int  formResidual(void);}\\
-\indent {\em int  formTangVectProduct(Vector \&u);}\\
-\indent {\em virtual Matrix \&getTangent();}\\
-\indent {\em virtual Vector \&getResidual();}\\
-\indent {\em const Vector \&getTangVectProduct();}\\
+// Destructor 
+
+{\em virtual~ $\tilde{}$DomainDecompositionAnalysis();}\\ 
+
+// Public Methods 
+
+{\em virtual int analyze(void);} 
+
+{\em virtual void domainChanged(void);} 
+
+{\em int getNumExternalEqn(void);} 
+
+{\em     virtual int  computeInternalResponse(void);}
+
+{\em     virtual int  formTangent(void);}
+
+{\em     virtual int  formResidual(void);}
+
+{\em int  formTangVectProduct(Vector \&u);}
+
+{\em virtual Matrix \&getTangent();}
+
+{\em virtual Vector \&getResidual();}
+
+{\em const Vector \&getTangVectProduct();}
+
 \indent {\em int sendSelf(Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker);}\\ 
 \indent {\em int recvSelf(Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker);}\\\\ 
-\indent // Protected Member Functions  \\
-\indent {\em Subdomain  *getSubdomainPtr(void) const;} \\
-\indent {\em ConstraintHandler *getConstraintHandlerPtr(void) const;}\\
-\indent {\em DOF\_Numberer *getDOF\_NumbererPtr(void) const;}\\
-\indent {\em AnalysisModel  *getAnalysisModelPtr(void) const;}\\
-\indent {\em DomainDecompAlgo  *getDomainDecompAlgoPtr(void) const;}\\
-\indent {\em IncrementalIntegrator *getIncrementalIntegratorPtr(void) const;}\\
-\indent {\em LinearSOE *getLinSOEPtr(void) const;}\\
-\indent {\em DomainSolver *getDomainSolverPtr(void) const;} \\
+// Protected Member Functions  
+
+{\em Subdomain  *getSubdomainPtr(void) const;} 
+
+{\em ConstraintHandler *getConstraintHandlerPtr(void) const;}
+
+{\em DOF\_Numberer *getDOF\_NumbererPtr(void) const;}
+
+{\em AnalysisModel  *getAnalysisModelPtr(void) const;}
+
+{\em DomainDecompAlgo  *getDomainDecompAlgoPtr(void) const;}
+
+{\em IncrementalIntegrator *getIncrementalIntegratorPtr(void) const;}
+
+{\em LinearSOE *getLinSOEPtr(void) const;}
+
+{\em DomainSolver *getDomainSolverPtr(void) const;} 
+
 
 
 \noindent {\bf Constructors} \\
-\indent {\em DomainDecompositionAnalysis(Subdomain \&theDomain, \\
+{\em DomainDecompositionAnalysis(Subdomain \&theDomain, 
+
 \indent\indent\indent\indent\indent\indent\indent ConstraintHandler
 \&theHandler, \\ 
 \indent\indent\indent\indent\indent\indent\indent DOF\_Numberer \&theNumberer, \\
@@ -108,7 +137,8 @@ setLinks(theModel, theSOE)} on {\em theIntegrator}, and it invokes {\em
 setLinks(theModel,theIntegrator, theSOE,theSolver,theSubdomain)} on {\em
 theSolnAlgo}. Finally it invokes {\em setAnalysis(*this)} on {\em theSubdomain}. \\
 
-\indent {\em DomainDecompositionAnalysis(Subdomain \&theDomain);} \\
+{\em DomainDecompositionAnalysis(Subdomain \&theDomain);} 
+
 A constructor that is used when creating a DomainDecompositionObject which
 is to receive itself afterwards. Sets the links to the Subdomain. It is
 essential that this object {\em recvSelf()} before DomainDecompositionAnalysis
@@ -124,7 +154,8 @@ Subdomain. \\
 \indent {\em virtual~ $\tilde{}$DomainDecompositionAnalysis();}\\ 
 
 \noindent {\bf Public Methods}\\
-\indent {\em virtual int analyze(void);} \\
+{\em virtual int analyze(void);} 
+
 Causes an error message to be output and returns $-1$. \\
 
 {\em virtual void domainChanged(void);} \\
@@ -227,7 +258,8 @@ is invoked on the {\em Subdomain}.  Returns 0.\\
 
 
 \noindent {\bf Protected Methods}  \\
-\indent {\em Subdomain  *getSubdomainPtr(void) const;} \\
+{\em Subdomain  *getSubdomainPtr(void) const;} 
+
 A const member function which returns a pointer to {\em theSubdomain}. \\
 
 {\em ConstraintHandler *getConstraintHandlerPtr(void) const;}\\
@@ -252,7 +284,8 @@ theIntegrator}.\\
 {\em LinearSOE *getLinSOEPtr(void) const;}\\
 A const member function which returns a pointer to {\em theSOE}.\\
 
-\indent {\em DomainSolver *getDomainSolverPtr(void) const;} \\
+{\em DomainSolver *getDomainSolverPtr(void) const;} 
+
 A const member function which returns a pointer to {\em theSolver}.
 associated with the DomainDecompositionAnalysis object. \\
 

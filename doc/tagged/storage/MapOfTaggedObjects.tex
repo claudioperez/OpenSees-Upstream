@@ -2,13 +2,16 @@
 % What: "@(#) MapOfTaggedObjects.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/tagged/storage/MapOfTaggedObjects.h$>$ \\
+\#include $<\tilde{ }$/tagged/storage/MapOfTaggedObjects.h$>$ 
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class MapOfTaggedObjects  \\
+class MapOfTaggedObjects  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  {TaggedObjectStorage} \\
+ {TaggedObjectStorage} 
+
 \indent\indent  {\bf MapOfTaggedObjects} \\
 
 \noindent {\bf Description}  \\
@@ -22,24 +25,38 @@ a MapOfTaggedObjectsIter object to iterate through the objects which
 have been added.\\ 
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructor  \\
-\indent {\em MapOfTaggedObjects();} \\\\
-\indent // Destructor \\
-\indent {\em  ~MapOfTaggedObjects();} \\  \\
-\indent // Pure Public Methods \\
-\indent {\em int  setSize(int newSize);}\\
+// Constructor  
+
+{\em MapOfTaggedObjects();} \\
+
+// Destructor 
+
+{\em  ~MapOfTaggedObjects();} \\  
+
+// Pure Public Methods 
+
+{\em int  setSize(int newSize);}
+
 \indent {\em bool addComponent(TaggedObject *newComponent, bool
 allowMultiple = false);}\\
-\indent {\em TaggedObject *removeComponent(int tag);}\\
-\indent {\em int getNumComponents(void) const;}\\
-\indent {\em TaggedObject *getComponentPtr(int tag);}\\
-\indent {\em TaggedObjectIter \&getComponents(void);}\\
-\indent {\em TaggedObjectStorage *getEmptyCopy(void)}\\
-\indent {\em void clearAll(void);}\\
-\indent {\em void Print(OPS_Stream \&s, int flag);}\\
+{\em TaggedObject *removeComponent(int tag);}
+
+{\em int getNumComponents(void) const;}
+
+{\em TaggedObject *getComponentPtr(int tag);}
+
+{\em TaggedObjectIter \&getComponents(void);}
+
+{\em TaggedObjectStorage *getEmptyCopy(void)}
+
+{\em void clearAll(void);}
+
+{\em void Print(OPS_Stream \&s, int flag);}
+
 
 \noindent {\bf Constructor} \\
-\indent {\em MapOfTaggedObjects();} \\
+{\em MapOfTaggedObjects();} 
+
 Creates the map object and an iter for iterating through the objects
 that are added to the map. \\
 
@@ -48,7 +65,8 @@ that are added to the map. \\
 Does nothing.\\
 
 \noindent {\bf Public Member Functions} \\
-\indent {\em int setSize(int newSize);}\\
+{\em int setSize(int newSize);}
+
 Checks to see that max size for the map (which is a built in value
 defined for the template class) is larger than {\em newSize}. Returns
 $0$ if successful. If not successful, the warning method is invoked
@@ -66,7 +84,8 @@ method is invoked on the global ErrorHandler and {\em false} is
 returned. Note that the map template does not allow items with
 duplicate keys to be added.\\ 
  
-\indent {\em TaggedObject *removeComponent(int tag);}\\
+{\em TaggedObject *removeComponent(int tag);}
+
 To remove the component whose tag is given by {\em tag} from the
 container and return a pointer to the object. Invokes {\em find(tag)}
 on the map to first see if the element is there. If it is {\em
@@ -74,22 +93,26 @@ erase(tag)} is invoked on the map to remove the item. $0$ is returned
 if the component is not in the map, otherwise a pointer to the component
 is returned.\\
 
-\indent {\em int  getNumComponents(void) const;}\\
+{\em int  getNumComponents(void) const;}
+
 Returns the number of components currently stored in the
 container. This is found by invoking {\em size()} on the map object.\\
 
-\indent {\em TaggedObject *getComponentPtr(int tag);}\\
+{\em TaggedObject *getComponentPtr(int tag);}
+
 To return a pointer to the TaggedObject whose identifier is given by
 {\em tag}. Invokes {\em find(tag)} on the map to determine if the
 component is in the container. If it is a pointer to the component is
 returned. If it is not in the map $0$ is returned. \\
 
-\indent {\em TaggedObjectIter \&getComponents(void);}\\
+{\em TaggedObjectIter \&getComponents(void);}
+
 To return an iter for iterating through the objects that have been
 added to the container. Each MapOfTaggedObjects object has its own iter. This
 iter() is first reset and a reference to this iter is then returned.\\ 
 
-\indent {\em TaggedObjectStorage *getEmptyCopy(void)}\\
+{\em TaggedObjectStorage *getEmptyCopy(void)}
+
 Returns a pointer to a new MapOfTaggedObjects which was created using
 {\em new()}. The new container that is returned is an empty container.
 If not enough memory is available to create this object the warning
@@ -98,13 +121,15 @@ Note that it is the responsibility of the caller to invoke the destructor on the
 object that is returned. \\
 
 
-\indent {\em void clearAll(void);}\\
+{\em void clearAll(void);}
+
 To remove all objects from the container and {\bf to invoke the
 destructor on these objects}. Goes through the container, invoking the
 destructor on any object in the map. It then invokes {\em clear()} on
 the map object to clear it. \\
 
-\indent {\em void Print(OPS_Stream \&s, int flag =0);}\\
+{\em void Print(OPS_Stream \&s, int flag =0);}
+
 Invokes {\em Print(s,flag)} on all objects which have been added to
 the container. 
 

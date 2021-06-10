@@ -4,13 +4,16 @@
 UNDER CONSTRUCTION - removeVertex \& printSpecial NEED TO BE ADDED. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/graph/graph/ArrayGraph.h$>$  \\
+\#include $<\tilde{ }$/graph/graph/ArrayGraph.h$>$  
+
 
 \noindent {\bf Class Decleration}  \\
-\indent class ArrayGraph: public Graph \\
+class ArrayGraph: public Graph 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Graph \\
+Graph 
+
 \indent\indent {\bf ArrayGraph} \\
 
 \noindent {\bf Description}  \\
@@ -47,7 +50,8 @@ instance.} \\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em ArrayGraph(int arraySize);}  \\
+{\em ArrayGraph(int arraySize);}  
+
 To construct an empty ArrayGraph. Creates a Vertex ** array, {\em
 theVertices} of size {\em arraySize} and sets the number of vertices,
 {\em numVertex}, and number of edges {\em numEdge} to $0$. If it fails
@@ -56,14 +60,16 @@ $0$; subclasses can check if successfull construction by invoking the
 protected member function {\em getArraySize()}. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$ArrayGraph();}  \\
+{\em virtual~$\tilde{}$ArrayGraph();}  
+
 Goes through {\em theVertices} and anywhere it finds a non-zero pointer,
 invokes the vertex destructor on that pointer. It then invokes the
 destructor on theVertices array. \\
 
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int addVertex(Vertex *vertexPtr);}  \\
+{\em virtual int addVertex(Vertex *vertexPtr);}  
+
 Method to add a vertex to the graph. If the adjacency list
 of the vertex is not empty the graph will first check to see all
 vertices in the the the vertices adjacency list exist in the graph
@@ -111,7 +117,8 @@ vertex. It does this by going through theVertices array and invoking
 {\em Print()}  on each non-zero pointer.\\
 
 \noindent {\bf Protected Methods }  \\
-\indent {\em virtual int getArraySize(void) const;} \\
+{\em virtual int getArraySize(void) const;} 
+
 A method to return the size of the graphs array. \\
 
 

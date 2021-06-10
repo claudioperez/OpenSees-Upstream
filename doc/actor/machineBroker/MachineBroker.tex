@@ -2,13 +2,16 @@
 %What: "@(#) MachineBroker.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/actor/machineBroker/MachineBroker.h$>$  \\
+\#include $<\tilde{ }$/actor/machineBroker/MachineBroker.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class MachineBroker \\
+class MachineBroker 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf MachineBroker} \\
+{\bf MachineBroker} 
+
 
 \noindent {\bf Description}  \\
 \indent MachineBrokers are objects that are used to start remote
@@ -16,16 +19,22 @@ processes running on the parallel machine. \\
 
 
 \noindent {\bf Constructor}  \\
-\indent // Constructor  \\
-\indent {\em MachineBroker();}  \\\\
-\indent // Destructor \\
-\indent {\em virtual $\tilde{ }$MachineBroker();}\\  \\
-\indent // Public Member Functions  \\
+// Constructor  
+
+{\em MachineBroker();}  \\
+
+// Destructor 
+
+{\em virtual $\tilde{ }$MachineBroker();}\\  
+
+// Public Member Functions  
+
 \indent {\em virtual int startActor(char *actorProgram, Channel \&theChannel,
 int compDemand =0) =0;}\\
 
 \noindent {\bf Constructor}  \\
-\indent {\em MachineBroker();}  \\
+{\em MachineBroker();}  
+
 
 \noindent {\bf Destructor} \\
 \indent {\em virtual~ $\tilde{}$MachineBroker();}\\ 

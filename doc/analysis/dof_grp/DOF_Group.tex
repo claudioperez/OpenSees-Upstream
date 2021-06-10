@@ -5,10 +5,12 @@ NEED A GETTANGFORCE() LIKE FE\_ELEMENT FOR ELE\_BY\_ELE SOLVERS. KEEP A
 POINTER TO LAST INTEGRATOR. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/dof\_grp/DOF\_Group.h$>$  \\
+\#include $<\tilde{ }$/analysis/dof\_grp/DOF\_Group.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DOF\_Group;  \\
+class DOF\_Group;  
+
 
 \noindent {\bf Description}  \\
 \indent DOF\_Group is a base class. An object of type DOF\_Group
@@ -26,44 +28,73 @@ nodal trial response quantities. \\
 
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructors  \\
-\indent {\em DOF\_Group(int tag, Node *theNode);}  \\
-\indent {\em DOF\_Group(int tag, int numDOF);}  \\ \\
-\indent // Destructor  \\
-\indent {\em virtual~ $\tilde{}$DOF\_Group();}  \\\\
-\indent // Public Methods - Mapping  \\
-\indent {\em virtual void setID(int dof, int value);} \\
-\indent {\em virtual void setID(const ID \&values);} \\
-\indent {\em virtual const ID \&getID(void) const;} \\
-\indent {\em virtual int getTag(void) const;} \\
-\indent {\em virtual int getNumDOF(void) const;}\\
-\indent {\em virtual int getNumFreeDOF(void) const;}\\
-\indent {\em virtual int getNumConstrainedDOF(void) const;}\\ \\
+// Constructors  
+
+{\em DOF\_Group(int tag, Node *theNode);}  
+
+{\em DOF\_Group(int tag, int numDOF);}  \\ 
+
+// Destructor  
+
+{\em virtual~ $\tilde{}$DOF\_Group();}  \\
+
+// Public Methods - Mapping  
+
+{\em virtual void setID(int dof, int value);} 
+
+{\em virtual void setID(const ID \&values);} 
+
+{\em virtual const ID \&getID(void) const;} 
+
+{\em virtual int getTag(void) const;} 
+
+{\em virtual int getNumDOF(void) const;}
+
+{\em virtual int getNumFreeDOF(void) const;}
+
+{\em virtual int getNumConstrainedDOF(void) const;}\\ 
+
 \indent // Public Methods - Tangent \& Residual  \\ 
-\indent {\em virtual const Matrix \&getTangent(Integrator *theIntegrator)} \\
-\indent {\em virtual void zeroTangent(void);}\\
-\indent {\em virtual void addMtoTang(double factt);}\\
+{\em virtual const Matrix \&getTangent(Integrator *theIntegrator)} 
+
+{\em virtual void zeroTangent(void);}
+
+{\em virtual void addMtoTang(double factt);}
+
 \indent {\em virtual const Vector \&getUnbalance(Integrator
 *theIntegrator); }\\ 
-\indent {\em virtual void zeroUnbalance(void);}\\
-\indent {\em virtual void  addPtoUnbalance(double fact = 1.0);} \\ \\
+{\em virtual void zeroUnbalance(void);}
+
+{\em virtual void  addPtoUnbalance(double fact = 1.0);} \\ 
+
 \indent {\em virtual void addMtoTang(const Vector \&$\ddot u$,
 double fact);}\\ \\ 
-\indent // Public Methods - Node Response  \\
-\indent {\em virtual const Vector \&getCommittedDisp(void);} \\
-\indent {\em virtual const Vector \&getCommittedVel(void);} \\
-\indent {\em virtual const Vector \&getCommittedAccel(void);} \\
-\indent {\em virtual int setNodeDisp(const Vector \&u);} \\
-\indent {\em virtual int setNodeVel(const Vector \&$\dot u$);}\\
-\indent {\em virtual int setNodeAccel(const Vector \&$\ddot u$);}\\
-\indent {\em virtual int incrNodeDisp(const Vector \&u);} \\
-\indent {\em virtual int incrNodeVel(const Vector \&$\dot u$);}\\
-\indent {\em virtual int incrNodeAccel(const Vector \&$\ddot u$);}\\
+// Public Methods - Node Response  
+
+{\em virtual const Vector \&getCommittedDisp(void);} 
+
+{\em virtual const Vector \&getCommittedVel(void);} 
+
+{\em virtual const Vector \&getCommittedAccel(void);} 
+
+{\em virtual int setNodeDisp(const Vector \&u);} 
+
+{\em virtual int setNodeVel(const Vector \&$\dot u$);}
+
+{\em virtual int setNodeAccel(const Vector \&$\ddot u$);}
+
+{\em virtual int incrNodeDisp(const Vector \&u);} 
+
+{\em virtual int incrNodeVel(const Vector \&$\dot u$);}
+
+{\em virtual int incrNodeAccel(const Vector \&$\ddot u$);}
+
 
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em DOF\_Group(int tag, Node *theNode);}  \\
+{\em DOF\_Group(int tag, Node *theNode);}  
+
 Constructs a  DOF\_Group with an associated node given by {\em
 theNode} and a tag given by {\em tag}. During construction it
 determines the number of unknown dofs from the node, {\em numDOF}, and
@@ -86,11 +117,13 @@ the size of the Vector or the ID is $0$, i.e. ran out of memory, a
 warning message is orinted and {\em numDOF} set to $0$. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$DOF\_Group();}  \\
+{\em virtual~ $\tilde{}$DOF\_Group();}  
+
 Invokes the destructor on the Vector created to hold the unbalance. \\
 
 \noindent {\bf Public Methods - Equation Numbers}  \\
-\indent {\em virtual void setID(int dof, int value);} \\
+{\em virtual void setID(int dof, int value);} 
+
 Operation to set the equation number of the {\em dof'th} DOF in the
 DOF\_Group to {\em value}. In this base class, if {\em index} is a
 valid location, $0 < index < numDOF-1$ the operator {\em (index) =
@@ -134,21 +167,25 @@ the mapping information. \\
 
 \noindent {\bf Public Methods - Nodal Tangent contributions
 for transient}  \\ 
-\indent {\em virtual const Matrix \&getTangent(void)} \\
+{\em virtual const Matrix \&getTangent(void)} 
+
 Returns the current tangent matrix for the DOF\_Group. If no tangent
 matrix has been created, one of size(numDOF,numDOF) is constructed.
 If not enough space is available for a new tangent matrix, an error
 message is printed and an error Matrix is returned.. \\  
 
-\indent {\em virtual void formTangent(Integrator *theIntegrator)} \\
+{\em virtual void formTangent(Integrator *theIntegrator)} 
+
 To form the DOF\_Groups tangent. Invokes {\em formNodTangent(this)} on
 The Integrator object {\em theIntegrator}. \\
 
-\indent {\em virtual void zeroTangent(void);}\\
+{\em virtual void zeroTangent(void);}
+
 To zero the tangent. If a tangent matrix has been allocated,
 will invoke {\em Zero()} on the tangent matrix.\\
 
-\indent {\em virtual void addMtoTang(double fcat);}\\
+{\em virtual void addMtoTang(double fcat);}
+
 To add {\em fact} times the nodal mass matrix to the tangent
 matrix. In this base class, if a Matrix to store the tangent has not
 yet been created, one of size (numDOF,numDOF) is now created; if
@@ -159,7 +196,8 @@ $negative$ value. If no Node is associated with the DOF\_Group an
 error message is printed and nothing is done. \\
 
 \noindent {\bf Public Methods - Node Unbalance}  \\
-\indent {\em virtual void zeroUnbalance(void);}\\
+{\em virtual void zeroUnbalance(void);}
+
 To zero the unbalance vector. Invokes {\em Zero()} on the vector
 object used to store the unbalance information. \\
 
@@ -186,24 +224,28 @@ printed and nothing is done if no node is associated with the
 DOF\_Group. \\
 
 \noindent {\bf Public Methods - Node Response}  \\
-\indent {\em virtual const Vector \&getCommittedDisp(void);} \\
+{\em virtual const Vector \&getCommittedDisp(void);} 
+
 To return the committed displacement at the node. Returns the result
 of invoking {\em getDisp()} on the Node. If there is no associated
 node object, an error message is printed and an error Vector is
 returned. \\
 
 
-\indent {\em virtual const Vector \&getCommittedVel(void);} \\
+{\em virtual const Vector \&getCommittedVel(void);} 
+
 To return the committed velocity at the node. Returns the result of
 invoking {\em getVel()} on the Node. If there is no associated node
 object, an error message is printed and an error Vector is returned. \\
 
-\indent {\em virtual const Vector \&getCommittedAccel(void);} \\
+{\em virtual const Vector \&getCommittedAccel(void);} 
+
 To return the committed velocity at the node. Returns result of
 invoking  {\em getAccel()} on the Node. If there is no associated node
 object, an error message is printed and an error Vector is returned. \\
 
-\indent {\em virtual int setNodeDisp(const Vector \&u);} \\
+{\em virtual int setNodeDisp(const Vector \&u);} 
+
 This operation sets the value of the nodal trial displacement at the
 associated node. The vector {\em u} is of size equal to the number of
 equations in the AnalysisModel (this is not checked by the DOF\_Group).
@@ -241,9 +283,12 @@ MUST CHANGE AS setNodeDisp \\
 
 
 
-\indent {\em virtual int incrNodeDisp(const Vector \&u);} \\
-\indent {\em virtual int incrNodeVel(const Vector \&$u^{.}$);}\\
-\indent {\em virtual int incrNodeAccel(const Vector \&$u^{..}$);}\\
+{\em virtual int incrNodeDisp(const Vector \&u);} 
+
+{\em virtual int incrNodeVel(const Vector \&$u^{.}$);}
+
+{\em virtual int incrNodeAccel(const Vector \&$u^{..}$);}
+
 These methods are similar to those three just outlined, the only
 difference being that the trial response quantities at the nodes are
 incremented, not set, with the values now given; this is done by

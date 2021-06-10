@@ -3,13 +3,16 @@
 
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/graph/numberer/RCM.h$>$  \\
+\#include $<\tilde{ }$/graph/numberer/RCM.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class RCM: public GraphNumberer; \\
+class RCM: public GraphNumberer; 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent GraphNumberer \\
 \indent\indent\indent {\bf RCM} \\
 
@@ -33,14 +36,16 @@ FEM\_ObjectBroker \&theBroker);} \\
 FEM\_ObjectBroker \&theBroker); } \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em RCM(bool GPS = true);}  \\
+{\em RCM(bool GPS = true);}  
+
 The integer {\em classTag} is passed to the MovableObject classes
 constructor. The flag {\em GPS} is used to mark whether the
 Gibbs-Poole-Stodlmyer algorithm is used to determine a starting vertex
 when no starting vertex is given. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$RCM();}  \\
+{\em virtual~$\tilde{}$RCM();}  
+
 Invokes the destructor on any ID object created when {\em number()} is
 invoked. \\
 

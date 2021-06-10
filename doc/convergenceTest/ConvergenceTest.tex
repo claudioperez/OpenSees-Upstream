@@ -2,13 +2,16 @@
 %What: "@(#) ConvergenceTest.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{}$/convergenceTest/ConvergenceTest.h$>$  \\
+\#include $<\tilde{}$/convergenceTest/ConvergenceTest.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ConvergenceTest: public MovableObject  \\
+class ConvergenceTest: public MovableObject  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent {\bf ConvergenceTest} \\
 
 \noindent {\bf Description}  \\
@@ -28,7 +31,8 @@ the interface that all subclasses must provide. \\
 \indent\indent {\em virtual int test(void) =0;} \\
 
 \noindent {\bf Constructors}  \\
-\indent {\em ConvergenceTest();}  \\
+{\em ConvergenceTest();}  
+
 The integer {\em classTag} is passed to the MovableObject constructor. \\
 
 \noindent {\bf Destructor} \\
@@ -36,10 +40,12 @@ The integer {\em classTag} is passed to the MovableObject constructor. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int setEquiSolnAlgo(EquiSolnAlgo \&theAlgo) =0;} \\
+{\em virtual int setEquiSolnAlgo(EquiSolnAlgo \&theAlgo) =0;} 
+
 To set the corresponding EquiSolnAlgo class. \\
 
-\indent {\em virtual int test(void) =0;} \\
+{\em virtual int test(void) =0;} 
+
 To return a postive number if the convergence criteria defined for the
 object has been satisfied, the positibe number equal to the number of times 
 since {\em start} that {\em test()} has been invoked. Otherwise a negative number 
@@ -48,6 +54,7 @@ is returned if the test fails to meet the criteria and no more tests are to be
 performed due to limits set, i.e. the maximum number of iterations, otherwise a
 {\em -1} is to be returned.  \\
 
-\indent {\em virtual int start(void) =0;} \\
+{\em virtual int start(void) =0;} 
+
 This is invoked at the start of each iteration. To return {\em 0} if sucessfull, i.e 
 that testing can proceed, a negative number if not. \\

@@ -4,13 +4,16 @@
 MODIFY INTERFACE TO OFFER USER DEFINED STORAGE TYPE. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/analysis/model/AnalysisModel.h$>$  \\
+\#include $<$/analysis/model/AnalysisModel.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class AnalysisModel : public MovableObject  \\
+class AnalysisModel : public MovableObject  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent {\bf SolutionAlgorithm} \\
 
 \noindent {\bf Description}  \\
@@ -37,70 +40,109 @@ TaggedObjectStorage classes cannot be used for storage. This may
 change to allow efficient storage classes to be used.\\
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructors \\
-\indent {\em AnalysisModel();}  \\
-\indent {\em AnalysisModel(int classTag);}  \\ \\
-\indent // Destructor  \\
-\indent {\em virtual $\tilde{ }$AnalysisModel();}  \\\\
-\indent // Public Methods - Population/Depopulation  \\
-\indent {\em virtual bool addFE\_Element(FE\_Element *theElementPtr);}  \\
-\indent {\em virtual bool addDOF\_Group(DOF\_Group *theDOFPtr);}  \\
-\indent {\em virtual void clearAll(void);} \\ \\
-\indent // Public Member Functions - Access  \\
-\indent {\em virtual int getNumDOF\_Groups(void) const;}\\
-\indent {\em virtual DOF\_Group *getDOF\_GroupPtr(int tag);}\\
-\indent {\em virtual FE\_EleIter getFEs(void)=0;} \\
-\indent {\em virtual DOF\_Group getDOFs(void)=0;} \\ \\
-\indent // Public Member Functions - Connectivity  \\
-\indent {\em virtual void setNumEqn(int numEqn);} \\
-\indent {\em virtual int getNumEqn(void) const;} \\
-\indent {\em virtual const Graph \&getDOFGraph(void);} \\
-\indent {\em virtual const Graph \&getDOFGroupGraph(void);} \\ \\
-\indent // Public Member Functions - Update  \\
+// Constructors 
+
+{\em AnalysisModel();}  
+
+{\em AnalysisModel(int classTag);}  \\ 
+
+// Destructor  
+
+{\em virtual $\tilde{ }$AnalysisModel();}  \\
+
+// Public Methods - Population/Depopulation  
+
+{\em virtual bool addFE\_Element(FE\_Element *theElementPtr);}  
+
+{\em virtual bool addDOF\_Group(DOF\_Group *theDOFPtr);}  
+
+{\em virtual void clearAll(void);} \\ 
+
+// Public Member Functions - Access  
+
+{\em virtual int getNumDOF\_Groups(void) const;}
+
+{\em virtual DOF\_Group *getDOF\_GroupPtr(int tag);}
+
+{\em virtual FE\_EleIter getFEs(void)=0;} 
+
+{\em virtual DOF\_Group getDOFs(void)=0;} \\ 
+
+// Public Member Functions - Connectivity  
+
+{\em virtual void setNumEqn(int numEqn);} 
+
+{\em virtual int getNumEqn(void) const;} 
+
+{\em virtual const Graph \&getDOFGraph(void);} 
+
+{\em virtual const Graph \&getDOFGroupGraph(void);} \\ 
+
+// Public Member Functions - Update  
+
 \indent {\em virtual void setResponse(const const Vector \&disp, const
 const Vector \&vel, const const Vector \&accel);}\\ 
-\indent {\em virtual void setDisp(const const Vector \&disp);} \\
-\indent {\em virtual void setVel(const const Vector \&vel);} \\
-\indent {\em virtual void setAccel(const const Vector \&accel);} \\
-\indent {\em virtual void incrDisp(const const Vector \&disp);} \\
-\indent {\em virtual void incrVel(const const Vector \&vel);} \\
-\indent {\em virtual void incrAccel(const const Vector \&accel);} \\\\
-\indent // Public Member Functions - Trigger  \\
-\indent {\em void setLinks(Domain \&theDomain)} \\
+{\em virtual void setDisp(const const Vector \&disp);} 
+
+{\em virtual void setVel(const const Vector \&vel);} 
+
+{\em virtual void setAccel(const const Vector \&accel);} 
+
+{\em virtual void incrDisp(const const Vector \&disp);} 
+
+{\em virtual void incrVel(const const Vector \&vel);} 
+
+{\em virtual void incrAccel(const const Vector \&accel);} \\
+
+// Public Member Functions - Trigger  
+
+{\em void setLinks(Domain \&theDomain)} 
+
 \indent {\em virtual void applyLoadDomain(double timeStep = 0.0,
 double loadFactor = 1.0);}\\
-\indent {\em virtual void commitDomain(void);} \\
-\indent {\em virtual void updateDomain(void);}\\ \\
+{\em virtual void commitDomain(void);} 
+
+{\em virtual void updateDomain(void);}\\ 
+
 \indent {\em virtual void revertDomainToLastCommit(void);}\\ 
-\indent {\em virtual double getCurrentDomainTime(void);} \\
-\indent {\em virtual void   setCurrentDomainTime(double newTime);}\\
-\indent {\em virtual double getCurrentDomainLoadFactor(void);}\\
+{\em virtual double getCurrentDomainTime(void);} 
+
+{\em virtual void   setCurrentDomainTime(double newTime);}
+
+{\em virtual double getCurrentDomainLoadFactor(void);}
+
 \indent {\em virtual void   setCurrentDomainLoadFactor(double
 newFactor);}\\ \\
-\indent // Public Methods for Output\\
+// Public Methods for Output
+
 \indent {\em virtual int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em virtual int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\  \\
-\indent // Protected Member Functions  \\
-\indent {\em Domain *getDomainPtr(void) const;} \\
+// Protected Member Functions  
+
+{\em Domain *getDomainPtr(void) const;} 
+
 
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em AnalysisModel();}  \\
+{\em AnalysisModel();}  
+
 Constructs an empty AnalysisModel. The constructor allocates
 space for two arrays of 256 pointers to FE\_Elements and DOF\_Groups.
 If not enough memory is available for these arrays, an error message
 is printed and the program is terminated. Note these arrays grow
 automatically if the problem needs it.\\
 
-\indent {\em AnalysisModel(int classTag);}  \\
+{\em AnalysisModel(int classTag);}  
+
 Provided for subclasses to be used. The storage of the FE\_Elements
 and DOF\_Groups and iters to access them must be provided by the
 subclass. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$AnalysisModel();}  \\
+{\em virtual~ $\tilde{}$AnalysisModel();}  
+
 Is responsible for returning to memory the arrays used for storing
 pointers to the FE\_Element and DOF\_Groups which have been added to
 the AnalysisModel. It is not responsible for deleting the individual
@@ -109,7 +151,8 @@ ConstraintHandler. If the Graphs have been requested their destructor
 is invoked.\\ 
 
 \noindent {\bf Public Member Functions - Population/Depopulation}  \\
-\indent {\em virtual bool addFE\_Element(FE\_Element *theElement);}  \\
+{\em virtual bool addFE\_Element(FE\_Element *theElement);}  
+
 Adds the FE\_Element pointed to by {\em theElement} to the domain and
 invokes {\em setAnalysisModel(*this)} on the FE\_Element. If the
 array for the FE\_Elements is large enough, it adds this pointer to
@@ -144,29 +187,34 @@ $0$ and setting the number of components to $0$. If the Graphs have
 been created their destructor is invoked. Also sets {\em numEqn} to $0$. \\
 
 \noindent {\bf Public Member Functions - Access}  \\
-\indent {\em virtual int getNumDOF\_Groups(void) const;}\\
+{\em virtual int getNumDOF\_Groups(void) const;}
+
 Returns the number of DOF\_Group objects that have been added to the
 model.\\
 
-\indent {\em virtual DOF\_Group *getDOF\_GroupPtr(int tag);}\\
+{\em virtual DOF\_Group *getDOF\_GroupPtr(int tag);}
+
 Returns a pointer to the DOF\_Group object whose tag is given by {\em
 tag}.  It first checks to see if the DOF\_Group object is at the
 location in the array given by {\em tag}; if not it searches through
 the array to find the DOF\_Group object. Returns a pointer to the
 object if found, otherwise $0$ is returned.\\
 
-\indent {\em virtual FE\_EleIter getFEs(void)=0;} \\
+{\em virtual FE\_EleIter getFEs(void)=0;} 
+
 Returns an {\em FE\_EleIter} for the FE\_Elements of the model. \\
 
 {\em virtual DOF\_Group getDOFs(void)=0;} \\
 Returns a {\em DOF\_GrpIter} for the DOF\_Groups of the model. \\
 
 \noindent {\bf Public Member Functions - Connectivity}  \\
-\indent {\em virtual void setNumEqn(int numEqn);} \\
+{\em virtual void setNumEqn(int numEqn);} 
+
 Sets the value of the number of equations in the model. Invoked by the
 DOF\_Numberer when it is numbering the dofs. \\
 
-\indent {\em virtual int getNumEqn(void) const;} \\
+{\em virtual int getNumEqn(void) const;} 
+
 Returns the number of DOFs in the model which have been assigned
 an equation number. Returns the value passed in {\em setNumEqn()},
 if {\em setNumEqn()} was not invoked $0$ is returned.\\
@@ -236,7 +284,8 @@ incrNodeAccel(accel)} on each DOF\_Group. \\
 
 
 \noindent {\bf Public Member Functions - Trigger}  \\
-\indent {\em void setLinks(Domain \&theDomain)} \\
+{\em void setLinks(Domain \&theDomain)} 
+
 Method to set the link to the associated Domain. Invoked by
 during the construction of the {\em Analysis} object.\\
 
@@ -267,22 +316,26 @@ the Domain.\\
 Method which invokes {\em update()} on the domain. If no Domain has
 been set nothing is done and an error message is printed. \\ 
 
-\indent {\em virtual double getCurrentDomainTime(void);} \\
+{\em virtual double getCurrentDomainTime(void);} 
+
 To get the current time in the Domain. If no Domain has been set a
 warning message is printed and $0.0$ is returned, otherwise the result
 of invoking {\em getCurrentTime()} on the Domain is returned. \\
 
-\indent {\em virtual void   setCurrentDomainTime(double newTime);}\\
+{\em virtual void   setCurrentDomainTime(double newTime);}
+
 To set the current time in the Domain to be {\em newTime}. If no
 Domain has been set a warning message is printed, otherwise 
 {\em setCurrentTime(newTime)} is invoked on the Domain. \\
 
-\indent {\em virtual double getCurrentDomainLoadFactor(void);}\\
+{\em virtual double getCurrentDomainLoadFactor(void);}
+
 To get the current load factor in the Domain. If no Domain has been set a
 warning message is printed and $0.0$ is returned, otherwise the result
 of invoking {\em getCurrentLoadFactor()} on the Domain is returned. \\
 
-\indent {\em virtual void setCurrentDomainLoadFactor(double newFactor)};\\
+{\em virtual void setCurrentDomainLoadFactor(double newFactor)};
+
 To set the current load factor in the Domain to be {\em newFactor}. If no
 Domain has been set a warning message is printed, otherwise 
 {\em setCurrentLoadFactor(newFactor)} is invoked on the Domain. \\
@@ -299,7 +352,8 @@ FEM\_ObjectBroker \&theBroker)};\\
 Returns $0$.  \\
 
 \noindent {\bf Protected Member Functions}  \\
-\indent {\em Domain *getDomainPtr(void) const;} \\
+{\em Domain *getDomainPtr(void) const;} 
+
 Returns a pointer to the associated Domain, that is the Domain
 set when {\em setLinks()} was last invoked. 
 

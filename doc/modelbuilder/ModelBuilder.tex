@@ -2,13 +2,16 @@
 %What: "@(#) ModelBuilder.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/modelbuilder/ModelBuilder.h$>$  \\
+\#include $<\tilde{ }$/modelbuilder/ModelBuilder.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ModelBuilder;  \\
+class ModelBuilder;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf ModelBuilder} \\
+{\bf ModelBuilder} 
+
 
 \noindent {\bf Description} \\ 
 \indent The ModelBuilder class is an abstract base class. A subclass
@@ -19,13 +22,18 @@ components to the Domain.  \\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em ModelBuilder(theDomain \&theDomain);}\\ \\
+{\em ModelBuilder(theDomain \&theDomain);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$ModelBuilder();}\\  \\
+{\em virtual $\tilde{ }$ModelBuilder();}\\  
+
 \indent // Public Methods \\ 
-\indent {\em virtual buildFE\_Model(void) = 0;} \\ \\
-\indent // Protected Methods \\
-\indent {\em  Domain *getDomainPtr(void) const;} \\
+{\em virtual buildFE\_Model(void) = 0;} \\ 
+
+// Protected Methods 
+
+{\em  Domain *getDomainPtr(void) const;} 
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em ModelBuilder(theDomain \&theDomain);}\\ 
@@ -38,12 +46,14 @@ to the Domain object {\em theDomain}. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em virtual buildFE\_Model(void) = 0;} \\
+{\em virtual buildFE\_Model(void) = 0;} 
+
 The ModelBuilder will construct the Element, Node, Load and Constraint
 objects and add them to the Domain object associated with the ModelBuilder. \\
 
 \noindent {\bf Protected Methods} \\
-\indent {\em  Domain *getDomainPtr(void) const;} \\
+{\em  Domain *getDomainPtr(void) const;} 
+
 Returns a pointer to the Domain object passed in the constructor. This
 method can be used in the subclasses to get a pointer the Domain object
 to which to add the domain components. \\

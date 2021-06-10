@@ -2,13 +2,16 @@
 %What: "@(#) MaxNodeDispRecorder.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/recorder/MaxNodeDispRecorder.h$>$  \\
+\#include $<\tilde{ }$/recorder/MaxNodeDispRecorder.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class MaxNodeDispRecorder: public Recorder\\
+class MaxNodeDispRecorder: public Recorder
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Recorder \\
+Recorder 
+
 \indent\indent {\bf MaxNodeDispRecorder} \\
 
 \noindent {\bf Description}  \\
@@ -17,14 +20,20 @@ about the absolute maximum nodal displacement at a number of specified
 Nodes for a specified degree of freedom during an analysis. \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em MaxNodeDispRecorder(int dof, const ID \&nodeTags, Domain
 \&theDomain);}\\ \\ 
-\indent // Destructor \\
-\indent {\em $\tilde{ }$MaxNodeDispRecorder();}\\ \\
-\indent // Public Methods  \\
-\indent {\em int record(int commitTag);}\\
-\indent {\em int playback(int commitTag);}\\
+// Destructor 
+
+{\em $\tilde{ }$MaxNodeDispRecorder();}\\ 
+
+// Public Methods  
+
+{\em int record(int commitTag);}
+
+{\em int playback(int commitTag);}
+
 \indent {\em void restart(void);}\\ 
 
 \noindent {\bf Constructor}  \\
@@ -40,7 +49,8 @@ tags. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em int record(int commitTag);}\\
+{\em int record(int commitTag);}
+
 For each node in {\em nodeTags} the value of the {\em dof}'th committed
 displacement is obtained. If the absolute value of this is greater
 than the value currently stored in the Vector of max displacements,
@@ -49,7 +59,8 @@ theDomain} with the tag or the Node does not have a {\em dof}'th
 degree-of-freedom associated with it $0$ is entered in the
 Vector. Returns $0$. \\
 
-\indent {\em int playback(int commitTag);}\\
+{\em int playback(int commitTag);}
+
 Prints to {\em opserr} the Vector containing the maximum absolute nodal
 displacements. Note, at the end of the analysis, what is printed is
 independent of {\em commitTag}. Returns $0$. \\

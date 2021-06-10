@@ -4,14 +4,18 @@
 UNDER CONSTRUCTION. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/material/ElasticPPModel.h$>$  \\
+\#include $<\tilde{ }$/material/ElasticPPModel.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ElasticPPMaterial: public MaterialModel \\
+class ElasticPPMaterial: public MaterialModel 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent MaterialModel \\
 \indent\indent\indent UniaxialMaterial \\
 \indent\indent\indent\indent {\bf ElasticPPMaterial} \\
@@ -24,21 +28,36 @@ while the material is elastic and $| \sigma = E * \epsilon_p |$  while
 the material is undergoing plastic deformation. SOME MORE THEORY. \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
-\indent {\em ElasticPPMaterial(int tag, double E, double ep);}  \\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$ElasticPPMaterial();}\\ \\
-\indent // Public Methods \\
-\indent {\em int setTrialStrain(double strain); } \\
-\indent {\em double getStress(void); } \\
-\indent {\em double getTangent(void); } \\
-\indent {\em int commitState(void); } \\
-\indent {\em int revertToLastCommit(void); } \\
-\indent {\em int revertToStart(void); } \\
-\indent {\em UniaxialMaterial *getCopy(void); } \\ \\
-\indent // Public Methods for Output\\
-\indent {\em    int sendSelf(int commitTag, Channel \&theChannel); }\\
+// Constructor 
+
+{\em ElasticPPMaterial(int tag, double E, double ep);}  \\ 
+
+// Destructor 
+
+{\em $\tilde{ }$ElasticPPMaterial();}\\ 
+
+// Public Methods 
+
+{\em int setTrialStrain(double strain); } 
+
+{\em double getStress(void); } 
+
+{\em double getTangent(void); } 
+
+{\em int commitState(void); } 
+
+{\em int revertToLastCommit(void); } 
+
+{\em int revertToStart(void); } 
+
+{\em UniaxialMaterial *getCopy(void); } \\ 
+
+// Public Methods for Output
+
+{\em    int sendSelf(int commitTag, Channel \&theChannel); }
+
 \indent {\em    int recvSelf(int commitTag, Channel \&theChannel, 
 		 FEM\_ObjectBroker \&theBroker); }\\
-\indent {\em    void Print(OPS_Stream \&s, int flag =0);} \\
+{\em    void Print(OPS_Stream \&s, int flag =0);} 
+
 

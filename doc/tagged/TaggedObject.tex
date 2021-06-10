@@ -2,13 +2,16 @@
 % What: "@(#) TaggedObject.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/tagged/TaggedObject.h$>$ \\
+\#include $<\tilde{ }$/tagged/TaggedObject.h$>$ 
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class TaggedObject  \\
+class TaggedObject  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  {\bf TaggedObject} \\
+ {\bf TaggedObject} 
+
 \indent\indent  {DomainComponent} \\
 \indent\indent  {Vertex} \\
 
@@ -23,35 +26,47 @@ object. (templates will be able to provide this functionality when
 they are provided with all compilers). \\ 
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructor  \\
-\indent {\em TaggedObject(int tag);}  \\ \\
-\indent // Destructor  \\
-\indent {\em virtual~ $\tilde{}$TaggedObject();}  \\ \\
-\indent // Public Methods  \\
+// Constructor  
+
+{\em TaggedObject(int tag);}  \\ 
+
+// Destructor  
+
+{\em virtual~ $\tilde{}$TaggedObject();}  \\ 
+
+// Public Methods  
+
 \indent {\em int getTag(void) const;} \\ 
-\indent {\em virtual void Print(OPS_Stream \&s) =0;} \\
+{\em virtual void Print(OPS_Stream \&s) =0;} 
+
 \indent {\em friend OPS_Stream \&operator$<<$(OPS_Stream \&s,
 TaggedObject \&m);} \\  \\ 
-\indent // Protected Methods  \\
-\indent {\em virtual void setTag(int newTag);} \\
+// Protected Methods  
+
+{\em virtual void setTag(int newTag);} 
+
 
 \noindent {\bf Constructors}  \\
-\indent {\em TaggedObject(int tag);}  \\
+{\em TaggedObject(int tag);}  
+
 Constructs a TaggedObject with a tag given by {\em tag}. The tag of
 a component is some unique means of identifying the component among
 like components, i.e. the tag of a node would be its unique node number. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$TaggedObject();}\\
+{\em virtual~ $\tilde{}$TaggedObject();}
+
 Does nothing. Provided so the concrete subclasses destructors will be
 called. \\
 
 \noindent {\bf Public Member Functions}  \\
-\indent {\em int getTag(void) const;} \\
+{\em int getTag(void) const;} 
+
 Returns the tag associated with the object. This function is inlined
 for performance.\\
 
-\indent {\em virtual void Print(OPS_Stream \&s, int flag =0) =0;} \\
+{\em virtual void Print(OPS_Stream \&s, int flag =0) =0;} 
+
 A pure virtual function. The component is to output itself to the output
 stream {\em s}. The integer {\em flag} can be used to select just what
 should be output, by default $0$ is passed. \\
@@ -60,7 +75,8 @@ should be output, by default $0$ is passed. \\
 Invokes {\em Print(s)} on the TaggedObject {\em m}. \\
 
 \noindent {\bf Protected Member Functions}  \\
-\indent {\em virtual void setTag(int newTag);} \\
+{\em virtual void setTag(int newTag);} 
+
 Sets the tag of the object to be {\em newTag}. It is provided so that
 MovableObjects can set their tag in {\em recvSelf()}.
 

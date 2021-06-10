@@ -2,10 +2,12 @@
 %What: "@(#) FE_Element.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/fe\_ele/FE\_Element.h$>$  \\
+\#include $<\tilde{ }$/analysis/fe\_ele/FE\_Element.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class FE\_Element;  \\
+class FE\_Element;  
+
 
 \noindent {\bf Description}  \\
 \indent FE\_Element is a base class, subtypes of which are used to
@@ -81,7 +83,8 @@ double fact = 1.0); }\\  \\
 \indent\indent {\em const Vector \&getLastResponse(void);} \\
 
 \noindent {\bf Constructors}  \\
-\indent {\em FE\_Element(Element *theElemen);}  \\
+{\em FE\_Element(Element *theElemen);}  
+
 Constructs an empty FE\_Element with an associated element given by {\em
 theElement}.  During construction it determines the number of unknown
 dofs from the element. Constructs an ID for the mapping between dof's of
@@ -109,11 +112,13 @@ tangent and residual matrix and vector, this is the responsibility of
 the subclass. \\  
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$FE\_Element();}  \\
+{\em virtual~ $\tilde{}$FE\_Element();}  
+
 Deletes the IDs, Vectors and Matrices created by the constructor. \\
 
 \noindent {\bf Public Methods - Mapping}  \\
-\indent {\em virtual const ID \&getDOFtags(void) const;} \\
+{\em virtual const ID \&getDOFtags(void) const;} 
+
 Returns a const ID containing the unique tag number of the
 DOF\_Group objects associated with that FE\_Element. For this base class,
 these are obtained from the DOF\_Groups associated with the Node objects
@@ -174,7 +179,8 @@ passed in the constructor, a warning message and an error vector is
 returned. \\
 
 
-\indent {\em virtual void zeroTangent(void);} \\
+{\em virtual void zeroTangent(void);} 
+
 Zeros the tangent matrix. If the Element is not a Subdomain invokes
 {\em Zero()} on the tangent matrix. Subclasses must provide their own
 implementation. Nothing is done and a warning message is printed if no
@@ -218,7 +224,8 @@ FE\_Element nothing is added, if the element is not a Subdomain
 matrix. Nothing is done and a warning message is printed if no Element was
 passed in the constructor or the Element passed was a Subdomain. \\  
 
-\indent {\em virtual void zeroResidual(void);} \\
+{\em virtual void zeroResidual(void);} 
+
 Zeros the residual vector. If the Element is not a Subdomain invokes
 {\em Zero()} on the residual vector. Subclasses must provide their own
 implementation. Nothing is done and a warning message is printed if no

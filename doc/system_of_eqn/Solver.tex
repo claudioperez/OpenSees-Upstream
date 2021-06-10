@@ -2,13 +2,16 @@
 %What: "@(#) Solver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/Solver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/Solver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Solver:  public MovableObject \\
+class Solver:  public MovableObject 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent {\bf Solver} \\
 
 \noindent {\bf Description}  \\
@@ -25,7 +28,8 @@ the numerical operations on its associated SystemOfEqn object. \\
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em Solver(int classTag);}  \\
+{\em Solver(int classTag);}  
+
 The integer {\em classTag} is passed to the MovableObject classes
 constructor. \\ 
 
@@ -34,7 +38,8 @@ constructor. \\
 Does nothing. Provided so the subclasses destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int solve(void) =0;} \\
+{\em virtual int solve(void) =0;} 
+
 Causes the solver to solve the system of equations. Returns $0$ if
 successful , negative number if not; the actual value depending on
 the type of Solver.\\

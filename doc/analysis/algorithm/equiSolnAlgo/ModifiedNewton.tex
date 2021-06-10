@@ -6,10 +6,12 @@
 }$/analysis/algorithm/equiSolnAlgo/ModifiedNewton.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class ModifiedNewton: public EquiSolnAlg;  \\
+class ModifiedNewton: public EquiSolnAlg;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent SolutionAlgorithm \\
 \indent\indent\indent EquiSolnAlgo \\
 \indent\indent\indent\indent {\bf ModifiedNewton} \\
@@ -49,17 +51,25 @@ determines if convergence has been achieved. \\
 \noindent {\bf Class Interface} \\ 
 \indent // Constructors \\ 
 \indent {\em ModifiedNewton(ConvergenceTest \&theTest);}\\ 
-\indent {\em ModifiedNewton();}\\ \\
-\indent // Destructor \\
-\indent {\em ~ $\tilde{}$ModifiedNewton();}\\  \\
-\indent // Public Member Functions \\
-\indent {\em int solveCurrentStep(void);} \\
-\indent {\em void setTest(ConvergenceTest \&theTest);} \\\\
-\indent // Public Methods  for Output \\
+{\em ModifiedNewton();}\\ 
+
+// Destructor 
+
+{\em ~ $\tilde{}$ModifiedNewton();}\\  
+
+// Public Member Functions 
+
+{\em int solveCurrentStep(void);} 
+
+{\em void setTest(ConvergenceTest \&theTest);} \\
+
+// Public Methods  for Output 
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, 
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag =0);} \\
+{\em int Print(OPS_Stream \&s, int flag =0);} 
+
 
 
 \noindent {\bf Constructors} \\ 
@@ -71,7 +81,8 @@ integer {\em EquiALGORITHM\_TAGS\_ModifiedNewton} (defined in
 $<$classTags.h$>$) is passed to the EquiSolnAlgo classes
 constructor. \\ 
 
-\indent {\em ModifiedNewton();}\\
+{\em ModifiedNewton();}
+
 Provided for FEM\_ObjectBroker to instantiate a blank object with a
 class tag of EquiALGORITHM\_TAGS\_ModofiedNewton. {\em
 recvSelf()} must be invoked on this object. \\
@@ -81,7 +92,8 @@ recvSelf()} must be invoked on this object. \\
 Does nothing. \\
 
 \noindent {\bf Public Member Functions}  \\
-\indent {\em int solveCurrentStep(void);} \\
+{\em int solveCurrentStep(void);} 
+
 When invoked the object first sets itself as the EquiSolnAlgo object
 that the ConvergenceTest is testing and then it performs the
 modified Newton-Raphson iteration algorithm: 

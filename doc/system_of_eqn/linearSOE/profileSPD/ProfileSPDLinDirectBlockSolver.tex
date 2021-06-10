@@ -9,10 +9,12 @@ UNDER CONSTRUCTION
 \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class ProfileSPDLinDirectBlockSolver: public LinearSOESolver  \\
+class ProfileSPDLinDirectBlockSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent ProfileSPDLinSolver \\
@@ -39,7 +41,8 @@ FEM\_ObjectBroker \&theBroker);}\\
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em ProfileSPDLinDierctBlockSolver();}  \\
+{\em ProfileSPDLinDierctBlockSolver();}  
+
 A unique class tag (defined in $<$classTags.h$>$) is passed to the
 ProfileSPDLinSolver constructor. \\
 
@@ -49,13 +52,15 @@ ProfileSPDLinSolver constructor. \\
 Does nothing. \\
 
 \noindent {\bf Public Member Functions }  \\
-\indent {\em int solve(void);} \\
+{\em int solve(void);} 
+
 The solver first copies the B vector into X.
 FILL IN
 The solve process changes $A$ and $X$. \\   
 
 
-\indent {\em int setSize(void);} \\
+{\em int setSize(void);} 
+
 Does nothing but return $0$. \\
 
 \indent {\em  int sendSelf(int commitTag, Channel \&theChannel);} \\ 

@@ -5,14 +5,18 @@ NEED TO ADD ADD\_INERTIA\_LOAD TO INTERFACE .. SEE EARTHQUAKE\_PATTERN
 CLASS.\\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/element/BeamWithHinges2D.h$>$  \\
+\#include $<\tilde{ }$/element/BeamWithHinges2D.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class BeamWithHinges2D: public DomainComponent \\
+class BeamWithHinges2D: public DomainComponent 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent Element \\
 \indent\indent\indent\indent {\bf BeamWithHinges2D} \\
@@ -25,7 +29,8 @@ behavior through its interior region, including linear elastic shear
 effects. \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em BeamWithHinges2D (int tag, int nodeI, int nodeJ, double
 E, double I, double A, double G, double alpha,
 SectionForceDeformation \&sectionI, double ratioI,
@@ -36,27 +41,43 @@ E, double I, double A, double G, double alpha,
 SectionForceDeformation \&sectionI, double ratioI,
 SectionForceDeformation \&sectionJ, double ratioJ,
 double massDens = 0);}  \\
-\indent {\em BeamWithHinges2D ();} \\ \\
-\indent // Destructor \\
-\indent {\em ~ $\tilde{}$BeamWithHinges2D ();}\\ \\
-\indent // Public Methods dealing with Nodes and dof\\
-\indent {\em int getNumExternalNodes(void) const;} \\
-\indent {\em const ID \&getExternalNodes(void);} \\
-\indent {\em int getNumDOF(void);}\\ \\
-\indent // Public Methods dealing with State\\
+{\em BeamWithHinges2D ();} \\ 
+
+// Destructor 
+
+{\em ~ $\tilde{}$BeamWithHinges2D ();}\\ 
+
+// Public Methods dealing with Nodes and dof
+
+{\em int getNumExternalNodes(void) const;} 
+
+{\em const ID \&getExternalNodes(void);} 
+
+{\em int getNumDOF(void);}\\ 
+
+// Public Methods dealing with State
+
 \indent{\em int commitState(void);} \\
 \indent{\em int revertToLastCommit(void);} \\ 
 \indent{\em int revertToStart(void);} \\ \\
 \indent // Public Methods for obtaining Linearized Stiffness,
 Mass and Damping Matrices\\
-\indent {\em const Matrix \&getTangentStiff(void);} \\
-\indent {\em const Matrix \&getSecantStiff(void);} \\
-\indent {\em const Matrix \&getDamp(void);} \\
-\indent {\em const Matrix \&getMass(void);} \\ \\
-\indent // Public Methods for obtaining Resisting Forces \\
-\indent {\em void zeroLoad(void);	}\\
-\indent {\em const Vector \&getResistingForce(void);} \\
-\indent {\em const Vector \&getResistingForceIncInertia(void);} \\ \\
+{\em const Matrix \&getTangentStiff(void);} 
+
+{\em const Matrix \&getSecantStiff(void);} 
+
+{\em const Matrix \&getDamp(void);} 
+
+{\em const Matrix \&getMass(void);} \\ 
+
+// Public Methods for obtaining Resisting Forces 
+
+{\em void zeroLoad(void);	}
+
+{\em const Vector \&getResistingForce(void);} 
+
+{\em const Vector \&getResistingForceIncInertia(void);} \\ 
+
 
 \noindent {\bf Constructors}  \\
 \indent {\em BeamWithHinges2D (int tag, int nodeI, int nodeJ, double
@@ -90,7 +111,8 @@ effects.  Element hinges are created by obtaining copies of {\em sectionI} and {
 The hinge lengths are specified as ratios of the total element length, {\em ratioI}
 and {\em ratioJ}.  The element mass density per unit length is {\em massDens}. \\
 
-\indent {\em BeamWithHinges2D ();} \\
+{\em BeamWithHinges2D ();} 
+
 Constructs a blank BeamWithHinges2D object. \\
 
 \noindent {\bf Destructor} \\
@@ -98,13 +120,16 @@ Constructs a blank BeamWithHinges2D object. \\
 Invokes the section destructors. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em int getNumExternalNodes(void) const;} \\
+{\em int getNumExternalNodes(void) const;} 
+
 Returns 2, the number of external nodes for this element. \\
 
-\indent {\em const ID \&getExternalNodes(void);} \\
+{\em const ID \&getExternalNodes(void);} 
+
 Returns an ID containing the tags of the two external nodes for this element. \\
 
-\indent {\em int getNumDOF(void);}\\
+{\em int getNumDOF(void);}
+
 Returns 6, the number of degrees of freedom for this element. \\ 
 
 {\em int commitState(void);} \\

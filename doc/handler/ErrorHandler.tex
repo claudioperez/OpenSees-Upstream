@@ -2,13 +2,16 @@
 %What: "@(#) ErrorHandler.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/handler/ErrorHandler.h$>$  \\
+\#include $<\tilde{ }$/handler/ErrorHandler.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ErrorHandler \\
+class ErrorHandler 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf ErrorHandler} \\
+{\bf ErrorHandler} 
+
 
 \noindent {\bf Description}  \\
 \indent The ErrorHandler class is an abstract class which is
@@ -23,15 +26,24 @@ terminated. \\
 QUESTION: SHOULD THE DOMAIN/RECORDER CLASSES HAVE A shutdown() METHOD? \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
-\indent {\em ErrorHandler();}\\ \\
-\indent // Destructor \\
-\indent {\em virtual $\tilde{ }$ErrorHandler();}\\ \\
-\indent // Public Methods  \\
-\indent {\em virtual void warning(const char *msg, ...) =0;}\\
-\indent {\em virtual void fatal(const char *msg, ...) =0;}\\ \\
-\indent // Protected Methods  \\
-\indent {\em void outputMessage(OPS_Stream \&theStream, const char *msg, va\_list args);} \\
+// Constructor 
+
+{\em ErrorHandler();}\\ 
+
+// Destructor 
+
+{\em virtual $\tilde{ }$ErrorHandler();}\\ 
+
+// Public Methods  
+
+{\em virtual void warning(const char *msg, ...) =0;}
+
+{\em virtual void fatal(const char *msg, ...) =0;}\\ 
+
+// Protected Methods  
+
+{\em void outputMessage(OPS_Stream \&theStream, const char *msg, va\_list args);} 
+
 
 \noindent {\bf Constructor}  \\
 \indent {\em ErrorHandler();}  \\ 
@@ -42,7 +54,8 @@ Does nothing.\\
 Does nothing. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual void warning(const char *msg, ...) =0;}\\
+{\em virtual void warning(const char *msg, ...) =0;}
+
 Invoked by an object when an error has occurred. The program will
 continue running after this method has been invoked. The first
 argument is a pointer to a format string that specifies how

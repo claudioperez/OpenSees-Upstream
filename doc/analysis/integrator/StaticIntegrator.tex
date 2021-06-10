@@ -2,13 +2,16 @@
 %What: "@(#) StaticIntegrator.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/StaticIntegrator.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/StaticIntegrator.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class StaticIntegrator: public Integrator  \\
+class StaticIntegrator: public Integrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent {\bf StaticIntegrator} \\
@@ -95,7 +98,8 @@ IncrementalIntegrator classes constructor. \\
 Does nothing. Provided so that the subclasses destructors will be called.\\
 
 \noindent {\bf Public Methods}\\
-\indent {\em virtual int formEleTangent(FE\_Element *theEle);} \\
+{\em virtual int formEleTangent(FE\_Element *theEle);} 
+
 To form the tangent matrix of the FE\_Element, {\em theEle}, is
 instructed to zero this matrix and then add it's $K$ matrix to the
 tangent, i.e. it performs the following: 

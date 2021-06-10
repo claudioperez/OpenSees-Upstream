@@ -2,13 +2,16 @@
 %What: "@(#) IncrementalIntegrator.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/IncrementalIntegrator.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/IncrementalIntegrator.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class IncrementalIntegrator: public Integrator  \\
+class IncrementalIntegrator: public Integrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent {\bf IncrementalIntegrator} \\
 
@@ -101,7 +104,8 @@ setLinks()} has not been called, an error message is printed and a
 negative number is returned. Returns $0$ if successful. \\ 
 
 
-\indent {\em virtual int formEleTangent(FE\_Element *theEle) =0;} \\
+{\em virtual int formEleTangent(FE\_Element *theEle) =0;} 
+
 To inform the FE\_Element how to build its tangent matrix for addition
 to the system of equations. The subclasses must provide the
 implementation of this method. \\
@@ -136,7 +140,8 @@ Integrator. \\
 
 
 \noindent {\bf Public Method added for Domain Decomposition}\\
-\indent {\em virtual int getLastResponse(Vector \&result, const ID \&id);} \\
+{\em virtual int getLastResponse(Vector \&result, const ID \&id);} 
+
 Returns in {\em result} values for the last solution to the system of
 equation object whose location in the solution vector is given by {\em
 id}. For a location specified by a negative integer in {\em id} 0.0 will be
@@ -146,7 +151,8 @@ message and a negative number is returned if an error occurs. $-1$ if
 greater than $order-1$ of $b$ vector.\\
 
 \noindent {\bf Protected Methods}  \\
-\indent {\em LinearSOE *getLinearSOEPtr(void) const;} \\
+{\em LinearSOE *getLinearSOEPtr(void) const;} 
+
 A const member function which returns a pointer to the LinearSOE
 associated with the IncrementalIntegrator object, i.e. {\em theSOE}
 passed in {\em setLinks()}. \\

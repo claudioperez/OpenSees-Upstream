@@ -1,14 +1,18 @@
 % File: ~/domain/constraints/SP\_Constraint.tex 
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/constraints/SP\_Constraint.h$>$  \\
+\#include $<\tilde{ }$/domain/constraints/SP\_Constraint.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class SP\_Constraint: public DomainComponent \\
+class SP\_Constraint: public DomainComponent 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent {\bf SP\_Constraint} \\
 
@@ -43,7 +47,8 @@ FEM\_ObjectBroker \&theBroker);} \\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em SP\_Constraint(int tag, int nodeTag, int ndof, double value);} \\
+{\em SP\_Constraint(int tag, int nodeTag, int ndof, double value);} 
+
 To construct a single point constraint to constrain the trial
 displacement of the {\em ndof}'th dof at node {\em node} to the value
 given by {\em value}. The integer value {\em tag} is used to identify
@@ -51,7 +56,8 @@ the SP\_Constraint among all other SP\_Constraints. If
 {\em value} is equal to $0.0$ the method {\em isHomogeneous()} will
 always return {\em true}, otherwise {\em false}. \\ 
 
-\indent {\em SP\_Constraint(int tag, int node, int ndof, int classTag);} \\
+{\em SP\_Constraint(int tag, int node, int ndof, int classTag);} 
+
 Provided for subclasses to use. The subclasses can vary the value of the
 imposed displacement when {\em getValue()} is invoked. If this
 constructor is used the {\em isHomogeneous()} method will always
@@ -59,7 +65,8 @@ return {\em false}. The integer value {\em tag} is used to identify
 the SP\_Constraint among all other SP\_Constraints. \\
 
 
-\indent {\em SP\_Constraint(int classTag);} \\
+{\em SP\_Constraint(int classTag);} 
+
 Provided for the FEM\_ObjectBroker to be able to instantiate an
 object; the data for this object will be read from a Channel object
 when {\em recvSelf()} is invoked. $0$ and {\em classTag} are passed to
@@ -67,13 +74,15 @@ the DomainComponent constructor. \\
 
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual $\tilde{ }$ SP\_Constraint();} \\
+{\em virtual $\tilde{ }$ SP\_Constraint();} 
+
 Does nothing. Provided so that a subclasses destructor can be
 invoked. \\
 
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int getNodeTag(void) const;} \\
+{\em virtual int getNodeTag(void) const;} 
+
 Returns the value of {\em node} passed in the constructor, this should be 
 the tag of the node that is being constrained. \\
 
@@ -87,7 +96,8 @@ loadFactor}. The constraint is set equal to {\em loadFactor} * {\em
 value} if the constraint is not constant, or {\em value} if the
 constraint was identified as constant in the constructor. \\
 
-\indent {\em virtual bool isHomogeneous(void) const;}\\
+{\em virtual bool isHomogeneous(void) const;}
+
 To return a boolean indicating whether or not the constraint is a
 homogeneous constraint. A homogeneous constraint is one where the value
 of the constraint, {\em value}, is always $0$. This information can be used by the
@@ -98,7 +108,8 @@ To return the value of the constraint determined in the last call to
 {\em applyConstraint()}. This base class returns {\em value} passed in
 the constructor.  \\ 
 
-\indent {\em virtual void setLoadPatternTag(int loadPaternTag);}\\
+{\em virtual void setLoadPatternTag(int loadPaternTag);}
+
 To set the LoadPattern tag associated with the object to be {\em
 loadPatternTag}. \\
 

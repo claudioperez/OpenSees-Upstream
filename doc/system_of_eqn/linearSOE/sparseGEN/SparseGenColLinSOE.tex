@@ -2,13 +2,16 @@
 %What: "@(#) SparseGenColLinSOE.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/sparseGen/SparseGenColLinSOE.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/sparseGen/SparseGenColLinSOE.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class SparseGenColLinSOE: public LinearSOE \\
+class SparseGenColLinSOE: public LinearSOE 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent SystemOfEqn \\
 \indent\indent\indent LinearSOE \\
 \indent\indent\indent\indent {\bf SparseGenColLinSOE} \\
@@ -25,7 +28,11 @@ and $rowA(j)$ identifying the row in $A$ to which the
 $j'th$ component in the 1d double array. $colStartA$ is of
 dimension $size+1$ and $rowA$ of dimension $nnz$. For example
 
+
 $$
+
+$$
+
 \left[
 \begin{array}{ccccc}
 a_{0,0} & 0 & a_{0,2}  & a_{0,3} & 0  \\
@@ -35,40 +42,68 @@ a_{1,0} & a_{1,1} & 0 & 0 & 0  \\
 a_{4,0} & a_{4,1} & 0 & 0 & a_{4,4}
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 is stored in:
 
+
 $$
+
+$$
+
 \left[
 \begin{array}{cccccccccccccc}
 a_{0,0} & a_{1,0}  & a_{4,0} & a_{1,1} & a_{2,1} & a_{4,1} &
 a_{0,2} & a_{2,2} & a_{0,3} & a_{3,3} & a_{3,4} & a_{4,4}  \\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 with
 
+
 $$
+
+$$
+
 colStartA =
 \left[
 \begin{array}{cccccccccccccc}
 0 & 3 & 6 & 8 & 10 & 12
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 and
 
+
 $$
+
+$$
+
 rowA =
 \left[
 \begin{array}{cccccccccccccc}
 0 & 1 & 4 & 1 & 2 & 4 & 0 & 2 & 0 & 3 & 3 & 4 
 \end{array}
 \right] 
+
 $$
+
+$$
+
 The $x$ and $b$ vectors are stored in 1d double arrays of length $n$. \\
 
 \noindent {\bf Interface}  \\
@@ -100,7 +135,8 @@ FEM\_ObjectBroker \&theBroker);}\\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em SparseGenColLinSOE(SparseGenColLinSolver \&solver);}  \\
+{\em SparseGenColLinSOE(SparseGenColLinSolver \&solver);}  
+
 The {\em solver} and a unique class tag (defined in $<$classTags.h$>$)
 are passed to the LinearSOE constructor. The system size is set
 to $0$ and the matrix $A$ is marked as not having been factored. Invokes
@@ -129,14 +165,16 @@ contain the correct data. \\
 Calls delete on any arrays created. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em  int setSolver(SparseGenColLinSolver \&newSolver);}\\
+{\em  int setSolver(SparseGenColLinSolver \&newSolver);}
+
 Invokes {\em setLinearSOE(*this)} on {\em newSolver}.
 If the system size is not equal to $0$, it also invokes {\em setSize()}
 on {\em newSolver}, printing a warning and returning $-1$ if this
 method returns a number less than $0$. Finally it returns the result
 of invoking the LinearSOE classes {\em setSolver()} method. \\
 
-\indent {\em int getNumEqn(void) =0; } \\
+{\em int getNumEqn(void) =0; } 
+
 A method which returns the current size of the system. \\
 
 \indent {\em  int setSize(const Graph \&theGraph); } \\ 

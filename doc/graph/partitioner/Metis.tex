@@ -2,13 +2,16 @@
 %What: "@(#) Metis.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/graph/partitioner/Metis.h$>$  \\
+\#include $<\tilde{ }$/graph/partitioner/Metis.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class GraphPartitioner:  \\
+class GraphPartitioner:  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent GraphPartitioner \\
+GraphPartitioner 
+
 \indent\indent {\bf Metis} \\
 
 \noindent {\bf Description}  \\
@@ -35,29 +38,49 @@ $$ A =
 1 & 1 & 0 & 0 & 1
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 is represented by:
 
+
 $$
+
+$$
+
 xadj =
 \left[
 \begin{array}{cccccccccccccc}
 0 & 2 & 3 & 4 & 5 & 7
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 and
 
+
 $$
+
+$$
+
 adjncy =
 \left[
 \begin{array}{cccccccccccccc}
 2 & 3 & 0 & 1 & 4 & 0 & 1
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 \noindent note that there is no space allocated for the diagonal
 components. \\
@@ -79,7 +102,8 @@ rTypem, int ipType);}  \\ \\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em Metis();}  \\
+{\em Metis();}  
+
 To construct a Metis object which will use the default settings when
 partitioning. \\ 
 
@@ -90,10 +114,12 @@ constructor as options to metis's {\em PMETIS()} routine. {\em
 checkOptions()} is invoked to ensure the settings are valid. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$Metis();}  \\
+{\em virtual~$\tilde{}$Metis();}  
+
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int partition(Graph \&theGraph, int numPart) =0;} \\
+{\em virtual int partition(Graph \&theGraph, int numPart) =0;} 
+
 This is the method invoked to partition the graph into {\em numPart}
 partitions. On completion of the routine each vertex will be assigned
 a color $1$ through {\em numPart}, the color assigned indicating the
@@ -116,7 +142,8 @@ The colors of the partitions are then set equal to the color indicated
 in {\em partition}.  The integer arrays are destroyed and $0$
 returned. \\
 
-\indent {\em bool setDefaultOptions(void);}\\
+{\em bool setDefaultOptions(void);}
+
 Sets the default options. \\
 
 \indent {\em bool setOptions(int pType, int mType, int coarsenTo, int 

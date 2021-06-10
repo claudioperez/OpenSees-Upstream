@@ -2,13 +2,16 @@
 %What: "@(#) GraphPartitioner.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/graph/partitioner/GraphPartitioner.h$>$  \\
+\#include $<\tilde{ }$/graph/partitioner/GraphPartitioner.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class GraphPartitioner:  \\
+class GraphPartitioner:  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf GraphPartitioner} \\
+{\bf GraphPartitioner} 
+
 \indent\indent Metis \\
 
 \noindent {\bf Description}  \\
@@ -28,14 +31,17 @@ of the graph. \\
 \indent\indent {\em virtual int partition(Graph \&theGraph, int numPart) =0;} \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em GraphPartitioner();}  \\
+{\em GraphPartitioner();}  
+
 To construct a GraphPartitioner. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$GraphPartitioner();}  \\
+{\em virtual~$\tilde{}$GraphPartitioner();}  
+
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int partition(Graph \&theGraph, int numPart) =0;} \\
+{\em virtual int partition(Graph \&theGraph, int numPart) =0;} 
+
 This is the method invoked to partition the graph into {\em numPart}
 partitions. On completion of the routine each vertex will be assigned
 a color $1$ through {\em numPart}, the color assigned indicating the

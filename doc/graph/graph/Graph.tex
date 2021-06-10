@@ -2,13 +2,16 @@
 %What: "@(#) Graph.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/graph/graph/Graph.h$>$  \\
+\#include $<\tilde{ }$/graph/graph/Graph.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Graph:  \\
+class Graph:  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf Graph} \\
+{\bf Graph} 
+
 
 \noindent {\bf Description}  \\
 \indent Graph is a base class. A Graph is a container class
@@ -43,12 +46,14 @@ removeEdgeFlag = true );} \\
 \&G);} \\
 
 \noindent {\bf Constructors}  \\
-\indent {\em Graph();}  \\
+{\em Graph();}  
+
 To create an empty Graph. Creates an ArrayOfTagged object of initial
 size $32$ in which to store the Vertices. The ArrayOfTagged object is
 used to store the Vertices.\\
 
-\indent {\em Graph(int numVertices);} \\
+{\em Graph(int numVertices);} 
+
 To create an empty Graph. Creates an ArrayOfTagged object of initial
 size {\em numVertices} in which to store the Vertices. The
 ArrayOfTagged object is used to store the Vertices. \\ 
@@ -59,7 +64,8 @@ store the Vertices. {\em clearAll()} is invoked on this object to
 ensure it is empty. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$Graph();}  \\
+{\em virtual~$\tilde{}$Graph();}  
+
 Invokes {\em clearAll()} on the storage object used to store the
 Vertices. It then invokes delete on the storage object used, which was
 either passed or created in the constructor. \\

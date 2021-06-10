@@ -2,13 +2,16 @@
 %What: "@(#) Message.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/actor/message/Message.h$>$  \\
+\#include $<\tilde{ }$/actor/message/Message.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Message \\
+class Message 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf Message} \\
+{\bf Message} 
+
 
 \noindent {\bf Description}  \\
 \indent Messages are objects that can be sent between Channels. They
@@ -22,31 +25,45 @@ Message. \\
 
 
 \noindent {\bf Constructors}  \\
-\indent // Constructors  \\
-\indent {\em Message();}  \\
-\indent {\em Message(double *, int num);}\\
-\indent {\em Message(int *, int num);}\\
-\indent {\em Message(char *, int num);} \\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$Message();}\\  \\
-\indent // Public Member Functions  \\
+// Constructors  
+
+{\em Message();}  
+
+{\em Message(double *, int num);}
+
+{\em Message(int *, int num);}
+
+{\em Message(char *, int num);} \\ 
+
+// Destructor 
+
+{\em virtual~ $\tilde{}$Message();}\\  
+
+// Public Member Functions  
+
 \indent {\em virtual int putData(char *theData, int startLoc, int endLoc);}; \\  
-\indent {\em virtual const char *getData(void);}\\
-\indent {\em virtual int   getSize(void);} \\
+{\em virtual const char *getData(void);}
+
+{\em virtual int   getSize(void);} 
+
 
 \noindent {\bf Constructors}  \\
-\indent {\em Message();}  \\
+{\em Message();}  
+
 To construct an empty message. \\
 
-\indent {\em Message(double *data, int num);}\\
+{\em Message(double *data, int num);}
+
 To construct a message for sending/receiving an array containing {\em
 num} doubles. \\
 
-\indent {\em Message(int *data, int num);}\\
+{\em Message(int *data, int num);}
+
 To construct a message for sending/receiving an array containing {\em
 num} ints. \\
 
-\indent {\em Message(char *data, int num);} \\
+{\em Message(char *data, int num);} 
+
 To construct a message for sending/receiving a string of {\em num}
 characters or a struct. \\ 
 

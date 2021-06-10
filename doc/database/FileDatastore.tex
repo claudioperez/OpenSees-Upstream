@@ -2,14 +2,18 @@
 %What: "@(#) FileDatastore.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/database/FileDatastore.h$>$  \\
+\#include $<\tilde{ }$/database/FileDatastore.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class FileDatastore: public FE\_Datastore \\
+class FileDatastore: public FE\_Datastore 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent ModelBuilder \\
-\indent Channel \\
+ModelBuilder 
+
+Channel 
+
 \indent\indent FE\_Datastore \\
 \indent\indent\indent {\bf FileDatastore} \\
 
@@ -34,52 +38,77 @@ files following the schema outlined previously.\\
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
-\indent {\em FileDatastore(char *name, Domain \&theDomain, FEM\_ObjectBroker \&theBroker);}  \\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$FileDatastore();}\\ \\
-\indent // Public Methods  inherited from the ModelBuilder Class \\
-\indent {\em int buildFE\_Model(void);}\\ \\
-\indent // Public Methods  inherited from the FE\_Datastore Class \\
-\indent {\em int getDbTag(void);}\\
-\indent {\em int validateBaseRelationsWrite(int commitTag); }\\
-\indent {\em int validateBaseRelationsRead(int commitTag); }\\ \\
+// Constructor 
+
+{\em FileDatastore(char *name, Domain \&theDomain, FEM\_ObjectBroker \&theBroker);}  \\ 
+
+// Destructor 
+
+{\em $\tilde{ }$FileDatastore();}\\ 
+
+// Public Methods  inherited from the ModelBuilder Class 
+
+{\em int buildFE\_Model(void);}\\ 
+
+// Public Methods  inherited from the FE\_Datastore Class 
+
+{\em int getDbTag(void);}
+
+{\em int validateBaseRelationsWrite(int commitTag); }
+
+{\em int validateBaseRelationsRead(int commitTag); }\\ 
+
 \indent// Public Methods  inherited from the Channel Class \\
-\indent {\em char *addToProgram(void); }\\
-\indent {\em int setUpShadow(void);}\\
-\indent {\em int setUpActor(void);}\\
-\indent {\em int setNextAddress(const ChannelAddress \&otherChannelAddress);}\\
-\indent {\em ChannelAddress *getLastSendersAddress(void);}\\
-\indent {\em int sendObj(int commitTag, \\
+{\em char *addToProgram(void); }
+
+{\em int setUpShadow(void);}
+
+{\em int setUpActor(void);}
+
+{\em int setNextAddress(const ChannelAddress \&otherChannelAddress);}
+
+{\em ChannelAddress *getLastSendersAddress(void);}
+
+{\em int sendObj(int commitTag, 
+
 \indent\indent\indent\indent\indent		MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
-\indent {\em int recvObj(int commitTag, \\
+{\em int recvObj(int commitTag, 
+
 \indent\indent\indent\indent\indent		MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent		FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
 		
-\indent {\em int sendMsg(int dbTag, int commitTag,  \\
+{\em int sendMsg(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent		const Message \&, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
-\indent {\em int recvMsg(int dbTag, int commitTag, \\
+{\em int recvMsg(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent		Message \&, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
-\indent {\em int sendMatrix(int dbTag, int commitTag,  \\
+{\em int sendMatrix(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent		   const Matrix \&theMatrix, \\
 \indent\indent\indent\indent\indent		   ChannelAddress *theAddress =0);}\\
-\indent {\em int recvMatrix(int dbTag, int commitTag, \\
+{\em int recvMatrix(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent		   Matrix \&theMatrix,  \\
 \indent\indent\indent\indent\indent		   ChannelAddress *theAddress =0);}\\
-\indent {\em int sendVector(int dbTag, int commitTag, \\
+{\em int sendVector(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent const Vector \&theVector, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0);}\\
-\indent {\em int recvVector(int dbTag, int commitTag,  \\
+{\em int recvVector(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent		   Vector \&theVector,  \\
 \indent\indent\indent\indent\indent		   ChannelAddress *theAddress =0);}\\
-\indent {\em int sendID(int dbTag, int commitTag, \\
+{\em int sendID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent	   const ID \&theID, \\
 \indent\indent\indent\indent\indent	   ChannelAddress *theAddress =0);}\\
-\indent {\em int recvID(int dbTag, int commitTag, \\
+{\em int recvID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent	   ID \&theID, \\
 \indent\indent\indent\indent\indent	   ChannelAddress *theAddress =0);}\\
 
@@ -103,11 +132,13 @@ obtained from the heap in the constructor are returned to the heap. \\
 To build the finite element model from data in the database. It does
 this by invoking {\em restor(0)} on itself. \\
 
-\indent {\em int getDbTag(void);}\\
+{\em int getDbTag(void);}
+
 Increments the integer containing the current dbTag and returns this
 integer. \\
 
-\indent {\em int validateBaseRelationsWrite(int commitTag); }\\
+{\em int validateBaseRelationsWrite(int commitTag); }
+
 The object first checks to see if the Domain has already been
 committed to the database with a similar {\em commitTag}. If it has, a
 check is made to ensure that the current domain stamp and the one at
@@ -138,45 +169,55 @@ objects created, $0$ if just the Domain object needed to be updated
 with current time and load factor. A warning message and a negative
 number is printed if an error occurs. \\
 
-\indent {\em char *addToProgram(void); }\\
+{\em char *addToProgram(void); }
+
 Returns $0$. \\
 
-\indent {\em int setUpShadow(void);}\\
+{\em int setUpShadow(void);}
+
 Returns $0$. \\
 
-\indent {\em int setUpActor(void);}\\
+{\em int setUpActor(void);}
+
 Returns $0$. \\
 
-\indent {\em int setNextAddress(const ChannelAddress \&otherChannelAddress);}\\
+{\em int setNextAddress(const ChannelAddress \&otherChannelAddress);}
+
 Returns $0$. \\
 
-\indent {\em ChannelAddress *getLastSendersAddress(void);}\\
+{\em ChannelAddress *getLastSendersAddress(void);}
+
 Returns $0$. \\
 
-\indent {\em int sendObj(int commitTag, \\
+{\em int sendObj(int commitTag, 
+
 \indent\indent\indent\indent\indent		MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
 Returns the result of invoking {\em sendSelf(commitTag, *this)} on
 {\em theObject}. \\
 
-\indent {\em int recvObj(int commitTag, \\
+{\em int recvObj(int commitTag, 
+
 \indent\indent\indent\indent\indent		MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent		FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
 Returns the result of invoking {\em recvSelf(commitTag, *this, theBroker)} on
 {\em theObject}. \\
 		
-\indent {\em int sendMsg(int dbTag, int commitTag,  \\
+{\em int sendMsg(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent		const Message \&, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
 Prints an error message and returns $-1$ as not yet implemented. \\
 
-\indent {\em int recvMsg(int dbTag, int commitTag, \\
+{\em int recvMsg(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent		Message \&, \\
 \indent\indent\indent\indent\indent		ChannelAddress *theAddress =0);}\\
 Prints an error message and returns $-1$ as not yet implemented. \\
 
-\indent {\em int sendMatrix(int dbTag, int commitTag,  \\
+{\em int sendMatrix(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent		   const Matrix \&theMatrix, \\
 \indent\indent\indent\indent\indent		   ChannelAddress *theAddress =0);}\\
 First determines the size of the matrix, $noRows * noCols$. If a files
@@ -190,7 +231,8 @@ for Matrices of this size is updated. If successful $0$ is
 returned. A warning message and a negative number is returned if the
 operation fails: $-1$ if Matrix size is too large. \\
 
-\indent {\em int recvMatrix(int dbTag, int commitTag, \\
+{\em int recvMatrix(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent Matrix \&theMatrix,  \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0);}\\
 First determines the size of the matrix, $noRows * noCols$. If a files
@@ -202,7 +244,8 @@ $-1$ is returned. If information is stored, the information is
 retrieved and the data in the Matrix is set. returns $0$ if
 successful. \\
 
-\indent {\em int sendVector(int dbTag, int commitTag, \\
+{\em int sendVector(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent const Vector \&theVector, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0);}\\
 If a file
@@ -216,7 +259,8 @@ for Vectors of this size is updated. If successful $0$ is
 returned. A warning message and a negative number is returned if the
 operation fails: $-1$ if Vector size is too large. \\
 
-\indent {\em int recvVector(int dbTag, int commitTag,  \\
+{\em int recvVector(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent		   Vector \&theVector,  \\
 \indent\indent\indent\indent\indent		   ChannelAddress *theAddress =0);}\\
 If a file for Vectors of this size has not yet been created, an error message
@@ -227,7 +271,8 @@ $-1$ is returned. If information is stored, the information is
 retrieved and the data in the Vector is set. Returns $0$ if
 successful. \\
 
-\indent {\em int sendID(int dbTag, int commitTag, \\
+{\em int sendID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent	   const ID \&theID, \\
 \indent\indent\indent\indent\indent	   ChannelAddress *theAddress =0);}\\
 If a file
@@ -241,7 +286,8 @@ for IDss of this size is updated. If successful $0$ is
 returned. A warning message and a negative number is returned if the
 operation fails: $-1$ if ID size is too large. \\
 
-\indent {\em int recvID(int dbTag, int commitTag, \\
+{\em int recvID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent	   ID \&theID, \\
 \indent\indent\indent\indent\indent	   ChannelAddress *theAddress =0);}\\
 If a file for IDs of this size has not yet been created, an error message

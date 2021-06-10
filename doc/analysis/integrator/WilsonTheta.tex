@@ -2,13 +2,16 @@
 %What: "@(#) WilsonTheta.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/WilsonTheta.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/WilsonTheta.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class WilsonTheta: public TransientIntegrator  \\
+class WilsonTheta: public TransientIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent TransientIntegrator \\
@@ -67,24 +70,36 @@ determined using the following
 
 \pagebreak
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em WilsonTheta();}\\ 
 \indent {\em WilsonTheta(double theta);}\\ 
-\indent {\em WilsonTheta(double theta, double alphaM, double betaK);}\\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$WilsonTheta();}\\ \\
-\indent // Public Methods \\
-\indent {\em int formEleTangent(FE\_Element *theEle);} \\
-\indent {\em int formNodTangent(DOF\_Group *theDof);} \\
-\indent {\em int domainChanged(void);}\\
-\indent {\em int newStep(double deltaT);}\\
+{\em WilsonTheta(double theta, double alphaM, double betaK);}\\ 
+
+// Destructor 
+
+{\em virtual~ $\tilde{}$WilsonTheta();}\\ 
+
+// Public Methods 
+
+{\em int formEleTangent(FE\_Element *theEle);} 
+
+{\em int formNodTangent(DOF\_Group *theDof);} 
+
+{\em int domainChanged(void);}
+
+{\em int newStep(double deltaT);}
+
 \indent {\em int update(const Vector \&$\Delta U$);} \\ 
-\indent {\em int commit(void);}\\ \\
-\indent // Public Methods for Output\\
+{\em int commit(void);}\\ 
+
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 \noindent {\bf Constructors} \\
 \indent {\em WilsonTheta();}\\ 
@@ -119,7 +134,8 @@ be used. \\
 Invokes the destructor on the Vector objects created. \\
 
 \noindent {\bf Public Methods}\\
-\indent {\em int formEleTangent(FE\_Element *theEle);} \\
+{\em int formEleTangent(FE\_Element *theEle);} 
+
 This tangent for each FE\_Element is defined to be $\K_e = c1 \K
 + c2  \D + c3 \M$, where c1,c2 and c3 were determined in the last invocation
 of the {\em newStep()} method. Returns $0$ after performing the

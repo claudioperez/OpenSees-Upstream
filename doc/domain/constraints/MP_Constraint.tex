@@ -1,14 +1,18 @@
 % File: ~/domain/constraints/MP\_Constraint.tex 
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/constraints/MP\_Constraint.h$>$  \\
+\#include $<\tilde{ }$/domain/constraints/MP\_Constraint.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class MP\_Constraint: public DomainComponent  \\
+class MP\_Constraint: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent {\bf MP\_Constraint} \\
 
@@ -29,8 +33,16 @@ constrained node, with the displacements at node $2$, the retained
 node in a problem where the x,y,z components are identified as the
 0,1,2 degrees-of-freedom:
 
-$$ u_{1,x} = 2 u_{2,x} + u_{2,z} $$
-$$ u_{1,y} = 3 u_{2,z}$$
+
+$$
+$ u_{1,x} = 2 u_{2,x} + u_{2,z} $
+$$
+
+
+$$
+$ u_{1,y} = 3 u_{2,z}$
+$$
+
 
 the constraint matrix is:
 $$ C_{cr} =
@@ -40,7 +52,11 @@ $$ C_{cr} =
 0 & 3  \\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 {\em constrainedID} = $[0$ $1]$ and {\em retainedID} $= [0$ $2]$. \\
 
@@ -83,7 +99,8 @@ The integers {\em tag} and  CNSTRNT\_TAG\_MP\_Constraint
 are passed to the DomainComponent classes constructor. New Matrix and ID objects are
 created to hold the information. \\
 
-\indent {\em MP\_Constraint(int tag, int nodeRetain, int nodeConstr, \\
+{\em MP\_Constraint(int tag, int nodeRetain, int nodeConstr, 
+
 \indent\indent\indent\indent\indent\indent ID \&constrainedDOF, ID
 \&retainedDOF, int classTag);}\\
 For the subclasses to use. The subclasses can vary the contents of the
@@ -92,19 +109,22 @@ The integers {\em tag} {\em classTag} are
 passed to the DomainComponent classes constructor. New ID objects are
 created to hold the information. \\
 
-\indent {\em MP\_Constraint(int classTag);} \\
+{\em MP\_Constraint(int classTag);} 
+
 Provided for the FEM\_ObjectBroker to construct a blank object. The
 data for the object is filled in when {\em recvSelf()} is invoked on
 the object. $0$ and {\em classTag} are passed to the DomainComponent
 constructor. \\ 
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$ MP\_Constraint();} \\
+{\em virtual~$\tilde{}$ MP\_Constraint();} 
+
 Invokes the destructor on both the ID and the Matrix object, if a
 Matrix object is passed in the constructor. \\
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual int getNodeRetained(void) const; } \\
+{\em virtual int getNodeRetained(void) const; } 
+
 Returns the value of {\em nodeRetain} passed in the constructor,
 i.e. the tag of the retained node. \\
 

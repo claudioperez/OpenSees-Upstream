@@ -2,13 +2,16 @@
 %What: "@(#) BandGenLinSOE.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/bandGEN/BandGenLinSOE.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/bandGEN/BandGenLinSOE.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class BandGenLinSOE: public LinearSOE \\
+class BandGenLinSOE: public LinearSOE 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent SystemOfEqn \\
 \indent\indent\indent LinearSOE \\
 \indent\indent\indent\indent {\bf BandGenLinSOE} \\
@@ -21,7 +24,11 @@ n is the size of the system. $A_{i,j}$ is stored at location
 $(ku+1+i-j) + j*(ku+1+kl)$, where $i$ and $j$ range from $0$ to$n-1$, i.e. C
 notation. For example when $n=5$, $kl = 2$ and $ku=1$: 
 
+
 $$
+
+$$
+
 \left[
 \begin{array}{ccccc}
 a_{0,0} & a_{0,1}  & 0 & 0 & 0 \\
@@ -31,11 +38,19 @@ a_{2,0} & a_{2,1} & a_{2,2} & a_{2,3} & 0  \\
 0 & 0 & a_{4,2} & a_{4,3} & a_{4,4} \\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 is stored in:
 
+
 $$
+
+$$
+
 \left[
 \begin{array}{ccccccccccccccccccccc}
 * & a_{0,0} & a_{1,0}  & a_{2,0} & a_{0,1} & a_{1,1} & a_{2,1} &
@@ -43,7 +58,11 @@ a_{3,1} & a_{1,2} & a_{2,2} & a_{3,2} & a_{4,2} & a_{2,3} & a_{3,3} &
 a_{4,3} & * & a_{3,4} & a_{4,4} & * & * \\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 The $x$ and $b$ vectors are stored in 1d double arrays of length
 $N$. To allow the solvers access to this data, the solvers that use
@@ -79,7 +98,8 @@ FEM\_ObjectBroker \&theBroker);}\\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em BandGenLinSOE(BandGenLinSolver \&theSolver);}  \\
+{\em BandGenLinSOE(BandGenLinSolver \&theSolver);}  
+
 The {\em solver} and a unique class tag (defined in $<$classTags.h$>$)
 are passed to the LinearSOE constructor. The system size is set
 to $0$ and the matrix $A$ is marked as not having been factored. Invokes
@@ -106,14 +126,16 @@ for $x$ and $b$ using the {\em (double *,int)} Vector constructor. \\
 Calls delete on any arrays created. \\
 
 \noindent {\bf Public Methods}  \\
-\indent {\em  int setBandGenSolver(BandGenLinSolver \&newSolver);}\\
+{\em  int setBandGenSolver(BandGenLinSolver \&newSolver);}
+
 Invokes {\em setLinearSOE(*this)} on {\em newSolver}.
 If the system size is not equal to $0$, it also invokes {\em setSize()}
 on {\em newSolver}, printing a warning and returning the returned value if this
 method returns a number less than $0$. Finally it returns the result
 of invoking the LinearSOE classes {\em setSolver()} method. \\
 
-\indent {\em int getNumEqn(void) =0; } \\
+{\em int getNumEqn(void) =0; } 
+
 A method which returns the current size of the system. \\
 
 \indent {\em  int setSize(const Graph \&G); } \\ 

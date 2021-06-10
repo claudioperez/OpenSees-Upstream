@@ -2,13 +2,16 @@
 %What: "@(#) Actor.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/actor/actor/Actor.h$>$  \\
+\#include $<\tilde{ }$/actor/actor/Actor.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Actor \\
+class Actor 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf Actor} \\
+{\bf Actor} 
+
 
 \noindent {\bf Description}  \\
 \indent Actor is meant as an abstract class, i.e. no instances of Actor
@@ -20,34 +23,50 @@ actor and the shadow both have a channel, a communication port. This
 allows the two to communicate with each other.\\
 
 \noindent {\bf Class Interface }  \\
-\indent // Constructor  \\
+// Constructor  
+
 \indent {\em Actor(Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker, int numActorMethods);}  \\  \\
-\indent // Destructor \\
-\indent {\em virtual $\tilde{ }$Actor();}\\ \\
-\indent // Public Methods for Processing Functions \\
-\indent {\em virtual int addMethod(int tag, int (*fp)());}\\
-\indent {\em virtual int  getMethod();} \\
-\indent {\em virtual int  processMethod(int tag);}\\ \\
-\indent // Public Methods for Sending/Receiving Objects\\
+// Destructor 
+
+{\em virtual $\tilde{ }$Actor();}\\ 
+
+// Public Methods for Processing Functions 
+
+{\em virtual int addMethod(int tag, int (*fp)());}
+
+{\em virtual int  getMethod();} 
+
+{\em virtual int  processMethod(int tag);}\\ 
+
+// Public Methods for Sending/Receiving Objects
+
 \indent {\em virtual int sendObject(MovableObject \&theObject, ChannelAddress
 *theAddress =0);}\\
 \indent {\em virtual int recvObject(MovableObject \&theObject, ChannelAddress
 *theAddress =0);}\\
 \indent {\em virtual int sendMessage(Message \&theMessage, ChannelAddress
 *theAddress =0);}\\
-\indent {\em virtual int recvMessage(Message \&theMessage);} \\
+{\em virtual int recvMessage(Message \&theMessage);} 
+
 \indent {\em virtual int sendMatrix(Matrix \&theMatrix, ChannelAddress
 *theAddress =0);}\\
-\indent {\em virtual int recvMatrix(Matrix \&theMatrix);} \\
+{\em virtual int recvMatrix(Matrix \&theMatrix);} 
+
 \indent {\em virtual int sendVector(Vector \&theVector, ChannelAddress
 *theAddress =0);}\\
-\indent {\em virtual int recvVector(Vector \&theVector);} \\
-\indent {\em virtual int sendID(ID \&theID, ChannelAddress *theAddress =0);}\\
-\indent {\em virtual int recvID(ID \&theID);} \\
-\indent {\em void Channel *getChannelPtr(void) const;}\\
-\indent {\em void FEM\_ObjectBroker *getObjectBrokerPtr(void) const;}\\
-\indent {\em void ChannelAddress *getChannelAddressPtr(void) const;}\\
+{\em virtual int recvVector(Vector \&theVector);} 
+
+{\em virtual int sendID(ID \&theID, ChannelAddress *theAddress =0);}
+
+{\em virtual int recvID(ID \&theID);} 
+
+{\em void Channel *getChannelPtr(void) const;}
+
+{\em void FEM\_ObjectBroker *getObjectBrokerPtr(void) const;}
+
+{\em void ChannelAddress *getChannelAddressPtr(void) const;}
+
 
 
 \noindent {\bf Constructor}  \\
@@ -72,7 +91,8 @@ getLastSendersAddress()} on {\em theChannel}. \\
 Provided so subclass destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int addMethod(int tag, int (*fp)());}\\
+{\em virtual int addMethod(int tag, int (*fp)());}
+
 A method to add as a function to the actor object the function {\em
 fp}, this function is identified by the {\em tag} value. This
 function will be invoked by the actor on invocation of {\em 

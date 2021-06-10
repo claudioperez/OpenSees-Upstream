@@ -2,13 +2,16 @@
 %What: "@(#) TimeSeries.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$domain/pattern/TimeSeries.h$>$  \\
+\#include $<\tilde{ }$domain/pattern/TimeSeries.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class TimeSeries: public DomainComponent  \\
+class TimeSeries: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent {\bf TimeSeries} \\
 
 \noindent {\bf Description} \\ 
@@ -19,12 +22,16 @@ specified. \\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em TimeSeries(int classTag);}\\ \\
+{\em TimeSeries(int classTag);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$TimeSeries();}\\  \\
+{\em virtual $\tilde{ }$TimeSeries();}\\  
+
 \indent // Pure Virtual Public Methods \\ 
-\indent {\em  virtual double getFactor(double pseudoTime) =0;}\\
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}\\
+{\em  virtual double getFactor(double pseudoTime) =0;}
+
+{\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em TimeSeries(int tag);}\\ 
@@ -36,10 +43,12 @@ constructor. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em  virtual double getFactor(double pseudoTime) =0;}\\
+{\em  virtual double getFactor(double pseudoTime) =0;}
+
 To return the current load factor for the given value of {\em
 pseudoTime} to be applied to the loads and single-point constraints in
 a LoadPattern based on the value of {\em pseudoTime}. \\
 
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}
+
 To print to the stream {\em s} output based on the value of {\em flag}.

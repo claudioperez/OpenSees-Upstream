@@ -2,13 +2,16 @@
 % What: "@(#) Domain.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/domain/domain/Domain.h$>$  \\
+\#include $<$/domain/domain/Domain.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Domain  \\
+class Domain  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  {\bf Domain} \\
+ {\bf Domain} 
+
 
 \noindent {\bf Description}  \\
 \indent Domain is container class for storing and providing access to
@@ -37,81 +40,131 @@ TaggedObjectStorage (templates are not used as yet due to present
 difficulties in porting code which uses templates). \\
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructors  \\
-\indent {\em Domain();}  \\
+// Constructors  
+
+{\em Domain();}  
+
 \indent {\em Domain(int numNodes, int numElements, int numNodeLoads,
 int numEleLoads, int numSPs, int numMPs);}  \\
-\indent {\em Domain(TaggedObjectStorage \&theNodesStorage, \\
+{\em Domain(TaggedObjectStorage \&theNodesStorage, 
+
 \indent\indent\indent           TaggedObjectStorage \&theElementsStorage, \\
 \indent\indent\indent           TaggedObjectStorage \&theMPsStorage,\\
 \indent\indent\indent           TaggedObjectStorage \&theSPsStorage, \\
 \indent\indent\indent           TaggedObjectStorage \&theLoadPatternsStorage);}\\ 
-\indent {\em Domain(TaggedObjectStorage \&theStorageType);}\\ \\
-\indent // Destructor  \\
-\indent {\em virtual~ $\tilde{}$Domain();}  \\ \\
-\indent // Public Methods to Populate the Domain  \\
+{\em Domain(TaggedObjectStorage \&theStorageType);}\\ 
+
+// Destructor  
+
+{\em virtual~ $\tilde{}$Domain();}  \\ 
+
+// Public Methods to Populate the Domain  
+
 \indent {\em virtual bool addElement(Element *theElementPtr);}  \\ 
 \indent {\em virtual bool addNode(Node *theNodePtr);} \\  
 \indent {\em virtual bool addSP\_Constraint(SP\_Constraint
 *theSPptr);} \\
 \indent {\em virtual bool addMP(MP\_Constraint *theMPptr);}  \\  
-\indent {\em virtual bool addLoadPattern(LoadPattern *thePattern);}\\ \\
-\indent // Public Methods to Populate the LoadPatterns  \\
+{\em virtual bool addLoadPattern(LoadPattern *thePattern);}\\ 
+
+// Public Methods to Populate the LoadPatterns  
+
 \indent {\em virtual bool addSP(SP\_Constraint *theSPptr, int pattern);}  \\   
 \indent {\em virtual bool addNodalLoad(NodalLoad *theLd, int pattern);}  \\   
-\indent {\em virtual bool addElementalLoad(ElementalLoad *theLd, int pattern);}\\\\
-\indent // Public Methods to Depopulate the Domain  \\
-\indent {\em virtual void clearAll(void);}\\
-\indent {\em virtual Element *removeElement(int tag);}\\
+{\em virtual bool addElementalLoad(ElementalLoad *theLd, int pattern);}\\
+
+// Public Methods to Depopulate the Domain  
+
+{\em virtual void clearAll(void);}
+
+{\em virtual Element *removeElement(int tag);}
+
 \indent {\em virtual Node *removeNode(int tag);}\\    
-\indent {\em virtual SP\_Constraint *removeSP\_Constraint(int tag);}\\
-\indent {\em virtual MP\_Constraint *removeMP\_Constraint(int tag);} \\
-\indent {\em virtual LoadPattern *removeLoadPattern(int patternTag);}\\ \\
-\indent // Public Methods to Access the Components of the Domain  \\
-\indent {\em virtual ElementIter \&getElements(void);} \\
-\indent {\em virtual NodeIter \&getNodes(void);} \\
-\indent {\em virtual SP\_ConstraintIter \&getSPs(void);} \\
-\indent {\em virtual MP\_ConstraintIter \&getMPs(void);} \\
+{\em virtual SP\_Constraint *removeSP\_Constraint(int tag);}
+
+{\em virtual MP\_Constraint *removeMP\_Constraint(int tag);} 
+
+{\em virtual LoadPattern *removeLoadPattern(int patternTag);}\\ 
+
+// Public Methods to Access the Components of the Domain  
+
+{\em virtual ElementIter \&getElements(void);} 
+
+{\em virtual NodeIter \&getNodes(void);} 
+
+{\em virtual SP\_ConstraintIter \&getSPs(void);} 
+
+{\em virtual MP\_ConstraintIter \&getMPs(void);} 
+
 \indent {\em virtual  LoadPatternIter \&getLoadPatterns(void);} \\ 
-\indent {\em virtual  Element *getElement(int tag);}\\
-\indent {\em virtual  Node *getNode(int tag);}\\
-\indent {\em virtual  SP\_Constraint *getSP\_ConstraintPtr(int tag);}\\
+{\em virtual  Element *getElement(int tag);}
+
+{\em virtual  Node *getNode(int tag);}
+
+{\em virtual  SP\_Constraint *getSP\_ConstraintPtr(int tag);}
+
 \indent {\em virtual  MP\_Constraint *getMP\_ConstraintPtr(int tag);}\\ 
-\indent {\em virtual  LoadPattern *getLoadPattern(int tag);} \\ \\
-\indent // Public Methods to Query the State of the Domain \\
-\indent {\em virtual double getCurrentTime(void) const;} \\
-\indent {\em virtual double getCurrentLoadFactor(void) const;} \\
+{\em virtual  LoadPattern *getLoadPattern(int tag);} \\ 
+
+// Public Methods to Query the State of the Domain 
+
+{\em virtual double getCurrentTime(void) const;} 
+
+{\em virtual double getCurrentLoadFactor(void) const;} 
+
 \indent {\em virtual int getNumElements(void) const;}\\ 
-\indent {\em virtual int getNumNodes(void) const;}\\
-\indent {\em virtual int getNumSPs(void) const;}\\
-\indent {\em virtual int getNumMPs(void) const;}\\
-\indent {\em virtual int getNumLoadPatterns(void) const;}\\
-\indent {\em virtual const Vector \&getPhysicalBounds(void);} \\
-\indent {\em virtual Graph \&getElementGraph(void);} \\
-\indent {\em virtual Graph \&getNodeGraph(void);} \\ \\
-\indent // Public Methods to Update the Domain  \\
-\indent {\em virtual void setCommitTag(int newTag);} \\
-\indent {\em virtual void setCurrentTime(double newTime);} \\
-\indent {\em virtual void setCommittedTime(double newTime);} \\
-\indent {\em virtual void applyLoad(double pseudoTime);} \\
+{\em virtual int getNumNodes(void) const;}
+
+{\em virtual int getNumSPs(void) const;}
+
+{\em virtual int getNumMPs(void) const;}
+
+{\em virtual int getNumLoadPatterns(void) const;}
+
+{\em virtual const Vector \&getPhysicalBounds(void);} 
+
+{\em virtual Graph \&getElementGraph(void);} 
+
+{\em virtual Graph \&getNodeGraph(void);} \\ 
+
+// Public Methods to Update the Domain  
+
+{\em virtual void setCommitTag(int newTag);} 
+
+{\em virtual void setCurrentTime(double newTime);} 
+
+{\em virtual void setCommittedTime(double newTime);} 
+
+{\em virtual void applyLoad(double pseudoTime);} 
+
 \indent {\em virtual void setLoadConstant(void);} \\ 
 \indent {\em virtual void commit(void);} \\ 
 \indent {\em virtual void revertToLastCommit(void);} \\ 
 \indent {\em virtual void update(void);} \\ 
 \indent {\em virtual int hasDomainChanged(void);} \\ 
-\indent {\em virtual void setDomainChangeStamp(int newStamp);}\\\\
-\indent // Public Methods for Output \\
-\indent {\em virtual  int  addRecorder(Recorder \&theRecorder);}\\
-\indent {\em virtual  int  playback(int cTag);}\\
-\indent {\em virtual  void Print(OPS_Stream \&s, int flag =0);}\\
+{\em virtual void setDomainChangeStamp(int newStamp);}\\
+
+// Public Methods for Output 
+
+{\em virtual  int  addRecorder(Recorder \&theRecorder);}
+
+{\em virtual  int  playback(int cTag);}
+
+{\em virtual  void Print(OPS_Stream \&s, int flag =0);}
+
 \indent {\em friend OPS_Stream \&operator<<(OPS_Stream \&s, Domain \&M); }\\  
-\indent // Protected Member Functions  \\
-\indent {\em virtual void domainChange(void) }\\
-\indent {\em virtual int buildEleGraph(Graph \&theEleGraph)} \\
-\indent {\em virtual int buildNodeGraph(Graph \&theNodeGraph)} \\
+// Protected Member Functions  
+
+{\em virtual void domainChange(void) }
+
+{\em virtual int buildEleGraph(Graph \&theEleGraph)} 
+
+{\em virtual int buildNodeGraph(Graph \&theNodeGraph)} 
+
 
 \noindent {\bf Constructors}  \\
-\indent {\em Domain();}  \\
+{\em Domain();}  
+
 Constructs an empty domain. The storage for the DomainComponents uses
 ArrayOfTaggedObjects objects for each type of object to be stored. The
 initial sizes specified for these objects are 4096 for the Elements
@@ -132,7 +185,8 @@ is allocated for these objects, if not the {\em fatal()} method of the
 global ErrorHandler is invoked.\\   
 
 
-\indent {\em Domain(TaggedObjectStorage \&theNodesStorage, \\
+{\em Domain(TaggedObjectStorage \&theNodesStorage, 
+
 \indent\indent\indent           TaggedObjectStorage \&theElementsStorage, \\
 \indent\indent\indent           TaggedObjectStorage \&theMPsStorage, \\
 \indent\indent\indent           TaggedObjectStorage \&theSPsStorage, \\
@@ -144,7 +198,8 @@ these container objects are empty is made; if not empty the {\em warning()}
 method of the global ErrorHandler is invoked and the objects are
 cleared. \\
 
-\indent {\em Domain(TaggedObjectStorage \&theStorageType); } \\
+{\em Domain(TaggedObjectStorage \&theStorageType); } 
+
 Constructs a Domain where the Nodes, Elements, MP\_Constraints,
 SP\_Constraint and LoadPattern objects will be stored in the storage
 objects obtained by invoking {\em getEmptyCopy()} on the {\em
@@ -153,7 +208,8 @@ allocated for these objects, if not the {\em fatal()} method of the
 global ErrorHandler is invoked.\\    
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$Domain();}  \\
+{\em virtual~ $\tilde{}$Domain();}  
+
 Invokes delete on all the storage objects. This means that, if the two
 latter constructors have been called, the container objects must have 
 been created using {\em new} and that at no other point in the program
@@ -164,7 +220,8 @@ invoked before the destructor is called. \\
 
 %%%%%%%% Public Member Functions - POPULATION
 \noindent {\bf Public Methods to Populate the Domain}  \\
-\indent {\em virtual bool addElement(Element *theElementPtr);}  \\
+{\em virtual bool addElement(Element *theElementPtr);}  
+
 To add the element pointed to by theElementPtr to the domain. 
 If {\em \_DEBUG} is defined the domain checks to
 see that: 1) that all external nodes for the element exists in the
@@ -335,7 +392,8 @@ before it is returned.\\
 
 %%%%%%%% Public Member Functions - ACCESS
 \noindent {\bf Public Methods to Access the Components of the Domain}  \\
-\indent {\em virtual ElementIter \&getElements(void);} \\
+{\em virtual ElementIter \&getElements(void);} 
+
 To return an iter for the Elements in the domain. It returns an {\em
 ElementIter} for the elements of the domain that were added using {\em
 addElement()}. \\  
@@ -391,7 +449,8 @@ performing a cast to a LoadPattern if the object exists. \\
 
 %%%%%%%% Public Member Functions - QUERY
 \noindent {\bf Public Methods to Query the Domain} \\
-\indent {\em virtual int getNumElements(void) const;}\\
+{\em virtual int getNumElements(void) const;}
+
 To return the number of elements in the domain. It does this by
 invoking {\em getNumComponents()} on the container for the elements. \\
 
@@ -440,13 +499,16 @@ $0$ through $numNode-1$. The Vertices references contain the nodal tags. \\
 
 %%%%%%%% Public Member Functions - UPDATE
 \noindent {\bf Public Methods to Update the Domain}  \\
-\indent {\em virtual setCommitTag(int newTag);} \\
+{\em virtual setCommitTag(int newTag);} 
+
 To set the current commitTag to {\em newTag}. \\
 
-\indent {\em virtual setCurrentTime(double newTime);} \\
+{\em virtual setCurrentTime(double newTime);} 
+
 To set the current time to {\em newTime}. \\
 
-\indent {\em virtual setCommittedTime(double newTime);} \\
+{\em virtual setCommittedTime(double newTime);} 
+
 To set the committed time to {\em newTime}. \\
 
 \indent {\em virtual void applyLoad(double pseudoTime);} \\ 
@@ -460,7 +522,8 @@ constraints in the single and multi point constraint
 containers. Finally the domain sets its current time to be {\em
 pseudoTime}.\\  
 
-\indent {\em virtual setLoadConstant(void);} \\
+{\em virtual setLoadConstant(void);} 
+
 To set the loads in the LoadPatterns to be constant. The domain
 achieves this by invoking {\em setLoadConstant()} on all the
 LoadPatterns which have been added to the domain. Note that
@@ -491,7 +554,8 @@ Called by the AnalysisModel to update the state of the
 domain. Iterates over all the elements of the Domain and invokes {\em
 update()}. \\
 
-\indent {\em virtual void setDomainChangeStamp(int newStamp);}\\
+{\em virtual void setDomainChangeStamp(int newStamp);}
+
 To set the domain stamp to be {\em newStamp}. Domain stamp is the
 integer returned by {\em hasDomainChanged()}. \\
 
@@ -504,17 +568,20 @@ method. If the domain has changed it marks the element and node graph
 flags as not having been built.\\  
 
 \noindent {\bf Public Methods for Output} \\
-\indent {\em  virtual int  addRecorder(Recorder \&theRecorder);}\\
+{\em  virtual int  addRecorder(Recorder \&theRecorder);}
+
 To add a recorder object {\em theRecorder} to the domain. {\em
 record(commitTag)} is invoked on each {\em commit()}. The pointers to
 the recorders are stored in an array which is resized on each
 invocation of this method.\\  
 
-\indent {\em int playback(int commitTag);}\\
+{\em int playback(int commitTag);}
+
 The domain will invoke {\em playback(commitTag)} on all recorder
 objects which have been added to the domain.\\
 
-\indent {\em virtual void Print(OPS_Stream \&s, int flag =0);}\\
+{\em virtual void Print(OPS_Stream \&s, int flag =0);}
+
 To print the state of the domain. The domain invokes {\em Print(s,flag)} on
 all it's container objects. \\
 

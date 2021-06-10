@@ -4,14 +4,18 @@
 NEEDS FINISHING. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/pattern/UniformExcitation.h$>$  \\
+\#include $<\tilde{ }$/domain/pattern/UniformExcitation.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class UniformExcitation: public EarthquakeLoad  \\
+class UniformExcitation: public EarthquakeLoad  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent LoadPattern \\
 \indent\indent\indent\indent EarthquakePattern \\
@@ -27,18 +31,23 @@ direction will be set to $1$.\\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em UniformExcitation(GroundMotion \&theMotion, int dof, int tag);}\\ \\
+{\em UniformExcitation(GroundMotion \&theMotion, int dof, int tag);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em $\tilde{ }$UniformExcitation();}\\  \\
+{\em $\tilde{ }$UniformExcitation();}\\  
+
 \indent // Public Methods \\ 
 \indent {\em void applyLoad(double time);} \\ 
-\indent {\em void Print(OPS_Stream \&s, int flag);}\\
-\indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\
+{\em void Print(OPS_Stream \&s, int flag);}
+
+{\em int sendSelf(int commitTag, Channel \&theChannel);}
+
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, 
 FEM\_ObjectBroker \&theBroker);}\\
 
 \noindent {\bf Constructor} \\ 
-\indent {\em UniformExcitation(GroundMotion \&theMotion, int dof, int tag);}\\ \\
+{\em UniformExcitation(GroundMotion \&theMotion, int dof, int tag);}\\ 
+
 The integers {\em LOAD\_TAG\_UniformExcitation} and {\em classTag} are
 passed to the Load classes constructor. \\
 
@@ -52,10 +61,12 @@ there has been a change it invokes {\em setNumColR(1)} and then
 {\em setR(theDof, 0, 1.0)} on each Node. It then invokes the base classes {\em
 applyLoad()} method. THIS SHOULD BE CHANGED TO USE LATEST domainChanged().\\
 
-\indent {\em void Print(OPS_Stream \&s, int flag);}\\
+{\em void Print(OPS_Stream \&s, int flag);}
+
 Does nothing. NEEDS WORK. \\
 
-\indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\
+{\em int sendSelf(int commitTag, Channel \&theChannel);}
+
 Does nothing. NEEDS WORK. \\
 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, 

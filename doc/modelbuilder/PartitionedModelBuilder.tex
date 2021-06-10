@@ -2,14 +2,18 @@
 %What: "@(#) PartitionedModelBuilder.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/modelbuilder/PartitionedModelBuilder.h$>$  \\
+\#include $<\tilde{ }$/modelbuilder/PartitionedModelBuilder.h$>$  
+
 
 \noindent {\bf Class Decleration}  \\
-\indent class PartitionedModelBuilder: public ModelBuilder, public MovableObject  \\
+class PartitionedModelBuilder: public ModelBuilder, public MovableObject  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  PartitionedModelBuilder \\
-\indent  MovableObject \\
+ PartitionedModelBuilder 
+
+ MovableObject 
+
 \indent\indent {\bf PartitionedModelBuilder} \\
 
 \noindent {\bf Description} \\ 
@@ -62,7 +66,8 @@ Does nothing. \\
 
 
 \noindent {\bf Public Methods} \\
-\indent {\em virtual buildFE\_Model(void);} \\
+{\em virtual buildFE\_Model(void);} 
+
 The PartitionedModelBuilder will first check that the
 PartitionedModelBuilder was constructed with a PartitioneDomain, if
 not a warning message is printed and a $-1$ is returned. If o.k. the object 
@@ -92,7 +97,8 @@ if not. \\
 
 
 \noindent {\bf Protected Methods} \\
-\indent {\em  PartitionedDomain *getPartitionedDomainPtr(void) const;} \\
+{\em  PartitionedDomain *getPartitionedDomainPtr(void) const;} 
+
 Returns a pointer to the PartitionedDomain object passed in the constructor.\\
 
 

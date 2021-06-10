@@ -2,13 +2,16 @@
 %What: "@(#) FullGenLinSolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/fullGEN/FullGenLinSolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/fullGEN/FullGenLinSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class FullGenLinSolver: public LinearSOESolver  \\
+class FullGenLinSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent {\bf FullGenLinSolver} \\
@@ -27,7 +30,8 @@ through the pointer {\em theSOE}, which is a protected pointer. \\
 \indent\indent {\em virtual int setLinearSOE(FullGenLinSOE \&theSOE);} \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em FullGenLinSolver(int classTag);}  \\
+{\em FullGenLinSolver(int classTag);}  
+
 The integer {\em classTag} is passed to the LinearSOESolver classes
 constructor. \\ 
 
@@ -36,7 +40,8 @@ constructor. \\
 Does nothing, provided so the subclasses destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int setLinearSOE(FullGenLinSOE \&theSOE);} \\
+{\em virtual int setLinearSOE(FullGenLinSOE \&theSOE);} 
+
 Sets the link to the FullGEnLinSOE object {\em theSOE}. This is the
 object on which the solver will perform the numerical computations. \\
 

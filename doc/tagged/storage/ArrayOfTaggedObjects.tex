@@ -2,13 +2,16 @@
 % What: "@(#) ArrayOfTaggedObjects.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/tagged/storage/ArrayOfTaggedObjects.h$>$ \\
+\#include $<\tilde{ }$/tagged/storage/ArrayOfTaggedObjects.h$>$ 
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ArrayOfTaggedObjects  \\
+class ArrayOfTaggedObjects  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  {TaggedObjectStorage} \\
+ {TaggedObjectStorage} 
+
 \indent\indent  {\bf ArrayOfTaggedObjects} \\
 
 \noindent {\bf Description}  \\
@@ -23,23 +26,38 @@ used to keep track of whether all objects have been stored at the
 location given by the tags.\\
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructor  \\
-\indent {\em ArrayOfTaggedObjects(int sizeInitialArray);} \\\\
-\indent // Destructor \\
-\indent {\em  ~ArrayOfTaggedObjects();} \\  \\
-\indent // Pure Public Methods \\
-\indent {\em int  setSize(int newSize);}\\
-\indent {\em bool addComponent(TaggedObject *newComponent)=0;}\\
-\indent {\em TaggedObject *removeComponent(int tag);}\\
-\indent {\em int getNumComponents(void) const;}\\
-\indent {\em TaggedObject *getComponentPtr(int tag);}\\
-\indent {\em TaggedObjectIter \&getComponents(void);}\\
-\indent {\em TaggedObjectStorage *getEmptyCopy(void);}\\
-\indent {\em void clearAll(void);}\\
-\indent {\em void Print(OPS_Stream \&s, int flag);}\\
+// Constructor  
+
+{\em ArrayOfTaggedObjects(int sizeInitialArray);} \\
+
+// Destructor 
+
+{\em  ~ArrayOfTaggedObjects();} \\  
+
+// Pure Public Methods 
+
+{\em int  setSize(int newSize);}
+
+{\em bool addComponent(TaggedObject *newComponent)=0;}
+
+{\em TaggedObject *removeComponent(int tag);}
+
+{\em int getNumComponents(void) const;}
+
+{\em TaggedObject *getComponentPtr(int tag);}
+
+{\em TaggedObjectIter \&getComponents(void);}
+
+{\em TaggedObjectStorage *getEmptyCopy(void);}
+
+{\em void clearAll(void);}
+
+{\em void Print(OPS_Stream \&s, int flag);}
+
 
 \noindent {\bf Constructor} \\
-\indent {\em ArrayOfTaggedObjects(int sizeInitialArray);} \\
+{\em ArrayOfTaggedObjects(int sizeInitialArray);} 
+
 Creates an array of size {\em sizeInitialArray} to hold pointers to
 the TaggedObject objects that will be added to the container. This
 array is created using {\em new()} to allow the array to grow as
@@ -58,7 +76,8 @@ If memory has been allocated for the array, the object invokes the
 destructor on the current array. \\ 
 
 \noindent {\bf Public Member Functions} \\
-\indent {\em int setSize(int newSize);}\\
+{\em int setSize(int newSize);}
+
 If {\em newSize} is valid, i.e. $>= 1$ AND {\em newSize} $>$ current
 size of the array, the object allocates memory for a new array of size
 {\em newSize}. It zeros this array and copies the old components to
@@ -71,7 +90,8 @@ successful, the warning method is invoked on the global ErrorHandler
 and a negative value is returned.\\ 
 
 
-\indent {\em bool addComponent(TaggedObject *newComponent);}\\
+{\em bool addComponent(TaggedObject *newComponent);}
+
 To add the object {\em newComponent} to the container. First checks to
 see that an object with a similar tag does not already exist in the
 container, invokes the warning method on the global ErrorHandler and
@@ -94,7 +114,8 @@ location all the time.
 incremented and {\em true} is returned. \\
 
  
-\indent {\em TaggedObject *removeComponent(int tag);}\\
+{\em TaggedObject *removeComponent(int tag);}
+
 To remove the component whose tag is given by {\em tag} from the
 container and return a pointer to the object. If tag is not too large
 and all components have been added nicely, the contents of the array
@@ -110,10 +131,12 @@ does the array location is set to $0$ and the object returned,
 otherwise $0$ is returned. If the object has not been found after the
 last possible location has been checked, $0$ is returned. \\
 
-\indent {\em int  getNumComponents(void) const;}\\
+{\em int  getNumComponents(void) const;}
+
 Returns the number of components currently stored in the container. \\
 
-\indent {\em TaggedObject *getComponentPtr(int tag);}\\
+{\em TaggedObject *getComponentPtr(int tag);}
+
 To return a pointer to the TaggedObject whose identifier is given by
 {\em tag}. If tag is not too large
 and all components have been added nicely, the contents of the array
@@ -128,26 +151,30 @@ is returned. If the object has not been found after the last possible
 location has been checked, $0$ is returned. \\
 
 
-\indent {\em TaggedObjectIter \&getComponents(void);}\\
+{\em TaggedObjectIter \&getComponents(void);}
+
 To return an iter for iterating through the objects that have been
 added to the container. Each container object has its own iter. This
 iter() is reset to point to the start and a reference to this iter is
 returned.\\ 
 
-\indent {\em TaggedObjectStorage *getEmptyCopy(void);}\\
+{\em TaggedObjectStorage *getEmptyCopy(void);}
+
 To return an empty copy of the container. Creates a new
 ArrayOfTaggedObjects object using the current size of the array as the
 argument for the constructor. It is up to the user of this method to
 invoke the destructor on the new object. \\
 
-\indent {\em void clearAll(void);}\\
+{\em void clearAll(void);}
+
 To remove all objects from the container and {\bf to invoke the
 destructor on these objects}. Goes through the array, invoking the
 destructor on any object pointed to by a cell and then setting this
 cell to $0$. Resets the internal member data to indicate that zero
 components have been added to the container.\\
 
-\indent {\em void Print(OPS_Stream \&s, int flag =0);}\\
+{\em void Print(OPS_Stream \&s, int flag =0);}
+
 Invokes {\em Print(s,flag)} on all objects which have been added to
 the container. 
 

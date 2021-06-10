@@ -6,10 +6,12 @@
 }$/analysis/handler/LagrangeConstraintHandler.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class LagrangeConstraintHandler: public ConstraintHandler  \\
+class LagrangeConstraintHandler: public ConstraintHandler  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent ConstraintHandler \\
 \indent\indent\indent {\bf LagrangeConstraintHandler} \\
 
@@ -25,16 +27,22 @@ and residual vector. \\
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em LagrangeConstraintHandler(double alphaSP, double
 alphaMP);}\\  \\ 
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$LagrangeConstraintHandler();}\\  \\
-\indent // Public Methods\\
+// Destructor 
+
+{\em virtual~ $\tilde{}$LagrangeConstraintHandler();}\\  
+
+// Public Methods
+
 \indent {\em virtual int handle(const ID *nodeToBeNumberedLast
 =0); } \\ 
-\indent {\em virtual void clearAll(void);} \\ \\
-\indent {\em int sendSelf(int commitTag, Channel \&theChannel); } \\
+{\em virtual void clearAll(void);} \\ 
+
+{\em int sendSelf(int commitTag, Channel \&theChannel); } 
+
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker); } \\
 
@@ -53,7 +61,8 @@ Currently invokes {\em clearAll()}, this will change when {\em
 clearAll()} is rewritten. \\
 
 \noindent {\bf Public Methods }\\
-\indent {\em virtual int handle(const ID *nodeToBeNumberedLast =0) =0;} \\
+{\em virtual int handle(const ID *nodeToBeNumberedLast =0) =0;} 
+
 Determines the number of FE\_Elements and DOF\_Groups needed from the
 Domain (a one to one mappinging between Elements and FE\_Elements,
 SP\_Constraints and LagrangeSP\_FEs, MP\_Constraints and LagrangeMP\_FEs and

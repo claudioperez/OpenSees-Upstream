@@ -2,13 +2,16 @@
 %What: "@(#) CTestNormUnbalance.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{}$/convergenceTest/CTestNormUnbalance.h$>$  \\
+\#include $<\tilde{}$/convergenceTest/CTestNormUnbalance.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class CTestNormUnbalance: public ConvergenceTest  \\
+class CTestNormUnbalance: public ConvergenceTest  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent ConvergenceTest \\
 \indent\indent\indent {\bf CTestNormUnbalance} \\
 
@@ -38,7 +41,8 @@ printFlag);}  \\
 
 \noindent {\bf Constructors}  \\
 \indent {\em CTestNormUnbalance(double tol, int maxNumIter, int printFlag);}  \\ 
-\indent {\em CTestNormUnbalance(double tol, int );}  \\
+{\em CTestNormUnbalance(double tol, int );}  
+
 The integer {\em CLASS\_TAGS\_CTestNormUnbalance}, defined in
 $<$classTags.h$>$, is passed to the ConvergenceTest constructor. 
 Sets the tolerance used in {\em test()} to be {\em tol}, the max
@@ -46,7 +50,8 @@ number of iterations to be performed to {\em maxNumIter} and the print
 flag used to determine what, if anything, is printed on each test to
 {\em printFlag}. \\
 
-\indent {\em CTestNormUnbalance();}  \\
+{\em CTestNormUnbalance();}  
+
 To be used by the FEM\_ObjectBroker object in parallel programs. The
 integer {\em CLASS\_TAGS\_CTestNormUnbalance}, defined in
 $<$classTags.h$>$, is passed to the ConvergenceTest constructor. Sets
@@ -58,20 +63,24 @@ to be $0$. These will be set when {\em recvSelf()} is invoked on the object. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em int setTolerance(double newTol);} \\
+{\em int setTolerance(double newTol);} 
+
 Sets the tolerance used in {\em test()} to be {\em newTol}. \\
 
-\indent {\em int setEquiSolnAlgo(EquiSolnAlgo \&theAlgo);} \\
+{\em int setEquiSolnAlgo(EquiSolnAlgo \&theAlgo);} 
+
 It sets a pointer to {\em theAlgo}'s LinearSOE object. Returns $0$ if
 successful, a $-1$ is returned and an error message printed if no
 LinearSOE object has been set in {\em theAlgo}. \\
 
-\indent {\em virtual void start(void);} \\
+{\em virtual void start(void);} 
+
 Sets an integer indicating the current number of iterations, {\em
 currentNumIter} to $1$. Returns $0$ if successfull, an error message
 and $-1$ are returned if no LinearSOE object has been set. \\ 
 
-\indent {\em int test(void);} \\
+{\em int test(void);} 
+
 Returns {currentNumIter} if if the two norm of the LinearSOE objects B
 Vector is less than the tolerance {\em tol}. If no LinearSOE has been
 set $-2$ is returned. If the {\em currentNumIter} $>=$ {\em

@@ -2,13 +2,16 @@
 %What: "@(#) LagrangeSP_FE.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/fe\_ele/lagrange/LagrangeSP\_FE.h$>$  \\
+\#include $<\tilde{ }$/analysis/fe\_ele/lagrange/LagrangeSP\_FE.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class LagrangeSP\_FE: public FE\_Element ;  \\
+class LagrangeSP\_FE: public FE\_Element ;  
+
 
 \noindent {\bf Class Hierarchy}  \\
-\indent FE\_Element \\
+FE\_Element 
+
 \indent\indent {\bf LagrangeSP\_FE} \\ 
 
 \noindent {\bf Description}  \\
@@ -57,12 +60,14 @@ Node associated with the SP\_Constraint exists in the Domain, or
 DOF\_Group is associated with the Node.\\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$LagrangeSP\_FE();}  \\
+{\em virtual~ $\tilde{}$LagrangeSP\_FE();}  
+
 Invokes the destructor on the Matrix and Vector objects created in the
 constructor. \\
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual void setID(void);} \\
+{\em virtual void setID(void);} 
+
 Causes the LagrangeSP\_FE to determine the mapping between it's equation
 numbers and the degrees-of-freedom. From the Node object link, created
 in the constructor, the DOF\_group corresponding to the Node
@@ -77,10 +82,12 @@ Node has no associated DOF\_Group, $-3$ if the constrained DOF
 specified is invalid for this Node and $-4$ if the ID in the
 DOF\_Group is too small for the Node. \\ 
 
-\indent {\em virtual const Matrix \&getTangent(Integrator *theIntegrator);} \\
+{\em virtual const Matrix \&getTangent(Integrator *theIntegrator);} 
+
 Returns the tangent Matrix created in the constructor. \\
 
-\indent {\em virtual const Vector \&getResidual(Integrator *theIntegrator);} \\
+{\em virtual const Vector \&getResidual(Integrator *theIntegrator);} 
+
 Sets the FE\_Elements contribution to the residual:
 \[ \left\{ \begin{array}{c} 0 \\ \alpha(u_s - u_t) \end{array} \right\} \]
 where $U_s$ is the specified value of the

@@ -2,14 +2,18 @@
 %What: "@(#) NodalLoad.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/node/NodalLoad.h$>$  \\
+\#include $<\tilde{ }$/domain/node/NodalLoad.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class NodalLoad: public Load  \\
+class NodalLoad: public Load  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent Load \\
 \indent\indent\indent\indent {\bf NodalLoad} \\
@@ -54,12 +58,14 @@ and the program terminates. The boolean {\em isLoadConstant} is used
 to indicate whether the value of the load applies to the Node is
 independent of the load factor. \\ 
 
-\indent {\em NodalLoad(int tag, int node, int classTag);}  \\
+{\em NodalLoad(int tag, int node, int classTag);}  
+
 Provided for subclasses, which may which to provide the abstraction of
 time varying nodal loads. The integers {\em tag} and {\em classTag}
 are passed to the Load constructor. \\
 
-\indent {\em NodalLoad(int classTag);}  \\
+{\em NodalLoad(int classTag);}  
+
 Provided so that a FEM\_ObjectBroker can construct an object. $0$ and
 {\em classTag} are passed to the Load classes constructor. The data
 for the object is filled in when {\em recvSelf()} is invoked on the
@@ -72,7 +78,8 @@ delete on this Vector object. \\
 
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual void setDomain(Domain *newDomain);} \\
+{\em virtual void setDomain(Domain *newDomain);} 
+
 To set the associated Domain object. First checks to ensure that a
 Node object with the tag exists in the Domain. It sets the pointer for
 it's associated Node object to point to this object, and then 
@@ -80,7 +87,8 @@ invokes the DomainComponent classes {\em setDomain()} method. If the
 Node does not exist in the Domain a warning message and {\em
 setDomain()} is not invoked. \\
 
-\indent {\em virtual int getNodeTag(void) const;} \\
+{\em virtual int getNodeTag(void) const;} 
+
 Returns the integer {\em node} passed in the constructor. \\
 
 \indent {\em virtual void applyLoad(double timeStep = 0.0, double
@@ -95,7 +103,8 @@ Domain. For efficiency reasons, the NodalLoad object keeps a pointer
 to it's associated Node object. The time {\em timeStep} has no
 influence on the load added. \\
 
-\indent {\em virtual int sendSelf(int commitTag, Channel \&theChannel); } \\
+{\em virtual int sendSelf(int commitTag, Channel \&theChannel); } 
+
 Determines its database tag. The object then sends it's tag, {\em
 node} and size of load Vector to the Channel in an ID object. Then, if
 {\em load} is not NULL, it sends it's copy of the {\em load}
@@ -110,6 +119,7 @@ of load Vector. If size of {\em load} is not $0$ it then receives it's
 copy of the {\em load} Vector. Returns $0$ if successful, a negative 
 number if the Channel failed to receive the data. \\ 
 
-\indent {\em virtual void Print(OPS_Stream \&s, int flag = 0);} \\
+{\em virtual void Print(OPS_Stream \&s, int flag = 0);} 
+
 Prints it's {\em node} and then prints the load Vector. \\
 

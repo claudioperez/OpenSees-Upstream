@@ -6,13 +6,16 @@ PARALLEL, 2) SET\_MINMAX() and 3) ONLY ONE CALL TO GET RGB VALUES, i.e.
 getRGB(value, \&r, \&g, \&b) \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/earthquake/ColorMap.h$>$  \\
+\#include $<\tilde{ }$/earthquake/ColorMap.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ColorMap   \\
+class ColorMap   
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf ColorMap} \\
+{\bf ColorMap} 
+
 
 \noindent {\bf Description} \\ 
 \indent 
@@ -23,13 +26,18 @@ image and the rgb values that are displayed. \\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em ColorMap();}\\ \\
+{\em ColorMap();}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$ColorMap();}\\  \\
+{\em virtual $\tilde{ }$ColorMap();}\\  
+
 \indent // Public Methods\\ 
-\indent {\em virtual float getRed(float value) =0;}\\
-\indent {\em virtual float getGreen(float value) =0;}\\
-\indent {\em virtual float getBlue(float value) =0;}\\
+{\em virtual float getRed(float value) =0;}
+
+{\em virtual float getGreen(float value) =0;}
+
+{\em virtual float getBlue(float value) =0;}
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em ColorMap();}\\ 
@@ -40,14 +48,17 @@ Does nothing. \\
 Does Noting. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em virtual float getRed(float value) =0;}\\
+{\em virtual float getRed(float value) =0;}
+
 To return the red intensity of the rgb triple for the scalar quantity
 {\em value}. \\
 
-\indent {\em virtual float getGreen(float value) =0;}\\
+{\em virtual float getGreen(float value) =0;}
+
 To return the green intensity of the rgb triple for the scalar quantity
 {\em value}. \\
 
-\indent {\em virtual float getBlue(float value) =0;}\\
+{\em virtual float getBlue(float value) =0;}
+
 To return the blue intensity of the rgb triple for the scalar quantity
 {\em value}. \\

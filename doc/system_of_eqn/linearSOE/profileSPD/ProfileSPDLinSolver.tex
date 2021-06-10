@@ -4,13 +4,16 @@
 \noindent {\bf ProfileSPDLinSolver} \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$ProfileSPDLinSolver.h$>$  \\
+\#include $<\tilde{ }$ProfileSPDLinSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ProfileSPDLinSolver: public LinearSOESolver  \\
+class ProfileSPDLinSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  Solver \\
+ Solver 
+
 \indent\indent LinearSOESolver \\
 \indent\indent\indent {\bf ProfileSPDLinSolver} \\
 
@@ -28,7 +31,8 @@ through the pointer {\em theSOE}, which is a protected pointer. \\
 \indent\indent {\em virtual int setLinearSOE(ProfileSPDLinSOE \&theSOE);} \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em ProfileSPDLinSolver(int classTag);}  \\
+{\em ProfileSPDLinSolver(int classTag);}  
+
 The integer {\em classTag} is passed to the LinearSOESolver classes
 constructor. \\ 
 
@@ -37,6 +41,7 @@ constructor. \\
 Does nothing, provided so the subclasses destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int setLinearSOE(ProfileSPDLinSOE \&theSOE);} \\
+{\em virtual int setLinearSOE(ProfileSPDLinSOE \&theSOE);} 
+
 The method sets up the link between the ProfileSPDLinSOE object and the
 ProfileSPDLinSolver, that it is sets the pointer the subclasses use.  \\

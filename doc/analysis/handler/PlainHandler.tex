@@ -2,13 +2,16 @@
 %What: "@(#) PlainHandler.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/handler/PlainHandler.h$>$  \\
+\#include $<\tilde{ }$/analysis/handler/PlainHandler.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class PlainHandler: public ConstraintHandler  \\
+class PlainHandler: public ConstraintHandler  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent ConstraintHandler \\
 \indent\indent\indent {\bf PlainHandler} \\
 
@@ -21,15 +24,22 @@ assigned an equation number. Pointers to the DOF\_Group and
 FE\_Element objects are kept in two arrays. \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
-\indent {\em PlainHandler();}\\  \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$PlainHandler();}\\  \\
-\indent // Public Methods\\
+// Constructor 
+
+{\em PlainHandler();}\\  
+
+// Destructor 
+
+{\em $\tilde{ }$PlainHandler();}\\  
+
+// Public Methods
+
 \indent {\em int handle(const ID *nodeToBeNumberedLast
 =0);} \\ 
-\indent {\em void clearAll(void);} \\ \\
-\indent {\em int sendSelf(int commitTag, Channel \&theChannel); } \\
+{\em void clearAll(void);} \\ 
+
+{\em int sendSelf(int commitTag, Channel \&theChannel); } 
+
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker); } \\
 
@@ -45,7 +55,8 @@ created in {\em handle}. Then invokes the destructor on the two
 pointer arrays. \\
 
 \noindent {\bf Public Methods }\\
-\indent {\em int handle(const ID *nodeToBeNumberedLast =0);} \\
+{\em int handle(const ID *nodeToBeNumberedLast =0);} 
+
 Determines the number of FE\_Elements and DOF\_Groups needed from the
 Domain (a one to one mapping between Elements and FE\_Elements and
 Nodes and DOF\_Groups) Creates two arrays of pointers to store the

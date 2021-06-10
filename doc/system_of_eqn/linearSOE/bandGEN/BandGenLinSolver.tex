@@ -2,13 +2,16 @@
 %What: "@(#) BandGenLinSolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/bandGEN/BandGenLinSolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/bandGEN/BandGenLinSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class BandGenLinSolver: public LinearSOESolver  \\
+class BandGenLinSolver: public LinearSOESolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent {\bf BandGenLinSolver} \\
@@ -28,7 +31,8 @@ through the pointer {\em theSOE}, which is a protected pointer. \\
 \indent\indent {\em virtual int setLinearSOE(BandGenLinSOE \&theSOE);} \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em BandGenLinSolver(int classTag);}  \\
+{\em BandGenLinSolver(int classTag);}  
+
 The integer {\em classTag} is passed to the LinearSOESolver classes
 constructor. \\ 
 
@@ -37,7 +41,8 @@ constructor. \\
 Does nothing, provided so the subclasses destructor will be called. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int setLinearSOE(BandGenLinSOE \&theSOE);} \\
+{\em virtual int setLinearSOE(BandGenLinSOE \&theSOE);} 
+
 The method sets up the link between the BandGenLinSOE object and the
 BandGenLinSolver, that it is sets the pointer the subclasses use.  \\
 

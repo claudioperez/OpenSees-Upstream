@@ -6,10 +6,12 @@
 }$/analysis/algorithm/equiSolnAlgo/EquiSolnAlgo.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class EquiSolnAlg: public SolutionAlgo;  \\
+class EquiSolnAlg: public SolutionAlgo;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent SolutionAlgorithm \\
 \indent\indent\indent {\bf EquiSolnAlgo} \\
 
@@ -53,7 +55,8 @@ Does nothing. \\
 
 
 \noindent {\bf Public Methods}  \\
-\indent {\em void setLinks(AnalysisModel \&theModel, \\
+{\em void setLinks(AnalysisModel \&theModel, 
+
 \indent\indent\indent\indent IncrementalIntegrator \&theIntegrator, \\
 \indent\indent\indent\indent LinearSOE \&theSOE);} \\
 Sets up the links needed by an object of this class, or a derived
@@ -61,18 +64,21 @@ class, to an AnalysisMode, IncrementalIntegrator and LinearSOE
 object. Pointers to these objects can be obtained by subtypes using
 the protected methods defined below. \\ 
 
-\indent {\em virtual int solveCurrentStep(void) = 0;} \\
+{\em virtual int solveCurrentStep(void) = 0;} 
+
 A method implemented by each subclass which specifies the steps taken
 in order to get the system into an equilibrium state. It is a pure
 virtual function, i.e. all subclasses or their descendents must
 implement this routine. To return $0$ if algorithm succeeds, a negative
 value otherwise. \\ 
 
-\indent {\em virtual void Print(OPS_Stream \&s, int flag = 0) =0;}\\
+{\em virtual void Print(OPS_Stream \&s, int flag = 0) =0;}
+
 The Integrator is to send information to the stream based on the
 integer {\em flag}. \\
 
-\indent {\em AnalysisModel *getAnalysisModelPtr(void) const;} \\
+{\em AnalysisModel *getAnalysisModelPtr(void) const;} 
+
 A const member function which returns a pointer to the AnalysisModel
 associated with the EquiSolnAlgo object, {\em theModel} passed in {\em
 setLinks()}. $0$ returned if one not yet associated. \\

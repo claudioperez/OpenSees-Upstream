@@ -2,13 +2,16 @@
 %What: "@(#) RectangularSeries.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$domain/pattern/RectangularSeries.h$>$  \\
+\#include $<\tilde{ }$domain/pattern/RectangularSeries.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class RectangularSeries: public DomainComponent  \\
+class RectangularSeries: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent TimeSeries \\
 \indent\indent\indent {\bf RectangularSeries} \\
 
@@ -21,15 +24,20 @@ pseudo time $<=$ tFinish, otherwise factor $ =0.0$. \\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em RectangularSeries(double tStart, double tFinish, double factor = 1.0);}\\ \\
+{\em RectangularSeries(double tStart, double tFinish, double factor = 1.0);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$RectangularSeries();}\\  \\
+{\em virtual $\tilde{ }$RectangularSeries();}\\  
+
 \indent // Public Methods \\ 
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
-\indent {\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
+{\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}
+
 \indent {\em  virtual int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0);}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0);}
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em RectangularSeries(double tStart, double tFinish, double cFactor = 1.0);}\\ 
@@ -43,7 +51,8 @@ cfactor}. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
 Returns cFactor if tStart $<=$ pseudo time $<=$ tFinish, otherwise
 returns $0.0$. \\ 
 
@@ -57,6 +66,7 @@ the Channel object. \\
 FEM\_ObjectBroker \&theBroker);}\\
 Does the mirror image of {\em sendSelf()}. \\
 
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}
+
 Prints the string 'RectangularSeries' and the values {\em tStart}, {\em
 tFinish} and {\em factor}. 

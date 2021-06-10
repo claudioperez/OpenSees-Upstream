@@ -4,13 +4,16 @@
 \noindent {\bf DomainUser} \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<$DomainUser.h$>$  \\
+\#include $<$DomainUser.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DomainUser;  \\
+class DomainUser;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf DomainUser} \\
+{\bf DomainUser} 
+
 \indent\indent Analysis \\
 \indent\indent Design \\
 \indent\indent DomainDisplay \\
@@ -37,13 +40,15 @@ removes the link in the domain by invoking {\em removeDomainUser(*this)}
 on the domain. \\
 
 \noindent {\bf Pure Virtual Public Member Functions}\\
-\indent {\em virtual void domainChange(void) = 0;} \\
+{\em virtual void domainChange(void) = 0;} 
+
 Invoked by the associated domain to inform the domainUser that the
 connectivity of the domain has changed. \\
 
 
 \noindent {\bf Protected Member Functions}  \\
-\indent {\em Domain \&getDomain(void) const;} \\
+{\em Domain \&getDomain(void) const;} 
+
 A const method which returns a pointer to the Domain object on which
 the DomainUser performs its DomainUser.
 

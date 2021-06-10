@@ -2,15 +2,18 @@
 %What: "@(#) DisplacementControl.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/DisplacementControl.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/DisplacementControl.h$>$  
+
 
 UNDER CONSTRUCTION.\\
 
 \noindent {\bf Class Declaration}  \\
-\indent class DisplacementControl: public StaticIntegrator  \\
+class DisplacementControl: public StaticIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent StaticIntegrator \\
@@ -43,20 +46,29 @@ Uc_n$ is bounded by $\delta Uc_{min}$  and $\delta Uc_{max}$. \\
 SOME THEORY.\\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em DisplacementControl(int node, int dof, double $\delta Uc_1$, int Jd,  
 double $\delta Uc_{min}$, double $\delta Uc_{max}$);}\\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$DisplacementControl();}\\  \\
-\indent // Public Methods \\
-\indent {\em int newStep(void);} \\
-\indent {\em int update(const Vector \&$\Delta U$);} \\
-\indent {\em int domainChanged(void);} \\ \\
-\indent // Public Methods for Output\\
+// Destructor 
+
+{\em $\tilde{ }$DisplacementControl();}\\  
+
+// Public Methods 
+
+{\em int newStep(void);} 
+
+{\em int update(const Vector \&$\Delta U$);} 
+
+{\em int domainChanged(void);} \\ 
+
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 \noindent {\bf Constructors} \\
 \indent {\em DisplacementControl(int node, int dof, double $\delta Uc_1$, int Jd,  

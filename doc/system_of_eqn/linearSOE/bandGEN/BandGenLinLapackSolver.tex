@@ -2,13 +2,16 @@
 %What: "@(#) BandGenLinLapackSolver.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/system\_of\_eqn/linearSOE/bandGEN/BandGenLinLapackSolver.h$>$  \\
+\#include $<\tilde{ }$/system\_of\_eqn/linearSOE/bandGEN/BandGenLinLapackSolver.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class BandGenLinLapackSolver: public BandGenLinSolver  \\
+class BandGenLinLapackSolver: public BandGenLinSolver  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent  Solver \\
 \indent\indent\indent LinearSOESolver \\
 \indent\indent\indent\indent BandGenLinSolver \\
@@ -35,7 +38,8 @@ BandGenLinSOE class (see $<$BandGenLinSOE.h$>$). \\
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em BandGenLinLapackSolver();}  \\
+{\em BandGenLinLapackSolver();}  
+
 A unique class tag (defined in $<$classTags.h$>$) is passed to the
 BandGenLinSolver constructor. Sets the size of {\em iPiv} to $0$, {\em
 iPiv} being an integer array needed by the LAPACK routines. \\
@@ -46,7 +50,8 @@ Invokes delete on {\em iPiv} to free the memory allocated to store the
 array. \\ 
 
 \noindent {\bf Public Methods }  \\
-\indent {\em virtual int solve(void);} \\
+{\em virtual int solve(void);} 
+
 The solver first copies the B vector into X and then solves the
 BandGenLinSOE system by calling the LAPACK routines {\em
 dgbsv()}, if the system is marked as not having been factored, and {\em
@@ -56,7 +61,8 @@ in the INFO argument, it marks the system has having been
 factored and returns $0$, otherwise it prints a warning message and
 returns INFO. The solve process changes $A$ and $X$. \\   
 
-\indent {\em int setSize(void);} \\
+{\em int setSize(void);} 
+
 Is used to construct a 1d integer array, {\em iPiv} that is needed by
 the LAPACK solvers. It checks to see if current size of {\em iPiv} is
 large enough, if not it deletes the cold and creates a larger

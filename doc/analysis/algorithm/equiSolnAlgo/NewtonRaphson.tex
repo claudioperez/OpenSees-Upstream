@@ -6,10 +6,12 @@
 }$/analysis/algorithm/equiSolnAlgo/NewtonRaphson.h$>$  \\ 
 
 \noindent {\bf Class Declaration}  \\
-\indent class NewtonRaphson: public EquiSolnAlg;  \\
+class NewtonRaphson: public EquiSolnAlg;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent SolutionAlgorithm \\
 \indent\indent\indent EquiSolnAlgo \\
 \indent\indent\indent\indent {\bf NewtonRaphson} \\
@@ -43,17 +45,25 @@ determines if convergence has been achieved. \\
 \noindent {\bf Class Interface} \\ 
 \indent // Constructors \\ 
 \indent {\em NewtonRaphson(ConvergenceTest \&theTest);}\\ 
-\indent {\em NewtonRaphson();}\\ \\
-\indent // Destructor \\
-\indent {\em ~ $\tilde{}$NewtonRaphson();}\\  \\
-\indent // Public Member Functions \\
-\indent {\em int solveCurrentStep(void);} \\
-\indent {\em void setTest(ConvergenceTest \&theTest);} \\ \\
-\indent // Public Methods  for Output \\
+{\em NewtonRaphson();}\\ 
+
+// Destructor 
+
+{\em ~ $\tilde{}$NewtonRaphson();}\\  
+
+// Public Member Functions 
+
+{\em int solveCurrentStep(void);} 
+
+{\em void setTest(ConvergenceTest \&theTest);} \\ 
+
+// Public Methods  for Output 
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, 
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag =0);} \\
+{\em int Print(OPS_Stream \&s, int flag =0);} 
+
 
 \noindent {\bf Constructors} \\ 
 \indent {\em NewtonRaphson(int theMaxNumIter, ConvergenceTest \&theTest);}\\ 
@@ -64,7 +74,8 @@ integer {\em EquiALGORITHM\_TAGS\_NewtonRaphson} (defined in
 $<$classTags.h$>$) is passed to the EquiSolnAlgo classes
 constructor. \\ 
 
-\indent {\em NewtonRaphson();}\\
+{\em NewtonRaphson();}
+
 Provided for FEM\_ObjectBroker to instantiate a blank object with a
 class tag of EquiALGORITHM\_TAGS\_NewtonRaphson is passed. {\em
 recvSelf()} must be invoked on this object. \\
@@ -74,7 +85,8 @@ recvSelf()} must be invoked on this object. \\
 Does nothing. \\
 
 \noindent {\bf Public Member Functions}  \\
-\indent {\em int solveCurrentStep(void);} \\
+{\em int solveCurrentStep(void);} 
+
 When invoked the object first sets itself as the EquiSolnAlgo object
 that the ConvergenceTest is testing and then it performs the
 Newton-Raphson iteration algorithm: 

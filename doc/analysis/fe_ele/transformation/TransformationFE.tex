@@ -2,15 +2,18 @@
 %What: "@(#) TransformationFE.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/fe\_ele/penalty/TransformationFE.h$>$  \\
+\#include $<\tilde{ }$/analysis/fe\_ele/penalty/TransformationFE.h$>$  
+
 
 UNDER CONSTRUCTION. \\
 
 \noindent {\bf Class Declaration}  \\
-\indent class TransformationFE: public FE\_Element ;  \\
+class TransformationFE: public FE\_Element ;  
+
 
 \noindent {\bf Class Hierarchy}  \\
-\indent FE\_Element \\
+FE\_Element 
+
 \indent\indent {\bf TransformationFE} \\ 
 
 \noindent {\bf Description}  \\
@@ -26,16 +29,23 @@ diagonal matrix equal to WHAT?
 
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructor  \\
+// Constructor  
+
 \indent {\em TransformationFE(Domain \&theDomain,
 TransformationConstraintHandler \&theHandler); \\ \\
-\indent // Destructor  \\
-\indent {\em virtual~ $\tilde{}$TransformationFE();}  \\ \\
-\indent // Public Methods \\
+// Destructor  
 
-\indent {\em    virtual const ID \&getDOFtags(void) const; }\\
-\indent {\em   virtual const ID \&getID(void) const;}\\
-\indent {\em    void setAnalysisModel(AnalysisModel \&theModel);}\\
+{\em virtual~ $\tilde{}$TransformationFE();}  \\ 
+
+// Public Methods 
+
+
+{\em    virtual const ID \&getDOFtags(void) const; }
+
+{\em   virtual const ID \&getID(void) const;}
+
+{\em    void setAnalysisModel(AnalysisModel \&theModel);}
+
 \indent {\em virtual void setID(void);} \\ 
 \indent {\em virtual const Matrix \&getTangent(Integrator
 *theIntegrator);} \\  
@@ -43,8 +53,10 @@ TransformationConstraintHandler \&theHandler); \\ \\
 *theIntegrator);} \\ 
 \indent {\em virtual const Vector \&getTangForce(const Vector
 \&disp, double fact = 1.0);    }\\
-\indent {\em    int addSP(SP\_Constraint \&theSP);}\\ \\
-\indent // Protected Methods \\
+{\em    int addSP(SP\_Constraint \&theSP);}\\ 
+
+// Protected Methods 
+
 \indent {\em transformResponse(const Vector \&modResponse, 
 Vector \&unmodResponse);}\\
 
@@ -54,15 +66,19 @@ TransformationConstraintHandler \&theHandler); \\
 
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$TransformationFE();}  \\
+{\em virtual~ $\tilde{}$TransformationFE();}  
+
 
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual void setID(void);} \\
+{\em virtual void setID(void);} 
 
-\indent {\em virtual Matrix \&getTangent(Integrator *theIntegrator);} \\
 
-\indent {\em virtual const Vector \&getResidual(Integrator *theIntegrator);} \\
+{\em virtual Matrix \&getTangent(Integrator *theIntegrator);} 
+
+
+{\em virtual const Vector \&getResidual(Integrator *theIntegrator);} 
+
 
 
 {\em virtual const Vector \&getTangForce(const Vector \&disp, double

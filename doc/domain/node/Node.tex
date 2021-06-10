@@ -5,14 +5,18 @@ NEW METHOD POSSIBLY NEEDED TO SPECIFY THE NUMBER OF PREVIOUSLY
 COMMITTED RESPONSES TO KEEP .. NEEDED FOR EXPLICIT DYNAMIC INTEGRATORS\\
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/domain/node/Node.h$>$  \\
+\#include $<$/domain/node/Node.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Node: public DomainComponent  \\
+class Node: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent {\bf Node} \\
 
@@ -88,20 +92,23 @@ float fact);} \\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em Node(int classTag);}  \\
+{\em Node(int classTag);}  
+
 To construct a node which has no data, other than the {\em classTag}
 identifier; $0$ and {\em classTag} are passed to the DomainComponent
 constructor. This is the constructor called by an
 FEM\_ObjectBroker. The data must be filled in subsequently by a call
 to {\em recvSelf()}. \\ 
 
-\indent {\em Node(int tag, int classTag);}  \\
+{\em Node(int tag, int classTag);}  
+
 To construct a node whose unique integer among nodes in the
 domain is given by {\em tag} and whose classTag is given by {\em
 classTag}. This constructor can be used by 
 subclasses who wish to handle their own data management. \\ 
 
-\indent {\em Node(int tag, int ndof, double Crd1);}  \\
+{\em Node(int tag, int ndof, double Crd1);}  
+
 To construct a node for 1d problems whose unique integer among nodes in the
 domain is given by {\em tag} and whose original position in 1d space
 is given by (Crd1). With the node is associated {\em ndof} number
@@ -111,7 +118,8 @@ storage objects are created to hold the trial and committed response
 quantities, mass, load quantities; these are created as needed to
 reduce the memory demands on the system in certain situations. \\ 
 
-\indent {\em Node(int tag, int ndof, double Crd1, double Crd2);}  \\
+{\em Node(int tag, int ndof, double Crd1, double Crd2);}  
+
 To construct a node for 2d problems whose unique integer among nodes in the
 domain is given by {\em tag} and whose original position in 2d space
 is given by (Crd1,Crd2). With the node is associated {\em ndof} number
@@ -121,7 +129,8 @@ storage objects are created to hold the trial and committed response
 quantities, mass, load quantities; these are created as needed to
 reduce the memory demands on the system in certain situations. \\ 
 
-\indent {\em Node(int tag, int ndof, double Crd1, double Crd2, double Crd3);}\\
+{\em Node(int tag, int ndof, double Crd1, double Crd2, double Crd3);}
+
 To construct a node for 3d problems whose unique integer among nodes in the
 domain is given by {\em tag} and whose original position in 3d space
 is given by (Crd1,Crd2,Crd3). With the node is associated {\em ndof} number
@@ -133,20 +142,24 @@ reduce the memory demands on the system in certain situations. \\
 
 
 
-\indent {\em Node(const Node \&theCopy);}\\
+{\em Node(const Node \&theCopy);}
+
 To construct a node which is an exact copy of {\em theCopy}. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~$\tilde{}$ Node();} \\
+{\em virtual~$\tilde{}$ Node();} 
+
 Invokes the destructor on all the storage objects created to hold the coordinates,
 response quantities, mass and load quantities. \\
 
 \noindent {\bf Public Member Functions }  \\
-\indent {\em virtual int  getNumberDOF(void) const;}\\
+{\em virtual int  getNumberDOF(void) const;}
+
 Returns the number of degrees-of-freedom, {\em ndof}, associated with
 the node. \\
 
-\indent {\em virtual void setDOF\_GroupPtr(DOF\_Group *theDOF\_Grp);} \\
+{\em virtual void setDOF\_GroupPtr(DOF\_Group *theDOF\_Grp);} 
+
 Each node, when involved with an analysis, will be associated with a
 DOF\_Group object. It is the DOF\_Group that contains the ID of equation
 numbers. When invoked this method sets the pointer to that DOF\_Group object. \\
@@ -349,20 +362,23 @@ Node; if incompatible size an error message is printed and -1 returned. If no
 mass matrix yet allocated, one is created; if no space is available an
 error message is printed and the program terminated. Returns 0 if successful. \\
 
-\indent {\em virtual int setNumColR(int numCol);} \\
+{\em virtual int setNumColR(int numCol);} 
+
 Creates a Matrix to store the R matrix. The matrix is of dimension
 {\em ndof} and {\em numCol}. If not enough space is available for this
 matrix an error message is printed and the program is terminated. Zeros the
 matrix R and returns $0$ if successful. \\
 
-\indent {\em virtual int setR(int row, int col, double Value);} \\
+{\em virtual int setR(int row, int col, double Value);} 
+
 Sets the {\em \(row,col\)} entry of R to be equal to {\em Value}. If
 no matrix R has been specified or the position in R is out of range a
 warning message is printed and a $-1$ is returned. Returns $0$ if
 successful. \\
 
 
-\indent {\em virtual const Vector \& getRV(const Vector \&V);} \\
+{\em virtual const Vector \& getRV(const Vector \&V);} 
+
 This is a method provided for Element objects, the Node object returns
 the product of the matrix $R$ and the vector $V$. If the matrix 
 and vector are of inappropriate size a warning message is printed and

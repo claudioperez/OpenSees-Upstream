@@ -2,14 +2,18 @@
 %What: "@(#) ElasticMaterial.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/material/ElasticMaterial.h$>$  \\
+\#include $<\tilde{ }$/material/ElasticMaterial.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ElasticMaterial: public MaterialModel \\
+class ElasticMaterial: public MaterialModel 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent MaterialModel \\
 \indent\indent\indent UniaxialMaterial \\
 \indent\indent\indent\indent {\bf ElasticMaterial} \\
@@ -20,26 +24,42 @@ uniaxial material, i.e. the stress-strain relationship is given by the
 linear equation $\sigma = E * \epsilon$. \\
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
-\indent {\em ElasticMaterial(int tag, double E);}  \\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$ElasticMaterial();}\\ \\
-\indent // Public Methods \\
-\indent {\em int setTrialStrain(double strain); } \\
-\indent {\em double getStress(void); } \\
-\indent {\em double getTangent(void); } \\
-\indent {\em int commitState(void); } \\
-\indent {\em int revertToLastCommit(void); } \\
-\indent {\em int revertToStart(void); } \\
-\indent {\em UniaxialMaterial *getCopy(void); } \\ \\
-\indent // Public Methods for Output\\
-\indent {\em int sendSelf(int commitTag, Channel \&theChannel); }\\
+// Constructor 
+
+{\em ElasticMaterial(int tag, double E);}  \\ 
+
+// Destructor 
+
+{\em $\tilde{ }$ElasticMaterial();}\\ 
+
+// Public Methods 
+
+{\em int setTrialStrain(double strain); } 
+
+{\em double getStress(void); } 
+
+{\em double getTangent(void); } 
+
+{\em int commitState(void); } 
+
+{\em int revertToLastCommit(void); } 
+
+{\em int revertToStart(void); } 
+
+{\em UniaxialMaterial *getCopy(void); } \\ 
+
+// Public Methods for Output
+
+{\em int sendSelf(int commitTag, Channel \&theChannel); }
+
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel, 
 FEM\_ObjectBroker \&theBroker); }\\
-\indent {\em void Print(OPS_Stream \&s, int flag =0);} \\
+{\em void Print(OPS_Stream \&s, int flag =0);} 
+
 
 \noindent {\bf Constructor}  \\
-\indent {\em ElasticMaterial(int tag, int classTag);}  \\
+{\em ElasticMaterial(int tag, int classTag);}  
+
 To construct an ElasticMaterial with an integer identifier {\em
 tag}, an elastic tangent modulus of $E$ and a current strain
 $\epsilon$ of $0.0$. The integers {\em tag} and
@@ -51,32 +71,40 @@ to the UniaxialMaterial classes constructor. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em int setTrialStrain(double strain); }  \\
+{\em int setTrialStrain(double strain); }  
+
 Sets the value of the trial strain, $\epsilon$ to be {\em
 strain}. Returns $0$.\\
 
-\indent {\em double getStress(void); } \\
+{\em double getStress(void); } 
+
 Returns the product of $E * \epsilon$, where $\epsilon$ is the current
 trial strain. \\
 
-\indent {\em double getTangent(void); } \\
+{\em double getTangent(void); } 
+
 Returns the value of $E$ passed in the constructor. \\
 
-\indent {\em int commitState(void); } \\
+{\em int commitState(void); } 
+
 Returns $0$. \\
 
-\indent {\em int revertToLastCommit(void); } \\
+{\em int revertToLastCommit(void); } 
+
 Returns $0$. \\
 
-\indent {\em int revertToStart(void); } \\
+{\em int revertToStart(void); } 
+
 Returns $0$. \\
 
-\indent {\em UniaxialMaterial *getCopy(void); } \\
+{\em UniaxialMaterial *getCopy(void); } 
+
 returns a pointer to a new ElasticMaterial object, constructed
 using the same values of {\em tag} and $E$. It is up to the caller to
 ensure that the destructor is invoked. \\
 
-\indent {\em    int sendSelf(int commitTag, Channel \&theChannel); }\\
+{\em    int sendSelf(int commitTag, Channel \&theChannel); }
+
 Creates a Vector of size $2$ into which it places  {\em tag} and
 {\em E}. Invokes {\em sendVector()} on  {\em theChannel} using the
 ElasticMaterialObjects {\em dbTag}, the integer {\em commitTag} and
@@ -94,5 +122,6 @@ warning message is printed, {\em tag} and $E$ are set to $0.0$, and a
 negative number is returned if the Channel object fails to receive
 the Vector. \\
 
-\indent {\em    void Print(OPS_Stream \&s, int flag =0);} \\
+{\em    void Print(OPS_Stream \&s, int flag =0);} 
+
 Prints to the stream {\em s} the objects {\em tag} and $E$ values. \\

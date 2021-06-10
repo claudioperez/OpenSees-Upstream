@@ -2,13 +2,16 @@
 %What: "@(#) PathSeries.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$domain/pattern/PathSeries.h$>$  \\
+\#include $<\tilde{ }$domain/pattern/PathSeries.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class PathSeries: public DomainComponent  \\
+class PathSeries: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent TimeSeries \\
 \indent\indent\indent {\bf PathSeries} \\
 
@@ -24,15 +27,20 @@ beyond the last path point a load factor of $0.0$ will be returned.\\
 \indent // Constructors \\ 
 \indent {\em PathSeries(Vector \&thePath, double dT; double cFactor);}\\ 
 \indent {\em PathSeries(char *fileName, double dT; double cFactor);}\\ 
-\indent {\em PathSeries();}\\ \\
+{\em PathSeries();}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$PathSeries();}\\  \\
+{\em virtual $\tilde{ }$PathSeries();}\\  
+
 \indent // Public Methods \\ 
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
-\indent {\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
+{\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}
+
 \indent {\em  virtual int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0);}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0);}
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em PathSeries(Vector \&thePath, double dT; double cFactor);}\\ 
@@ -67,7 +75,8 @@ points. \\
 
 
 \noindent {\bf Public Methods} \\
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
 Determines the load factor based on the {\em pseudoTime} and the data
 points. Returns $0.0$ if {\em pseudoTime} is greater than time of last
 data point, otherwise returns a linear interpolation of the data
@@ -85,7 +94,8 @@ thePath}. \\
 FEM\_ObjectBroker \&theBroker);}\\
 Does the mirror image of {\em sendSelf()}. \\
 
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}
+
 Prints the string 'PathSeries', the factor{\em cFactor}, and the time
 increment {\em dT}. If {\em flag} is equal to $1.0$ the load path
 Vector is also printed.

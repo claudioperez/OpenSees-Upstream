@@ -2,13 +2,16 @@
 %What: "@(#) DatastoreRecorder.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/recorder/DatastoreRecorder.h$>$  \\
+\#include $<\tilde{ }$/recorder/DatastoreRecorder.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DatastoreRecorder: public Recorder\\
+class DatastoreRecorder: public Recorder
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Recorder \\
+Recorder 
+
 \indent\indent {\bf DatastoreRecorder} \\
 
 \noindent {\bf Description}  \\
@@ -20,13 +23,19 @@ objects. \\
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em DatastoreRecorder(FE\_Datastore \&theDatastore);}\\ \\ 
-\indent // Destructor \\
-\indent {\em $\tilde{ }$DatastoreRecorder();}\\ \\
-\indent // Public Methods  \\
-\indent {\em int record(int commitTag);}\\
-\indent {\em int playback(int commitTag);}\\
+// Destructor 
+
+{\em $\tilde{ }$DatastoreRecorder();}\\ 
+
+// Public Methods  
+
+{\em int record(int commitTag);}
+
+{\em int playback(int commitTag);}
+
 \indent {\em void restart(void);}\\ 
 
 \noindent {\bf Constructor}  \\
@@ -38,11 +47,13 @@ Saves a pointer to the object {\em theDatastore}. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em int record(int commitTag);}\\
+{\em int record(int commitTag);}
+
 Returns the result of invoking {\em commitState(commitTag)} on {\em
 theDatastore} object. \\ 
 
-\indent {\em int playback(int commitTag);}\\
+{\em int playback(int commitTag);}
+
 Returns the result of invoking {\em restoreState(commitTag)} on {\em
 theDatastore} object. \\ 
 

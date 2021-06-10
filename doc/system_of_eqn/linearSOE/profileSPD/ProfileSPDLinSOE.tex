@@ -4,13 +4,16 @@
 \noindent {\bf ProfileSPDLinSOE} \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$ProfileSPDLinSOE.h$>$  \\
+\#include $<\tilde{ }$ProfileSPDLinSOE.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ProfileSPDLinSOE: public LinearSOE \\
+class ProfileSPDLinSOE: public LinearSOE 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent SystemOfEqn \\
 \indent\indent\indent LinearSOE \\
 \indent\indent\indent\indent {\bf ProfileSPDLinSOE} \\
@@ -22,7 +25,11 @@ triangular part of $A$ is stored in a 1d double array with the diagonals of
 $A$ located at positions given by an integer array $iLoc$. 
 For example when $n=5$ and $A$ as shown below:
 
+
 $$
+
+$$
+
 \left[
 \begin{array}{ccccc}
 a_{0,0} & a_{0,1}  & 0 & 0 & a_{0,4} \\
@@ -32,7 +39,11 @@ a_{2,0} & a_{2,1} & a_{2,2} & a_{2,3} & a_{2,4}  \\
 0 & 0 & a_{4,2} & a_{4,3} & a_{4,4} \\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 this is stored using:
 
@@ -44,7 +55,11 @@ a_{0,0} & a_{0,1}  & a_{1,1} & a_{1,2} & a_{2,2} & a_{1,3} &
 a_{2,3} & a_{3,3} & a_{0,4} & 0 & a_{2,4} & a_{3,4} & a_{4,4}\\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 
 and 
 
@@ -54,7 +69,11 @@ $$ iLoc =
 1 & 3 & 5 & 8 & 13 \\
 \end{array}
 \right] 
+
 $$
+
+$$
+
 Note $iLoc$ stores the diagonal locations using Fortran indexing. This
 is to facilitate calls to Fortran libraries, e.g. Digital's DXML.
 The $x$ and $b$ vectors are stored in 1d double arrays of length $N$. \\
@@ -88,7 +107,8 @@ double fact = 1.0) =0;} \\
 FEM\_ObjectBroker \&theBroker);}\\ 
 
 \noindent {\bf Constructors}  \\
-\indent {\em ProfileSPDLinSOE(Solver \&theSolver);}  \\
+{\em ProfileSPDLinSOE(Solver \&theSolver);}  
+
 The {\em solver} and a unique class tag (defined in $<$classTags.h$>$)
 are passed to the LinearSOE constructor. The system size is set
 to $0$ and the matrix $A$ is marked as not having been factored. Invokes
@@ -118,14 +138,16 @@ number. Also creates Vector objects for $x$ and $b$ using the {\em
 Calls delete on any arrays created. \\
 
 \noindent {\bf Public Methods }  \\
-\indent {\em  int setProfileSPDSolver(ProfileSPDLinSolver \&newSolver);}\\
+{\em  int setProfileSPDSolver(ProfileSPDLinSolver \&newSolver);}
+
 Invokes {\em setLinearSOE(*this)} on {\em newSolver}.
 If the system size is not equal to $0$, it also invokes {\em setSize()}
 on {\em newSolver}, printing a warning and returning the returned value if this
 method returns a number less than $0$. Finally it returns the result
 of invoking the LinearSOE classes {\em setSolver()} method. \\
 
-\indent {\em int getNumEqn(void) =0; } \\
+{\em int getNumEqn(void) =0; } 
+
 A method which returns the current size of the system. \\
 
 \indent {\em  int setSize(const Graph \&G); } \\ 

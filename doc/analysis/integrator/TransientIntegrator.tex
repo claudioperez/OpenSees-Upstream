@@ -2,13 +2,16 @@
 %What: "@(#) TransientIntegrator.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/TransientIntegrator.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/TransientIntegrator.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class TransientIntegrator: public Integrator  \\
+class TransientIntegrator: public Integrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent {\bf TransientIntegrator} \\
@@ -86,12 +89,20 @@ expansion of equation~\ref{genForm} about $\U_{t}$:
 \left( \U_{t} - \U_{t}^{(i)} \right) 
 \end{equation}
 
+
 $$
+
+$$
+
 \R(\U_{t}) = 
  \P (t) 
  - \f_{I} \left( \ddot \U_{t}^{(i)} \right) -
 \f_{R} \left( \dot \U_{t}^{(i)}, \U_{t}^{(i)} \right)
+
 $$
+
+$$
+
 \begin{equation} 
 - \left[
    \M^{(i)} {\I}_2'
@@ -104,7 +115,11 @@ $$
 To start the iteration scheme, trial values for $\U_{t}$, $\dot
 \U_{t} $ and $\ddot \U_{t} $ are required. These are
 obtained by assuming $\U_{t}^{(0)} = \U_{t-\Delta t}$. The
-$\dot \U_{t}^{(0)} $ and $\ddot \U_{t}^{(0)}$
+
+$$
+\dot \U_{t}^{(0)} $ and $\ddot \U_{t}^{(0)}
+$$
+
 can then be obtained from the operators for the integration scheme. \\
 
 Subclasses of TransientIntegrators provide
@@ -116,15 +131,23 @@ to the linear system of equations. \\
 
 
 \noindent {\bf Class Interface } \\
-\indent // Constructor \\
-\indent {\em TransientIntegrator(int classTag);}\\  \\
+// Constructor 
+
+{\em TransientIntegrator(int classTag);}\\  
+
 \indent // Destructor  \\ 
-\indent {\em virtual~ $\tilde{}$TransientIntegrator();}\\  \\
-\indent // Public Methods \\
-\indent {\em virtual int formTangent(void);} \\
-\indent {\em virtual int formEleResidual(FE\_Element *theEle);} \\
-\indent {\em virtual int formNodUnbalance(DOF\_Group *theDof);} \\
-\indent {\em virtual void newStep(double deltaT) =0;} \\
+{\em virtual~ $\tilde{}$TransientIntegrator();}\\  
+
+// Public Methods 
+
+{\em virtual int formTangent(void);} 
+
+{\em virtual int formEleResidual(FE\_Element *theEle);} 
+
+{\em virtual int formNodUnbalance(DOF\_Group *theDof);} 
+
+{\em virtual void newStep(double deltaT) =0;} 
+
 
 \noindent {\bf Constructor} \\
 \indent {\em TransientIntegrator(int classTag);}\\ 
@@ -136,7 +159,8 @@ classes constructor. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods}\\
-\indent {\em virtual int formTangent(void);} \\
+{\em virtual int formTangent(void);} 
+
 Invoked to form the structure tangent matrix. The method is rewritten
 for this class to include inertia effects from the nodes. The method
 iterates over both the FE\_Elements and DOF\_Groups invoking methods

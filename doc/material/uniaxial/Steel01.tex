@@ -4,14 +4,18 @@
 UNDER CONSTRUCTION. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/material/Steel01.h$>$  \\
+\#include $<\tilde{ }$/material/Steel01.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Steel01 : public MaterialModel \\
+class Steel01 : public MaterialModel 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent TaggedObject \\
-\indent MovableObject \\
+TaggedObject 
+
+MovableObject 
+
 \indent\indent MaterialModel \\
 \indent\indent\indent UniaxialMaterial \\
 \indent\indent\indent\indent {\bf Steel01} \\
@@ -29,29 +33,47 @@ material object among material objects in the BasicBuilder object.
 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructor \\
+// Constructor 
+
 \indent {\em Steel01 (int tag, double fy, double E0, double b,
                       double a1, double a2, double a3, double a4,
                       double epsmin, double epsmax);}  \\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$Steel01();}\\ \\
-\indent // Public Methods \\
-\indent {\em int setTrialStrain(double strain); } \\
-\indent {\em double getStress(void); } \\
-\indent {\em double getTangent(void); } \\
-\indent {\em int commitState(void); } \\
-\indent {\em int revertToLastCommit(void); } \\
-\indent {\em int revertToStart(void); } \\
-\indent {\em ElasticMaterial *getCopy(void); } \\ \\
-\indent // Public Methods for Output\\
-\indent {\em    int sendSelf(int commitTag, Channel \&theChannel); }\\
+// Destructor 
+
+{\em $\tilde{ }$Steel01();}\\ 
+
+// Public Methods 
+
+{\em int setTrialStrain(double strain); } 
+
+{\em double getStress(void); } 
+
+{\em double getTangent(void); } 
+
+{\em int commitState(void); } 
+
+{\em int revertToLastCommit(void); } 
+
+{\em int revertToStart(void); } 
+
+{\em ElasticMaterial *getCopy(void); } \\ 
+
+// Public Methods for Output
+
+{\em    int sendSelf(int commitTag, Channel \&theChannel); }
+
 \indent {\em    int recvSelf(int commitTag, Channel \&theChannel, 
 		 FEM\_ObjectBroker \&theBroker); }\\
-\indent {\em    void Print(OPS_Stream \&s, int flag =0);} \\
-\indent // Private Methods \\
-\indent {\em void determineTrialState (double dStrain); } \\
-\indent {\em void detectLoadReversal (double dStrain); } \\
-\indent {\em void setHistoryVariables (); } \\
+{\em    void Print(OPS_Stream \&s, int flag =0);} 
+
+// Private Methods 
+
+{\em void determineTrialState (double dStrain); } 
+
+{\em void detectLoadReversal (double dStrain); } 
+
+{\em void setHistoryVariables (); } 
+
 
 \noindent {\bf Constructor}  \\
 \indent {\em Steel01 (int tag, double fy, double E0, double b,
@@ -63,6 +85,7 @@ material object among material objects in the BasicBuilder object.
 Does nothing. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em int setTrialStrain(double strain); }  \\
+{\em int setTrialStrain(double strain); }  
+
 
 

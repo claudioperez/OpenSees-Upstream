@@ -4,13 +4,16 @@
 UNDER CONSTRUCTION .. POLYGONS and COLORMAP NEED A RETHINK.
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/earthquake/Renderer.h$>$  \\
+\#include $<\tilde{ }$/earthquake/Renderer.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Renderer   \\
+class Renderer   
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf Renderer} \\
+{\bf Renderer} 
+
 
 \noindent {\bf Description} \\ 
 \indent 
@@ -32,38 +35,54 @@ stresses, and nodal displacements.   \\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em Renderer(ColorMap \&theMap);}\\ \\
+{\em Renderer(ColorMap \&theMap);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$Renderer();}\\  \\
+{\em virtual $\tilde{ }$Renderer();}\\  
+
 \indent // Public Methods to display the Model\\ 
 \indent // Public Methods invoked at start or end of a rendering\\ 
-\indent {\em virtual int clearImage(void) =0;}\\
-\indent {\em virtual int startImage(void) =0;}\\
-\indent {\em virtual int doneImage(void) =0;}\\ \\
-\indent // Public Methods invoked by the Objects to Display Themselves\\
+{\em virtual int clearImage(void) =0;}
+
+{\em virtual int startImage(void) =0;}
+
+{\em virtual int doneImage(void) =0;}\\ 
+
+// Public Methods invoked by the Objects to Display Themselves
+
 \indent {\em virtual int drawLine(const Vector \&, const Vector \&, 
 float V1, float V2) =0;}\\
 \indent {\em virtual int drawLine(const Vector \&, const Vector \&, 
 donst Vector \&rgb1, const Vector \&rgb2) =0;}\\
-\indent {\em virtual int drawPolygon(const Vector *, const Vector \&);} \\
+{\em virtual int drawPolygon(const Vector *, const Vector \&);} 
+
 \indent {\em virtual int drawVector(const Vector \&position, 
 const Vector \&value);}\\
 \indent {\em virtual int drawGText(const Vector \&posGlobal, 
 char *string, int length);}\\
 \indent {\em virtual int drawLText(const Vector \&posLocal, 
 char *string, int length); }\\
-\indent {\em void setColorMap(ColorMap \&theMap);}\\ \\
-\indent // Public Methods invoked to set up the viewing system \\
-\indent {\em virtual int setVRP(float x, float y, float z) =0;}\\
-\indent {\em virtual int setVPN(float x, float y, float z) =0;}\\
-\indent {\em virtual int setVUP(float x, float y, float z) =0;}\\
+{\em void setColorMap(ColorMap \&theMap);}\\ 
+
+// Public Methods invoked to set up the viewing system 
+
+{\em virtual int setVRP(float x, float y, float z) =0;}
+
+{\em virtual int setVPN(float x, float y, float z) =0;}
+
+{\em virtual int setVUP(float x, float y, float z) =0;}
+
 \indent {\em virtual int setViewWindow(float uMin, float uMax, float
 vMin, float vMax) =0;}\\
-\indent {\em    virtual int setPlaneDist(float nearPlane, float farPlane) =0;}\\
+{\em    virtual int setPlaneDist(float nearPlane, float farPlane) =0;}
+
 \indent {\em    virtual int setProjectionMode(int) =0;}\\ 
-\indent {\em    virtual int setFillMode(int) =0;}\\
-\indent {\em    virtual int setPRP(float u, float v, float n) =0;}\\
-\indent {\em    virtual int setPortWindow(float, float, float, float) =0;}\\
+{\em    virtual int setFillMode(int) =0;}
+
+{\em    virtual int setPRP(float u, float v, float n) =0;}
+
+{\em    virtual int setPortWindow(float, float, float, float) =0;}
+
 
 
 \noindent {\bf Constructor} \\ 
@@ -76,15 +95,18 @@ object {\em theMap}. \\
 Does Noting. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em virtual int clearImage(void) =0;}\\
+{\em virtual int clearImage(void) =0;}
+
 Invoked to clear the image. This is required if multiple images can be
 displayed at once for example in a graphic window. \\
 
-\indent {\em virtual int startImage(void) =0;}\\
+{\em virtual int startImage(void) =0;}
+
 Invoked at the start of {\em displayModel()}, when the image is about
 to be displayed. \\
 
-\indent {\em virtual int doneImage(void) =0;}\\
+{\em virtual int doneImage(void) =0;}
+
 Invoked at the end of {\em displayModel()}, when the image is finished
 and ready to be displayed. \\
 
@@ -129,21 +151,25 @@ posGlobal}. The position is in the 3d model coordinates. The length of
 the string is {\em length}. To return $0$ if successful, a negative
 number if not.\\ 
 
-\indent {\em void setColorMap(ColorMap \&theMap);}\\
+{\em void setColorMap(ColorMap \&theMap);}
+
 To set the ColorMap used in the {\em draw()} routines. The ColorMap
 object is used to convert scalar quantities into rgb values. 
 
 
-\indent {\em virtual int setVRP(float x, float y, float z) =0;}\\
+{\em virtual int setVRP(float x, float y, float z) =0;}
+
 Invoked to set the VRP. The VRP is a point on the viewing plane, which
 is that plane in the global coordinate system on which the 3d image is
 projected. The point is given in the global coordinate system. \\
 
-\indent {\em virtual int setVPN(float x, float y, float z) =0;}\\
+{\em virtual int setVPN(float x, float y, float z) =0;}
+
 Invoked to set the VPN. The VPN defines the perpendicular to the
 viewing plane. \\
 
-\indent {\em virtual int setVUP(float x, float y, float z) =0;}\\
+{\em virtual int setVUP(float x, float y, float z) =0;}
+
 Invoked to set the VUP. The VUP defines the up direction of the
 viewing plane. The combination of VRP, VPN and VUP define a new local
 coordinate system centered at VRP, with axis u,v,n, where the
@@ -165,12 +191,14 @@ Sets the projection mode. If mode is $0$ a parallel projection of the
 image onto the viewing plane will be displayed, if $1$ a perspective
 projection. \\
 
-\indent {\em    virtual int setFillMode(int mode) =0;}\\
+{\em    virtual int setFillMode(int mode) =0;}
+
 Sets the fill mode for solid shapes, i.e. polygons. If {\em mode} is
 $0$ a wire frame image will be displayed, otherwise solid shapes will
 be filled. \\
 
-\indent {\em    virtual int setPRP(float u, float v, float n) =0;}\\
+{\em    virtual int setPRP(float u, float v, float n) =0;}
+
 Sets the PRP. The PRP defines the eye location of the viewer. It is
 important to note that the eye location is specified in the new local
 coordinate system. \\

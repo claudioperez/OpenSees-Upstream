@@ -2,14 +2,18 @@
 % What: "@(#) DomainComponent.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/domain/component/DomainComponent.h$>$  \\
+\#include $<\tilde{ }$/domain/component/DomainComponent.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class DomainComponent \\
+class DomainComponent 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  TaggedObject \\
-\indent  MovableObject \\
+ TaggedObject 
+
+ MovableObject 
+
 \indent\indent  {\bf DomainComponent} \\
 \indent\indent\indent  Element \\
 \indent\indent\indent  Node \\
@@ -37,7 +41,8 @@ to set and retrieve a pointer to the enclosing Domain object. \\
 displayMode, float fact); } \\
 
 \noindent {\bf Constructor}  \\
-\indent {\em DomainComponent(int tag, int classTag);}  \\
+{\em DomainComponent(int tag, int classTag);}  
+
 Constructs a DomainComponent with a tag given by {\em tag}, whose
 class tag is given by {\em classTag}. The tag of
 a component is some unique means of identifying the component among
@@ -48,18 +53,21 @@ passed to the TaggedObject constructor and the integer {\em classTag}
 is passed to the MovableObject constructor. \\
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$DomainComponent();}  \\
+{\em virtual~ $\tilde{}$DomainComponent();}  
+
 Does nothing. Provided so subclasses destructor's will always be
 called. \\
 
 \noindent {\bf Public Methods}  \\
-\indent {\em virtual void setDomain(Domain *theDomain);} \\
+{\em virtual void setDomain(Domain *theDomain);} 
+
 Sets the encompassing domain of the component to that given by {\em
 theDomain}. This method is invoked by {\em theDomain} when the component is
 being added to the domain, in an {\em addDomain..} invocation (see
 interface for Domain). \\
 
-\indent {\em virtual Domain *getDomain(void) const;}\\
+{\em virtual Domain *getDomain(void) const;}
+
 Returns a pointer to the Domain to which the component was added,
 or $0$ if the {\em setDomain()} command was never called on the
 object. \\

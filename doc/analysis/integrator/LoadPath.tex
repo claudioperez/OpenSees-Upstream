@@ -2,13 +2,16 @@
 %What: "@(#) LoadPath.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/LoadPath.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/LoadPath.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class LoadPath: public StaticIntegrator  \\
+class LoadPath: public StaticIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent StaticIntegrator \\
@@ -37,19 +40,28 @@ results in the following equation:
 \end{equation} 
 
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em LoadPath(Vector \&loadPath);}\\ 
-\indent {\em LoadPath();}\\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$LoadPath();}\\  \\
-\indent // Public Methods \\
-\indent {\em int newStep(void);} \\
-\indent {\em int update(const Vector \&$\Delta U$);} \\ \\
-\indent // Public Methods for Output\\
+{\em LoadPath();}\\ 
+
+// Destructor 
+
+{\em $\tilde{ }$LoadPath();}\\  
+
+// Public Methods 
+
+{\em int newStep(void);} 
+
+{\em int update(const Vector \&$\Delta U$);} \\ 
+
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 \noindent {\bf Constructors} \\
 \indent {\em LoadPath(Vector \&loadPath);}\\ 
@@ -69,7 +81,8 @@ object, {\em recvSelf()} should be invoked on this object. \\
 Invokes the destructor on the vector {\em path}. \\
 
 \noindent {\bf Public Methods}\\
-\indent {\em int newStep(void);} \\
+{\em int newStep(void);} 
+
 The object obtains the current value of $\lambda$ from the {\em path}
 vector using the current index. The index is then incremented by
 $1$. If the index is greater than the size of {\em path}, $\lambda$ is

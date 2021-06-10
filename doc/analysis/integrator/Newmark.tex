@@ -2,13 +2,16 @@
 %What: "@(#) Newmark.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/Newmark.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/Newmark.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Newmark: public TransientIntegrator  \\
+class Newmark: public TransientIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent TransientIntegrator \\
@@ -83,24 +86,35 @@ t}^{(i-1)}\right) \]
 
 \pagebreak
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
+// Constructors 
+
 \indent {\em Newmark(bool dispFlag = true);}\\ 
 \indent {\em Newmark(double gamma, double beta, bool dispFlag = true);}\\ 
 \indent {\em Newmark(double gamma, double beta, double alphaM, double
 betaK, bool dispFlag = true);}\\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$Newmark();}\\ \\
-\indent // Public Methods \\
-\indent {\em int formEleTangent(FE\_Element *theEle);} \\
-\indent {\em int formNodTangent(DOF\_Group *theDof);} \\
-\indent {\em int domainChanged(void);}\\
-\indent {\em int newStep(double deltaT);}\\
-\indent {\em int update(const Vector \&$\Delta U$);} \\ \\
-\indent // Public Methods for Output\\
+// Destructor 
+
+{\em virtual~ $\tilde{}$Newmark();}\\ 
+
+// Public Methods 
+
+{\em int formEleTangent(FE\_Element *theEle);} 
+
+{\em int formNodTangent(DOF\_Group *theDof);} 
+
+{\em int domainChanged(void);}
+
+{\em int newStep(double deltaT);}
+
+{\em int update(const Vector \&$\Delta U$);} \\ 
+
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 
 \noindent {\bf Constructors} \\
@@ -134,7 +148,8 @@ be used. \\
 Invokes the destructor on the Vector objects created. \\
 
 \noindent {\bf Public Methods}\\
-\indent {\em int formEleTangent(FE\_Element *theEle);} \\
+{\em int formEleTangent(FE\_Element *theEle);} 
+
 This tangent for each FE\_Element is defined to be $\K_e = c1 \K + c2
 \D + c3 \M$, where c1,c2 and c3 were determined in the last invocation
 of the {\em newStep()} method.  The method returns $0$ after

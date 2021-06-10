@@ -2,13 +2,16 @@
 %What: "@(#) Shadow.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/actor/shadow/Shadow.h$>$  \\
+\#include $<\tilde{ }$/actor/shadow/Shadow.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Shadow \\
+class Shadow 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf Shadow} \\
+{\bf Shadow} 
+
 
 \noindent {\bf Description}  \\
 \indent Shadow is meant as an abstract class, i.e. no instances of Shadow
@@ -21,7 +24,8 @@ have a Channel, a communication port. This allows the two to
 communicate with each other.\\ 
 
 \noindent {\bf Class Interface}  \\
-\indent // Constructors  \\
+// Constructors  
+
 \indent\indent {\em Shadow(Channel \&theChannel, \\
 \indent\indent\indent\indent\indent FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent\indent ChannelAddress \&theActorsAddress);}\\
@@ -50,7 +54,8 @@ communicate with each other.\\
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em Shadow(Channel \&theChannel, \\
+{\em Shadow(Channel \&theChannel, 
+
 \indent\indent\indent\indent FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent ChannelAddress \&theActorsAddress);}\\
 This constructor is used when the actor process is already up and
@@ -58,7 +63,8 @@ running. The constructor sets its channel to be {\em theChannel}, its
 associated object broker to be {\em theBroker}, and the address to
 which it will send data to be {\em thaActorsAddress}. \\ 
 
-\indent {\em Shadow(char *program, \\
+{\em Shadow(char *program, 
+
 \indent\indent\indent\indent Channel \&theChannel, \\
 \indent\indent\indent\indent FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent MachineBroker \&theMachineBroker, \\
@@ -81,7 +87,8 @@ Does nothing. \\
 \noindent {\bf Public Member Functions }  \\
 
 \noindent {\bf Protected Member Functions }  \\
-\indent {\em virtual void sendObject(MovableObject \&theObject);}\\
+{\em virtual void sendObject(MovableObject \&theObject);}
+
 A method which will send the MovableObject {\em theObject} to
 the actor object through the shadows channel. It returns the
 result of invoking {\em sendObj(0,0,theObject, theBroker, theActorsAddress)} on the
@@ -94,7 +101,8 @@ theObject} from the channel. It will return the
 result of invoking {\em recvObj(0,0,theObject, theBroker, theActorsAddress)} on the
 shadows associated channel {\em theChannel}. \\ 
 
-\indent {\em virtual void sendMessage(Message \&theMessage);}\\
+{\em virtual void sendMessage(Message \&theMessage);}
+
 A method which will send the message {\em theMessage} to
 the actor object through the shadows channel. It will return the
 result of invoking {\em sendMsg(0,0,theMessage, theActorsAddress)} on the
@@ -108,7 +116,8 @@ result of invoking {\em recvMsg(0,0,theMessage, theActorsAddress)} on the
 shadows associated channel {\em theChannel}. \\ 
 
 
-\indent {\em virtual void sendMatrix(Matrix \&theMatrix);}\\
+{\em virtual void sendMatrix(Matrix \&theMatrix);}
+
 A method which will send the Matrix {\em theMatrix} to
 the actor object through the shadows channel. It will return the
 result of invoking {\em sendMatrix(0,0,theMatrix, theActorsAddress)} on the
@@ -121,7 +130,8 @@ theMatrix} from the channel. It will return the
 result of invoking {\em recvMatrix(0,0,theMatrix, theActorsAddress)} on the
 shadows associated channel {\em theChannel}. \\ 
 
-\indent {\em virtual void sendVector(Vector \&theVector);}\\
+{\em virtual void sendVector(Vector \&theVector);}
+
 A method which will send the Vector {\em theVector} to
 the actor object through the shadows channel. It will return the
 result of invoking {\em sendVector(0,0,theVector, theActorsAddress)} on the
@@ -135,7 +145,8 @@ result of invoking {\em recvVector(0,0,theVector, theActorsAddress)} on the
 shadows associated channel {\em theChannel}. \\ 
 
 
-\indent {\em virtual void sendID(ID \&theID);}\\
+{\em virtual void sendID(ID \&theID);}
+
 A method which will send the ID {\em theID} to
 the actor object through the shadows channel. It will return the
 result of invoking {\em sendID(0,0,theID, theActorsAddress)} on the

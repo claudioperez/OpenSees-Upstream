@@ -4,13 +4,16 @@
 UNDER CONSTRUCTION
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/domain/domain/partitioned/PartitionedDomain.h$>$  \\
+\#include $<$/domain/domain/partitioned/PartitionedDomain.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class PartitionedDomain: public Domain  \\
+class PartitionedDomain: public Domain  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent  Domain \\
+ Domain 
+
 \indent\indent {\bf PartitionedDomain} \\
 
 
@@ -75,13 +78,15 @@ tag);}\\
 \indent\indent {\em virtual MP\_Constraint *removeMP\_Constraint(int
 tag);} \\ \\
 \indent\indent // Protected Methods   \\
-\indent {\em DomainPartitioner \&getPartitioner(void) const;} \\
+{\em DomainPartitioner \&getPartitioner(void) const;} 
+
 {\em virtual int buildEleGraph(Graph \&theEleGraph)} \\
 
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em PartitionedDomain(DomainPartitioner \&thePartitioner); } \\
+{\em PartitionedDomain(DomainPartitioner \&thePartitioner); } 
+
 Constructs an empty PartitionedDomain. A link with the domain
 partitioner {\em thePartitioner} is set up. The {\em thePartitioner}
 is used by the domain to partition and load balance the partitioned domain. \\
@@ -98,11 +103,13 @@ and load balance the partitioned domain. \\
 
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$PartitionedDomain();}  \\
+{\em virtual~ $\tilde{}$PartitionedDomain();}  
+
 Deletes the storage components. \\
 
 \noindent {\bf Public Member Functions - which extend the Domain class}  \\
-\indent {\em virtual int partition(int numPartitions);}\\
+{\em virtual int partition(int numPartitions);}
+
 Method which first checks that subdomains with tags 1 through {\em numPartitions} exist in the 
 PartitionedDomain. Then it invokes {\em setPartitionedDomain(*this)} on the DomainPartitioner
 and finally it returns the result of invoking {\em partition(numPartitions} on
@@ -178,7 +185,8 @@ the constraint was not added, otherwise {\em true} is returned. \\
 
 %%%%%%%% Public Member Functions - ACCESS
 \noindent {\bf Pure Virtual Public Member Functions - Access}  \\
-\indent {\em virtual ElementIter \&getElements(void);} \\
+{\em virtual ElementIter \&getElements(void);} 
+
 It returns an {\em PartionedDomEleIter} for the elements of the domain. This
 is an iter which goes through all the subdomains, invoking {\em
 getElements()} on the subdomain to get an ElementIter. The
@@ -202,13 +210,15 @@ more subdomains exist; in which case a $0$ is returned. \\
 Returns a pointer to the element whose tag is given by {\em tag}. If
 no such load case exists $0$ is returned. \\
 
-\indent {\em virtual bool setCurrentLoadCase(int LCtag);} \\
+{\em virtual bool setCurrentLoadCase(int LCtag);} 
+
 Sets the current load case of the domain to be that whose tag is given
 by LCtag. It iterates through all the subdomains invoking the same
 operation on them. Returns {\em false} if no such load case exists, otherwise
 returns {\em true}. \\
 
-\indent {\em virtual void setCurrentTime(double newTime);} \\
+{\em virtual void setCurrentTime(double newTime);} 
+
 Sets the current load case of the domain to be that whose tag is given
 by {\em newTime}. It iterates through all the subdomains invoking the
 same operation on them. \\
@@ -229,16 +239,19 @@ commit()} on them. \\
 
 %%%%%%%% Public Member Functions - QUERY
 \noindent {\bf Public Member Functions - Query}  \\
-\indent {\em virtual int getCurrentLoadCase(void);} \\
+{\em virtual int getCurrentLoadCase(void);} 
+
 Returns the tag of the current load case set for the domain. If no
 load case is set $-1$ is returned. \\
 
-\indent {\em virtual double getCurrentTime(void);} \\
+{\em virtual double getCurrentTime(void);} 
+
 Returns the currentTime set for the domain. If no load case is set $0$
 is returned. \\ 
 
 \noindent {\bf Pure Virtual Public Member Functions - Query}  \\
-\indent {\em virtual int getNumElements(void) const;}\\
+{\em virtual int getNumElements(void) const;}
+
 Returns the number of elements in the domain. This number is obtained
 by summing the contributions from each subdomain. \\
 
@@ -303,7 +316,8 @@ constraint is returned.\\
 
 
 \noindent {\bf Protected Member Functions}  \\
-\indent {\em DomainPartitioner \&getPartitioner(void) const;} \\
+{\em DomainPartitioner \&getPartitioner(void) const;} 
+
 Will return a pointer to the DomainPartitioner object associated with the
 PartitionedDomain. \\
 

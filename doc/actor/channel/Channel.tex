@@ -2,13 +2,16 @@
 %What: "@(#) Channel.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/actor/channel/Channel.h$>$  \\
+\#include $<\tilde{ }$/actor/channel/Channel.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Channel \\
+class Channel 
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent {\bf Channel} \\
+{\bf Channel} 
+
 
 \noindent {\bf Description}  \\
 \indent Channel is an abstract class, i.e. no instances of Channel
@@ -20,55 +23,77 @@ channel in one process space is associated with a channel in the
 address space of another process space. The interaction is in the form
 of data sent between the two processes along the connection line. \\ 
 
-\indent // Constructor  \\
-\indent {\em Channel();}  \\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$Channel();}\\  \\
-\indent // Public Methods  \\
-\indent {\em char *addToProgram(void) =0;} \\
-\indent {\em virtual int setUpShadow(void) =0;} \\
-\indent {\em virtual int setUpActor(void) =0;} \\
-\indent {\em virtual int setNextAddress(ChannelAddress \&theNextAddress) =0;}\\
-\indent {\em virtual ChannelAddress *getLastSendersAddress(void) =0;}\\
-\indent {\em virtual int getDbTag(void);} \\
+// Constructor  
 
-\indent {\em int sendObj(int commitTag, \\
+{\em Channel();}  \\ 
+
+// Destructor 
+
+{\em virtual~ $\tilde{}$Channel();}\\  
+
+// Public Methods  
+
+{\em char *addToProgram(void) =0;} 
+
+{\em virtual int setUpShadow(void) =0;} 
+
+{\em virtual int setUpActor(void) =0;} 
+
+{\em virtual int setNextAddress(ChannelAddress \&theNextAddress) =0;}
+
+{\em virtual ChannelAddress *getLastSendersAddress(void) =0;}
+
+{\em virtual int getDbTag(void);} 
+
+
+{\em int sendObj(int commitTag, 
+
 \indent\indent\indent\indent\indent MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int recvObj(int commitTag, \\
+{\em int recvObj(int commitTag, 
+
 \indent\indent\indent\indent\indent MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
  
-\indent {\em int sendMsg(int dbTag, int commitTag,  \\
+{\em int sendMsg(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent const Message \&, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int recvMsg(int dbTag, int commitTag, \\
+{\em int recvMsg(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent Message \&, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int sendMatrix(int dbTag, int commitTag,  \\
+{\em int sendMatrix(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent    const Matrix \&theMatrix, \\
 \indent\indent\indent\indent\indent    ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int recvMatrix(int dbTag, int commitTag, \\
+{\em int recvMatrix(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent    Matrix \&theMatrix,  \\
 \indent\indent\indent\indent\indent    ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int sendVector(int dbTag, int commitTag, \\
+{\em int sendVector(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent const Vector \&theVector, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int recvVector(int dbTag, int commitTag,  \\
+{\em int recvVector(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent    Vector \&theVector,  \\
 \indent\indent\indent\indent\indent    ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int sendID(int dbTag, int commitTag, \\
+{\em int sendID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent const ID \&theID, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
-\indent {\em int recvID(int dbTag, int commitTag, \\
+{\em int recvID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent ID \&theID, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 
 
 
 \noindent {\bf Constructor}  \\
-\indent {\em Channel();}  \\
+{\em Channel();}  
+
 Does nothing. \\
 
 \noindent {\bf Destructor} \\
@@ -76,14 +101,16 @@ Does nothing. \\
 Does nothing. Provided so that a subclasses destructor will be invoked. \\
 
 \noindent {\bf Public Methods}  \\
-\indent {\em char *addToProgram(void) =0;} \\
+{\em char *addToProgram(void) =0;} 
+
 When creating remote actors the channels created in the actor space
 need to know how to contact the shadows channels. This information is
 provided in the string returned from this method. It is used by the
 machine broker when starting the remote process. It places this
 information as the last arguments to the program. \\
 
-\indent {\em virtual int setUpShadow(void) =0;} \\
+{\em virtual int setUpShadow(void) =0;} 
+
 A method invoked in the local address space by a shadow object. The
 method is to be invoked concurrently with a {\em setUpShadow()}
 invocation on a channel object in all the remote actor processes.\\
@@ -101,14 +128,16 @@ A method invoked to set specify the next address that the next
 messages to be sent if {\em sendMessage()} or received if {\em
 recvMessage()} is invoked with a null pointer. \\
 
-\indent {\em virtual int getDbTag(void);} \\
+{\em virtual int getDbTag(void);} 
+
 To return the next available database tag, must be an integer value
 greater than $0$, $0$ is used my the objects to check if they have yet
 been assigned a database tag. The method defined for the Channel base
 class always returns $0$, only database channel objects need worry
 about assigning unique integer values. \\
 
-\indent {\em int sendObj(int commitTag, \\
+{\em int sendObj(int commitTag, 
+
 \indent\indent\indent\indent\indent MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent ChannelAddress
 *theAddress =0) =0;}\\
@@ -119,7 +148,8 @@ address last set in a {\em send..()}, {\em recv..()}, or {\em
 setNextAddress()} operation. To return $0$ if successful, a negative
 number if not. \\  
 
-\indent {\em int recvObj(int commitTag, \\
+{\em int recvObj(int commitTag, 
+
 \indent\indent\indent\indent\indent MovableObject \&theObject, \\
 \indent\indent\indent\indent\indent FEM\_ObjectBroker \&theBroker, \\
 \indent\indent\indent\indent\indent ChannelAddress
@@ -133,7 +163,8 @@ number if not. \\
 
 
 
-\indent {\em int sendMsg(int dbTag, int commitTag,  \\
+{\em int sendMsg(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent const Message \&theMessage, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method which is invoked to send the data in the Message object {\em
@@ -147,7 +178,8 @@ recv..()}, or {\em setNextAddress()} operation. To return $0$ if
 successful, a negative number if not. \\  
 
 
-\indent {\em int recvMsg(int dbTag, int commitTag, \\
+{\em int recvMsg(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent Message \& theMessage, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method which is invoked to send the data in the Message object {\em
@@ -161,7 +193,8 @@ recv..()}, or {\em setNextAddress()} operation. To return $0$ if
 successful, a negative number if not. \\  
 
 
-\indent {\em int sendMatrix(int dbTag, int commitTag,  \\
+{\em int sendMatrix(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent const Matrix \&theMatrix, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method for sending a Matrix {\em theMatrix} to a
@@ -172,7 +205,8 @@ a {\em send..()}, {\em recv..()}, or {\em setNextAddress()}
 operation. To return $0$ if successful, a negative number if not. \\ 
 
 
-\indent {\em int recvMatrix(int dbTag, int commitTag, \\
+{\em int recvMatrix(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent Matrix \&theMatrix,  \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method for receiving a Matrix {\em theMatrix} from a
@@ -182,7 +216,8 @@ is $0$, the Channel receives from the Channel at the address last set
 in a {\em send..()}, {\em recv..()}, or {\em setNextAddress()}
 operation. To return $0$ if successful, a negative number if not. \\ 
 
-\indent {\em int sendVector(int dbTag, int commitTag,  \\
+{\em int sendVector(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent const Vector \&theVector, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method for sending a Vector {\em theVector} to a
@@ -193,7 +228,8 @@ a {\em send..()}, {\em recv..()}, or {\em setNextAddress()}
 operation. To return $0$ if successful, a negative number if not. \\ 
 
 
-\indent {\em int recvVector(int dbTag, int commitTag, \\
+{\em int recvVector(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent Vector \&theVector,  \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method for receiving a Vector {\em theVector} from a
@@ -203,7 +239,8 @@ is $0$, the Channel receives from the Channel at the address last set
 in a {\em send..()}, {\em recv..()}, or {\em setNextAddress()}
 operation. To return $0$ if successful, a negative number if not. \\ 
 
-\indent {\em int sendID(int dbTag, int commitTag,  \\
+{\em int sendID(int dbTag, int commitTag,  
+
 \indent\indent\indent\indent\indent const ID \&theID, \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method for sending a ID {\em theID} to a
@@ -214,7 +251,8 @@ a {\em send..()}, {\em recv..()}, or {\em setNextAddress()}
 operation. To return $0$ if successful, a negative number if not. \\ 
 
 
-\indent {\em int recvID(int dbTag, int commitTag, \\
+{\em int recvID(int dbTag, int commitTag, 
+
 \indent\indent\indent\indent\indent ID \&theID,  \\
 \indent\indent\indent\indent\indent ChannelAddress *theAddress =0) =0;}\\
 A method for receiving a ID {\em theID} from a

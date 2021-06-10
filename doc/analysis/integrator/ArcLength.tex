@@ -9,13 +9,16 @@ WORK IN DD IF ALL USE ONE SOE .. WHAT PetSC DOES, TALK WITH P. DEMMEL
 ABOUT WHAT HE WILL PROVIDE. \\
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/integrator/ArcLength.h$>$  \\
+\#include $<\tilde{ }$/analysis/integrator/ArcLength.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class ArcLength: public StaticIntegrator  \\
+class ArcLength: public StaticIntegrator  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent Integrator \\
 \indent\indent\indent IncrementalIntegrator \\
 \indent\indent\indent\indent StaticIntegrator \\
@@ -139,22 +142,33 @@ the incremental displacement before and after this step.
 
 \end{enumerate}
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
-\indent {\em ArcLength(double arc, double $\alpha$ = 1.0);}\\ \\
-\indent // Destructor \\
-\indent {\em $\tilde{ }$ArcLength();}\\  \\
-\indent // Public Methods \\
-\indent {\em int newStep(void);} \\
-\indent {\em int update(const Vector \&$\Delta U$);} \\
-\indent {\em int domainChanged(void); }\\ \\
-\indent // Public Methods for Output\\
+// Constructors 
+
+{\em ArcLength(double arc, double $\alpha$ = 1.0);}\\ 
+
+// Destructor 
+
+{\em $\tilde{ }$ArcLength();}\\  
+
+// Public Methods 
+
+{\em int newStep(void);} 
+
+{\em int update(const Vector \&$\Delta U$);} 
+
+{\em int domainChanged(void); }\\ 
+
+// Public Methods for Output
+
 \indent {\em int sendSelf(int commitTag, Channel \&theChannel);}\\ 
 \indent {\em int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\ 
-\indent {\em int Print(OPS_Stream \&s, int flag = 0);}\\
+{\em int Print(OPS_Stream \&s, int flag = 0);}
+
 
 \noindent {\bf Constructors} \\
-\indent {\em ArcLength(double dS, double alpha = 1.0);}\\ \\
+{\em ArcLength(double dS, double alpha = 1.0);}\\ 
+
 The integer INTEGRATOR\_TAGS\_ArcLength (defined in
 $<$classTags.h$>$) is passed to the StaticIntegrator classes
 constructor. The value of $\alpha$ is set to {\em alpha} and 

@@ -4,15 +4,19 @@
 UNDER CONSTRUCTION
 
 \noindent {\bf Files}   \\
-\indent \#include $<$/domain/subdomain/Subdomain.h$>$  \\
+\#include $<$/domain/subdomain/Subdomain.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class Subdomain: public Domain, public Element  \\
+class Subdomain: public Domain, public Element  
+
 
 \noindent {\bf Class Hierarchy} \\
 \indent  Domain  \\ 
-\indent MovableObject \\
-\indent TaggedObject \\
+MovableObject 
+
+TaggedObject 
+
 \indent\indent DomainComponent \\
 \indent\indent\indent  Element \\
 \indent\indent\indent\indent {\bf Subdomain} \\
@@ -27,58 +31,91 @@ Elements residing in different Subdomains. \\
 
 
 \noindent {\bf Class Interface}  \\
-\indent {\bf Constructors}  \\
-\indent {\em Subdomain(int tag);}  \\
-\indent {\em Subdomain(int tag, \\
+{\bf Constructors}  
+
+{\em Subdomain(int tag);}  
+
+{\em Subdomain(int tag, 
+
 \indent\indent\indent\indent TaggedObjectStorage \&theInternalNodeStorage,\\
 \indent\indent\indent\indent TaggedObjectStorage \&theExternalNodeStorage,\\
 \indent\indent\indent\indent TaggedObjectStorage \&theElementsStorage, \\
 \indent\indent\indent\indent TaggedObjectStorage \&theLCsStorage, \\
 \indent\indent\indent\indent TaggedObjectStorage \&theMPsStorage, \\
 \indent\indent\indent\indent TaggedObjectStorage \&theSPsStorage);} \\ \\
-\indent // Destructor  \\
-\indent {\em virtual~ $\tilde{}$Subdomain();}  \\ \\
-\indent // Public Methods modified from Domain class}  \\
-\indent {\em virtual bool addNode(Node *theNodePtr);} \\
-\indent {\em virtual Node *removeNode(int tag); } \\
-\indent {\em virtual Node *getNode(int tag); } \\
-\indent {\em virtual int getNumNodes(void); } \\
+// Destructor  
+
+{\em virtual~ $\tilde{}$Subdomain();}  \\ 
+
+// Public Methods modified from Domain class}  
+
+{\em virtual bool addNode(Node *theNodePtr);} 
+
+{\em virtual Node *removeNode(int tag); } 
+
+{\em virtual Node *getNode(int tag); } 
+
+{\em virtual int getNumNodes(void); } 
+
 \indent{\em virtual NodeIter \&getNodes();} \\
-\indent {\em virtual void setAnalysis(DomainDecompositionAnalysis *theAnalysis);}\\
-\indent {\em void commit(void);} \\ \\
-\indent // Public Methods inherited from Element now implemented \\
-\indent {\em virtual int getNumExternalNodes(void) const;    }\\
-\indent {\em virtual const ID \&getExternalNodes(void);}\\
-\indent {\em virtual int getNumDOF(void);}\\
+{\em virtual void setAnalysis(DomainDecompositionAnalysis *theAnalysis);}
+
+{\em void commit(void);} \\ 
+
+// Public Methods inherited from Element now implemented 
+
+{\em virtual int getNumExternalNodes(void) const;    }
+
+{\em virtual const ID \&getExternalNodes(void);}
+
+{\em virtual int getNumDOF(void);}
+
 \indent {\em virtual void commitState(void);}\\ 
-\indent {\em virtual const Matrix \&getStiff(void);}\\
-\indent {\em virtual const Matrix \&getMass(void);    }\\
-\indent {\em virtual const Matrix \&getDamp(void);    }\\
-\indent {\em virtual const Vector \&getResistingForce(void);}\\
-\indent {\em virtual const Vector \&getResistingForceWithInertia(void);}\\
-\indent {\em virtual bool isSubdomain(void);}\\
+{\em virtual const Matrix \&getStiff(void);}
+
+{\em virtual const Matrix \&getMass(void);    }
+
+{\em virtual const Matrix \&getDamp(void);    }
+
+{\em virtual const Vector \&getResistingForce(void);}
+
+{\em virtual const Vector \&getResistingForceWithInertia(void);}
+
+{\em virtual bool isSubdomain(void);}
+
 \indent {\em int sendSelf(Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker);}\\ 
 \indent {\em int recvSelf(Channel \&theChannel, FEM\_ObjectBroker
 \&theBroker);}\\ \\
-\indent  // Public Methods introduced for the Subdomain class \\
-\indent {\em virtual bool addExternalNode(Node *theNodePtr);} \\
+ // Public Methods introduced for the Subdomain class 
+
+{\em virtual bool addExternalNode(Node *theNodePtr);} 
+
 \indent{\em virtual NodeIter \&getInternalNodeIter();} \\
 \indent{\em virtual const ID \&getExternalNodeIter();} \\
-\indent {\em virtual int computeTang(void);}\\
-\indent {\em virtual int computeResidual(void);}\\
-\indent {\em virtual const Matrix \&getTang(void);    }\\
-\indent {\em void setFE\_ElementPtr(FE\_Element *theFEelePtr);}\\
-\indent {\em const Vector \&getLastExternalSysResponse(void);}\\
-\indent {\em virtual int computeNodalResponse(void);}\\
-\indent {\em double getCost(void); }\\ \\
-\indent // Protected Methods  \\
+{\em virtual int computeTang(void);}
+
+{\em virtual int computeResidual(void);}
+
+{\em virtual const Matrix \&getTang(void);    }
+
+{\em void setFE\_ElementPtr(FE\_Element *theFEelePtr);}
+
+{\em const Vector \&getLastExternalSysResponse(void);}
+
+{\em virtual int computeNodalResponse(void);}
+
+{\em double getCost(void); }\\ 
+
+// Protected Methods  
+
 \indent{\em FE\_Element *getFE\_ElementPtr(void); }\\
 
 
 
 \noindent {\bf Constructors}  \\
-\indent {\em Subdomain(int tag);}  \\
+{\em Subdomain(int tag);}  
+
 Constructs an empty Subdomain with a number given by {\em tag}. The
 storage of the Elements, constraints and loads are handled by the base
 Domain class, the storage of the internal and external nodes are
@@ -89,7 +126,8 @@ InternalNodeArray = 8024, ExternalNodeArray = 256. The initial sizes
 are not upperbounds on the number of components that can be added. \\
 
 
-\indent {\em Subdomain(int tag, \\
+{\em Subdomain(int tag, 
+
 \indent\indent\indent\indent TaggedObjectStorage \&theInternalNodeStorage,\\
 \indent\indent\indent\indent TaggedObjectStorage \&theExternalNodeStorage,\\
 \indent\indent\indent\indent TaggedObjectStorage \&theElementsStorage, \\
@@ -101,13 +139,15 @@ components of the subdomain are stored in the storage objects given in
 the argument for the constructor. \\ 
 
 \noindent {\bf Destructor}  \\
-\indent {\em virtual~ $\tilde{}$Subdomain();}  \\
+{\em virtual~ $\tilde{}$Subdomain();}  
+
 Invokes the destructor on the storage objects for both the internal
 and external nodes. \\ 
 
 
 \noindent {\bf Public Methods modified from Domain class}  \\
-\indent {\em virtual bool addNode(Node *theNodePtr);} \\
+{\em virtual bool addNode(Node *theNodePtr);} 
+
 A Method to add the node pointed to by {\em theNoedPtr} to the
 Subdomain. This node is an internal node to the domain and is
 returned in calls to {\em getNodes()} and {\em getInternalNodes()}. 
@@ -144,7 +184,8 @@ all the Nodes in the Subdomain, invoking {\em commitState()} on the Nodes. \\
 
 
 \noindent {\bf Public Methods inherited from Element now implemented} \\
-\indent {\em virtual int getNumExternalNodes(void) const;    }\\
+{\em virtual int getNumExternalNodes(void) const;    }
+
 Returns the number of external nodes that have been successfully added
 to the subdomain as external nodes and have yet to be removed from the
 subdomain. \\ 
@@ -199,7 +240,8 @@ is asked to construct a new DomainDecompositionAnalysis object using the class t
 Returns resultt of invoking {\em recvSelf()} on this object. \\
 
 \noindent {\bf Public Methods introduced for the Subdomain class} \\
-\indent {\em virtual bool addExternalNode(Node *theNodePtr);} \\
+{\em virtual bool addExternalNode(Node *theNodePtr);} 
+
 A Method to add the node pointed to by {\em theNoedPtr} to the
 Subdomain. This node is an external node to the subdomain and is
 returned in calls to {\em getExternalNodes()} and {\em

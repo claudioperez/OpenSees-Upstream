@@ -2,13 +2,16 @@
 %What: "@(#) LinearSeries.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$domain/pattern/LinearSeries.h$>$  \\
+\#include $<\tilde{ }$domain/pattern/LinearSeries.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class LinearSeries: public DomainComponent  \\
+class LinearSeries: public DomainComponent  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent MovableObject \\
+MovableObject 
+
 \indent\indent TimeSeries \\
 \indent\indent\indent {\bf LinearSeries} \\
 
@@ -20,15 +23,20 @@ for objects of this class. \\
 
 \noindent {\bf Class Interface} \\
 \indent // Constructor \\ 
-\indent {\em LinearSeries(double factor = 1.0);}\\ \\
+{\em LinearSeries(double factor = 1.0);}\\ 
+
 \indent // Destructor \\ 
-\indent {\em virtual $\tilde{ }$LinearSeries();}\\  \\
+{\em virtual $\tilde{ }$LinearSeries();}\\  
+
 \indent // Public Methods \\ 
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
-\indent {\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
+{\em  virtual int sendSelf(int commitTag, Channel \&theChannel);}
+
 \indent {\em  virtual int recvSelf(int commitTag, Channel \&theChannel,
 FEM\_ObjectBroker \&theBroker);}\\
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0);}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0);}
+
 
 \noindent {\bf Constructor} \\ 
 \indent {\em LinearSeries(double cFactor = 1.0);}\\ 
@@ -41,7 +49,8 @@ cFactor}. \\
 Does nothing. \\
 
 \noindent {\bf Public Methods} \\
-\indent {\em  virtual double getFactor(double pseudoTime);}\\
+{\em  virtual double getFactor(double pseudoTime);}
+
 Returns the product of {\em cFactor} and {\em pseudoTime}. \\
 
 \indent {\em  virtual int sendSelf(int commitTag, Channel
@@ -53,5 +62,6 @@ invokes {\em sendVector()} on the Channel object. \\
 FEM\_ObjectBroker \&theBroker);}\\
 Does the mirror image of {\em sendSelf()}. \\
 
-\indent {\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}\\
+{\em  virtual void Print(OPS_Stream \&s, int flag =0) =0;}
+
 Prints the string 'LinearSeries' and the factor{\em cFactor}.

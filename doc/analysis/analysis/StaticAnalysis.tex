@@ -2,13 +2,16 @@
 %What: "@(#) StaticAnalysis.tex, revA"
 
 \noindent {\bf Files}   \\
-\indent \#include $<\tilde{ }$/analysis/analysis/StaticAnalysis.h$>$  \\
+\#include $<\tilde{ }$/analysis/analysis/StaticAnalysis.h$>$  
+
 
 \noindent {\bf Class Declaration}  \\
-\indent class StaticAnalysis: public Analysis;  \\
+class StaticAnalysis: public Analysis;  
+
 
 \noindent {\bf Class Hierarchy} \\
-\indent Analysis \\
+Analysis 
+
 \indent\indent {\bf StaticAnalysis} \\
 
 \noindent {\bf Description} \\ 
@@ -40,8 +43,10 @@ U = P(U).
 \end{itemize}
 
 \noindent {\bf Class Interface} \\
-\indent // Constructors \\
-\indent {\em StaticAnalysis(Domain \&theDomain, \\
+// Constructors 
+
+{\em StaticAnalysis(Domain \&theDomain, 
+
 \indent\indent\indent\indent ConstraintHandler \&theHandler, \\
 \indent\indent\indent\indent DOF\_Numberer \&theNumberer, \\
 \indent\indent\indent\indent AnalysisModel \&theModel,\\
@@ -49,20 +54,31 @@ U = P(U).
 \indent\indent\indent\indent LinearSOE \&theSOE, \\
 \indent\indent\indent\indent StaticIntegrator \&theIntegrator \\
 \indent\indent\indent\indent int numIncrements = 1);} \\ \\
-\indent // Destructor \\
-\indent {\em virtual~ $\tilde{}$StaticAnalysis();}\\  \\
-\indent // Public Methods\\
-\indent {\em int analyze(void);} \\
-\indent {\em void clearAll(void);} \\
-\indent {\em int domainChange(void);}\\  \\
-\indent // Public Methods to vary the type of Analysis\\
+// Destructor 
+
+{\em virtual~ $\tilde{}$StaticAnalysis();}\\  
+
+// Public Methods
+
+{\em int analyze(void);} 
+
+{\em void clearAll(void);} 
+
+{\em int domainChange(void);}\\  
+
+// Public Methods to vary the type of Analysis
+
 \indent {\em int setNumIncrements(int numIncrements);}\\ 
-\indent {\em int setAlgorithm(EquiSolnAlgo \&theAlgorithm);} \\
-\indent {\em int setIntegrator(StaticIntegrator \&theIntegrator);}\\
-\indent {\em int setLinearSOE(LinearSOE \&theSOE);} \\
+{\em int setAlgorithm(EquiSolnAlgo \&theAlgorithm);} 
+
+{\em int setIntegrator(StaticIntegrator \&theIntegrator);}
+
+{\em int setLinearSOE(LinearSOE \&theSOE);} 
+
 
 \noindent {\bf Constructors} \\
-\indent {\em StaticAnalysis(Domain \&theDomain, \\
+{\em StaticAnalysis(Domain \&theDomain, 
+
 \indent\indent\indent\indent\indent ConstraintHandler \&theHandler, \\
 \indent\indent\indent\indent\indent DOF\_Numberer \&theNumberer, \\
 \indent\indent\indent\indent\indent AnalysisModel \&theModel,\\
@@ -87,7 +103,8 @@ Does nothing. {\em clearAll()} must be invoked if the destructor on
 the objects in the aggregation need to be invoked. \\
 
 \noindent {\bf Public Member Functions}\\
-\indent {\em int analyze(void);} \\
+{\em int analyze(void);} 
+
 Invoked to perform a static analysis on the FE\_Model. The analysis 
 The StaticAnalysis object performs the following:
 \begin{tabbing}
@@ -140,7 +157,8 @@ is returned. \\
 To set the number of incremental steps in the analysis to be {\em
 numIncrements}. Returns $0$.\\
 
-\indent {\em int setAlgorithm(EquiSolnAlgo \&newAlgorithm);}\\
+{\em int setAlgorithm(EquiSolnAlgo \&newAlgorithm);}
+
 To change the algorithm between analysis. It first invokes the
 destructor on the old SolutionAlgorithm object associated with the
 analysis. It then sets the SolutionAlgorithm 
@@ -151,7 +169,8 @@ domainChanged()}, otherwise it invokes {\em domainChanged()} on the
 new SolutionAlgorithm. Returns $0$ if successful, a warning message
 and a negative number if not.\\
 
-\indent {\em int setIntegrator(StaticIntegrator \&newIntegrator);}\\
+{\em int setIntegrator(StaticIntegrator \&newIntegrator);}
+
 To change the integration scheme between analysis. It first invokes the
 destructor on the old Integrator object associated with the
 analysis. It then sets the SolutionAlgorithm 
@@ -163,7 +182,8 @@ invokes {\em domainChanged()}, otherwise it invokes {\em
 domainChanged()} on the new Integrator. Returns $0$ if
 successful, a warning message and a negative number if not.\\
 
-\indent {\em int setLinearSOE(LinearSOE \&newSOE);}\\
+{\em int setLinearSOE(LinearSOE \&newSOE);}
+
 To change the linear system of equation object between analysis. It
 first invokes the destructor on the old LinearSOE object associated
 with the analysis. It then sets the SolutionAlgorithm 
