@@ -16,7 +16,7 @@ G 3
 :::
 :::
 
-\
+
 This document outlines the class interfaces currently provided by G3.
 The main categories of classes are:
 

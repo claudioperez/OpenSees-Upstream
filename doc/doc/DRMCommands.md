@@ -4,7 +4,9 @@ The syntax of the DRM command is :
 
 `pattern PBowlLoading` loadpattrnTag? `-pbele` PBElmentFile? `-acce`
 acceFile? `-disp` dispFile? `-dt` dt? $<$`-factor` factor?$>$ `-xp` +X?
-`-xm` -X? `-yp` -Y? `-ym` -Y? `-zp` +Z? `-zm` -Z?\
+`-xm` -X? `-yp` -Y? `-ym` -Y? `-zp` +Z? `-zm` -Z?
+
+
 where pattern and PBowlLoading are key words. loadpattrnTag? is the tag
 for this loadPattern. A user needs to supply an element file,
 acceleration file, displacement file following the identifiers `-pbele`,

@@ -153,13 +153,13 @@ constructors, respectively. The UniaxialMaterial destructor is declared,
 but does not do anything as the UniaxialMaterial base class contains no
 data.
 
-The method *setTrialStrain()* takes one or two arguments, an updated
+The method `setTrialStrain()` takes one or two arguments, an updated
 strain and strain rate. The strain rate is an optional argument, with
 default value $0.0$. This method is pure virtual, so it must be
 implemented in all subclasses of UniaxialMaterial. The next two methods,
-*getStrain()* and *getStrainRate()*, are to return the current strain
-and strain rate of this UniaxialMaterial. The method *getStrain()* is
-pure virtual, while *getStrainRate()* is only virtual; by default it
+`getStrain()` and `getStrainRate()`, are to return the current strain
+and strain rate of this UniaxialMaterial. The method `getStrain()` is
+pure virtual, while `getStrainRate()` is only virtual; by default it
 returns $0.0$, but may be overridden in subclasses if needed.
 
     double
@@ -168,26 +168,26 @@ returns $0.0$, but may be overridden in subclasses if needed.
        return 0.0;
     }
 
-The next method is *getStress()*, which is to return the current stress
+The next method is `getStress()`, which is to return the current stress
 of this UniaxialMaterial. The current stress is a function of the
 current strain, $\varepsilon$, and the current strain rate,
 $\dot{\varepsilon}$,
 
 $$\sigma = \sigma(\varepsilon,\dot{\varepsilon}) \: .$$
 
-The *getStress()* method is pure virtual and must be implemented by
+The `getStress()` method is pure virtual and must be implemented by
 subclasses of UniaxialMaterial.
 
 The current material tangent is returned by the next method,
-*getTangent()*. The material tangent is the partial derivative of the
+`getTangent()`. The material tangent is the partial derivative of the
 material stress with respect to the current strain,
 
 $$D_t = \frac{\partial{\sigma}}{\partial{\varepsilon}} \: .$$
 
-The *getTangent()* is also pure virtual and must be implemented in all
+The `getTangent()` is also pure virtual and must be implemented in all
 UniaxialMaterial subclasses.
 
-The *getDampTangent()* method is next, and is to return the current
+The `getDampTangent()` method is next, and is to return the current
 damping tangent, which is the partial derivative of the current stress
 with respect to the current strain rate,
 
@@ -202,7 +202,7 @@ subclasses of UniaxialMaterial where there is strain rate dependence.
        return 0.0;
     }
 
-Finally, the *getSecant()* method is provided to return the material
+Finally, the `getSecant()` method is provided to return the material
 secant, which is the current stress divided by the current strain,
 
 $$D_s = \frac{\sigma}{\varepsilon} \: .$$
@@ -226,17 +226,17 @@ tangent is returned instead.
 The next set of methods deal with possible path dependent behavior of
 UniaxialMaterial models. All Material objects in OpenSees are
 responsible for keeping track of and updating their own history
-variables. First, the method *commitState()* is invoked to inform a
+variables. First, the method `commitState()` is invoked to inform a
 UniaxialMaterial object that its current state is on the converged
 solution path and its internal history variables should be updated
-accordingly. Next, the method *revertToLastCommit()* is provided to let
+accordingly. Next, the method `revertToLastCommit()` is provided to let
 a UniaxialMaterial object know that it should return to its last
-committed state at. Finally, *revertToStart()* informs the
+committed state at. Finally, `revertToStart()` informs the
 UniaxialMaterial object to revert to its initial state, i.e., at the
 start of the analysis. All three of these methods are pure virtual, and
 thus must be implemented in all subclasses of UniaxialMaterial.
 
-The *getCopy()* method is declared so a calling object, be it an
+The `getCopy()` method is declared so a calling object, be it an
 Element, Fiber, or another Material object, can obtain an exact copy of
 this UniaxialMaterial object. A pointer to the new object is returned by
 this function, and the calling object is responsible for deleting this
@@ -244,7 +244,7 @@ dynamically allocated memory. This method is pure virtual because only a
 subclass of UniaxialMaterial knows the internal representation of its
 data.
 
-The final two methods, *setResponse()* and *getResponse()*, are declared
+The final two methods, `setResponse()` and `getResponse()`, are declared
 for recording UniaxialMaterial state information. These methods have
 default implementations to record the material stress, strain, and
 tangent. These methods may be overridden, but their implementations are
@@ -268,7 +268,7 @@ corresponding methods inherited from the UniaxialMaterial class.
 :::
 
 Note, three additional methods not declared in the UniaxialMaterial
-interface, *sendSelf()*, *recvSelf()*, and *Print()*, must be defined in
+interface, `sendSelf()`, `recvSelf()`, and `Print()`, must be defined in
 implementations of UniaxialMaterial. These methods are inherited from
 higher level classes in the OpenSees framework, particularly,
 TaggedObject and MovableObject. An explanation of these methods is
@@ -333,9 +333,9 @@ $H_{kin}$. The UniaxialMaterial base class constructor is invoked with
 the arguments tag and MAT_TAG_Hardening (defined in classTags.h). The
 material parameters for this object are initialized in the
 initialization list with the arguments passed to the constructor, and
-all history variables are initialized by invoking *revertToStart()*. The
+all history variables are initialized by invoking `revertToStart()`. The
 second constructor is a default constructor which sets all material
-parameters to $0.0$ then invokes *revertToStart()*.
+parameters to $0.0$ then invokes `revertToStart()`.
 
     HardeningMaterial::HardeningMaterial(int tag, double e, double s,
                                          double hi, double hk)
@@ -363,12 +363,12 @@ memory is dynamically allocated by a HardeningMaterial object.
     }
 
 The following methods deal with the material state determination. The
-return mapping algorithm is coded in *setTrialStrain()*. The stress and
+return mapping algorithm is coded in `setTrialStrain()`. The stress and
 tangent of this HardeningMaterial object are computed and stored in the
 instance variables Tstress and Ttangent and returned by the methods
-*getStress()* and *getTangent()*, respectively. The trial strain, stored
+`getStress()` and `getTangent()`, respectively. The trial strain, stored
 in the instance variable Tstrain, is returned by the method
-*getStrain()*.
+`getStrain()`.
 
     int 
     HardeningMaterial::setTrialStrain(double strain, double strainRate)
@@ -436,10 +436,10 @@ in the instance variable Tstrain, is returned by the method
     }
 
 The next set of methods deal with the path dependent behavior of this
-HardeningMaterial object. The method *commitState()* sets the committed
+HardeningMaterial object. The method `commitState()` sets the committed
 history variables to be their corresponding trial values. Nothing needs
-to be done in the method *revertToLastCommit()*, and all history
-variables are set to $0.0$ in *revertToStart()*.
+to be done in the method `revertToLastCommit()`, and all history
+variables are set to $0.0$ in `revertToStart()`.
 
     int 
     HardeningMaterial::commitState(void)
@@ -480,7 +480,7 @@ variables are set to $0.0$ in *revertToStart()*.
        return 0;
     }
 
-The *getCopy()* method is defined so this HardeningMaterial object can
+The `getCopy()` method is defined so this HardeningMaterial object can
 provide a clone of itself to a calling object, be it an Element, Fiber,
 or other Material object. The constructor is invoked to create a new
 object, then all instance variables are copied to the new object. The
@@ -513,9 +513,9 @@ memory.
 
 The next two methods are defined for parallel processing and database
 programming, and are inherited from MovableObject. The first method,
-*sendSelf()*, packs the material properties and committed history
+`sendSelf()`, packs the material properties and committed history
 variables in a Vector, then sends the Vector across the Channel object
-passed as an argument to the method. The second method, *recvSelf()*,
+passed as an argument to the method. The second method, `recvSelf()`,
 receives data from the Channel object, then populates the data of this
 HardeningMaterial object with the received data.
 
@@ -569,7 +569,7 @@ HardeningMaterial object with the received data.
        return res;
     }
 
-The final HardeningMaterial method is *Print()*, which writes the
+The final HardeningMaterial method is `Print()`, which writes the
 material name, tag, and parameters to the output stream passed as an
 argument. This method is inherited from TaggedObject.
 
@@ -712,13 +712,13 @@ if/else statement has ended.
 ## FEM_ObjectBroker
 
 In order for the new HardeningMaterial object to be used for parallel
-processing and database programming, the *getNewUniaxialMaterial()*
+processing and database programming, the `getNewUniaxialMaterial()`
 method in the FEM_ObjectBroker class must be modified. An additional
 case statement should be added, as shown below. The MAT_TAG_Hardening
 classTag is the same pre-defined value passed to the UniaxialMaterial
 constructor by the HardeningMaterial constructor described earlier. The
 FEM_ObjectBroker simply returns a blank HardeningMaterial object, whose
-data can be subsequently populated by invoking *recvSelf()*.
+data can be subsequently populated by invoking `recvSelf()`.
 
     UniaxialMaterial*
     FEM_ObjectBroker::getNewUniaxialMaterial(int classTag)
@@ -929,10 +929,10 @@ constructor to hold the history variables and material parameters.
     }
 
 The next group of FedeasMaterial methods deals with material state
-determination. First, *setTrialStrain()* stores the trial strain, then
+determination. First, `setTrialStrain()` stores the trial strain, then
 invokes the FEDEAS subroutine with ist = 1, indicating that normal
 stress and tangent quantities should be computed. The methods
-*getStrain()*, *getStress()*, and *getTangent()* return the strain,
+`getStrain()`, `getStress()`, and `getTangent()` return the strain,
 stress, and tangent of this FedeasMaterial.
 
     int
@@ -967,11 +967,11 @@ stress, and tangent of this FedeasMaterial.
     }
 
 The next three methods deal with the path dependent behavior of this
-FedeasMaterial object. The *commitState()* method copies the trial
+FedeasMaterial object. The `commitState()` method copies the trial
 history variables from the second half of the hstv array to the first
 half, where the committed values are stored. The committed values are
-copied to the trial values in *revertToLastCommit()*, and all values are
-set to $0.0$ in the *revertToStart()* method.
+copied to the trial values in `revertToLastCommit()`, and all values are
+set to $0.0$ in the `revertToStart()` method.
 
     int
     FedeasMaterial::commitState(void)
@@ -1012,7 +1012,7 @@ set to $0.0$ in the *revertToStart()* method.
        return 0;
     }
 
-A copy of this FedeasMaterial object is returned by *getCopy()*. First,
+A copy of this FedeasMaterial object is returned by `getCopy()`. First,
 the FedeasMaterial constructor is called with the necessary tag, type,
 and array size data. Then, the committed strain and stress, all history
 variables, and material parameters are copied to the new object before
@@ -1039,11 +1039,11 @@ it is returned.
     }
 
 The next two methods are defined for parallel processing and database
-programming. The first method, *sendSelf()*, packs the tag and array
+programming. The first method, `sendSelf()`, packs the tag and array
 size information for this FedeasMaterial object into an ID vector and
 sends it across the Channel. Then, the material properties and committed
 history variables are put in a Vector, and sent as well. The second
-method, *recvSelf()*, receives both the ID and Vector data from the
+method, `recvSelf()`, receives both the ID and Vector data from the
 Channel object, then populates the data of this FedeasMaterial object
 with the appropriate data.
 
@@ -1124,7 +1124,7 @@ with the appropriate data.
        return res;
     }
 
-The *Print()* method outputs the name of this FedeasMaterial object to
+The `Print()` method outputs the name of this FedeasMaterial object to
 the stream passed as an argument. More cases can be added to the switch
 statement as additional subroutines are added.
 
@@ -1174,7 +1174,7 @@ subroutines are included in OpenSees.
 
     #endif
 
-The method *invokeSubroutine()* calls the appropriate subroutine based
+The method `invokeSubroutine()` calls the appropriate subroutine based
 on the material classTag. The FedeasMaterial instance variables are
 passed to the FORTRAN subroutine from this method. Additional cases in
 the switch statement can be added as more subroutines are linked with
@@ -1226,7 +1226,7 @@ FedeasMaterial, contains all the computational code and keeps track of
 path dependent behavior. This functionality is inherited from the
 FedeasMaterial base class. However, the FedeasMaterial class must be
 modified such that the appropriate subroutine is called during state
-determination from the method *invokeSubroutine()*.
+determination from the method `invokeSubroutine()`.
 
 ### FEDEAS Hardening Subroutine
 
@@ -1353,7 +1353,7 @@ the variables sig and tang.
 
 As stated previously, the functionality of the FedeasHardeningMaterial
 class is to read in the material parameters required for the Hard_1
-subroutine invoked from the FedeasMaterial method *invokeSubroutine()*.
+subroutine invoked from the FedeasMaterial method `invokeSubroutine()`.
 In addition, the required number of history variables must be passed to
 the FedeasMaterial base class.
 
@@ -1412,10 +1412,10 @@ the destructor does nothing.
 
 Should any method in the FedeasMaterial class need to be overridden,
 e.g., if a subclass does not want all of its history variables set to
-$0.0$ in *revertToStart()*, the *getCopy()* method must also be
-overridden to return a pointer to the subclass. If *getCopy()* is not
+$0.0$ in `revertToStart()`, the `getCopy()` method must also be
+overridden to return a pointer to the subclass. If `getCopy()` is not
 overridden, the dynamic type of the returned pointer will be of the
-FedeasMaterial type and the overridden method, e.g., *revertToStart()*,
+FedeasMaterial type and the overridden method, e.g., `revertToStart()`,
 will not be called.
 
 ## Tcl Model Builder
@@ -1437,7 +1437,7 @@ would be changed to
 ## FEM_ObjectBroker
 
 As for the HardeningMaterial class, an additional case needs to be added
-to the *getNewUniaxialMaterial()* method in FEM_ObjectBroker in order
+to the `getNewUniaxialMaterial()` method in FEM_ObjectBroker in order
 for the FedeasHardeningMaterial class to be used for parallel processing
 and database programming.
 

@@ -1,16 +1,16 @@
 \
 \#include $<\tilde{ }$/graph/partitioner/Metis.h$>$\
-\
+
 class GraphPartitioner:\
-\
+
 GraphPartitioner\
-\
+
 \
 Metis is a GraphPartitioner. The Metis graph partitioner calls
 procedures defined in the METIS library to partition the graph. METIS is
 currently being developed by G. Karypis and V. Kumar at the University
 of Minnesota. At the present time the Graph to be partitioned MUST have
-the vertices labeled $0$ through $numVertex-1$.\
+the vertices labeled $0$ through $numVertex-1$.
 The METIS library uses two integer arrays to represent the graph, *xadj*
 and *adjncy*. $xadj(i)$ stores the location in *adjncy* of the start of
 the $i$'th Vertices adjacent Vertices. *adjncy* contains the tags of all
@@ -46,34 +46,34 @@ $$adjncy =
 \end{array}
 \right]$$
 
-note that there is no space allocated for the diagonal components.\
-\
+note that there is no space allocated for the diagonal components.
+
 // Constructors\
+
 \
-\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
-\
-\
+
 \
 // Private Method\
+
 \
-\
-\
+
 To construct a Metis object which will use the default settings when
-partitioning.\
-\
+partitioning.
+
 To construct a Metis object which will use the setting passed into the
-constructor as options to metis's *PMETIS()* routine. *checkOptions()*
-is invoked to ensure the settings are valid.\
+constructor as options to metis's `PMETIS()` routine. `checkOptions()`
+is invoked to ensure the settings are valid.
+
 \
-\
-\
+
 \
 This is the method invoked to partition the graph into *numPart*
 partitions. On completion of the routine each vertex will be assigned a
@@ -94,13 +94,13 @@ called. Both are called with the following arguments: *numVertex,
 xadj,adjncy, 0, 0, &weightFlag, options, numPart, &numbering, &edgecut,
 partition* The colors of the partitions are then set equal to the color
 indicated in *partition*. The integer arrays are destroyed and $0$
-returned.\
-\
-Sets the default options.\
-\
+returned.
+
+Sets the default options.
+
 Sets the options for the partitioning to those passed as arguments. Then
-invokes *checkOptions()* to see if the options are valid. HOW ABOUT
-REFERRINGR TO MANUAL TO SEE WHAT OPTIONS MEAN.\
-\
+invokes `checkOptions()` to see if the options are valid. HOW ABOUT
+REFERRINGR TO MANUAL TO SEE WHAT OPTIONS MEAN.
+
 If options are not valid sets the default options. EXPAND ON VALID
-OPTIONS OR REFER TO METIS MANUAL.\
+OPTIONS OR REFER TO METIS MANUAL.

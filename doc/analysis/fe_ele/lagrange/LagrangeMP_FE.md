@@ -1,10 +1,10 @@
 \
 \#include $<\tilde{ }$/analysis/fe_ele/lagrange/LagrangeMP_FE.h$>$\
-\
+
 class LagrangeMP_FE: public FE_Element ;\
-\
+
 FE_Element\
-\
+
 \
 LagrangeMP_FE is a subclass of FE_Element used to enforce a multi point
 constraint, of the form $\U_c = \C_{cr} \U_r$, where $\U_c$ are the
@@ -20,20 +20,20 @@ $$\left[ \begin{array}{cc} 0 & \alpha\C^t \\ \alpha\C & 0 \end{array}
 corresponding to the constrained degree-of-freedoms specified by the
 MP_Constraint, i.e. $[\U_c$ $\U_r]$, and the lagrange multiplier
 degrees-of-freedom introduced by the LagrangeConstraintHandler for this
-constraint, $\C = [-\I$ $\C_{cr}]$. Nothing is added to the residual.\
-\
+constraint, $\C = [-\I$ $\C_{cr}]$. Nothing is added to the residual.
+
 // Constructor\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
+
 \
-\
-\
-\
+
 \
 To construct a LagrangeMP_FE element to enforce the constraint specified
 by the MP_Constraint *theMP* using a default value for $\alpha$ of
@@ -48,12 +48,12 @@ set using the tag of the constrained Nodes DOF_Group, the tag of the
 retained Node Dof_group and the tag of the LagrangeDOF_Group,
 *theGroup*. A warning message is printed and the program is terminated
 if either not enough memory is available for the Matrices and Vector or
-the constrained and retained Nodes of their DOF_Groups do not exist.\
-\
+the constrained and retained Nodes of their DOF_Groups do not exist.
+
 \
 Invokes delete on any Matrix or Vector objects created in the
-constructor that have not yet been destroyed.\
-\
+constructor that have not yet been destroyed.
+
 \
 Causes the LagrangeMP_FE to determine the mapping between it's equation
 numbers and the degrees-of-freedom. This information is obtained by
@@ -64,14 +64,14 @@ returns a negative number if an error occurs: $-2$ if the Node has no
 associated DOF_Group, $-3$ if the constrained DOF specified is invalid
 for this Node (sets corresponding ID component to $-1$ so nothing is
 added to the tangent) and $-4$ if the ID in the DOF_Group is too small
-for the Node (again setting corresponding ID component to $-1$).\
-\
+for the Node (again setting corresponding ID component to $-1$).
+
 If the MP_Constraint is time-varying, from the MP_Constraint *theMP* it
 obtains the current $C_{cr}$ matrix; it then adds the contribution to
 the tangent matrix. Returns this tangent Matrix.
 
-\
-Returns the residual, a $\zero$ Vector.\
+
+Returns the residual, a $\zero$ Vector.
 *virtual const Vector &getTangForce(const Vector &disp, double fact =
 1.0);* \
 CURRENTLY just returns the $0$ residual. THIS WILL NEED TO CHANGE FOR

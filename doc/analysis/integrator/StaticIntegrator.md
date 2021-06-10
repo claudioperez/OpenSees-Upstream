@@ -1,24 +1,24 @@
 \
 \#include $<\tilde{ }$/analysis/integrator/StaticIntegrator.h$>$\
-\
+
 class StaticIntegrator: public Integrator\
-\
+
 MovableObject\
 Integrator\
 IncrementalIntegrator\
-\
+
 LoadControl\
 ArcLength\
 DisplacementControl\
-\
+
 StaticIntegrator is an abstract class. It is a subclass of
 IncrementalIntegrator provided to implement the common methods among
 integrator classes used in performing a static analysis on the FE_Model.
 The StaticIntegrator class provides an implementation of the methods to
 form the FE_Element and DOF_Group contributions to the tangent and
-residual. A pure virtual method *newStep()* is also defined in the
+residual. A pure virtual method `newStep()` is also defined in the
 interface, this is the method first called at each iteration in a static
-analysis, see the StaticAnalysis class.\
+analysis, see the StaticAnalysis class.
 In static nonlinear finite element problems we seek a solution ($\U$,
 $\lambda$) to the nonlinear vector function
 
@@ -59,29 +59,29 @@ which a system of of $N$ equations with ($N+1$) unknowns. Two solve
 this, an additional equation is required, the constraint equation. The
 constraint equation used depends on the static integration scheme, of
 which there are a number, for example load control, arc length, and
-displacement control.\
-\
+displacement control.
+
 // Constructors\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
+
 \
+
 \
-\
-\
-\
-\
+
 The integer *classTag* is passed to the IncrementalIntegrator classes
-constructor.\
-\
+constructor.
+
 \
 Does nothing. Provided so that the subclasses destructors will be
-called.\
-\
+called.
+
 \
 To form the tangent matrix of the FE_Element, *theEle*, is instructed to
 zero this matrix and then add it's $K$ matrix to the tangent, i.e. it
@@ -92,8 +92,12 @@ while ̄ while w̄hile ̄ theEle-$>$zeroTang()\
 theEle-$>$addKtoTang()
 :::
 
-The method returns $0$.\
-*virtual int formEleResidual(FE_Element \*theEle);*\
+The method returns $0$.
+
+```{.cpp}
+virtual int formEleResidual(FE_Element \*theEle);
+```
+
 To form the residual vector of the FE_Element, *theEle*, is instructed
 to zero the vector and then add it's $R$ vector to the residual, i.e. it
 performs the following:
@@ -103,11 +107,19 @@ while ̄ while w̄hile ̄ theEle-$>$zeroResidual()\
 theEle-$>$addRtoResid()
 :::
 
-The method returns $0$.\
-*virtual int formNodTangent(DOF_Group \*theDof);*\
+The method returns $0$.
+
+```{.cpp}
+virtual int formNodTangent(DOF_Group \*theDof);
+```
+
 This should never be called in a static analysis. An error message is
-printed if it is. Returns -1.\
-*virtual int formNodUnbalance(DOF_Group \*theDof);*\
+printed if it is. Returns -1.
+
+```{.cpp}
+virtual int formNodUnbalance(DOF_Group \*theDof);
+```
+
 To form the unbalance vector of the DOF_Group, *theDof*, is instructed
 to zero the vector and then add it's $P$ vector to the unbalance, i.e.
 it performs the following:
@@ -117,4 +129,4 @@ while ̄ while w̄hile ̄ theDof-$>$zeroUnbalance()\
 theDof-$>$addPtoUnbal()
 :::
 
-The method returns $0$.\
+The method returns $0$.

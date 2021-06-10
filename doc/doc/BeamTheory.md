@@ -64,7 +64,9 @@ Linearizing the force-deformation relationship with respect to
 deformations reveals the section tangent stiffness, ${\bf k}_s$,
 
 $$\begin{aligned}
-\Delta{\bf s} &= \frac{\partial{\bf s}}{\partial{\bf e}} \Delta{\bf e} \\
+\Delta{\bf s} &= \frac{\partial{\bf s}}{\partial{\bf e}} \Delta{\bf e} \
+
+
 \Delta{\bf s} &= {\bf k}_s \Delta{\bf e},\end{aligned}$$
 
 where ${\bf k}_s = \frac{\partial{\bf s}}{\partial{\bf e}}$, the partial
@@ -118,8 +120,12 @@ Hermitian polynomials, the shape functions in the basic system are
 $$\label{eq:N}
 {\bf N}(x) =
 \left[ \begin{array}{c} N_1(x) \\ \\ N_2(x) \\ \\ N_3(x) \end{array} \right] =
-\left[ \begin{array}{c} \frac{x}{L} \\ \\
-L\left( \frac{x}{L} - 2\frac{x^2}{L^2} + \frac{x^3}{L^3} \right) \\ \\
+\left[ \begin{array}{c} \frac{x}{L} \\ \
+
+
+L\left( \frac{x}{L} - 2\frac{x^2}{L^2} + \frac{x^3}{L^3} \right) \\ \
+
+
 L\left( -\frac{x^2}{L^2} + \frac{x^3}{L^3} \right)
 \end{array}
 \right].$$
@@ -129,7 +135,9 @@ Axial strain is the first derivative of the axial displacement, and
 curvature is the second derivative of the transverse displacement,
 
 $${\bf a}(x) = \left[ \begin{array}{ccc}
-N_{1,x} & 0 & 0 \\ \\
+N_{1,x} & 0 & 0 \\ \
+
+
 0 & N_{2,xx} & N_{3,xx}
 \end{array}
 \right].$$
@@ -139,15 +147,17 @@ equation [\[eq:N\]](#eq:N){reference-type="ref" reference="eq:N"}, the
 strain-displacement matrix is then,
 
 $${\bf a}(x) = \frac{1}{L} \left[ \begin{array}{ccc}
-1 & 0 & 0 \\ \\
+1 & 0 & 0 \\ \
+
+
 0 & -4+6\frac{x}{L} & -2+6\frac{x}{L}
 \end{array}
 \right].$$
 
 The basic displacements, **v**, can be obtained by invoking the method
-*getBasicTrialDisp()*. After computing section deformations from basic
+`getBasicTrialDisp()`. After computing section deformations from basic
 displacements via equation [\[eq:e=av\]](#eq:e=av){reference-type="ref"
-reference="eq:e=av"}, the method *setTrialSectionDeformation()* may be
+reference="eq:e=av"}, the method `setTrialSectionDeformation()` may be
 invoked with the updated deformations, **e**.
 
 ## Equilibrium
@@ -166,10 +176,10 @@ $${\bf s}(x) =
 \left[ \begin{array}{c} P(x) \\ M(x) \end{array} \right].$$
 
 To obtain the current value of section stress resultants, **s**, the
-method *getStressResultant()* must be invoked. To perform the
+method `getStressResultant()` must be invoked. To perform the
 transformation from basic to global resisting force
 (equation [\[eq:p=p(q,u)\]](#eq:p=p(q,u)){reference-type="ref"
-reference="eq:p=p(q,u)"}), the method *getGlobalResistingForce()* should
+reference="eq:p=p(q,u)"}), the method `getGlobalResistingForce()` should
 be invoked.
 
 ## Element Stiffness
@@ -181,9 +191,13 @@ equation [\[eq:p=p(q,u)\]](#eq:p=p(q,u)){reference-type="ref"
 reference="eq:p=p(q,u)"} with respect to displacements, **u**.
 
 $$\begin{aligned}
-{\bf k} &= \frac{\partial{\bf p}}{\partial{\bf q}}\frac{\partial{\bf q}}{\partial{\bf u}} + \left.\frac{\partial{\bf p}}{\partial{\bf u}}\right|_{\bf q} \\
+{\bf k} &= \frac{\partial{\bf p}}{\partial{\bf q}}\frac{\partial{\bf q}}{\partial{\bf u}} + \left.\frac{\partial{\bf p}}{\partial{\bf u}}\right|_{\bf q} \
+
+
 &= \frac{\partial{\bf p}}{\partial{\bf q}} \frac{\partial{\bf q}}{\partial{\bf v}} \frac{\partial{\bf v}}{\partial{\bf u}} +
-\left.\frac{\partial{\bf p}}{\partial{\bf u}}\right|_{\bf q} \\
+\left.\frac{\partial{\bf p}}{\partial{\bf u}}\right|_{\bf q} \
+
+
 {\bf k} &= \label{eq:stiff} \frac{\partial{\bf p}}{\partial{\bf q}} {\bf k}_b \frac{\partial{\bf v}}{\partial{\bf u}} +
 \left.\frac{\partial{\bf p}}{\partial{\bf u}}\right|_{\bf q}\end{aligned}$$
 
@@ -193,19 +207,25 @@ ${\bf v}$. Differentiating
 equation [\[eq:q\]](#eq:q){reference-type="ref" reference="eq:q"} gives,
 
 $$\begin{aligned}
-{\bf k}_b &= \frac{\partial{\bf q}}{\partial{\bf v}} \\
-&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf v}} \: dx \\
-&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf e}} \frac{\partial{\bf e}}{\partial{\bf v}} \: dx \\
+{\bf k}_b &= \frac{\partial{\bf q}}{\partial{\bf v}} \
+
+
+&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf v}} \: dx \
+
+
+&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf e}} \frac{\partial{\bf e}}{\partial{\bf v}} \: dx \
+
+
 {\bf k}_b &= \label{eq:kb} \int_0^L {\bf a}(x)^T {\bf k}_s(x) {\bf a}(x) \: dx\end{aligned}$$
 
 The section tangent stiffness matrix, ${\bf k}_s$, is returned upon
-invoking the method *getSectionTangent()*. After computing the basic
-stiffness, ${\bf k}_b$, the method *getGlobalStiffMatrix()* should be
+invoking the method `getSectionTangent()`. After computing the basic
+stiffness, ${\bf k}_b$, the method `getGlobalStiffMatrix()` should be
 invoked to perform the transformation in
 equation [\[eq:stiff\]](#eq:stiff){reference-type="ref"
 reference="eq:stiff"}. The remaining partial derivatives in
 equation [\[eq:stiff\]](#eq:stiff){reference-type="ref"
-reference="eq:stiff"} are computed by the *getGlobalStiffMatrix()*
+reference="eq:stiff"} are computed by the `getGlobalStiffMatrix()`
 method.
 
 ## Numerical Quadrature
@@ -219,7 +239,9 @@ numerical quadrature,
 
 $$\begin{aligned}
 \label{eq:qapprox} {\bf q} &\approx
-\sum_{i=1}^{N_s} {\bf a}(x_i)^T {\bf s}(x_i) \: W_i \\
+\sum_{i=1}^{N_s} {\bf a}(x_i)^T {\bf s}(x_i) \: W_i \
+
+
 \label{eq:kbapprox}{\bf k}_b &\approx
 \sum_{i=1}^{N_s} {\bf a}(x_i)^T {\bf k}_s(x_i) {\bf a}(x_i) \: W_i ,\end{aligned}$$
 
@@ -234,7 +256,9 @@ weights defined on $\left[-1,1\right]$, the following relationships
 hold,
 
 $$\begin{aligned}
-x_i &= \frac{L}{2} \left( \xi_i+1 \right) \\
+x_i &= \frac{L}{2} \left( \xi_i+1 \right) \
+
+
 W_i &= \frac{L}{2} \: \omega_i .\end{aligned}$$
 
 After mapping the points and weights to the element domain,

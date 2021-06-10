@@ -107,7 +107,7 @@ reference="eq:e=av"} reduces to
 
 $$\varepsilon(x) = \frac{v_1}{L}.$$
 
-After computing the axial strain, the method *setTrialStrain()* should
+After computing the axial strain, the method `setTrialStrain()` should
 be invoked with the updated strain.
 
 ## Equilibrium
@@ -136,7 +136,7 @@ reduces to
 $$q_1 = \sigma A,$$
 
 since ${\bf a}(x) = \frac{1}{L}$. To obtain the current value of
-material stress, $\sigma$, the method *getStress()* must be invoked.
+material stress, $\sigma$, the method `getStress()` must be invoked.
 Then the truss force can be transformed to the global system via
 equation [\[eq:p=Tq\]](#eq:p=Tq){reference-type="ref"
 reference="eq:p=Tq"}, i.e.,
@@ -152,8 +152,12 @@ equation [\[eq:p=Tq\]](#eq:p=Tq){reference-type="ref"
 reference="eq:p=Tq"} with respect to displacements, **u**.
 
 $$\begin{aligned}
-{\bf k} &= \frac{\partial{\bf p}}{\partial{\bf u}}\\
-&= \frac{\partial{\bf p}}{\partial{\bf q}} \frac{\partial{\bf q}}{\partial{\bf v}} \frac{\partial{\bf v}}{\partial{\bf u}} \\
+{\bf k} &= \frac{\partial{\bf p}}{\partial{\bf u}}\
+
+
+&= \frac{\partial{\bf p}}{\partial{\bf q}} \frac{\partial{\bf q}}{\partial{\bf v}} \frac{\partial{\bf v}}{\partial{\bf u}} \
+
+
 {\bf k} &= \label{eq:k} {\bf T}^T {\bf k}_b {\bf T}\end{aligned}$$
 
 The basic element stiffness, ${\bf k}_b$, is the partial derivative of
@@ -162,9 +166,15 @@ ${\bf v}$. Differentiating
 equation [\[eq:q\]](#eq:q){reference-type="ref" reference="eq:q"} gives,
 
 $$\begin{aligned}
-{\bf k}_b &= \frac{\partial{\bf q}}{\partial{\bf v}} \\
-&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf v}} \: dx \\
-&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf e}} \frac{\partial{\bf e}}{\partial{\bf v}} \: dx \\
+{\bf k}_b &= \frac{\partial{\bf q}}{\partial{\bf v}} \
+
+
+&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf v}} \: dx \
+
+
+&= \int_0^L {\bf a}(x)^T \frac{\partial{\bf s}}{\partial{\bf e}} \frac{\partial{\bf e}}{\partial{\bf v}} \: dx \
+
+
 {\bf k}_b &= \int_0^L {\bf a}(x)^T {\bf k}_s(x) {\bf a}(x) \: dx \\\end{aligned}$$
 
 Recalling that ${\bf a}(x) = \frac{1}{L}$, integration along the element
@@ -179,13 +189,19 @@ in terms of the material tangent. Recalling that ${\bf s} = \sigma A$
 and ${\bf e} = \varepsilon$,
 
 $$\begin{aligned}
-{\bf k}_s &= \frac{\partial{\bf s}}{\partial{\bf e}} \\
-&= \frac{\partial{\bf s}}{\partial{\varepsilon}}\frac{\partial{\varepsilon}}{\partial{\bf e}} \\
-&= \frac{\partial{\sigma}}{\partial{\varepsilon}} A \\
+{\bf k}_s &= \frac{\partial{\bf s}}{\partial{\bf e}} \
+
+
+&= \frac{\partial{\bf s}}{\partial{\varepsilon}}\frac{\partial{\varepsilon}}{\partial{\bf e}} \
+
+
+&= \frac{\partial{\sigma}}{\partial{\varepsilon}} A \
+
+
 {\bf k}_s &= \label{eq:ks} D_t A,\end{aligned}$$
 
 where $D_t$ is the material tangent, which is returned upon invoking the
-method *getTangent()*. Combining
+method `getTangent()`. Combining
 equations [\[eq:k\]](#eq:k){reference-type="ref"
 reference="eq:k"}, [\[eq:kb\]](#eq:kb){reference-type="ref"
 reference="eq:kb"}, and [\[eq:ks\]](#eq:ks){reference-type="ref"

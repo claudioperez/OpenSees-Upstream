@@ -1,13 +1,13 @@
 \
 \#include $<\tilde{ }$/analysis/integrator/Newmark.h$>$\
-\
+
 class Newmark: public TransientIntegrator\
-\
+
 MovableObject\
 Integrator\
 IncrementalIntegrator\
 TransientIntegrator\
-\
+
 \
 Newmark is a subclass of TransientIntegrator which implements the
 Newmark method. In the Newmark method, to determine the velocities,
@@ -65,53 +65,53 @@ t}^{(i-1)}\right)
 - \F_R\left(\Ud_{t + \Delta t}^{(i-1)},\U_{t + \Delta
 t}^{(i-1)}\right)$$
 
-\
+
 // Constructors\
+
 \
-\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
+
 \
-\
-\
-\
+
 \
 // Public Methods for Output\
+
 \
+
 \
-\
-\
-\
+
 Sets $\gamma$ to $1/2$ and $\beta$ to $1/4$. Sets a flag indicating
 whether the incremental solution is done in terms of displacement,
 $\Delta \U$, if *dispFlag* is *true*, or acceleration,
 $\Delta \ddot \U$, if *dispFlag* is *false*. In addition, a flag is set
-indicating that Rayleigh damping will not be used.\
-\
+indicating that Rayleigh damping will not be used.
+
 Sets $\gamma$ to *gamma* and $\beta$ to *beta*. Sets a flag indicating
 whether the incremental solution is done in terms of displacement or
 acceleration to *dispFlag* and a flag indicating that Rayleigh damping
-will not be used.\
-\
+will not be used.
+
 This constructor is invoked if Rayleigh damping is to be used, i.e.
 $\D = \alpha_M M + \beta_K K$. Sets $\gamma$ to *gamma*, $\beta$ to
 *beta*, $\alpha_M$ to *alphaM* and $\beta_K$ to *betaK*. Sets a flag
 indicating whether the incremental solution is done in terms of
 displacement or acceleration to *dispFlag* and a flag indicating that
-Rayleigh damping will be used.\
+Rayleigh damping will be used.
+
 \
-\
-Invokes the destructor on the Vector objects created.\
-\
+Invokes the destructor on the Vector objects created.
+
 \
 This tangent for each FE_Element is defined to be $\K_e = c1 \K + c2
 \D + c3 \M$, where c1,c2 and c3 were determined in the last invocation
-of the *newStep()* method. The method returns $0$ after performing the
+of the `newStep()` method. The method returns $0$ after performing the
 following operations:
 
 ::: {.tabbing}
@@ -127,7 +127,11 @@ theEle-$>$addMtoTang(c3 + c2 \* $\alpha_M$)\
 }
 :::
 
-*int formNodTangent(DOF_Group \*theDof);*\
+
+```{.cpp}
+int formNodTangent(DOF_Group \*theDof);
+```
+
 The method returns $0$ after performing the following operations:
 
 ::: {.tabbing}
@@ -138,7 +142,11 @@ else\
 theDof-$>$addMtoTang(c3 + c2 \* $\alpha_M$)\
 :::
 
-*int domainChanged(void);*\
+
+```{.cpp}
+int domainChanged(void);
+```
+
 If the size of the LinearSOE has changed, the object deletes any old
 Vectors created and then creates $6$ new Vector objects of size equal to
 *theLinearSOE-$>$getNumEqn()*. There is a Vector object created to store
@@ -147,8 +155,12 @@ $t + \Delta t$. The response quantities at time $t + \Delta t$ are then
 set by iterating over the DOF_Group objects in the model and obtaining
 their committed values. Returns $0$ if successful, otherwise a warning
 message and a negative number is returned: $-1$ if no memory was
-available for constructing the Vectors.\
-*int newStep(double $\Delta t$);*\
+available for constructing the Vectors.
+
+```{.cpp}
+int newStep(double $\Delta t$);
+```
+
 The following are performed when this method is invoked:
 
 1.  First sets the values of the three constants *c1*, *c2* and *c3*
@@ -188,7 +200,7 @@ The following are performed when this method is invoked:
     :::
 
 4.  The response quantities at the DOF_Group objects are updated with
-    the new approximations by invoking *setResponse()* on the
+    the new approximations by invoking `setResponse()` on the
     AnalysisModel with new quantities for time $t + \Delta t$.
 
     ::: {.tabbing}
@@ -198,23 +210,27 @@ The following are performed when this method is invoked:
     :::
 
 5.  current time is obtained from the AnalysisModel, incremented by
-    $\Delta t$, and *applyLoad(time, 1.0)* is invoked on the
+    $\Delta t$, and `applyLoad(time, 1.0)`{.cpp} is invoked on the
     AnalysisModel.
 
-6.  Finally *updateDomain()* is invoked on the AnalysisModel.
+6.  Finally `updateDomain()` is invoked on the AnalysisModel.
 
 The method returns $0$ if successful, otherwise a negative number is
 returned: $-1$ if $\gamma$ or $\beta$ are $0$, $-2$ if *dispFlag* was
-true and $\Delta t$ is $0$, and $-3$ if *domainChanged()* failed or has
-not been called.\
-*int update(const Vector &$\Delta U$);*\
+true and $\Delta t$ is $0$, and $-3$ if `domainChanged()` failed or has
+not been called.
+
+```{.cpp}
+int update(const Vector &$\Delta U$);
+```
+
 Invoked this causes the object to increment the DOF_Group response
 quantities at time $t + \Delta t$. The displacement Vector is
 incremented by $c1 * \Delta U$, the velocity Vector by $c2 * \Delta U$,
 and the acceleration Vector by $c3 * \Delta U$. The response at the
-DOF_Group objects are then updated by invoking *setResponse()* on the
+DOF_Group objects are then updated by invoking `setResponse()` on the
 AnalysisModel with quantities at time $t +
-\Delta t$. Finally *updateDomain()* is invoked on the AnalysisModel.
+\Delta t$. Finally `updateDomain()` is invoked on the AnalysisModel.
 
 ::: {.tabbing}
 while w̄hile w̄hile w̄hile ̄ if (displIncr == true) {\
@@ -235,21 +251,25 @@ theModel-$>$setUpdateDomain()
 Returns $0$ if successful. A warning message is printed and a negative
 number returned if an error occurs: $-1$ if no associated AnalysisModel,
 $-2$ if the Vector objects have not been created, $-3$ if the Vector
-objects and $\delta U$ are of different sizes.\
+objects and $\delta U$ are of different sizes.
 *int sendSelf(int commitTag, Channel &theChannel);* \
 Places in a Vector of size 6 the values of $\beta$, $\gamma$,
 *dispFlag*, RayleighDampingFlag, $\alpha_M$ and $\beta_K$. Then invokes
-*sendVector()* on the Channel with this Vector. Returns $0$ if
+`sendVector()` on the Channel with this Vector. Returns $0$ if
 successful, a warning message is printed and a $-1$ is returned if
-*theChannel* fails to send the Vector.\
+*theChannel* fails to send the Vector.
 *int recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker
 &theBroker);* \
 Receives in a Vector of size 6 the values of $\beta$, $\gamma$,
 *dispFlag*, RayleighDampingFlag, $\alpha_M$ and $\beta_K$. Returns $0$
 if successful. A warning message is printed, $\gamma$ is set to 0.5,
 $\beta$ to 0.25 and the Rayleigh damping flag set to *false*, and a $-1$
-is returned, if *theChannel* fails to receive the Vector.\
-*int Print(OPS_Stream &s, int flag = 0);*\
+is returned, if *theChannel* fails to receive the Vector.
+
+```{.cpp}
+int Print(OPS_Stream &s, int flag = 0);
+```
+
 The object sends to $s$ its type, the current time, $\gamma$ and
 $\beta$. If Rayleigh damping is specified, the constants $\alpha_M$ and
 $\beta_K$ are also printed.

@@ -1466,7 +1466,7 @@ specifying the -piv option.
        system UmfPack 
 
 To construct a general sparse system of equations object which will be
-factored and solved during the analysis using the UMFPACK solver.\
+factored and solved during the analysis using the UMFPACK solver.
 
 #### The SparseSPD SOE
 

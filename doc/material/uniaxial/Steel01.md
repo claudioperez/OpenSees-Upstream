@@ -1,14 +1,14 @@
-UNDER CONSTRUCTION.\
-\
+UNDER CONSTRUCTION.
+
 \#include $<\tilde{ }$/material/Steel01.h$>$\
-\
+
 class Steel01 : public MaterialModel\
-\
+
 TaggedObject\
 MovableObject\
 MaterialModel\
 UniaxialMaterial\
-\
+
 \
 Steel01 provides the abstraction of a bilinear steel model with
 isotropic hardening. The model contains a yield strength of fy, an
@@ -20,34 +20,34 @@ appear after the specification of the hardening parameters, if present.
 The argument matTag is used to uniquely identify the material object
 among material objects in the BasicBuilder object.
 
-\
+
 // Constructor\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
+
 \
+
 \
-\
-\
-\
-\
+
 \
 // Public Methods for Output\
+
 \
-\
-\
+
 // Private Methods\
+
 \
+
 \
+
 \
-\
-\
-\
-\
-Does nothing.\
-\
+
+Does nothing.
+
 \

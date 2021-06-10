@@ -7,7 +7,9 @@
 
 **Frank McKenna and Gregory L. Fenves**
 
-**Pacific Earthquake Engineering Research Center\
+**Pacific Earthquake Engineering Research Center
+
+
 University of California, Berkeley**
 :::
 

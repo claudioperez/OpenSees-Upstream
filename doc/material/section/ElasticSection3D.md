@@ -1,60 +1,60 @@
 \
 \#include $<\tilde{ }$/material/section/ElasticSection3D.h$>$\
-\
+
 class ElasticSection3D : public SectionForceDeformation\
-\
+
 TaggedObject\
 MovableObject\
 Material\
 SectionForceDeformation\
-\
+
 \
 ElasticSection3D provides the implementation of a section which exhibits
 uncoupled elastic behavior in axial, moment, shear, and torsion
-response.\
-\
+response.
+
 // Constructor\
+
 \
-\
-\
+
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
+
 \
+
 \
+
 \
+
 \
+
 \
+
 \
-\
-\
-\
-\
-\
-\
-\
-\
+
 // Public Methods for Output\
+
 \
+
 \
-\
-\
-\
+
 To construct an ElasticSection3D with an integer identifier *tag*, an
 elastic modulus of $E$, a second moment of area about the local z-axis,
 $I_z$, a second moment of area about the local y-axis, $I_y$, a polar
 moment of intertia of $J$, a section area of $A$, an elastic shear
 modulus of $G$, and a shape factor of $\alpha$. The integers *tag* and
 MAT_TAG_ElasticSection3D, defined in $<$classTags.h$>$, are passed to
-the SectionForceDeformation class constructor.\
+the SectionForceDeformation class constructor.
+
+Constructs a blank ElasticSection3D object.
+
 \
-Constructs a blank ElasticSection3D object.\
-\
-\
-Does nothing.\
-\
+Does nothing.
+
 \
 Sets the value of the section deformation vector, $\esec$ to be *def*.
 The section deformation vector, $\esec$, is defined by
@@ -74,10 +74,10 @@ where $\epsilon_a$ is the axial strain, $\kappa_z$ is the curvature
 about the local z-axis, $\kappa_z$ is the curvature about the local
 z-axis, $\gamma_y$ is the shear strain along the local y-axis,
 $\gamma_z$ is the shear strain along the local z-axis, and $\phi$ is the
-angle of twist. Returns $0$.\
-\
-Returns the current value of the section deformation vector, $\esec$.\
-\
+angle of twist. Returns $0$.
+
+Returns the current value of the section deformation vector, $\esec$.
+
 Returns the section stress resultants, $\ssec$, the product of the
 section stiffness matrix, $\ksec$, and the section deformation vector,
 $\esec$,
@@ -96,11 +96,11 @@ $$\ssec = \ksec \esec = \left[
 where $P$ is the axial force, $M_z$ is the bending moment about the
 local z-axis, $M_y$ is the bending moment about the local y-axis, $V_y$
 is the shear force along the local y-axis, $V_z$ is the shear force
-along the local z-axis, and $T$ is the torque.\
-\
+along the local z-axis, and $T$ is the torque.
+
 Returns the value of $\ssec$ calculated at the previous state
-determination.\
-\
+determination.
+
 Returns the section stiffness matrix, $\ksec$, where
 
 $$\ksec = \left[
@@ -113,9 +113,9 @@ $$\ksec = \left[
         0 & 0 & 0 & 0 & 0 & GJ
    \end{array} 
  \right]$$\
-\
-Returns the section stiffness matrix, $\ksec$.\
-\
+
+Returns the section stiffness matrix, $\ksec$.
+
 Overrides the base class implementation and returns the section
 flexibility matrix, $\fsec$, where
 
@@ -129,27 +129,27 @@ $$\fsec = \left[
        0 & 0 & 0 & 0 & 0 & \frac{1}{GJ}
    \end{array} 
  \right]$$\
-\
+
 Overrides the base class implementation and returns the section
-flexibility matrix, $\fsec$.\
-\
-Returns $0$.\
-\
-Returns $0$.\
-\
-Returns $0$.\
-\
+flexibility matrix, $\fsec$.
+
+Returns $0$.
+
+Returns $0$.
+
+Returns $0$.
+
 Returns a pointer to a new ElasticSection3D object, constructed using
 the same values of *tag*, $E$, $A$, $I_z$, $I_y$, $J$, $G$, and
 $\alpha$. It is up to the caller to ensure that the destructor is
-invoked.\
-\
+invoked.
+
 Returns the section ID code that indicates the ordering of section
 response quantities. For this section, axial response is the first
 quantity, bending about the local z-axis is the second, bending about
 the local y-axis is the third, shear along the local y-axis is the
 fourth, shear along the local z-axis is the fifth, and torsion is the
-sixth.\
+sixth.
 $$code := \left[
    \begin{array}{c}
        2 \\
@@ -160,22 +160,22 @@ $$code := \left[
        6
    \end{array} 
  \right]$$\
-\
-Returns 6.\
-\
+
+Returns 6.
+
 Creates a Vector of size $8$ into which it places *tag*, $E$, $A$,
-$I_z$, $I_y$, $J$, $G$, and $\alpha$. Invokes *sendVector()* on
+$I_z$, $I_y$, $J$, $G$, and $\alpha$. Invokes `sendVector()` on
 *theChannel* using the ElasticSection3D objects *dbTag*, the integer
 *commitTag* and the Vector as arguments. Returns $0$ if successful, a
 warning message and a negative number are returned if the Channel object
-fails to send the Vector.\
-\
-Creates a Vector of size $8$. Invokes *recvVector()* on *theChannel*
+fails to send the Vector.
+
+Creates a Vector of size $8$. Invokes `recvVector()` on *theChannel*
 using the ElasticSection3D objects *dbTag*, the integer *commitTag* and
 the Vector as arguments. Using the data in the Vector to set its *tag*,
 $E$, $A$, $I_z$, $I_y$, $J$, $G$, and $\alpha$. Returns $0$ if
 successful, a warning message is printed and a negative number is
-returned if the Channel object fails to receive the Vector.\
-\
+returned if the Channel object fails to receive the Vector.
+
 Prints to the stream *s* the object's *tag*, $E$, $A$, $I_z$, $I_y$,
-$J$, $G$, and $\alpha$ values.\
+$J$, $G$, and $\alpha$ values.

@@ -1,52 +1,52 @@
 NEED TO ADD ADD_INERTIA_LOAD TO INTERFACE .. SEE EARTHQUAKE_PATTERN
-CLASS.\
-\
+CLASS.
+
 \#include $<\tilde{ }$/element/BeamWithHinges2D.h$>$\
-\
+
 class BeamWithHinges2D: public DomainComponent\
-\
+
 TaggedObject\
 MovableObject\
 DomainComponent\
 Element\
-\
+
 \
 BeamWithHinges2D is a beam-column element which uses the force based
 formulation for its state determination. This element has material
 non-linear hinges at both ends and exhibits linear elastic behavior
-through its interior region, including linear elastic shear effects.\
-\
+through its interior region, including linear elastic shear effects.
+
 // Constructors\
+
 \
-\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods dealing with Nodes and dof\
+
 \
-\
-\
+
 \
 // Public Methods dealing with State\
+
 \
-\
-\
+
 \
 // Public Methods for obtaining Linearized Stiffness, Mass and Damping
 Matrices\
+
 \
+
 \
-\
-\
-\
+
 // Public Methods for obtaining Resisting Forces\
+
 \
+
 \
-\
-\
-\
+
 \
 Constructs a BeamWithHinges2D object with tag *tag*, unique among all
 elements in the domain. The end nodes of the element are set to be those
@@ -59,8 +59,8 @@ created by obtaining copies of *sectionI* and *sectionJ*. The hinge
 lengths are specified as ratios of the total element length, *ratioI*
 and *ratioJ*. The element distributed load (reference value) is set to
 be *distrLoad*, and the element mass density per unit length is
-*massDens*.\
-\
+*massDens*.
+
 Constructs a BeamWithHinges2D object with tag *tag*, unique among all
 elements in the domain. The end nodes of the element are set to be those
 with tags *nodeI* and *nodeJ*. The elastic properties of the interior
@@ -70,30 +70,46 @@ cross-sectional area; *G*, the shear modulus; and *alpha*, the
 cross-section shape factor for elastic shear effects. Element hinges are
 created by obtaining copies of *sectionI* and *sectionJ*. The hinge
 lengths are specified as ratios of the total element length, *ratioI*
-and *ratioJ*. The element mass density per unit length is *massDens*.\
+and *ratioJ*. The element mass density per unit length is *massDens*.
+
+Constructs a blank BeamWithHinges2D object.
+
 \
-Constructs a blank BeamWithHinges2D object.\
+Invokes the section destructors.
+
 \
-\
-Invokes the section destructors.\
-\
-\
-Returns 2, the number of external nodes for this element.\
-\
+Returns 2, the number of external nodes for this element.
+
 Returns an ID containing the tags of the two external nodes for this
-element.\
-\
-Returns 6, the number of degrees of freedom for this element.\
-*int commitState(void);*\
-Invokes *commitState()* on each section and returns the sum of the
-result of these invocations.\
-*int revertToLastCommit(void);*\
-Invokes *revertToLastCommit()* on each section and returns the sum of
-the result of these invocations.\
-*int revertToStart(void);*\
-Invokes *revertToStart()* on each section and returns the sum of the
-result of these invocations.\
-*const Matrix &getTangentStiff(void);*\
+element.
+
+Returns 6, the number of degrees of freedom for this element.
+
+```{.cpp}
+int commitState(void);
+```
+
+Invokes `commitState()` on each section and returns the sum of the
+result of these invocations.
+
+```{.cpp}
+int revertToLastCommit(void);
+```
+
+Invokes `revertToLastCommit()` on each section and returns the sum of
+the result of these invocations.
+
+```{.cpp}
+int revertToStart(void);
+```
+
+Invokes `revertToStart()` on each section and returns the sum of the
+result of these invocations.
+
+```{.cpp}
+const Matrix &getTangentStiff(void);
+```
+
 Computes the element flexibility matrix, then returns its inverse, the
 element stiffness matrix. The element flexibility is the sum of the
 hinge flexibilities, $\mathbf{f}_I$ and $\mathbf{f}_J$, and the elastic
@@ -134,7 +150,7 @@ $${\mathbf{f}}_i = \bint(x_i)^T \fsec_i \bint(x_i) * l_i, \:\: i=I,J$$
 where $x_i$ is the midpoint of hinge $i$, measured along the length of
 the beam, and is the point at which the force interpolation matrix,
 $\bint$ is evaluated. The flexiblity, $\fsec_i$, is obtained from the
-constitutive relation for section $i$.\
+constitutive relation for section $i$.
 The element stiffness is then obtained by inversion of the element
 flexibility, given by Equation
 [\[eq:fele\]](#eq:fele){reference-type="ref" reference="eq:fele"}.
@@ -148,12 +164,24 @@ reference. The transformed stiffness matrix, $\kele$, is then assembled
 into the structural system of equations.
 
 $$\kele = \mathbf{A}^T \kbas \mathbf{A}$$\
-*const Matrix &getSecantStiff(void);*\
+
+```{.cpp}
+const Matrix &getSecantStiff(void);
+```
+
 To return the elements secant stiffness matrix. THIS SECANT MAY BE
-REMOVED.\
-*const Matrix &getDamp(void);*\
-To return the damping matrix.\
-*const Matrix &getMass(void);*\
+REMOVED.
+
+```{.cpp}
+const Matrix &getDamp(void);
+```
+
+To return the damping matrix.
+
+```{.cpp}
+const Matrix &getMass(void);
+```
+
 Returns the element lumped mass matrix, $\mele$. It is assumed that the
 mass density per unit length, $\rho$, is constant along the entire
 element, including the hinge regions.
@@ -170,10 +198,18 @@ $$\label{eq:mele}
    \end{array}
  \right]$$
 
-*void zeroLoad(void);*\
+
+```{.cpp}
+void zeroLoad(void);
+```
+
 This is a method invoked to zero the element load contributions to the
-residual.\
-*const Vector &getResistingForce(void);*\
+residual.
+
+```{.cpp}
+const Vector &getResistingForce(void);
+```
+
 Returns the element resisting force vector. The basic element force
 vector is obtained as the product of the basic element stiffness,
 $\kbas$, given by Equation [\[eq:kele\]](#eq:kele){reference-type="ref"
@@ -187,7 +223,11 @@ then assembled into the structural system of equations.
 
 $$\label{eq:qele}
 \qele = \mathbf{A}^T \qbas$$\
-*const Vector &getResistingForceIncInertia(void);*\
+
+```{.cpp}
+const Vector &getResistingForceIncInertia(void);
+```
+
 Returns the element resisting force vector, $\tilde{\qele}$ with inertia
 forces included,
 
@@ -197,4 +237,4 @@ where $\qele$ and $\mele$ are obtained from Equations
 [\[eq:qele\]](#eq:qele){reference-type="ref" reference="eq:qele"} and
 [\[eq:mele\]](#eq:mele){reference-type="ref" reference="eq:mele"},
 respectively, and $\ddot{\mathbf u}$ is the vector of trial nodal
-accelerations for the element.\
+accelerations for the element.

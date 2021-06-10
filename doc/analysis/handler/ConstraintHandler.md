@@ -1,10 +1,10 @@
 \
 \#include $<\tilde{ }$/analysis/handler/ConstraintHandler.h$>$\
-\
+
 class ConstraintHandler: public MovableObject\
-\
+
 MovableObject\
-\
+
 \
 The ConstraintHandler class is an abstract base class. Its purpose is to
 define the interface common among all subclasses. A constraint handler
@@ -20,36 +20,36 @@ is responsible for:
 
 3.  deleting the DOF_Group and FE_Element objects that it created.
 
-\
+
 // Constructor\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Methods\
+
 \
-\
-\
+
 \
 // Protected Methods\
+
 \
+
 \
+
+The integer *classTag* is passed to the MovableObject constructor.
+
 \
-\
-\
-The integer *classTag* is passed to the MovableObject constructor.\
-\
-\
-Does nothing.\
-\
+Does nothing.
+
 \
 Invoked to set the links that the ConstraintHandler will need. These
 include links to the Domain, *theDomain*, for which the
 ConstraintHandler object will apply the constraints and the
 AnalysisModel, *theModel*, to which the ConstraintHandler will add the
-FE_Element and DOF_Group objects.\
-\
+FE_Element and DOF_Group objects.
+
 Invoked to handle the constraints imposed on the domain by the
 SP_Constraints and MP_Constraints. The ConstraintHandler object does
 this by instantiating the appropriate FE_ELement and DOF_Group objects
@@ -67,20 +67,32 @@ negative integer if not; the positive number is to be set at the number
 of dof assigned a value $-3$ (this will be the number of external dof
 for a subdomain), the negative value of which depends on the type of
 ConstraintHandler. For subdomains the constraint handler is responsible
-for setting the FE_Element by calling *setFE_elementPtr*.\
-*virtual void clearAll(void) =0;*\
+for setting the FE_Element by calling *setFE_elementPtr*.
+
+```{.cpp}
+virtual void clearAll(void) =0;
+```
+
 Invoked to inform the ConstraintHandler object that the FE_Elements and
 DOF_Groups it constructed are no longer part of the AnalysisModel. The
 ConstraintHandler can delete these objects if necessary; or the
 ConstraintHandler can store them and use them in subsequent calls to
-*handle()*.\
-\
+`handle()`.
+
 \
 A const member function to return the Domain object associated with the
-ConstraintHandler, *theDomain*.\
-*AnalysisModel \*getAnalysisModelPtr(void) const;*\
+ConstraintHandler, *theDomain*.
+
+```{.cpp}
+AnalysisModel \*getAnalysisModelPtr(void) const;
+```
+
 A const member function to return the AnalysisModel object associated
-with the ConstraintHandler, *theModel*.\
-*Integrator \*getIntegratorPtr(void) const;*\
+with the ConstraintHandler, *theModel*.
+
+```{.cpp}
+Integrator \*getIntegratorPtr(void) const;
+```
+
 A const member function to return the Integrator object associated with
 the ConstraintHandler, *theIntegrator*.

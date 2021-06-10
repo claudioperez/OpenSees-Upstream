@@ -1,27 +1,27 @@
 \
 \#include $<\tilde{ }$/actor/machineBroker/MachineBroker.h$>$\
-\
+
 class MachineBroker\
+
 \
-\
-\
+
 MachineBrokers are objects that are used to start remote processes
-running on the parallel machine.\
-\
+running on the parallel machine.
+
 // Constructor\
-\
+
 \
 // Destructor\
-\
+
 \
 // Public Member Functions\
+
 \
+
 \
-\
-\
-\
-Does nothing.\
-\
+
+Does nothing.
+
 \
 Invoked to start the program, *actorProgram*, on the parallel machine.
 The remote actor process uses information supplied by *theChannel* to

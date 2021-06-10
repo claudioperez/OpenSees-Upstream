@@ -53,7 +53,9 @@ mixed hardening behavior.
     $$\dot{\varepsilon}^p = \gamma \mbox{sign}\left( \sigma-\kappa \right)$$
 
 3.  Isotropic and kinematic hardening laws $$\begin{aligned}
-    \dot{\alpha} &= \gamma \\
+    \dot{\alpha} &= \gamma \
+
+
     \dot{\kappa} &= \gamma H_{kin} \mbox{sign}\left( \sigma-\kappa \right)\end{aligned}$$
 
 4.  Yield condition
@@ -61,8 +63,12 @@ mixed hardening behavior.
     \left( \sigma_y + H_{iso}\alpha \right) \leq 0$$
 
 5.  Kuhn-Tucker complementary conditions $$\begin{aligned}
-    \gamma &\geq 0 \\
-    f(\sigma, \kappa, \alpha) &\leq 0 \\
+    \gamma &\geq 0 \
+
+
+    f(\sigma, \kappa, \alpha) &\leq 0 \
+
+
     \gamma f(\sigma, \kappa, \alpha) &= 0\end{aligned}$$
 
 6.  Consistency condition
@@ -81,23 +87,37 @@ mixed hardening behavior.
     $D_{n+1}$; proceed to step 3.
 
 3.  Compute trial stress and test for plastic loading $$\begin{aligned}
-    \sigma_{n+1}^{trial} &= E \left( \varepsilon_{n+1} - \varepsilon_n^p \right) \\
-    \xi_{n+1}^{trial} &= \sigma_{n+1}^{trial} - \kappa_n \\
+    \sigma_{n+1}^{trial} &= E \left( \varepsilon_{n+1} - \varepsilon_n^p \right) \
+
+
+    \xi_{n+1}^{trial} &= \sigma_{n+1}^{trial} - \kappa_n \
+
+
     f_{n+1}^{trial} &= \left| \xi_{n+1}^{trial} \right| -
                       \left( \sigma_y + H_{iso}\alpha_n \right)\end{aligned}$$
 
     ::: {.center}
     If $f_{n+1} \leq 0$, this is an elastic step; set
-    $\sigma_{n+1} = \sigma_{n+1}^{trial}, D_{n+1} = E$, and exit.\
+    $\sigma_{n+1} = \sigma_{n+1}^{trial}, D_{n+1} = E$, and exit.
     Else, this is a plastic step; proceed to step 4.
     :::
 
 4.  Return mapping $$\begin{aligned}
-    \Delta\gamma &= \frac{f_{n+1}^{trial}}{E+H_{iso}+H_{kin}} \\
-    \sigma_{n+1} &= \sigma_{n+1}^{trial} - \Delta\gamma E \mbox{sign}(\xi_{n+1}^{trial}) \\
-    \varepsilon_{n+1}^p &= \varepsilon_n^p + \Delta\gamma \mbox{sign}(\xi_{n+1}^{trial}) \\
-    \kappa_{n+1} &= \kappa_n + \Delta\gamma H_{kin} \mbox{sign}(\xi_{n+1}^{trial}) \\
-    \alpha_{n+1} &= \alpha_n + \Delta\gamma \\
+    \Delta\gamma &= \frac{f_{n+1}^{trial}}{E+H_{iso}+H_{kin}} \
+
+
+    \sigma_{n+1} &= \sigma_{n+1}^{trial} - \Delta\gamma E \mbox{sign}(\xi_{n+1}^{trial}) \
+
+
+    \varepsilon_{n+1}^p &= \varepsilon_n^p + \Delta\gamma \mbox{sign}(\xi_{n+1}^{trial}) \
+
+
+    \kappa_{n+1} &= \kappa_n + \Delta\gamma H_{kin} \mbox{sign}(\xi_{n+1}^{trial}) \
+
+
+    \alpha_{n+1} &= \alpha_n + \Delta\gamma \
+
+
     D_{n+1} &= \frac{E(H_{iso}+H_{kin})}{E+H_{iso}+H_{kin}}\end{aligned}$$
 
 ::: {.thebibliography}
