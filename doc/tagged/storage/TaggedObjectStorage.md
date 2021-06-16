@@ -1,9 +1,20 @@
 \
-\#include $<\tilde{ }$/tagged/storage/TaggedObjectStorage.h$>$\
+#include $<\tilde{ }$/tagged/storage/TaggedObjectStorage.h$>$
 
-class TaggedObjectStorage\
 
-\
+class TaggedObjectStorage
+
+
+
+```{.cpp}
+
+```{.cpp}
+TaggedObjectStorage
+```
+
+```
+
+
 
 TaggedObjectStorage is used as a container object to store and provide
 access to objects of type TaggedObject. Each TaggedObject object stored
@@ -13,60 +24,161 @@ TaggedObjectStorage class is an abstract base class, it just defines the
 interface all concrete subclasses must provide. The interface defines
 methods to add and to remove the components, and methods to obtain
 access to the components.
+### Constructor
 
-// Constructor\
 
-\
-// Destructor\
+```{.cpp}
+TaggedObjectStorage();
+```
 
-\
-// Pure Virtual Public Methods\
+### Destructor
 
-\
 
-\
+```{.cpp}
+virtual  TaggedObjectStorage();
+```
 
-\
+### Pure Virtual Public Methods
 
-\
 
-\
+```{.cpp}
+virtual int setSize(int newSize) =0;
+```
+
+
+
+```{.cpp}
+virtual bool addComponent(TaggedObject \*newComponent)=0;
+```
+
+
+
+```{.cpp}
+virtual TaggedObject \*removeComponent(int tag) =0;
+```
+
+
+
+```{.cpp}
+virtual int getNumComponents(void) const =0;
+```
+
+
+
+```{.cpp}
+virtual TaggedObject \*getComponentPtr(int tag) =0;
+```
+
+
+
+```{.cpp}
+virtual TaggedObjectIter &getComponents(void) =0;
+```
+
+
+
+```{.cpp}
+virtual TaggedObjectStorage \*getEmptyCopy(void) =0;
+```
+
+
+
+```{.cpp}
+virtual void clearAll(bool invokeDestructor = true) =0;
+```
+
+
+
+```{.cpp}
+virtual void Print(OPS_Stream &s, int flag =0) =0;
+```
+
+
+
+
+```{.cpp}
+TaggedObjectStorage();
+```
+
 
 Does nothing.
 
-\
 Does nothing. Provided so that the concrete subclasses destructor will
 be invoked. The subclasses destructor is NOT to delete the objects
-stored in the object. `clearAll()` can be invoked by the programmer if
+stored in the object. `clearAll()`{.cpp} can be invoked by the programmer if
 this is required.
 
-\
+```{.cpp}
+virtual int setSize(int newSize) =0;
+```
+
+
 To provide an indication to the container object that *newSize*
 components are likely to be added. This is only a hint, it should be
-acceptable for more or less objects than *newSize* to be added to the
-container.
+acceptable for more or less objects than `newSize`{.cpp} to be added to the
+container.\
 
-To add the object *newComponent* to the container. To return *true* if
+```{.cpp}
+virtual bool addComponent(TaggedObject \*newComponent);
+```
+
+
+To add the object `newComponent`{.cpp} to the container. To return *true* if
 the object was added to the container, *false* otherwise. The object
 should not be added if another object with a similar tag already exists
-in the container.
+in the container.\
 
-To remove the component whose tag is given by *tag* from the container.
-To return a pointer to the removed object if successful, $0$ if not.
+```{.cpp}
+virtual TaggedObject \*removeComponent(int tag) =0;
+```
 
-To return the number of components currently stored in the container.
+
+To remove the component whose tag is given by `tag` from the container.
+To return a pointer to the removed object if successful, $0$ if not.\
+
+```{.cpp}
+virtual int getNumComponents(void) const =0;
+```
+
+
+To return the number of components currently stored in the container.\
+
+```{.cpp}
+virtual TaggedObject \*getComponentPtr(int tag) =0;
+```
+
 
 To return a pointer to the TaggedObject whose identifier is given by
-*tag*. If the object has not been added to the container $0$ is to be
-returned.
+`tag`. If the object has not been added to the container $0$ is to be
+returned.\
+
+```{.cpp}
+virtual TaggedObjectIter &getComponents(void) =0;
+```
+
 
 To return an iter for iterating through the objects that have been added
-to the container.
+to the container.\
 
-To return an empty copy of the container.
+```{.cpp}
+virtual TaggedObjectStorage \*getEmptyCopy(void) =0;
+```
+
+
+To return an empty copy of the container.\
+
+```{.cpp}
+virtual void clearAll(bool invokeDestructor = true) =0;
+```
+
 
 To remove all objects from the container and **to invoke the destructor
-on these objects** if *invokeDestructor* is *true*.
+on these objects** if `invokeDestructor`{.cpp} is *true*.\
+
+```{.cpp}
+virtual void Print(OPS_Stream &s, int flag =0) =0;
+```
+
 
 To invoke `Print(s,flag)`{.cpp} on all objects which have been added to the
 container.

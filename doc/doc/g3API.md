@@ -1,18 +1,58 @@
-::: {.titlepage}
+::: titlepage
 .
 
-::: {.center}
+::: center
 G 3
 
-**C l a s s I n t e r f a c e S p e c i f i c a t i o n**
 
-**Version 0.1 - Preliminary Draft**
+```{.cpp}
 
-**December 20, 1999**
+```{.cpp}
+C l a s s I n t e r f a c e S p e c i f i c a t i o n
+```
 
-**Frank McKenna and Gregory L. Fenves**
+```
 
-**PEER, University of California at Berkeley**
+
+
+```{.cpp}
+
+```{.cpp}
+Version 0.1 - Preliminary Draft
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+December 20, 1999
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+Frank McKenna and Gregory L. Fenves
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+PEER, University of California at Berkeley
+```
+
+```
+
 :::
 :::
 

@@ -171,7 +171,7 @@ scalar evolution law object `el`, and tensorial evolution law object
 
  
 
-::: {.small}
+::: small
     # Yield surface 
     set ys "-VM"
 
@@ -193,7 +193,7 @@ scalar evolution law object `el`, and tensorial evolution law object
 
  
 
-::: {.small}
+::: small
     # Yield surface 
     set ys "-DP"
 
@@ -222,7 +222,7 @@ scalar evolution law object `el`, and tensorial evolution law object
 
  
 
-::: {.small}
+::: small
     # Yield surface M = 1.2
     set ys "-CC 1.2"
 

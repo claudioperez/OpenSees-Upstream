@@ -1,56 +1,50 @@
+\
+#include $<$/modelbuilder/PlaneFrame.h$>$
 
 
 
-\#include $<$/modelbuilder/PlaneFrame.h$>$
-
-
-
-class PlaneFrame: public ModelBuilder;
-
+```{.cpp}
+class PlaneFrame:
+```
+ public ModelBuilder;
 
 
 ModelBuilder
 
 
-
-
-
-
 The PlaneFrame class is used to construct 2d plane frame models from an
 input file of specified format.
+### Constructor\
 
-// Constructor
+```{.cpp}
+PlaneFrame(theDomain &theDomain);
+```
 
-
-
-
-
-
-// Destructor
+### Destructor
 
 
+```{.cpp}
+virtual  $\tilde{}$PlaneFrame();
+```
+
+### Public Methods
 
 
-
-
-// Public Methods
-
-
-
-
-
-
-
-The *theDomain* object is used by the ModelBuilder classes constructor.
+```{.cpp}
+virtual buildFE_Model(void) = 0;
+```
 
 
 
+The `theDomain`{.cpp} object is used by the ModelBuilder classes constructor.
 
 This does nothing. It is the responsibility of the Domain object to
 delete all the domain components when the destructor is called on that
 object.
 
-
+```{.cpp}
+virtual buildFE_Model(void) = 0;
+```
 
 
 The PlaneFrame will construct the Element, Node, Load and Constraint
@@ -58,63 +52,25 @@ objects and add them to the Domain object associated with the
 PlaneFrame. To do this the PlaneFrame object will prompt the user for
 the name of the input file; if the file cannot be opened an error
 message is printed and the program terminates. A sample input file is
-given below:
-
-
-3 3 1 2
-
-
-3 0.0 0.0
-
-
-3 0.0 10.0
-
-
-3 20.0 10.0
-
-
-3 20.0 0.0
-
-
-1 10.0 200000.0 100.0 1 2
-
-
-2 20.0 200000.0 100.0 2 3
-
-
-3 10.0 200000.0 100.0 3 4
-
-
-0 0.0
-
-
-1 0.0
-
-
-2 0.0
-
-
-4 2 3
-
-
-1
-
-
-1 2
-
-
-1.0 0.0
-
-
-0.0 2.0
-
-
-10.0 0.0 0.0
-
-
-10.0 10.0 0.0
-
-
+given below:\
+3 3 1 2\
+3 0.0 0.0\
+3 0.0 10.0\
+3 20.0 10.0\
+3 20.0 0.0\
+1 10.0 200000.0 100.0 1 2\
+2 20.0 200000.0 100.0 2 3\
+3 10.0 200000.0 100.0 3 4\
+0 0.0\
+1 0.0\
+2 0.0\
+4 2 3\
+1\
+1 2\
+1.0 0.0\
+0.0 2.0\
+10.0 0.0 0.0\
+10.0 10.0 0.0\
 line 1 contains the number of nodes (4), elements (3), single point
 constraints (3), multiple point constraints(1) and number of nodal loads
 respectively (2). The next 4 lines contains the nodal data; for each
@@ -141,4 +97,4 @@ $U_c = C_{cr} U_r$.
 whose tag is 5 which has two load cases. The next two lines contain the
 NodalLoad information; for each line a NodalLoad is created which acts
 on the node specified with the forces xForce, yForce and moment. To
-returns 0 if successful, -1 otherwise.
+returns 0 if successful, -1 otherwise.\

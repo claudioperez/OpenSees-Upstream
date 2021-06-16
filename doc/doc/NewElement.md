@@ -1,15 +1,45 @@
-::: {.center}
-**Introducing a New Element into OpenSees**
+::: center
 
-**Version 1.0**
+```{.cpp}
 
-**August 21, 2000**
+```{.cpp}
+Introducing a New Element into OpenSees
+```
 
-**Frank McKenna and Gregory L. Fenves**
-
-**Pacific Earthquake Engineering Research Center
+```
 
 
+
+```{.cpp}
+
+```{.cpp}
+Version 1.0
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+August 21, 2000
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+Frank McKenna and Gregory L. Fenves
+```
+
+```
+
+
+**Pacific Earthquake Engineering Research Center\
 University of California, Berkeley**
 :::
 
@@ -54,7 +84,7 @@ examples showing the reader should is referred to the OpenSees examples
 manual, which can be found at
 http://opensees.berkeley.edu/OpenSees/OpenSeesExamples.pdf.
 
-::: {.center}
+::: center
  
 :::
 
@@ -188,9 +218,7 @@ about the instance variables associated with the objects of type
 MyTruss. The interface first declares that the MyTruss class inherits
 from the Element class.
 
-```{.cpp}
-class MyTruss : public Element {
-```
+    class MyTruss : public Element {
 
 The interface then defines two constructors and a destructor. The first
 constructor is used to construct each object by the analyst. The
@@ -202,15 +230,13 @@ second is used in parallel and database programming. The destructor is
 the method called when the object is being destroyed. It is called so
 that memory associated with the object is returned to the system.
 
-```{.cpp}
-public:
-    // constructors   
-    MyTruss(int tag, int Nd1, int Nd2, UniaxialMaterial &theMat,
-		double A, double rho = 0.0); 
-    MyTruss();    
-    // destructor
-    ~MyTruss();
-```
+      public:
+        // constructors
+        MyTruss(int tag, int Nd1, int Nd2, UniaxialMaterial &theMat,
+                double A, double rho = 0.0); 
+        MyTruss();    
+        // destructor
+        ~MyTruss();
 
 After the destructor comes the public member functions, these define the
 methods that all other objects in the program will be able to invoke on

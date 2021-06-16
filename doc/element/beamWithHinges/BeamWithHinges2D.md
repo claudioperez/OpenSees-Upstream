@@ -1,110 +1,179 @@
 NEED TO ADD ADD_INERTIA_LOAD TO INTERFACE .. SEE EARTHQUAKE_PATTERN
 CLASS.
+#include $<\tilde{ }$/element/BeamWithHinges2D.h$>$
 
-\#include $<\tilde{ }$/element/BeamWithHinges2D.h$>$\
 
-class BeamWithHinges2D: public DomainComponent\
+class BeamWithHinges2D: public DomainComponent
 
-TaggedObject\
-MovableObject\
+
+TaggedObject
+
+MovableObject
+
 DomainComponent\
-Element\
+Element
 
-\
 BeamWithHinges2D is a beam-column element which uses the force based
 formulation for its state determination. This element has material
 non-linear hinges at both ends and exhibits linear elastic behavior
 through its interior region, including linear elastic shear effects.
+### Constructors
 
-// Constructors\
 
-\
 
-\
-// Destructor\
+```{.cpp}
+BeamWithHinges2D ();
+```
 
-\
-// Public Methods dealing with Nodes and dof\
+### Destructor
 
-\
 
-\
-// Public Methods dealing with State\
+```{.cpp}
+  $\tilde{}$BeamWithHinges2D ();
+```
 
-\
+### Public Methods dealing with Nodes and dof
 
-\
-// Public Methods for obtaining Linearized Stiffness, Mass and Damping
+
+```{.cpp}
+int getNumExternalNodes(void) const;
+```
+
+
+
+```{.cpp}
+const ID &getExternalNodes(void);
+```
+
+
+
+```{.cpp}
+int getNumDOF(void);
+```
+
+### Public Methods dealing with State
+
+
+
+### Public Methods for obtaining Linearized Stiffness, Mass and Damping
 Matrices\
 
-\
+```{.cpp}
+const Matrix &getTangentStiff(void);
+```
 
-\
 
-// Public Methods for obtaining Resisting Forces\
 
-\
+```{.cpp}
+const Matrix &getSecantStiff(void);
+```
 
-\
 
-\
-Constructs a BeamWithHinges2D object with tag *tag*, unique among all
+
+```{.cpp}
+const Matrix &getDamp(void);
+```
+
+
+
+```{.cpp}
+const Matrix &getMass(void);
+```
+
+### Public Methods for obtaining Resisting Forces
+
+
+```{.cpp}
+void zeroLoad(void);
+```
+
+
+
+```{.cpp}
+const Vector &getResistingForce(void);
+```
+
+
+
+```{.cpp}
+const Vector &getResistingForceIncInertia(void);
+```
+
+
+Constructs a BeamWithHinges2D object with tag `tag`, unique among all
 elements in the domain. The end nodes of the element are set to be those
-with tags *nodeI* and *nodeJ*. The elastic properties of the interior
+with tags `nodeI`{.cpp} and *nodeJ*. The elastic properties of the interior
 beam region are set to be *E*, the modulus of elasticity; *I*, the
 second moment of area of the beam cross-section; *A*, the beam
 cross-sectional area; *G*, the shear modulus; and *alpha*, the
 cross-section shape factor for elastic shear effects. Element hinges are
-created by obtaining copies of *sectionI* and *sectionJ*. The hinge
+created by obtaining copies of `sectionI`{.cpp} and *sectionJ*. The hinge
 lengths are specified as ratios of the total element length, *ratioI*
 and *ratioJ*. The element distributed load (reference value) is set to
 be *distrLoad*, and the element mass density per unit length is
 *massDens*.
-
-Constructs a BeamWithHinges2D object with tag *tag*, unique among all
+Constructs a BeamWithHinges2D object with tag `tag`, unique among all
 elements in the domain. The end nodes of the element are set to be those
-with tags *nodeI* and *nodeJ*. The elastic properties of the interior
+with tags `nodeI`{.cpp} and *nodeJ*. The elastic properties of the interior
 beam region are set to be *E*, the modulus of elasticity; *I*, the
 second moment of area of the beam cross-section; *A*, the beam
 cross-sectional area; *G*, the shear modulus; and *alpha*, the
 cross-section shape factor for elastic shear effects. Element hinges are
-created by obtaining copies of *sectionI* and *sectionJ*. The hinge
+created by obtaining copies of `sectionI`{.cpp} and *sectionJ*. The hinge
 lengths are specified as ratios of the total element length, *ratioI*
-and *ratioJ*. The element mass density per unit length is *massDens*.
+and *ratioJ*. The element mass density per unit length is *massDens*.\
+
+```{.cpp}
+BeamWithHinges2D ();
+```
+
 
 Constructs a blank BeamWithHinges2D object.
 
-\
 Invokes the section destructors.
 
-\
-Returns 2, the number of external nodes for this element.
+```{.cpp}
+int getNumExternalNodes(void) const;
+```
+
+
+Returns 2, the number of external nodes for this element.\
+
+```{.cpp}
+const ID &getExternalNodes(void);
+```
+
 
 Returns an ID containing the tags of the two external nodes for this
-element.
+element.\
 
-Returns 6, the number of degrees of freedom for this element.
+```{.cpp}
+int getNumDOF(void);
+```
+
+
+Returns 6, the number of degrees of freedom for this element.\
 
 ```{.cpp}
 int commitState(void);
 ```
 
-Invokes `commitState()` on each section and returns the sum of the
-result of these invocations.
+Invokes `commitState()`{.cpp} on each section and returns the sum of the
+result of these invocations.\
 
 ```{.cpp}
 int revertToLastCommit(void);
 ```
 
-Invokes `revertToLastCommit()` on each section and returns the sum of
-the result of these invocations.
+Invokes `revertToLastCommit()`{.cpp} on each section and returns the sum of
+the result of these invocations.\
 
 ```{.cpp}
 int revertToStart(void);
 ```
 
-Invokes `revertToStart()` on each section and returns the sum of the
-result of these invocations.
+Invokes `revertToStart()`{.cpp} on each section and returns the sum of the
+result of these invocations.\
 
 ```{.cpp}
 const Matrix &getTangentStiff(void);
@@ -120,7 +189,11 @@ $$\label{eq:fele}
 
 The flexibility of the beam interior is obtained in closed form,
 
-$$\mathbf{f}_{mid} = \int_{l_I}^{L-l_J}{\bint^T \fsec_{mid} \bint \: dx}$$
+
+$$
+$\mathbf{f}_{mid} = \int_{l_I}^{L-l_J}{\bint^T \fsec_{mid} \bint \: dx}$
+$$
+
 
 where $\bint$ is the force interpolation matrix,
 
@@ -145,12 +218,16 @@ $$\fsec_{mid} = \left[
 The hinge flexibilities, $\mathbf{f}_I$ and $\mathbf{f}_J$, are obtained
 by the midpoint integration rule,
 
-$${\mathbf{f}}_i = \bint(x_i)^T \fsec_i \bint(x_i) * l_i, \:\: i=I,J$$
+
+$$
+${\mathbf{f}}_i = \bint(x_i)^T \fsec_i \bint(x_i) * l_i, \:\: i=I,J$
+$$
+
 
 where $x_i$ is the midpoint of hinge $i$, measured along the length of
 the beam, and is the point at which the force interpolation matrix,
 $\bint$ is evaluated. The flexiblity, $\fsec_i$, is obtained from the
-constitutive relation for section $i$.
+constitutive relation for section $i$.\
 The element stiffness is then obtained by inversion of the element
 flexibility, given by Equation
 [\[eq:fele\]](#eq:fele){reference-type="ref" reference="eq:fele"}.
@@ -170,13 +247,13 @@ const Matrix &getSecantStiff(void);
 ```
 
 To return the elements secant stiffness matrix. THIS SECANT MAY BE
-REMOVED.
+REMOVED.\
 
 ```{.cpp}
 const Matrix &getDamp(void);
 ```
 
-To return the damping matrix.
+To return the damping matrix.\
 
 ```{.cpp}
 const Matrix &getMass(void);
@@ -204,7 +281,7 @@ void zeroLoad(void);
 ```
 
 This is a method invoked to zero the element load contributions to the
-residual.
+residual.\
 
 ```{.cpp}
 const Vector &getResistingForce(void);
@@ -215,7 +292,11 @@ vector is obtained as the product of the basic element stiffness,
 $\kbas$, given by Equation [\[eq:kele\]](#eq:kele){reference-type="ref"
 reference="eq:kele"}, and the basic element deformations, $\vbas$.
 
-$$\qbas = \kbas \vbas$$
+
+$$
+$\qbas = \kbas \vbas$
+$$
+
 
 The basic element force vector is then transformed from the corotating
 frame to the global frame of reference. The transformed force vector is
@@ -231,10 +312,14 @@ const Vector &getResistingForceIncInertia(void);
 Returns the element resisting force vector, $\tilde{\qele}$ with inertia
 forces included,
 
-$$\tilde{\qele} = \qele - \mele \ddot{\mathbf u}$$
+
+$$
+$\tilde{\qele} = \qele - \mele \ddot{\mathbf u}$
+$$
+
 
 where $\qele$ and $\mele$ are obtained from Equations
 [\[eq:qele\]](#eq:qele){reference-type="ref" reference="eq:qele"} and
 [\[eq:mele\]](#eq:mele){reference-type="ref" reference="eq:mele"},
 respectively, and $\ddot{\mathbf u}$ is the vector of trial nodal
-accelerations for the element.
+accelerations for the element.\

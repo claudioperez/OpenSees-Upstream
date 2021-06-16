@@ -1,4 +1,4 @@
- \#include $<\tilde{ }$/graph/graph/Vertex.h$>$  class Vertex: public
+ #include $<\tilde{ }$/graph/graph/Vertex.h$>$  class Vertex: public
 TaggedObject  TaggedObject   Vertex is the abstraction of a vertex in a
 graph. It has a color, weight and a temporary integer value associated
 with it. Also associated with it is an integer reference, which can be

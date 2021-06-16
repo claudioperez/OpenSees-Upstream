@@ -1,14 +1,20 @@
 \
-\#include $<\tilde{ }$/analysis/integrator/Newmark.h$>$\
+#include $<\tilde{ }$/analysis/integrator/Newmark.h$>$
 
-class Newmark: public TransientIntegrator\
 
-MovableObject\
+
+```{.cpp}
+class Newmark:
+```
+ public TransientIntegrator
+
+
+MovableObject
+
 Integrator\
 IncrementalIntegrator\
-TransientIntegrator\
+TransientIntegrator
 
-\
 Newmark is a subclass of TransientIntegrator which implements the
 Newmark method. In the Newmark method, to determine the velocities,
 accelerations and displacements at time $t + \Delta t$, the equilibrium
@@ -66,55 +72,87 @@ t}^{(i-1)}\right)
 t}^{(i-1)}\right)$$
 
 
-// Constructors\
+### Constructors
 
-\
 
-\
-// Destructor\
 
-\
-// Public Methods\
+### Destructor
 
-\
 
-\
+```{.cpp}
+virtual  $\tilde{}$Newmark();
+```
 
-\
-// Public Methods for Output\
+### Public Methods
 
-\
 
-\
+```{.cpp}
+int formEleTangent(FE_Element \*theEle);
+```
+
+
+
+```{.cpp}
+int formNodTangent(DOF_Group \*theDof);
+```
+
+
+
+```{.cpp}
+int domainChanged(void);
+```
+
+
+
+```{.cpp}
+int newStep(double deltaT);
+```
+
+
+
+```{.cpp}
+int update(const Vector &$\Delta U$);
+```
+
+### Public Methods for Output
+
+
+
+```{.cpp}
+int Print(OPS_Stream &s, int flag = 0);
+```
+
+
 
 Sets $\gamma$ to $1/2$ and $\beta$ to $1/4$. Sets a flag indicating
 whether the incremental solution is done in terms of displacement,
-$\Delta \U$, if *dispFlag* is *true*, or acceleration,
-$\Delta \ddot \U$, if *dispFlag* is *false*. In addition, a flag is set
+$\Delta \U$, if `dispFlag`{.cpp} is *true*, or acceleration,
+$\Delta \ddot \U$, if `dispFlag`{.cpp} is *false*. In addition, a flag is set
 indicating that Rayleigh damping will not be used.
-
 Sets $\gamma$ to *gamma* and $\beta$ to *beta*. Sets a flag indicating
 whether the incremental solution is done in terms of displacement or
-acceleration to *dispFlag* and a flag indicating that Rayleigh damping
+acceleration to `dispFlag`{.cpp} and a flag indicating that Rayleigh damping
 will not be used.
-
 This constructor is invoked if Rayleigh damping is to be used, i.e.
 $\D = \alpha_M M + \beta_K K$. Sets $\gamma$ to *gamma*, $\beta$ to
-*beta*, $\alpha_M$ to *alphaM* and $\beta_K$ to *betaK*. Sets a flag
+*beta*, $\alpha_M$ to `alphaM`{.cpp} and $\beta_K$ to *betaK*. Sets a flag
 indicating whether the incremental solution is done in terms of
-displacement or acceleration to *dispFlag* and a flag indicating that
+displacement or acceleration to `dispFlag`{.cpp} and a flag indicating that
 Rayleigh damping will be used.
 
-\
 Invokes the destructor on the Vector objects created.
 
-\
+```{.cpp}
+int formEleTangent(FE_Element \*theEle);
+```
+
+
 This tangent for each FE_Element is defined to be $\K_e = c1 \K + c2
 \D + c3 \M$, where c1,c2 and c3 were determined in the last invocation
-of the `newStep()` method. The method returns $0$ after performing the
+of the `newStep()`{.cpp} method. The method returns $0$ after performing the
 following operations:
 
-::: {.tabbing}
+::: tabbing
 while ̄ while w̄hile ̄ if (RayleighDamping == false) {\
 theEle-$>$zeroTang()\
 theEle-$>$addKtoTang(c1)\
@@ -134,7 +172,7 @@ int formNodTangent(DOF_Group \*theDof);
 
 The method returns $0$ after performing the following operations:
 
-::: {.tabbing}
+::: tabbing
 while ̄ while w̄hile ̄ theDof-$>$zeroUnbalance()\
 if (RayleighDamping == false)\
 theDof-$>$addMtoTang(c3)\
@@ -155,7 +193,7 @@ $t + \Delta t$. The response quantities at time $t + \Delta t$ are then
 set by iterating over the DOF_Group objects in the model and obtaining
 their committed values. Returns $0$ if successful, otherwise a warning
 message and a negative number is returned: $-1$ if no memory was
-available for constructing the Vectors.
+available for constructing the Vectors.\
 
 ```{.cpp}
 int newStep(double $\Delta t$);
@@ -166,7 +204,7 @@ The following are performed when this method is invoked:
 1.  First sets the values of the three constants *c1*, *c2* and *c3*
     depending on the flag indicating whether incremental displacements
     or accelerations are being solved for at each iteration. If
-    *dispFlag* was *true*, *c1* is set to $1.0$, *c2* to
+    `dispFlag`{.cpp} was *true*, *c1* is set to $1.0$, *c2* to
     $\gamma / (\beta \Delta t)$ and *c3* to $1/ (\beta \Delta t^2)$. If
     the flag is *false* *c1* is set to $\beta \Delta t^2$, *c2* to
     $\gamma \Delta t$ and *c3* to $1.0$.
@@ -174,7 +212,7 @@ The following are performed when this method is invoked:
 2.  Then the Vectors for response quantities at time $t$ are set equal
     to those at time $t + \Delta t$.
 
-    ::: {.tabbing}
+    ::: tabbing
     while w̄hile w̄hile w̄hile ̄ $\U_t = \U_{t + \Delta t}$\
     $\Ud_t = \Ud_{t + \Delta t}$\
     $\Udd_t = \Udd_{t + \Delta t}$
@@ -184,7 +222,7 @@ The following are performed when this method is invoked:
     \Delta t$ are set using the difference approximations if *dispFlag*
     was *true*. (displacement and velocity if *false*).
 
-    ::: {.tabbing}
+    ::: tabbing
     while w̄hile w̄hile w̄hile ̄ if (displIncr == true) {\
     $\dot \U_{t + \Delta t} = 
      \left( 1 - \frac{\gamma}{\beta}\right) \dot \U_t + \Delta t \left(1
@@ -200,10 +238,10 @@ The following are performed when this method is invoked:
     :::
 
 4.  The response quantities at the DOF_Group objects are updated with
-    the new approximations by invoking `setResponse()` on the
+    the new approximations by invoking `setResponse()`{.cpp} on the
     AnalysisModel with new quantities for time $t + \Delta t$.
 
-    ::: {.tabbing}
+    ::: tabbing
     while w̄hile w̄hile w̄hile ̄
     theModel-$>$setResponse$(\U_{t + \Delta t}, \Ud_{t+\Delta t},
     \Udd_{t+\Delta t})$
@@ -213,12 +251,12 @@ The following are performed when this method is invoked:
     $\Delta t$, and `applyLoad(time, 1.0)`{.cpp} is invoked on the
     AnalysisModel.
 
-6.  Finally `updateDomain()` is invoked on the AnalysisModel.
+6.  Finally `updateDomain()`{.cpp} is invoked on the AnalysisModel.
 
 The method returns $0$ if successful, otherwise a negative number is
-returned: $-1$ if $\gamma$ or $\beta$ are $0$, $-2$ if *dispFlag* was
-true and $\Delta t$ is $0$, and $-3$ if `domainChanged()` failed or has
-not been called.
+returned: $-1$ if $\gamma$ or $\beta$ are $0$, $-2$ if `dispFlag`{.cpp} was
+true and $\Delta t$ is $0$, and $-3$ if `domainChanged()`{.cpp} failed or has
+not been called.\
 
 ```{.cpp}
 int update(const Vector &$\Delta U$);
@@ -228,11 +266,11 @@ Invoked this causes the object to increment the DOF_Group response
 quantities at time $t + \Delta t$. The displacement Vector is
 incremented by $c1 * \Delta U$, the velocity Vector by $c2 * \Delta U$,
 and the acceleration Vector by $c3 * \Delta U$. The response at the
-DOF_Group objects are then updated by invoking `setResponse()` on the
+DOF_Group objects are then updated by invoking `setResponse()`{.cpp} on the
 AnalysisModel with quantities at time $t +
-\Delta t$. Finally `updateDomain()` is invoked on the AnalysisModel.
+\Delta t$. Finally `updateDomain()`{.cpp} is invoked on the AnalysisModel.
 
-::: {.tabbing}
+::: tabbing
 while w̄hile w̄hile w̄hile ̄ if (displIncr == true) {\
 $\U_{t + \Delta t} += \Delta \U$\
 $\dot \U_{t + \Delta t} += \frac{\gamma}{\beta \Delta t} \Delta \U$\
@@ -251,20 +289,28 @@ theModel-$>$setUpdateDomain()
 Returns $0$ if successful. A warning message is printed and a negative
 number returned if an error occurs: $-1$ if no associated AnalysisModel,
 $-2$ if the Vector objects have not been created, $-3$ if the Vector
-objects and $\delta U$ are of different sizes.
-*int sendSelf(int commitTag, Channel &theChannel);* \
+objects and $\delta U$ are of different sizes.\
+
+```{.cpp}
+int sendSelf(int commitTag, Channel &theChannel);
+```
+
 Places in a Vector of size 6 the values of $\beta$, $\gamma$,
 *dispFlag*, RayleighDampingFlag, $\alpha_M$ and $\beta_K$. Then invokes
-`sendVector()` on the Channel with this Vector. Returns $0$ if
+*sendVector()* on the Channel with this Vector. Returns $0$ if
 successful, a warning message is printed and a $-1$ is returned if
-*theChannel* fails to send the Vector.
+*theChannel* fails to send the Vector.\
 *int recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker
 &theBroker);* \
 Receives in a Vector of size 6 the values of $\beta$, $\gamma$,
 *dispFlag*, RayleighDampingFlag, $\alpha_M$ and $\beta_K$. Returns $0$
 if successful. A warning message is printed, $\gamma$ is set to 0.5,
-$\beta$ to 0.25 and the Rayleigh damping flag set to *false*, and a $-1$
-is returned, if *theChannel* fails to receive the Vector.
+
+$$
+\beta$ to 0.25 and the Rayleigh damping flag set to *false*, and a $-1
+$$
+
+is returned, if `theChannel`{.cpp} fails to receive the Vector.\
 
 ```{.cpp}
 int Print(OPS_Stream &s, int flag = 0);

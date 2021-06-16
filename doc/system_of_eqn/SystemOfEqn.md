@@ -1,25 +1,19 @@
+\
+#include $<\tilde{ }$/system_of_eqn/SystemOfEqn.h$>$
 
 
 
-\#include $<\tilde{ }$/system_of_eqn/SystemOfEqn.h$>$
-
-
-
-class SystemOfEqn: public MovableObject
-
+```{.cpp}
+class SystemOfEqn:
+```
+ public MovableObject
 
 
 MovableObject
 
 
-
-LinearSOE
-
-
+LinearSOE\
 EigenSOE
-
-
-
 SystemOfEqn is an abstract class. A SystemOfEqn object is responsible
 for storing the system of equations it represents. A Solver object,
 which is associated with the SystemOfEqn object, is responsible for
@@ -31,30 +25,19 @@ equations.
 
 
 
+```{.cpp}
+SystemOfEqn(int classTag);
+```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-The integer *classTag* is provided to the constructor for the
+The integer `classTag`{.cpp} is provided to the constructor for the
 MovableObject.
-
-
-
 
 Does nothing. Declared to allow the subclass destructor to be called.
 
-
+```{.cpp}
+virtual int solve(void) =0;
+```
 
 
 Invoked to cause the system of equation object to solve itself. To

@@ -3,17 +3,22 @@ THE IMPLEMENTATION WILL HAVE TO CHANGE FOR DOMAIN-DECOMPOSITION ANALYSIS
 PRODUCTS OF VECTORS OBTAINED STRAIGHT FROM SYSTEM OF EQUATION .. MAYBE
 MODIFY LinearSOE TO DO THE DOT PRODUCT .. WILL WORK IN DD IF ALL USE ONE
 SOE .. WHAT PetSC DOES, TALK WITH P. DEMMEL ABOUT WHAT HE WILL PROVIDE.
+#include $<\tilde{ }$/analysis/integrator/ArcLength.h$>$
 
-\#include $<\tilde{ }$/analysis/integrator/ArcLength.h$>$\
 
-class ArcLength: public StaticIntegrator\
 
-MovableObject\
+```{.cpp}
+class ArcLength:
+```
+ public StaticIntegrator
+
+
+MovableObject
+
 Integrator\
 IncrementalIntegrator\
-StaticIntegrator\
+StaticIntegrator
 
-\
 ArcLength is a subclass of StaticIntegrator, it is used to when
 performing a static analysis on the FE_Model using an arc length method.
 In the arc length method implemented by this class, the following
@@ -21,7 +26,11 @@ constraint equation is added to
 equation [\[staticFormTaylor\]](#staticFormTaylor){reference-type="ref"
 reference="staticFormTaylor"} of the StaticIntegrator class:
 
-$$\Delta \U_n^T \Delta \U_n  + \alpha^2 \Delta \lambda_n^2  = \Delta s^2$$
+
+$$
+$\Delta \U_n^T \Delta \U_n  + \alpha^2 \Delta \lambda_n^2  = \Delta s^2$
+$$
+
 
 where
 
@@ -45,9 +54,17 @@ $$\K_n^{(i)} \Delta \U_n^{(i)} = \Delta \lambda_n^{(i)} \P +
 
 The idea of ?? is to separate this into two equations:
 
-$$\K_n^{(i)} \Delta \dot{\bf U}_n^{(i)} = \P$$
 
-$$\K_n^{(i)} \Delta \overline{\bf U}_n^{(i)} = \R_n^{(i)}$$
+$$
+$\K_n^{(i)} \Delta \dot{\bf U}_n^{(i)} = \P$
+$$
+
+
+
+$$
+$\K_n^{(i)} \Delta \overline{\bf U}_n^{(i)} = \R_n^{(i)}$
+$$
+
 
 where now
 
@@ -109,43 +126,71 @@ We now rewrite the constraint equation based on two conditions:
     this step.
 
 
-// Constructors\
+### Constructors
 
-\
-// Destructor\
 
-\
-// Public Methods\
+```{.cpp}
+ArcLength(double arc, double $\alpha$ = 1.0);
+```
 
-\
+### Destructor
 
-\
-// Public Methods for Output\
 
-\
+```{.cpp}
+$\tilde{ }$ArcLength();
+```
 
-\
-
-\
-The integer INTEGRATOR_TAGS_ArcLength (defined in $<$classTags.h$>$) is
-passed to the StaticIntegrator classes constructor. The value of
-$\alpha$ is set to *alpha* and $\Delta s$ to *dS*.
-
-\
-Invokes the destructor on the Vector objects created in
-`domainChanged()`.
+### Public Methods
 
 
 ```{.cpp}
 int newStep(void);
 ```
 
-`newStep()` performs the first iteration, that is it solves for
+
+
+```{.cpp}
+int update(const Vector &$\Delta U$);
+```
+
+
+
+```{.cpp}
+int domainChanged(void);
+```
+
+### Public Methods for Output
+
+
+
+```{.cpp}
+int Print(OPS_Stream &s, int flag = 0);
+```
+
+
+
+
+```{.cpp}
+ArcLength(double dS, double alpha = 1.0);
+```
+
+The integer INTEGRATOR_TAGS_ArcLength (defined in $<$classTags.h$>$) is
+passed to the StaticIntegrator classes constructor. The value of
+$\alpha$ is set to *alpha* and $\Delta s$ to *dS*.
+
+Invokes the destructor on the Vector objects created in
+*domainChanged()*.
+
+```{.cpp}
+int newStep(void);
+```
+
+*newStep()* performs the first iteration, that is it solves for
 $\lambda_n^{(1)}$ and $\Delta \U_n^{(1)}$ and updates the model with
 $\Delta \U_n^{(1)}$ and increments the load factor by $\lambda_n^{(1)}$.
 To do this it must set the rhs of the LinearSOE to $\P$, invoke
-`formTangent()` on itself and solve the LinearSOE to get
-$\Delta \dot{\bf U}_n^{(1)}$.
+*formTangent()* on itself and solve the LinearSOE to get
+$\Delta \dot{\bf U}_n^{(1)}$.\
 
 ```{.cpp}
 int update(const Vector &$\Delta U$);
@@ -160,26 +205,29 @@ with $\Delta \U_n^{(i)}$ and increments the load factor by $\Delta
 \lambda_n^{(i)}$. Sets the vector $x$ in the LinearSOE object to be
 equal to $\Delta \U_n^{(i)}$ before returning (this is for the
 convergence test stuff.
-
 The object creates the Vector objects it needs. Vectors are created to
 stor $\P$, $\Delta \overline{\bf U}_n^{(i)}$,
 $\Delta \dot{\bf U}_n^{(i)}$, $\Delta
 \overline{\bf U}_n^{(i)}$, $dU^{(i)}$. To form $\P$, the current load
 factor is obtained from the model, it is incremented by $1.0$,
-`formUnbalance()` is invoked on the object, and the $b$ vector is
+*formUnbalance()* is invoked on the object, and the $b$ vector is
 obtained from the linearSOE. This is $\P$, the load factor on the model
-is then decremented by $1.0$.
-*int sendSelf(int commitTag, Channel &theChannel);* \
+is then decremented by $1.0$.\
+
+```{.cpp}
+int sendSelf(int commitTag, Channel &theChannel);
+```
+
 Places the values of $\Delta s$ and $\alpha$ in a vector of size $2$ and
-invokes `sendVector()` on *theChannel*. Returns $0$ if successful, a
-warning message is printed and a $-1$ is returned if *theChannel* fails
-to send the Vector.
+invokes `sendVector()`{.cpp} on *theChannel*. Returns $0$ if successful, a
+warning message is printed and a $-1$ is returned if `theChannel`{.cpp} fails
+to send the Vector.\
 *int recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker
 &theBroker);* \
 Receives in a Vector of size 2 the values of $\Delta s$ and $\alpha$.
 Returns $0$ if successful, a warning message is printed, $\delta
-\lambda$ is set to $0$, and a $-1$ is returned if *theChannel* fails to
-receive the Vector.
+\lambda$ is set to $0$, and a $-1$ is returned if `theChannel`{.cpp} fails to
+receive the Vector.\
 
 ```{.cpp}
 int Print(OPS_Stream &s, int flag = 0);

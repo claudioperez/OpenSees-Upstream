@@ -1,3 +1,11 @@
-::: {.center}
-**ZeroLength**
+::: center
+
+```{.cpp}
+
+```{.cpp}
+ZeroLength
+```
+
+```
+
 :::

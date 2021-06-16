@@ -1,13 +1,53 @@
-::: {.center}
-**The OpenSees Command Language Manual**
+::: center
 
-**Version 1.1 - Preliminary Draft**
+```{.cpp}
 
-**December 15, 2000**
+```{.cpp}
+The OpenSees Command Language Manual
+```
 
-**Frank McKenna and Gregory L. Fenves**
+```
 
-**PEER, University of California at Berkeley**
+
+
+```{.cpp}
+
+```{.cpp}
+Version 1.1 - Preliminary Draft
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+December 15, 2000
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+Frank McKenna and Gregory L. Fenves
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+PEER, University of California at Berkeley
+```
+
+```
+
 :::
 
 # Introduction
@@ -31,7 +71,7 @@ results. In each finite element analysis, an analyst constructs 4 main
 types of objects, as shown in
 figure [\[main\]](#main){reference-type="ref" reference="main"}:
 
-::: {.center}
+::: center
  
 :::
 
@@ -413,7 +453,7 @@ object. Values for code are given in the figure 2. The argument secTag
 is used to uniquely identify this Section object among Section objects
 in the BasicBuilder object.
 
-::: {.center}
+::: center
   ---- ----------------------------------------------------
      P Axial force-deformation
     Mz Moment-curvature about section local z-axis
@@ -514,7 +554,7 @@ yVertJ, zVertJ, yVertK, zVertK, yVertL, and zVertL are the coordinates y
 and z of each of the four vertices specified in sequence
 (counter-clockwise).
 
-::: {.center}
+::: center
  
 :::
 
@@ -532,7 +572,7 @@ ending angle (startAng and endAng), according to
 figure [\[circPatch\]](#circPatch){reference-type="ref"
 reference="circPatch"}.
 
-::: {.center}
+::: center
  
 :::
 
@@ -559,7 +599,7 @@ the reinforcing layer, as represented in
 figure [\[straightLayer\]](#straightLayer){reference-type="ref"
 reference="straightLayer"}.
 
-::: {.center}
+::: center
  
 :::
 
@@ -576,7 +616,7 @@ endAng), as shown in
 figure [\[circLayer\]](#circLayer){reference-type="ref"
 reference="circLayer"}.
 
-::: {.center}
+::: center
  
 :::
 
@@ -637,7 +677,7 @@ rigid joint offset arguments depend on the dimension of the current
 model. The argument transfTag is used to uniquely identify this
 CrdTransf object among CrdTransf objects in the BasicBuilder object.
 
-::: {.center}
+::: center
  
 :::
 
@@ -1466,7 +1506,7 @@ specifying the -piv option.
        system UmfPack 
 
 To construct a general sparse system of equations object which will be
-factored and solved during the analysis using the UMFPACK solver.
+factored and solved during the analysis using the UMFPACK solver.\
 
 #### The SparseSPD SOE
 

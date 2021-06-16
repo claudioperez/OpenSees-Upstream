@@ -1,15 +1,17 @@
 UNDER CONSTRUCTION.
+#include $<\tilde{ }$/material/Steel01.h$>$
 
-\#include $<\tilde{ }$/material/Steel01.h$>$\
 
-class Steel01 : public MaterialModel\
+class Steel01 : public MaterialModel
 
-TaggedObject\
-MovableObject\
+
+TaggedObject
+
+MovableObject
+
 MaterialModel\
-UniaxialMaterial\
+UniaxialMaterial
 
-\
 Steel01 provides the abstraction of a bilinear steel model with
 isotropic hardening. The model contains a yield strength of fy, an
 initial elastic tangent of E0, and a hardening ratio of b. The optional
@@ -21,33 +23,99 @@ The argument matTag is used to uniquely identify the material object
 among material objects in the BasicBuilder object.
 
 
-// Constructor\
+### Constructor
 
-\
-// Destructor\
 
-\
-// Public Methods\
+### Destructor
 
-\
 
-\
+```{.cpp}
+$\tilde{ }$Steel01();
+```
 
-\
+### Public Methods
 
-\
-// Public Methods for Output\
 
-\
+```{.cpp}
+int setTrialStrain(double strain);
+```
 
-// Private Methods\
 
-\
 
-\
+```{.cpp}
+double getStress(void);
+```
 
-\
+
+
+```{.cpp}
+double getTangent(void);
+```
+
+
+
+```{.cpp}
+int commitState(void);
+```
+
+
+
+```{.cpp}
+int revertToLastCommit(void);
+```
+
+
+
+```{.cpp}
+int revertToStart(void);
+```
+
+
+
+```{.cpp}
+ElasticMaterial \*getCopy(void);
+```
+
+### Public Methods for Output
+
+
+```{.cpp}
+int sendSelf(int commitTag, Channel &theChannel);
+```
+
+
+
+
+```{.cpp}
+void Print(OPS_Stream &s, int flag =0);
+```
+
+
+### Private Methods
+
+
+```{.cpp}
+void determineTrialState (double dStrain);
+```
+
+
+
+```{.cpp}
+void detectLoadReversal (double dStrain);
+```
+
+
+
+```{.cpp}
+void setHistoryVariables ();
+```
+
+
+
 
 Does nothing.
 
-\
+```{.cpp}
+int setTrialStrain(double strain);
+```
+

@@ -1,15 +1,45 @@
-::: {.center}
-**The OpenSees Command Language Manual**
+::: center
 
-**Version 1.2**
+```{.cpp}
 
-**August 20, 2001**
+```{.cpp}
+The OpenSees Command Language Manual
+```
 
-**Frank McKenna and Gregory L. Fenves**
-
-**Pacific Earthquake Engineering Research Center
+```
 
 
+
+```{.cpp}
+
+```{.cpp}
+Version 1.2
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+August 20, 2001
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+Frank McKenna and Gregory L. Fenves
+```
+
+```
+
+
+**Pacific Earthquake Engineering Research Center\
 University of California, Berkeley**
 :::
 
@@ -35,7 +65,7 @@ results. In each finite element analysis, an analyst constructs 4 main
 types of objects, as shown in
 figure [\[main\]](#main){reference-type="ref" reference="main"}:
 
-::: {.center}
+::: center
  
 :::
 
@@ -529,7 +559,7 @@ response quantity. The argument `code` indicates the force-deformation
 quantity to be modeled by this section object. Values for `code` are
 given in Figure 2.
 
-::: {.center}
+::: center
   ---- ----------------------------------------------------
      P Axial force-deformation
     Mz Moment-curvature about section local z-axis
@@ -610,7 +640,7 @@ IJ and JK directions, respectively. The last arguments `yVertI`,
 are the coordinates y and z of each of the four vertices specified in
 sequence (counter-clockwise).
 
-::: {.center}
+::: center
  
 :::
 
@@ -627,7 +657,7 @@ radius (`intRad` and `extRad`), and the starting and ending angles
 figure [\[circPatch\]](#circPatch){reference-type="ref"
 reference="circPatch"}.
 
-::: {.center}
+::: center
  
 :::
 
@@ -653,7 +683,7 @@ starting and ending points of the reinforcing layer, as represented in
 figure [\[straightLayer\]](#straightLayer){reference-type="ref"
 reference="straightLayer"}.
 
-::: {.center}
+::: center
  
 :::
 
@@ -669,7 +699,7 @@ figure [\[circLayer\]](#circLayer){reference-type="ref"
 reference="circLayer"}. If the starting and ending angles are not
 specified, a full circle is assumed with the first bar at zero degrees.
 
-::: {.center}
+::: center
  
 :::
 
@@ -771,7 +801,7 @@ above, as are the joint offset parameters.
 NOTE: The Corotational transformation is only available with the Win32
 version of OpenSees.
 
-::: {.center}
+::: center
  
 :::
 
@@ -1071,7 +1101,7 @@ in
 Figure [\[bricknodenumbering\]](#bricknodenumbering){reference-type="ref"
 reference="bricknodenumbering"}.
 
-::: {.center}
+::: center
 :::
 
 ### The Bbar Brick Element
@@ -1116,7 +1146,7 @@ The "block2D" command syntax is as follows :
         <9>  <x9>  <y9>  <z9>
     }
 
-::: {.center}
+::: center
 :::
 
 In the above, $nx$ is the number of elements in the local $x$-direction
@@ -1125,7 +1155,7 @@ $y$-direction of the block. The number $e1$ is the starting element
 number for generation, and the number $n1$ is the starting node number.
 These are very often both equal to one(1), but that is not a
 requirement. The text string *element* defines which qudrilateral
-element is being used. The text string *elementArgs* is a list of data
+element is being used. The text string `elementArgs`{.cpp} is a list of data
 parameters for said element. This list may include, but is not limited
 to, a matTag number.
 
@@ -1165,7 +1195,7 @@ $z$-direction of the block. The number $e1$ is the starting element
 number for generation, and the number $n1$ is the starting node number.
 These are very often both equal to one(1), but that is not a
 requirement. The text string *element* defines which brick element is
-being used. The text string *elementArgs* is a list of data parameters
+being used. The text string `elementArgs`{.cpp} is a list of data parameters
 for said element. This list may include, but is not limited to, a matTag
 number.
 
@@ -1846,7 +1876,7 @@ specifying the -piv option.
        system UmfPack 
 
 To construct a general sparse system of equations object which will be
-factored and solved during the analysis using the UMFPACK solver.
+factored and solved during the analysis using the UMFPACK solver.\
 
 #### The SparseSPD SOE
 

@@ -1,59 +1,29 @@
-::: {#materialmodel}
-## **MaterialModel**
-:::
+## \*\*MaterialModel\*\*
 
-::: {#uniaxialmaterial}
-### **UniaxialMaterial**
-:::
+##\# \*\*UniaxialMaterial\*\*
 
-::: {#elasticmaterial}
-### ElasticMaterial
-:::
+##\# ElasticMaterial
 
-::: {#elasticppmaterial}
-### ElasticPPMaterial
-:::
+##\# ElasticPPMaterial
 
-::: {#parallelmaterial}
-### ParallelMaterial
-:::
+##\# ParallelMaterial
 
-::: {#concrete01}
-### Concrete01
-:::
+##\# Concrete01
 
-::: {#steel01}
-### Steel01
-:::
+##\# Steel01
 
-::: {#ndmaterial}
-### **NDMaterial**
-:::
+##\# \*\*NDMaterial\*\*
 
-::: {#sectionforcedeformation}
-### **SectionForceDeformation**
-:::
+##\# \*\*SectionForceDeformation\*\*
 
-::: {#genericsection1d}
-### GenericSection1D
-:::
+##\# GenericSection1D
 
-::: {#genericsectionnd}
-### GenericSectionND
-:::
+##\# GenericSectionND
 
-::: {#elasticsection2d}
-### ElasticSection2D
-:::
+##\# ElasticSection2D
 
-::: {#elasticsection3d}
-### ElasticSection3D
-:::
+##\# ElasticSection3D
 
-::: {#fibersection2d}
-### FiberSection2D
-:::
+##\# FiberSection2D
 
-::: {#fibersection3d}
-### FiberSection3D
-:::
+##\# FiberSection3D

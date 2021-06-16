@@ -1,13 +1,53 @@
-::: {.center}
-**How to Introduce a FEAP Element into g3**
+::: center
 
-**Version 0.1 - Preliminary Draft**
+```{.cpp}
 
-**December 20, 1999**
+```{.cpp}
+How to Introduce a FEAP Element into g3
+```
 
-**Frank McKenna and Gregory L. Fenves**
+```
 
-**PEER, University of California at Berkeley**
+
+
+```{.cpp}
+
+```{.cpp}
+Version 0.1 - Preliminary Draft
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+December 20, 1999
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+Frank McKenna and Gregory L. Fenves
+```
+
+```
+
+
+
+```{.cpp}
+
+```{.cpp}
+PEER, University of California at Berkeley
+```
+
+```
+
 :::
 
 # Introduction
@@ -162,7 +202,7 @@ linear three bar truss example, shown in
 figure [\[example1\]](#example1){reference-type="ref"
 reference="example1"}, is given below:
 
-::: {.center}
+::: center
  
 :::
 

@@ -1,14 +1,18 @@
 \
-\#include $<\tilde{
-}$/analysis/algorithm/equiSolnAlgo/NewtonRaphson.h$>$\
+#include $<\tilde{
+}$/analysis/algorithm/equiSolnAlgo/NewtonRaphson.h$>$
 
-class NewtonRaphson: public EquiSolnAlg;\
+```{.cpp}
+class NewtonRaphson:
+```
+ public EquiSolnAlg;
 
-MovableObject\
+
+MovableObject
+
 SolutionAlgorithm\
-EquiSolnAlgo\
+EquiSolnAlgo
 
-\
 The NewtonRaphson class is an algorithmic class which obtains a solution
 to a non-linear system using the Newton-Raphson iteration scheme. The
 iteration scheme is based on a Taylor expansion of the non-linear system
@@ -28,43 +32,69 @@ must be performed to see if convergence has been achieved at each
 iteration. Each NewtonRaphson object is associated with a
 ConvergenceTest object. It is this object which determines if
 convergence has been achieved.
+### Constructors
 
-// Constructors\
+```{.cpp}
+NewtonRaphson();
+```
 
-\
+### Destructor
 
-// Destructor\
 
-\
-// Public Member Functions\
+```{.cpp}
+  $\tilde{}$NewtonRaphson();
+```
 
-\
+### Public Member Functions
 
-// Public Methods for Output\
 
-\
+```{.cpp}
+int solveCurrentStep(void);
+```
 
-\
+
+
+```{.cpp}
+void setTest(ConvergenceTest &theTest);
+```
+
+### Public Methods for Output
+
+
+
+```{.cpp}
+int Print(OPS_Stream &s, int flag =0);
+```
+
+
 
 The constructor takes as an argument the ConvergenceTest object
 *theTest*, the object which is used at the end of each iteration to
 determine if convergence has been obtained. The integer
 *EquiALGORITHM_TAGS_NewtonRaphson* (defined in $<$classTags.h$>$) is
-passed to the EquiSolnAlgo classes constructor.
+passed to the EquiSolnAlgo classes constructor.\
+
+```{.cpp}
+NewtonRaphson();
+```
+
 
 Provided for FEM_ObjectBroker to instantiate a blank object with a class
-tag of EquiALGORITHM_TAGS_NewtonRaphson is passed. `recvSelf()` must be
+tag of EquiALGORITHM_TAGS_NewtonRaphson is passed. `recvSelf()`{.cpp} must be
 invoked on this object.
 
-\
 Does nothing.
 
-\
+```{.cpp}
+int solveCurrentStep(void);
+```
+
+
 When invoked the object first sets itself as the EquiSolnAlgo object
 that the ConvergenceTest is testing and then it performs the
 Newton-Raphson iteration algorithm:
 
-::: {.tabbing}
+::: tabbing
 while ̄ while ̄ theTest-$>$start()\
 theIntegrator-$>$formUnbalance();\
 do {\
@@ -76,36 +106,36 @@ theIntegrator-$>$formUnbalance();\
 :::
 
 The method returns a 0 if successful, otherwise a negative number is
-returned; a $-1$ if error during `formTangent()`, a $-2$ if error during
-`formUnbalance()`, a $-3$ if error during `solve()`, and a $-4$ if error
-during `update()`. If an error occurs in any of the above operations the
+returned; a $-1$ if error during *formTangent()*, a $-2$ if error during
+*formUnbalance()*, a $-3$ if error during *solve()*, and a $-4$ if error
+during *update()*. If an error occurs in any of the above operations the
 method stops at that routine, none of the subsequent operations are
 invoked. A $-5$ is returned if any one of the links has not been setup.
 NOTE it is up to ConvergenceTest to ensure an infinite loop situation is
-not encountered.
+not encountered.\
 
 ```{.cpp}
 void setTest(ConvergenceTest &theTest);
 ```
 
 A method to set the ConvergenceTest object associated with the Algorithm
-to be *theTest*.
+to be *theTest*.\
 
 ```{.cpp}
 int sendSelf(int commitTag, Channel &theChannel);
 ```
 
-Creates an ID object, puts the values of the *theTest* objects class and
-database tags into this ID. It then invokes `sendVector()` on the
-Channel object *theChannel* to send the data to the remote object. It
-then invokes `sendSelf()` on *theTest*. Returns $0$ if successful, the
-channel error if not.
+Creates an ID object, puts the values of the `theTest`{.cpp} objects class and
+database tags into this ID. It then invokes `sendVector()`{.cpp} on the
+Channel object `theChannel`{.cpp} to send the data to the remote object. It
+then invokes `sendSelf()`{.cpp} on *theTest*. Returns $0$ if successful, the
+channel error if not.\
 *int recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker
 &theBroker);*\
-Creates an ID object, invokes `recvVector()` on the Channel object. Uses
+Creates an ID object, invokes `recvVector()`{.cpp} on the Channel object. Uses
 the data in the ID to create a ConvergenceTest object of appropriate
-type and sets its dbTag. It then invokes `recvSelf()` on this test
-object.
+type and sets its dbTag. It then invokes `recvSelf()`{.cpp} on this test
+object.\
 
 ```{.cpp}
 int Print(OPS_Stream &s, int flag =0);

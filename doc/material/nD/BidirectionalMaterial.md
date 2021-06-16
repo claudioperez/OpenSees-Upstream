@@ -1,87 +1,206 @@
 \
-\#include $<\tilde{ }$/material/nD/BidirectionalMaterial.h$>$\
+#include $<\tilde{ }$/material/nD/BidirectionalMaterial.h$>$
 
-class BidirectionalMaterial : public NDMaterial\
 
-TaggedObject\
-MovableObject\
+class BidirectionalMaterial : public NDMaterial
+
+
+TaggedObject
+
+MovableObject
+
 Material\
-NDMaterial\
+NDMaterial
 
-\
 BidirectionalMaterial is an implementation of NDMaterial.
 BidirectionalMaterial is a two-dimensional elasto-plastic material model
 with combined linear isotropic and kinematic hardening. The yield
 surface is circular with a specified radius. A radial return map
 algorithm is used in the state determination.
+### Constructors
 
-// Constructors\
 
-\
 
-// Destructor\
+```{.cpp}
+BidirectionalMaterial();
+```
 
-\
-// Public Methods\
+### Destructor
 
-\
 
-\
+```{.cpp}
+$\tilde{ }$BidirectionalMaterial();
+```
 
-\
+### Public Methods
 
-\
 
-// Public Methods for Output\
+```{.cpp}
+int setTrialStrain(const Vector &strain);
+```
 
-\
 
-\
+
+```{.cpp}
+const Vector &getStrain(void);
+```
+
+
+
+```{.cpp}
+const Vector &getStress(void);
+```
+
+
+
+```{.cpp}
+const Matrix &getTangent(void);
+```
+
+
+
+```{.cpp}
+int commitState(void);
+```
+
+
+
+```{.cpp}
+int revertToLastCommit(void);
+```
+
+
+
+```{.cpp}
+int revertToStart(void);
+```
+
+
+
+```{.cpp}
+NDMaterial \*getCopy(void);
+```
+
+### Public Methods for Output
+
+
+```{.cpp}
+int sendSelf(int commitTag, Channel &theChannel);
+```
+
+
+
+
+```{.cpp}
+void Print(OPS_Stream &s, int flag = 0);
+```
+
+
+
+*BidirectionalMaterial(int tag, double E, double fy, double Hiso, double
+Hkin);*
 
 Constructs a BidirectionalMaterial whose unique integer among
-NDMaterials in the domain is given by *tag*. Sets the elastic modulus to
+NDMaterials in the domain is given by `tag`. Sets the elastic modulus to
 *E*, initial yield stress to *fy*, and isotropic and kinematic hardening
-moduli to *Hiso* and *Hkin*, respectively. Sets all committed history
-variables to $0.0$. The integers *tag* and ND_TAG_Bidirectional, defined
-in $<$classTags.h$>$, are passed to the NDMaterial constructor.
+moduli to `Hiso`{.cpp} and *Hkin*, respectively. Sets all committed history
+variables to $0.0$. The integers `tag` and ND_TAG_Bidirectional, defined
+in $<$classTags.h$>$, are passed to the NDMaterial constructor.\
+
+```{.cpp}
+BidirectionalMaterial();
+```
+
 
 Constructs a BidirectionalMaterial with tag 0. All material parameters
 and committed history variables are set to $0.0$. The integers 0 and
 ND_TAG_Bidirectional, defined in $<$classTags.h$>$, are passed to the
 NDMaterial constructor.
 
-\
+```{.cpp}
+$\tilde{ }$BidirectionalMaterial();
+```
+
+
 Does nothing.
 
-\
-Sets the trial strain of this material to be *strain*. Returns 0.
+```{.cpp}
+int setTrialStrain(const Vector &strain);
+```
 
-Returns the current trial strain of this material.
+
+Sets the trial strain of this material to be *strain*. Returns 0.\
+
+```{.cpp}
+const Vector &getStrain(void);
+```
+
+
+Returns the current trial strain of this material.\
+
+```{.cpp}
+const Vector &getStress(void);
+```
+
 
 Returns the current stress computed by the radial return mapping
 algorithm. This is the 2d generalization of the 1d algorithm described
-in Simo & Hughes (1998), Box $1.5$.
+in Simo & Hughes (1998), Box $1.5$.\
+
+```{.cpp}
+const Matrix &getTangent(void);
+```
+
 
 Returns the tangent consistent with the stress computed by the radial
-return mapping algorithm in `getStress()`.
+return mapping algorithm in *getStress()*.\
+
+```{.cpp}
+int commitState(void);
+```
+
 
 Sets the committed history variables to be their corresponding trial
-values. Returns 0.
+values. Returns 0.\
 
-Does nothing. Returns 0.
+```{.cpp}
+int revertToLastCommit(void);
+```
 
-Sets all committed history variables to $0.0$. Returns 0.
+
+Does nothing. Returns 0.\
+
+```{.cpp}
+int revertToStart(void);
+```
+
+
+Sets all committed history variables to $0.0$. Returns 0.\
+
+```{.cpp}
+NDMaterial \*getCopy(void);
+```
+
 
 Returns a pointer to a new instance of BidirectionalMaterial with the
 same tag, elastic modulus, initial yield stress, and hardening moduli.
 Copies the committed history variables to the new object. It is up to
-the caller to invoke the destructor.
+the caller to invoke the destructor.\
+
+```{.cpp}
+int sendSelf(int commitTag, Channel &theChannel);
+```
+
 
 Returns 0 if successful and a negative number if any of the send
 operation fails.
-
 Returns 0 if successful and a negative number if any of the receive
-operation fails.
+operation fails.\
+
+```{.cpp}
+void Print(OPS_Stream &s, int flag);
+```
+
 
 Prints the tag of this object and its elastic modulus, initial yield
 stress, and hardening moduli to the stream *s*.

@@ -1,14 +1,18 @@
 \
-\#include $<\tilde{
-}$/analysis/algorithm/equiSolnAlgo/ModifiedNewton.h$>$\
+#include $<\tilde{
+}$/analysis/algorithm/equiSolnAlgo/ModifiedNewton.h$>$
 
-class ModifiedNewton: public EquiSolnAlg;\
+```{.cpp}
+class ModifiedNewton:
+```
+ public EquiSolnAlg;
 
-MovableObject\
+
+MovableObject
+
 SolutionAlgorithm\
-EquiSolnAlgo\
+EquiSolnAlgo
 
-\
 The ModifiedNewton class is an algorithmic class which obtains a
 solution to a non-linear system using the modified Newton-Raphson
 iteration scheme. The Newton-Rapson iteration scheme is based on a
@@ -23,7 +27,7 @@ which can be expressed as: $$\
 $\Delta \U^{(i)}$ to give approximation for
 $\U^{(i+1)} = \U^{(i)} + \Delta \U^{(i)}$. To start the iteration
 $\U^{(1)} = \U_{trial}$, i.e. the current trial response quantities are
-chosen as initial response quantities.
+chosen as initial response quantities.\
 in the modified version the tangent is formed only once, i.e $$\
 \K^{(1)}  \Delta \U^{(i)} = \R(\U^{(i)})$$
 
@@ -31,43 +35,69 @@ To stop the iteration, a test must be performed to see if convergence
 has been achieved at each iteration. Each NewtonRaphson object is
 associated with a ConvergenceTest object. It is this object which
 determines if convergence has been achieved.
+### Constructors
 
-// Constructors\
+```{.cpp}
+ModifiedNewton();
+```
 
-\
+### Destructor
 
-// Destructor\
 
-\
-// Public Member Functions\
+```{.cpp}
+  $\tilde{}$ModifiedNewton();
+```
 
-\
+### Public Member Functions
 
-// Public Methods for Output\
 
-\
+```{.cpp}
+int solveCurrentStep(void);
+```
 
-\
+
+
+```{.cpp}
+void setTest(ConvergenceTest &theTest);
+```
+
+### Public Methods for Output
+
+
+
+```{.cpp}
+int Print(OPS_Stream &s, int flag =0);
+```
+
+
 
 The constructor takes as an argument the ConvregenceTest object
 *theTest*, the object which is used at the end of each iteration to
 determine if convergence has been obtained. The integer
 *EquiALGORITHM_TAGS_ModifiedNewton* (defined in $<$classTags.h$>$) is
-passed to the EquiSolnAlgo classes constructor.
+passed to the EquiSolnAlgo classes constructor.\
+
+```{.cpp}
+ModifiedNewton();
+```
+
 
 Provided for FEM_ObjectBroker to instantiate a blank object with a class
-tag of EquiALGORITHM_TAGS_ModofiedNewton. `recvSelf()` must be invoked
+tag of EquiALGORITHM_TAGS_ModofiedNewton. `recvSelf()`{.cpp} must be invoked
 on this object.
 
-\
 Does nothing.
 
-\
+```{.cpp}
+int solveCurrentStep(void);
+```
+
+
 When invoked the object first sets itself as the EquiSolnAlgo object
 that the ConvergenceTest is testing and then it performs the modified
 Newton-Raphson iteration algorithm:
 
-::: {.tabbing}
+::: tabbing
 while ̄ while ̄ theTest-$>$start();\
 theIntegrator-$>$formTangent();\
 do {\
@@ -78,34 +108,34 @@ theIntegrator-$>$update(theSOE-$>$getX());\
 :::
 
 The method returns a 0 if successful, otherwise a negative number is
-returned; a $-1$ if error during `formTangent()`, a $-2$ if error during
-`formUnbalance()`, a $-3$ if error during `solve()`, and a $-4$ if error
-during `update()`. If an error occurs in any of the above operations the
+returned; a $-1$ if error during *formTangent()*, a $-2$ if error during
+*formUnbalance()*, a $-3$ if error during *solve()*, and a $-4$ if error
+during *update()*. If an error occurs in any of the above operations the
 method stops at that routine, none of the subsequent operations are
-invoked. A $-5$ is returned if any one of the links has not been setup.
+invoked. A $-5$ is returned if any one of the links has not been setup.\
 
 ```{.cpp}
 void setTest(ConvergenceTest &theTest);
 ```
 
 A method to set the tolerance criteria of the algorithm to be equal to
-the value *theTol*.
+the value *theTol*.\
 
 ```{.cpp}
 int sendSelf(int commitTag, Channel &theChannel);
 ```
 
-Creates an ID object, puts the values of the *theTest* objects class and
-database tags into this ID. It then invokes `sendVector()` on the
-Channel object *theChannel* to send the data to the remote object. It
-then invokes `sendSelf()` on *theTest*. Returns $0$ if successful, the
-channel error if not.
+Creates an ID object, puts the values of the `theTest`{.cpp} objects class and
+database tags into this ID. It then invokes `sendVector()`{.cpp} on the
+Channel object `theChannel`{.cpp} to send the data to the remote object. It
+then invokes `sendSelf()`{.cpp} on *theTest*. Returns $0$ if successful, the
+channel error if not.\
 *int recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker
 &theBroker);*\
-Creates an ID object, invokes `recvVector()` on the Channel object. Uses
+Creates an ID object, invokes `recvVector()`{.cpp} on the Channel object. Uses
 the data in the ID to create a ConvergenceTest object of appropriate
-type and sets its dbTag. It then invokes `recvSelf()` on this test
-object.
+type and sets its dbTag. It then invokes `recvSelf()`{.cpp} on this test
+object.\
 
 ```{.cpp}
 int Print(OPS_Stream &s, int flag =0);

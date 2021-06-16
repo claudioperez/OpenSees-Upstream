@@ -1,12 +1,18 @@
 \
-\#include $<\tilde{ }$/analysis/analysis/DirectIntegrationAnalysis.h$>$\
+#include $<\tilde{ }$/analysis/analysis/DirectIntegrationAnalysis.h$>$
 
-class DirectIntegrationAnalysis: public TransientAnalysis;\
 
-Analysis\
-TransientAnalysis\
 
-\
+```{.cpp}
+class DirectIntegrationAnalysis:
+```
+ public TransientAnalysis;
+
+
+Analysis
+
+TransientAnalysis
+
 DirectIntegrationAnalysis is a subclass of TransientAnalysis. It is used
 to perform a transient analysis using an incremental approach on the
 Domain. The following are the aggregates of such an analysis type:
@@ -30,7 +36,7 @@ Domain. The following are the aggregates of such an analysis type:
     methods which are invoked by the FE_Element to determine their
     current tangent and residual matrices; that is this is the class
     that sets up the system of equations. It also provides the
-    `update()` method which is invoked to set up the appropriate dof
+    `update()`{.cpp} method which is invoked to set up the appropriate dof
     response values once the solution algorithm has formed and solved
     the system of equations.
 
@@ -40,43 +46,79 @@ Domain. The following are the aggregates of such an analysis type:
     P(U).
 
 
-// Constructor\
+### Constructor
 
-\
-// Destructor\
 
-\
-// Public Methods\
+### Destructor
 
-\
 
-\
-// Public Methods to vary the type of Analysis\
+```{.cpp}
+virtual  $\tilde{}$DirectIntegrationAnalysis();
+```
 
-\
+### Public Methods
 
-\
 
-\
-*tStart*, *tFinish* and *thDomain* are passed to the TransientAnalysis
+```{.cpp}
+int analyze(void);
+```
+
+
+
+```{.cpp}
+void clearAll(void);
+```
+
+
+
+```{.cpp}
+void domainChange(void);
+```
+
+### Public Methods to vary the type of Analysis
+
+
+
+```{.cpp}
+int setAlgorithm(EquiSolnAlgo &theAlgorithm);
+```
+
+
+
+```{.cpp}
+int setIntegrator(StaticIntegrator &theIntegrator);
+```
+
+
+
+```{.cpp}
+int setLinearSOE(LinearSOE &theSOE);
+```
+
+
+
+*tStart*, `tFinish`{.cpp} and `thDomain`{.cpp} are passed to the TransientAnalysis
 class constructor. The constructor is responsible for setting up all
 links needed by the objects in the aggregation. It invokes
-`setLinks(theDomain)` on *theModel*,
+*setLinks(theDomain)* on *theModel*,
 *setLinks(theDomain,theModel,theIntegrator)* on *theHandler*,
-`setLinks(theModel)` on *theNumberer*, `setLinks(theModel, theSOE)`{.cpp} on
+*setLinks(theModel)* on *theNumberer*, `setLinks(theModel, theSOE)`{.cpp} on
 *theIntegrator* and *setLinks(theModel,theAnalysis, theIntegrator,
 theSOE)* on *theSolnAlgo*.
 
-\
-Does nothing. `clearAll()` must be invoked if the destructor on the
+Does nothing. `clearAll()`{.cpp} must be invoked if the destructor on the
 objects in the aggregation need to be invoked.
 
-\
+```{.cpp}
+int analyze(void);
+```
+
+
 Invoked to perform a transient analysis on the FE_Model. The method
 checks to see if the domain has changed before it performs the analysis.
 The DirectIntegrationAnalysis object performs the following:
 
-::: {.tabbing}
+::: tabbing
 while ̄ while w̄hile ̄ double time = tStart;\
 while (theDomain-$>$getCurrntTime() $<$ tFinish) {\
 if (theDomain-$>$hasDomainChanged() == true)\
@@ -89,17 +131,17 @@ theIntegrator-$>$commit();\
 
 The type of analysis performed, depends on the type of the objects in
 the analysis aggregation. If any of the methods invoked returns a
-negative number, an error message is printed, `revertToLastCommit()` is
+negative number, an error message is printed, `revertToLastCommit()`{.cpp} is
 invoked on the Domain, and a negative number is immediately returned.
-Returns a $0$ if the algorithm is successful.
+Returns a $0$ if the algorithm is successful.\
 
 ```{.cpp}
 void clearAll(void);
 ```
 
 Will invoke the destructor on all the objects in the aggregation. NOTE
-this means they must have been constructed using `new()`, otherwise a
-segmentation fault can occur.
+this means they must have been constructed using *new()*, otherwise a
+segmentation fault can occur.\
 
 ```{.cpp}
 void domainChange(void);
@@ -108,67 +150,82 @@ void domainChange(void);
 This is a method invoked by a domain which indicates to the analysis
 that the domain has changed. The method invokes the following:
 
-1.  It invokes `clearAll()` on *theModel* which causes the AnalysisModel
+1.  It invokes `clearAll()`{.cpp} on `theModel`{.cpp} which causes the AnalysisModel
     to clear out its list of FE_Elements and DOF_Groups, and
-    `clearAll()` on *theHandler*.
+    `clearAll()`{.cpp} on *theHandler*.
 
-2.  It then invokes `handle()` on *theHandler*. This causes the
+2.  It then invokes `handle()`{.cpp} on *theHandler*. This causes the
     constraint handler to recreate the appropriate FE_Element and
     DOF_Groups to perform the analysis subject to the boundary
     conditions in the modified domain.
 
-3.  It then invokes `number()` on *theNumberer*. This causes the DOF
+3.  It then invokes `number()`{.cpp} on *theNumberer*. This causes the DOF
     numberer to assign equation numbers to the individual dof's. Once
     the equation numbers have been set the numberer then invokes
-    `setID()` on all the FE_Elements in the model. Finally the numberer
-    invokes `setNumEqn()` on the model.
+    `setID()`{.cpp} on all the FE_Elements in the model. Finally the numberer
+    invokes `setNumEqn()`{.cpp} on the model.
 
-4.  It then invokes `domainChanged()` on *theIntegrator* and
-    *theAlgorithm* to inform these objects that changes have occurred in
+4.  It then invokes `domainChanged()`{.cpp} on `theIntegrator`{.cpp} and
+    `theAlgorithm`{.cpp} to inform these objects that changes have occurred in
     the model.
 
-5.  It invokes `setSize(theModel.getDOFGraph())`{.cpp} on *theSOE* which
+5.  It invokes `setSize(theModel.getDOFGraph())`{.cpp} on `theSOE`{.cpp} which
     causes the system of equation to determine its size based on the
     connectivity of the dofs in the analysis model.
 
-6.  Finally it invokes `domainChanged()` on *theIntegrator* and
+6.  Finally it invokes `domainChanged()`{.cpp} on `theIntegrator`{.cpp} and
     *theAlgorithm*. Returns $0$ if successful. At any stage above, if an
     error occurs the method is stopped, a warning message is printed and
-    a negative number is returned.
+    a negative number is returned.\
 
 
 ```{.cpp}
 int setDeltaT(double $\delta t$);
 ```
 
-Sets the time increment used in the `analyze()` method to $\delta
-t$. Returns $0$.
+Sets the time increment used in the `analyze()`{.cpp} method to $\delta
+t$. Returns $0$.\
+
+```{.cpp}
+int setAlgorithm(EquiSolnAlgo &newAlgorithm);
+```
+
 
 To change the algorithm between analysis. It first invokes the
 destructor on the old SolutionAlgorithm object associated with the
 analysis. It then sets the SolutionAlgorithm associated with the
-analysis to be *newAlgorithm* and sets the links for this object by
-invoking `setLinks()`. Checks then to see if the domain has changed, if
-true it invokes `domainChanged()`, otherwise it invokes
-`domainChanged()` on the new SolutionAlgorithm. Returns $0$ if
-successful, a warning message and a negative number if not.
+analysis to be `newAlgorithm`{.cpp} and sets the links for this object by
+invoking *setLinks()*. Checks then to see if the domain has changed, if
+true it invokes *domainChanged()*, otherwise it invokes
+*domainChanged()* on the new SolutionAlgorithm. Returns $0$ if
+successful, a warning message and a negative number if not.\
+
+```{.cpp}
+int setIntegrator(TransientIntegrator &newIntegrator);
+```
+
 
 To change the integration scheme between analysis. It first invokes the
 destructor on the old Integrator object associated with the analysis. It
 then sets the SolutionAlgorithm associated with the analysis to be
 *newAlgorithm* and sets the links for this object by invoking
-`setLinks()`. It also invokes `setLinks()` on the ConstraintHandler and
+*setLinks()*. It also invokes `setLinks()`{.cpp} on the ConstraintHandler and
 SolutionAlgorithm objects. Checks then to see if the domain has changed,
-if true it invokes `domainChanged()`, otherwise it invokes
-`domainChanged()` on the new Integrator. Returns $0$ if successful, a
-warning message and a negative number if not.
+if true it invokes *domainChanged()*, otherwise it invokes
+*domainChanged()* on the new Integrator. Returns $0$ if successful, a
+warning message and a negative number if not.\
+
+```{.cpp}
+int setLinearSOE(LinearSOE &newSOE);
+```
+
 
 To change the linear system of equation object between analysis. It
 first invokes the destructor on the old LinearSOE object associated with
 the analysis. It then sets the SolutionAlgorithm associated with the
-analysis to be *newSOE*. links for this object by invoking `setLinks()`.
-It then invokes `setLinks()` on the ConstraintHandler and
+analysis to be *newSOE*. links for this object by invoking *setLinks()*.
+It then invokes `setLinks()`{.cpp} on the ConstraintHandler and
 SolutionAlgorithm objects. Checks then to see if the domain has changed,
-if true it invokes `domainChanged()`, otherwise it invokes `setSize()`
+if true it invokes *domainChanged()*, otherwise it invokes *setSize()*
 on the new LinearSOE. Returns $0$ if successful, a warning message and a
-negative number if not.
+negative number if not.\

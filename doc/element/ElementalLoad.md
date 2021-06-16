@@ -1,74 +1,52 @@
+\
+#include $<\tilde{ }$/element/ElementalLoad.h$>$
 
 
 
-\#include $<\tilde{ }$/element/ElementalLoad.h$>$
-
-
-
-class ElementalLoad: public Load
-
+```{.cpp}
+class ElementalLoad:
+```
+ public Load
 
 
 TaggedObject
 
-
 MovableObject
 
-
-DomainComponent
-
-
+DomainComponent\
 Load
-
-
-
-
-
 
 ElementalLoad is an abstract class, i.e. no instances of ElementalLoad
 will exist. The ElementalLoad class provides the interface that all
 ElementalLoad writers must provide when introducing new ElementalLoad
 classes.
+### Constructors
 
-// Constructors
+### Destructor
 
-
-
-
-
+### Public Methods
 
 
-// Destructor
-
-
-
-
-
-
-// Public Methods
-
-
-
-
-
+```{.cpp}
+ElementalLoad(int elementTag, int tag, int classTag);
+```
 
 
 Provided to allow subclasses to construct an ElementalLoad object
 associated with the Element whose unique identifier in the Domain will
-be *elementTag*. The integers *tag* and and *classTags* are passed to
-the Load constructor.
+be *elementTag*. The integers `tag` and and `classTags`{.cpp} are passed to
+the Load constructor.\
+
+```{.cpp}
+ElementalLoad(int classTag);
+```
+
 
 Provided so that a FEM_ObjectBroker can construct an object. $0$ and
 *classTag* are passed to the Load classes constructor. The data for the
-object is filled in when `recvSelf()` is invoked on the object.
-
-
-
+object is filled in when `recvSelf()`{.cpp} is invoked on the object.
 
 Does nothing. Provided so that the ElementalLoad subclasses destructor
 will be called.
 
-
-
-
-Returns the integer *elementTag* passed in the constructor.
+Returns the integer `elementTag`{.cpp} passed in the constructor.

@@ -1,45 +1,100 @@
 \
-\#include $<\tilde{ }$/material/nD/ElasticIsotropicPlaneStrain2D.h$>$\
+#include $<\tilde{ }$/material/nD/ElasticIsotropicPlaneStrain2D.h$>$
 
-class ElasticIsotropicPlaneStrain2D : public ElasticIsotropicMaterial\
 
-TaggedObject\
-MovableObject\
+class ElasticIsotropicPlaneStrain2D : public ElasticIsotropicMaterial
+
+
+TaggedObject
+
+MovableObject
+
 Material\
 NDMaterial\
-ElasticIsotropicMaterial\
+ElasticIsotropicMaterial
 
-\
 ElasticIsotropicPlaneStrain2D provides the implementation of an elastic
 isotropic material which exhibits plane strain behavior in two
 dimensions.
+### Constructor
 
-// Constructor\
 
-\
-// Destructor\
+### Destructor
 
-\
-// Public Methods\
 
-\
+```{.cpp}
+$\tilde{ }$ElasticIsotropicPlaneStrain2D ();
+```
 
-\
+### Public Methods
 
-\
 
-\
+```{.cpp}
+int setTrialStrain (const Vector &strain);
+```
+
+
+
+```{.cpp}
+const Vector &getStress (void);
+```
+
+
+
+```{.cpp}
+const Matrix &getTangent (void);
+```
+
+
+
+```{.cpp}
+int commitState (void);
+```
+
+
+
+```{.cpp}
+int revertToLastCommit (void);
+```
+
+
+
+```{.cpp}
+int revertToStart (void);
+```
+
+
+
+```{.cpp}
+NDMaterial \*getCopy (void);
+```
+
+
+
+
+```{.cpp}
+ElasticIsotropicPlaneStrain2D (int tag, double E, double v);
+```
+
 
 To construct an ElasticIsotropicPlaneStrain2D whose unique integer tag
-among NDMaterials in the domain is given by *tag*. The material model
-have Young's modulus *E* and Poisson's ratio *v*.
+among NDMaterials in the domain is given by `tag`. The material model
+have Young's modulus `E`{.cpp} and Poisson's ratio *v*.
 
-\
+```{.cpp}
+$\tilde{ }$ElasticIsotropicPlaneStrain2D ();
+```
+
+
 Does nothing.
 
-\
+```{.cpp}
+int setTrialStrain (const Vector &strain);
+```
+
+
 Sets the value of the current trial strain vector, $\myepsilon$, to be
-*strain*. Returns $0$.
+*strain*. Returns $0$.\
 $$\myepsilon := \left[
    \begin{array}{c}
        \epsilon_{xx} \\
@@ -49,8 +104,13 @@ $$\myepsilon := \left[
  \right]$$
 
 
+```{.cpp}
+const Vector &getStress (void);
+```
+
+
 Returns the material stress vector, $\mysigma$, for the current trial
-strain.
+strain.\
 $$\mysigma := \left[
    \begin{array}{c}
        \sigma_{xx} \\
@@ -60,7 +120,12 @@ $$\mysigma := \left[
  \right]$$
 
 
-Returns the material tangent stiffness matrix, $\D$.
+```{.cpp}
+const Matrix &getTangent (void);
+```
+
+
+Returns the material tangent stiffness matrix, $\D$.\
 $$\D := \frac{E}{(1+\nu)(1-2\nu)} \left[
    \begin{array}{ccc}
          1-\nu &     \nu &      0 \\
@@ -70,12 +135,32 @@ $$\D := \frac{E}{(1+\nu)(1-2\nu)} \left[
  \right]$$
 
 
-Returns $0$.
+```{.cpp}
+int commitState (void);
+```
 
-Returns $0$.
 
-Returns $0$.
+Returns $0$.\
+
+```{.cpp}
+int revertToLastCommit (void);
+```
+
+
+Returns $0$.\
+
+```{.cpp}
+int revertToStart (void);
+```
+
+
+Returns $0$.\
+
+```{.cpp}
+NDMaterial \*getCopy (void);
+```
+
 
 Returns a pointer to a new ElasticIsotropicPlaneStrain2D, with the same
-values for *tag*, *E*, and $\nu$. It is up to the caller to ensure that
-the destructor is invoked.
+values for `tag`, *E*, and $\nu$. It is up to the caller to ensure that
+the destructor is invoked.\

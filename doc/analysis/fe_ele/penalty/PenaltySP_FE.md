@@ -1,33 +1,33 @@
 \
-\#include $<\tilde{ }$/analysis/fe_ele/penalty/PenaltySP_FE.h$>$\
+#include $<\tilde{ }$/analysis/fe_ele/penalty/PenaltySP_FE.h$>$
 
-class PenaltySP_FE: public FE_Element ;\
 
-FE_Element\
 
-\
+```{.cpp}
+class PenaltySP_FE:
+```
+ public FE_Element ;
+
+
+FE_Element
+
+
 PenaltySP_FE is a subclass of FE_Element used to enforce a single point
 constraint. It does this by adding $\alpha$ to the tangent and
 $\alpha * (U\_s - U\_t)$ to the residual at the locations corresponding
 to the constrained degree-of-freedom specified by the SP_Constraint,
 where $U_s$ is the specified value of the constraint and $U_t$ the
 current trial displacement at the node corresponding to the constraint.
+### Constructor
 
-// Constructor\
+### Destructor
 
-\
-// Destructor\
+### Public Methods
 
-\
-// Public Methods\
 
-\
 
-\
-
-\
 To construct a PenaltySP_FE element to enforce the constraint specified
-by the SP_Constraint *theSP* using a value for $\alpha$ of *alpha*
+by the SP_Constraint `theSP`{.cpp} using a value for $\alpha$ of *alpha*
 (which, if none is specified, defaults to $1.0e8$). The FE_Element class
 constructor is called with the integers $1$ and $1$. A Matrix and a
 Vector object of order $1$ are created to return the tangent and
@@ -37,23 +37,41 @@ also set. A warning message is printed and program terminates if there
 is not enough memory or no Node associated with the SP_Constraint exists
 in the Domain.
 
-\
+```{.cpp}
+virtual  $\tilde{}$PenaltySP_FE();
+```
+
+
 Invokes the destructor on the Matrix and Vector objects created in the
 constructor.
 
-\
+```{.cpp}
+virtual void setID(void);
+```
+
+
 Causes the PenaltySP_FE to determine the mapping between it's equation
 numbers and the degrees-of-freedom. From the Node object link, created
 in the constructor, the DOF_group corresponding to the Node associated
-with the constraint is determined. From this *DOF_Group* object the
+with the constraint is determined. From this `DOF_Group`{.cpp} object the
 mapping for the constrained degree of freedom is determined and the ID
 in the base class is set. Returns $0$ if successful. Prints a warning
 message and returns a negative number if an error occurs: $-2$ if the
 Node has no associated DOF_Group, $-3$ if the constrained DOF specified
 is invalid for this Node and $-4$ if the ID in the DOF_Group is too
-small for the Node.
+small for the Node.\
 
-Returns the tangent Matrix created in the constructor.
+```{.cpp}
+virtual const Matrix &getTangent(Integrator \*theIntegrator);
+```
+
+
+Returns the tangent Matrix created in the constructor.\
+
+```{.cpp}
+virtual const Vector &getResidual(Integrator \*theIntegrator);
+```
+
 
 Sets the FE_Elements contribution to the residual to be
 $\alpha * (U_s - U_t)$, where $U_s$ is the specified value of the
@@ -68,5 +86,5 @@ Sets the FE_Elements contribution to the residual to be
 $\alpha * (U\_s - disp\_t)$, where $U\_s$ is the specified value of the
 constraint and $disp\_t$ the value in *disp* corresponding to
 constrained degree-of-freedom. Prints a warning message and sets this
-contribution to $0$ if the mapping, determined in `setID()`, for the the
-specified constrained degree-of-freedom lies outside *disp*.
+contribution to $0$ if the mapping, determined in *setID()*, for the the
+specified constrained degree-of-freedom lies outside *disp*.\

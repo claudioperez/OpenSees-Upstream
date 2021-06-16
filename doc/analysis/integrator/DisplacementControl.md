@@ -1,15 +1,20 @@
 \
-\#include $<\tilde{ }$/analysis/integrator/DisplacementControl.h$>$\
+#include $<\tilde{ }$/analysis/integrator/DisplacementControl.h$>$
+
 UNDER CONSTRUCTION.
 
-class DisplacementControl: public StaticIntegrator\
+```{.cpp}
+class DisplacementControl:
+```
+ public StaticIntegrator
 
-MovableObject\
+
+MovableObject
+
 Integrator\
 IncrementalIntegrator\
-StaticIntegrator\
+StaticIntegrator
 
-\
 DisplacementControl is a subclass of StaticIntegrator, it is used to
 when performing a static analysis on the FE_Model using the displacement
 control method. In the displacement control method the displacement at a
@@ -18,34 +23,59 @@ following constraint equation is added to
 equation [\[staticFormTaylor\]](#staticFormTaylor){reference-type="ref"
 reference="staticFormTaylor"} of the StaticIntegrator class:
 
-$$Uc_n^{(i)} - Uc_{n-1} = \delta Uc_n$$
+
+$$
+$Uc_n^{(i)} - Uc_{n-1} = \delta Uc_n$
+$$
+
 
 where $\delta Uc_n$ depends on $\delta Uc_{n-1}$, the displacement
 increment at the previous time step, $J_{n-1}$, the number of iterations
 required to achieve convergence in the previous load step, and $Jd$, the
 desired number of iteraions. $\delta
-Uc_n$ is bounded by $\delta Uc_{min}$ and $\delta Uc_{max}$.
+Uc_n$ is bounded by $\delta Uc_{min}$ and $\delta Uc_{max}$.\
 $$\delta Ucn = max \left( \delta Uc{min}, min \left(
 \frac{Jd}{J_{n-1}} \delta Uc{n-1}, \delta Uc{max} \right) \right)$$
 
 SOME THEORY.
+### Constructors
 
-// Constructors\
 
-\
-// Destructor\
+### Destructor
 
-\
-// Public Methods\
 
-\
+```{.cpp}
+$\tilde{ }$DisplacementControl();
+```
 
-\
-// Public Methods for Output\
+### Public Methods
 
-\
 
-\
+```{.cpp}
+int newStep(void);
+```
+
+
+
+```{.cpp}
+int update(const Vector &$\Delta U$);
+```
+
+
+
+```{.cpp}
+int domainChanged(void);
+```
+
+### Public Methods for Output
+
+
+
+```{.cpp}
+int Print(OPS_Stream &s, int flag = 0);
+```
+
+
 
 The integer INTEGRATOR_TAGS_DisplacementControl (defined in
 $<$classTags.h$>$) is passed to the StaticIntegrator classes
@@ -54,9 +84,7 @@ The arguments $Jd$, $\delta Uc_{min}$, and $\delta
 Uc_{max}$ are used in the determination of the increment in the load
 factor at each step.
 
-\
 Does nothing.
-
 
 ```{.cpp}
 int newStep(void);
@@ -69,7 +97,11 @@ int update(const Vector &$\Delta U$);
 ```
 
 WHAT DO I DO?\
-*int sendSelf(int commitTag, Channel &theChannel);* \
+
+```{.cpp}
+int sendSelf(int commitTag, Channel &theChannel);
+```
+
 WHAT DO I DO?\
 *int recvSelf(int commitTag, Channel &theChannel, FEM_ObjectBroker
 &theBroker);* \

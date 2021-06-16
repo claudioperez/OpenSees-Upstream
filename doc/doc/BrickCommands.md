@@ -32,7 +32,7 @@ to be output separated. If one needs to output the gauss point
 coordinates together with the plastic strain, the query "plasticGPC"
 needs to be used.
 
-::: {.center}
+::: center
 ![[\[8node\]]{#8node label="8node"} Node numbering for 8 node three
 dimensional
 element.](/home/jeremic/tex/works/Thesis/ZhaohuiYang/Appendex/brick8.eps){#8node
@@ -60,7 +60,11 @@ The valid queries to a Brick20N element when creating an ElementRecorder
 are "force," "stiffness," "stress," "pq," "gausspoint," or "plastic."
 For "stress" output, the six stress components from each Gauss point are
 output by the order: $\sigma_x$, $\sigma_y$, $\sigma_z$, $\tau_{xy}$,
-$\tau_{xz}$, $\tau_{yz}$. The stresses can also be output in $p$ and $q$
+
+$$
+\tau_{xz}$, $\tau_{yz}$. The stresses can also be output in $p$ and $q
+$$
+
 format by using query "pq," where $p$ is the hydrostatic pressure, while
 $q$ is the equivalent deviatoric stress. In this case, the stress state
 at one gauss point is printed in the $pq$ format. For "gausspoint," the
@@ -68,7 +72,7 @@ coordinates of all Gauss points are printed out. For "plastic," the
 equivalent deviatoric plastic strain from each Gauss point is output in
 the same order as the coordinates are printed.
 
-::: {.center}
+::: center
 ![[\[20node\]]{#20node label="20node"} Node numbering for 20 node three
 dimensional
 element.](/home/jeremic/tex/works/Thesis/ZhaohuiYang/Appendex/brick20.eps){#20node
