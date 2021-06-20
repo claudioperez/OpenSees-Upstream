@@ -110,38 +110,38 @@ enable_language(Fortran)
 #----------------------------------------------------------------
 
 
-if(FMK)
-   add_compile_definitions(
-	_HAVE_Damage2p    
-        _HAVE_PSUMAT
-        _HAVE_PML
-        _FILIP_LHNMYS)    
-endif()
-
-if(OPS_OPTION_HDF5)
-   find_package(HDF5)
-    if(HDF5_FOUND)
-        include_directories(${HDF5_INCLUDE_DIR})
-        set(_hdf5_libs hdf5 hdf5_cpp)
-    add_definitions(-D_H5DRM)
-    else()
-     message(STATUS ">>> Could not find HDF5")
-    endif()
-endif()
-
-if(APPLE)
- message(STATUS ">>> MacOS")
-endif()
-
-if(UNIX AND NOT APPLE)
-   message(STATUS ">>> LINUX")
-   add_definitions(_LINUX _UNIX)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -ffloat-store")
-endif()
-
-if(WIN32)
- message(STATUS ">>> WIN32")
-endif()
+#if(FMK)
+#   add_compile_definitions(
+#	_HAVE_Damage2p    
+#        _HAVE_PSUMAT
+#        _HAVE_PML
+#        _FILIP_LHNMYS)    
+#endif()
+#
+#if(OPS_OPTION_HDF5)
+#   find_package(HDF5)
+#    if(HDF5_FOUND)
+#        include_directories(${HDF5_INCLUDE_DIR})
+#        set(_hdf5_libs hdf5 hdf5_cpp)
+#    add_definitions(-D_H5DRM)
+#    else()
+#     message(STATUS ">>> Could not find HDF5")
+#    endif()
+#endif()
+#
+#if(APPLE)
+# message(STATUS ">>> MacOS")
+#endif()
+#
+#if(UNIX AND NOT APPLE)
+#   message(STATUS ">>> LINUX")
+#   add_compile_definitions(_LINUX _UNIX)
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -ffloat-store")
+#endif()
+#
+#if(WIN32)
+# message(STATUS ">>> WIN32")
+#endif()
 #
 # include paths to main abstract classes
 #
@@ -207,10 +207,11 @@ include_directories(src
 #------------------------------------------------------------------------------
 #                            Targets
 #------------------------------------------------------------------------------
-add_library(libg3)
+#add_library(libg3)
+add_library(libPFEM EXCLUDE_FROM_ALL)
 #add_executable(OpenSees   EXCLUDE_FROM_ALL src/tcl/tclMain.cpp)
 #add_executable(OpenSeesSP EXCLUDE_FROM_ALL src/tcl/tclMain.cpp)
-#add_executable(OpenSeesMP EXCLUDE_FROM_ALL src/tcl/tclMain.cpp)
+add_executable(OpenSeesMP EXCLUDE_FROM_ALL)# src/tcl/tclMain.cpp)
 #add_executable(openseespy EXCLUDE_FROM_ALL src/interpreter/pythonMain.cpp)
 
 
@@ -228,6 +229,6 @@ add_library(libg3)
 #
 # build
 #
-#add_subdirectory(${OPS_SRC_DIR})
+add_subdirectory(${OPS_SRC_DIR})
 
 

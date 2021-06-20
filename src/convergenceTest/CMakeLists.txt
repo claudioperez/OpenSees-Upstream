@@ -13,7 +13,6 @@ target_sources(convergenceTest
 	CTestRelativeTotalNormDispIncr.cpp
 	NormDispAndUnbalance.cpp
 	NormDispOrUnbalance.cpp
-	#CTestPFEM.cpp
     PUBLIC
         ConvergenceTest.h
 	CTestNormUnbalance.h
@@ -26,7 +25,11 @@ target_sources(convergenceTest
 	CTestRelativeTotalNormDispIncr.h
 	NormDispAndUnbalance.h
 	NormDispOrUnbalance.h
-	#CTestPFEM.h
 )
-
+target_sources(libPFEM
+    PRIVATE
+	CTestPFEM.cpp
+    PUBLIC
+	CTestPFEM.h
+)
 target_include_directories(convergenceTest PUBLIC $(CMAKE_CURRENT_LIST_DIR))

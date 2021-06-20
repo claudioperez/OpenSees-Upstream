@@ -63,8 +63,6 @@ define_property(TARGET
     FULL_DOCS  "..."
 )
 
-
-
 #----------------------------------------------------------------
 #                      External Libraries
 #----------------------------------------------------------------
@@ -79,15 +77,17 @@ define_property(TARGET
 # - PATHS:  Provide specific paths for library.
 #
 #----------------------------------------------------------------
-opensees_load(TCL      FIND)
+opensees_load(TCL                                            FIND)
 
-opensees_load(BLAS   SEARCH)
+opensees_load(BLAS                                         SEARCH)
 
-opensees_load(LAPACK SEARCH)
+opensees_load(LAPACK                                       SEARCH)
 
-opensees_load(ARPACK SEARCH)
+opensees_load(ARPACK                                       SEARCH)
 
-opensees_load(METIS  SEARCH)
+opensees_load(METIS                                        SEARCH)
+
+#opensees_load(SUPERLU                                      SEARCH)
 
 
 #----------------------------------------------------------------
@@ -223,13 +223,10 @@ include_directories(${OPS_SRC_DIR}
 #
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-#include_directories(ext/CSPARSE)
-#include_directories(ext/AMD)
-#include_directories(ext/UMFPACK)
 
 #
 # build
 #
-add_subdirectory(${OPS_SRC_DIR})
+#add_subdirectory(${OPS_SRC_DIR})
 
 
