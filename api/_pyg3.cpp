@@ -7,12 +7,16 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
+#include "quakeio.hpp"
+
+
 #include <ArrayOfTaggedObjects.h>
 #include <MapOfTaggedObjects.h>
 
-/* domain */
+/* Domain 
+ *******************************************/
 #include <domain/domain/Domain.h>
-#include <domain/element/Element.h>
+// #include <domain/element/Element.h>
 #include <ElementIter.h>
 #include <FEM_ObjectBroker.h>
 #include <Parameter.h>
@@ -23,10 +27,14 @@
 
 #include <LoadPattern.h>
 #include <EarthquakePattern.h>
+#include <GroundMotion.h>
 #include <UniformExcitation.h>
 #include <TimeSeries.h>
 #include <PathTimeSeries.h>
 #include <LinearSeries.h>
+
+/* Elements */
+#include <ZeroLength.h>
 
 /* Analysis 
  ********************************************/
@@ -65,11 +73,19 @@
 #include <handler/OPS_Stream.h>
 #include <StandardStream.h>
 
+
 /* Create global error stream */
 StandardStream sserr;
 OPS_Stream *opserrPtr = &sserr;
 
 namespace py = pybind11;
+
+void
+init_element(py::module &m)
+{
+    py::class_<Element, std::shared_ptr<Element> >(m, "Element");
+    py::class_<ZeroLength, std::shared_ptr<ZeroLength> >(m, "ZeroLength");
+}
 
 void
 init_analysis(py::module &m)
@@ -115,26 +131,26 @@ init_analysis(py::module &m)
                 StaticIntegrator&,
                 ConvergenceTest*>(),
               py::arg("theDomain"),
-		      py::arg("theHandler"),
-		      py::arg("theNumberer"),
-		      py::arg("theModel"),
-		      py::arg("theSolnAlgo"),		   
-		      py::arg("theSOE"),
-		      py::arg("theIntegrator"),
-		      py::arg("theTest")=0
+              py::arg("theHandler"),
+              py::arg("theNumberer"),
+              py::arg("theModel"),
+              py::arg("theSolnAlgo"),           
+              py::arg("theSOE"),
+              py::arg("theIntegrator"),
+              py::arg("theTest")=0
 
         )
         .def (py::init([](
              Domain& theDomain,
-		     ConstraintHandler &theHandler,
-		     DOF_Numberer &theNumberer,
-		     AnalysisModel &theModel,
-		     EquiSolnAlgo &theSolnAlgo,		   
-		     LinearSOE &theSOE,
-		     StaticIntegrator &theIntegrator
-		     // ConvergenceTest *theTest = 0
+             ConstraintHandler &theHandler,
+             DOF_Numberer &theNumberer,
+             AnalysisModel &theModel,
+             EquiSolnAlgo &theSolnAlgo,           
+             LinearSOE &theSOE,
+             StaticIntegrator &theIntegrator
+             // ConvergenceTest *theTest = 0
         )->StaticAnalysis{
-             printf("called\n\n\n");
+             // printf("called\n\n\n");
              return StaticAnalysis(
                  theDomain,theHandler,theNumberer,theModel,
                  theSolnAlgo,theSOE,theIntegrator, (ConvergenceTest *)0
@@ -154,24 +170,24 @@ init_analysis(py::module &m)
                 TransientIntegrator&,
                 ConvergenceTest*>(),
               py::arg("domain"),
-		      py::arg("handler"),
-		      py::arg("numberer"),
-		      py::arg("model"),
-		      py::arg("algo"),		   
-		      py::arg("soe"),
-		      py::arg("integrator"),
-		      py::arg("test")=0
+              py::arg("handler"),
+              py::arg("numberer"),
+              py::arg("model"),
+              py::arg("algo"),           
+              py::arg("soe"),
+              py::arg("integrator"),
+              py::arg("test")=0
 
         )
         .def (py::init([](
              Domain& theDomain,
-		     ConstraintHandler &theHandler,
-		     DOF_Numberer &theNumberer,
-		     AnalysisModel &theModel,
-		     EquiSolnAlgo &theSolnAlgo,		   
-		     LinearSOE &theSOE,
-		     TransientIntegrator &theIntegrator
-		     // ConvergenceTest *theTest = 0
+             ConstraintHandler &theHandler,
+             DOF_Numberer &theNumberer,
+             AnalysisModel &theModel,
+             EquiSolnAlgo &theSolnAlgo,           
+             LinearSOE &theSOE,
+             TransientIntegrator &theIntegrator
+             // ConvergenceTest *theTest = 0
         )->DirectIntegrationAnalysis{
              return DirectIntegrationAnalysis(
                  theDomain,theHandler,theNumberer,theModel,
@@ -229,7 +245,7 @@ init_base(py::module &m)
                  py::print("array\t", array);
                  printf("%lf\n", *((double*)info.ptr));
              }
-             return Vector(static_cast<double*>(info.ptr),(int)info.itemsize);
+             return Vector(static_cast<double*>(info.ptr),(int)info.shape[0]);
 
         }))
         /* Allow reference by numpy array; requires access to Vector.theData */
@@ -257,7 +273,8 @@ init_base(py::module &m)
                  throw std::runtime_error("Incompatible buffer dimension.");
              return Vector(
                  static_cast<double*>(info.ptr), 
-                 static_cast<int>(info.itemsize)
+                 // static_cast<int>(info.itemsize)
+                 static_cast<int>(info.shape[0])
              );
         }))
     ;
@@ -318,7 +335,7 @@ PYBIND11_MODULE(_pyg3, m)
         // .def ("addMP_Constraint", &Domain::addMP_Constraint)
     ;
 
-    py::class_<Node>(domain, "Node")
+    py::class_<Node, std::shared_ptr<Node> >(domain, "Node")
         .def (py::init<int, int, float, float> (),
              py::arg("tag"),  //"Node tag."), 
              py::arg("ndof"), //"Number of degrees of freedom at node"), 
@@ -334,6 +351,7 @@ PYBIND11_MODULE(_pyg3, m)
      *|
      ******************************************************/
     py::class_<TimeSeries>(domain, "TimeSeries");
+    py::class_<PathTimeSeries>(domain, "PathTimeSeries");
     py::class_<LinearSeries, TimeSeries>(domain, "LinearSeries")
         .def (py::init())
         .def ("getFactor",     &LinearSeries::getFactor)
@@ -355,24 +373,26 @@ PYBIND11_MODULE(_pyg3, m)
                 double,
                 double>(),
               py::arg("motion"),
-		      py::arg("dof"),
-		      py::arg("tag"),
-		      py::arg("vel") = 0.0,
-		      py::arg("factor") = 1.0
+              py::arg("dof"),
+              py::arg("tag"),
+              py::arg("vel") = 0.0,
+              py::arg("factor") = 1.0
         )
-        //.def (py::init([](
-        //     GroundMotion& motion,
-		//     int dof,
-		//     int tag,
-		//     double vel,
-		//     double factor,		   
-        //)->StaticAnalysis{
-        //     printf("called\n\n\n");
-        //     return StaticAnalysis(
-        //         theDomain,theHandler,theNumberer,theModel,
-        //         theSolnAlgo,theSOE,theIntegrator, (ConvergenceTest *)0
-        //);})
-        //)
+        .def (py::init([](
+             int tag,
+             int dof,
+             py::array_t<double,py::array::c_style|py::array::forcecast> motion,
+             double time_step,
+             double vel=0.0,
+             double factor=1.0
+        ) -> UniformExcitation {
+             printf("called\n\n\n");
+             GroundMotion *ground_motion = quake2sees_motion(motion, time_step);
+             return UniformExcitation(*ground_motion, dof, tag, vel, factor);
+        }), 
+             py::arg("tag"), py::arg("dof"), py::arg("accel"), py::arg("time_step"),
+             py::arg("vel")=0.0, py::arg("factor")=1.0
+        )
     ;
 
     py::class_<NodalLoad>(domain, "NodalLoad", 
@@ -388,6 +408,5 @@ PYBIND11_MODULE(_pyg3, m)
     py::class_<SP_Constraint>(domain, "SP_Constraint")
         .def (py::init<int, int, int, double>())
     ;
-
 }
 
