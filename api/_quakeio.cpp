@@ -17,7 +17,7 @@ quake2sees_motion(
     double time_step, 
     double time_start = 0.0, 
     double cfactor = 1.0,
-    int tag = 0
+    int tag = 110
 )
 {
     Vector *accel;
@@ -32,9 +32,33 @@ quake2sees_motion(
     /* {Vector} -> {TimeSeries:PathTimeSeries} */
     accelSeries = new PathSeries(tag, *accel, time_step, cfactor, false, time_start);
 
-    groundMotion = new GroundMotion(0, 0, accelSeries);
+    groundMotion = new GroundMotion(0, 0, accelSeries, 0);
     return groundMotion;
     /* TimeSeries -> Pattern:UniformExcitation */
 
 }
 
+GroundMotion*
+ground_motion(
+    double* accel_array, 
+    int array_size,
+    double time_step, 
+    double time_start = 0.0, 
+    double cfactor = 1.0,
+    int tag = 110
+)
+{
+    Vector *accel;
+    TimeSeries *accelSeries;
+    GroundMotion *groundMotion;
+    /* quake -> {Vector} */
+    accel = new Vector(accel_array,array_size);
+
+    /* {Vector} -> {TimeSeries:PathTimeSeries} */
+    accelSeries = new PathSeries(tag, *accel, time_step, cfactor, false, time_start);
+
+    groundMotion = new GroundMotion(0, 0, accelSeries, 0);
+    return groundMotion;
+    /* TimeSeries -> Pattern:UniformExcitation */
+
+}
