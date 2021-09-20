@@ -85,6 +85,7 @@ OPS_Stream *opserrPtr = &sserr;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 #include <elementAPI.h>
 extern "C" int         OPS_ResetInputNoBuilder(ClientData clientData, Tcl_Interp * interp, int cArg, int mArg, TCL_Char * *argv, Domain * domain);
@@ -138,7 +139,10 @@ extern "C" int         OPS_ResetInputNoBuilder(ClientData clientData, Tcl_Interp
 #include <CTestFixedNumIter.h>
 #include <NormDispAndUnbalance.h>
 #include <NormDispOrUnbalance.h>
+
+#if defined(OPSDEF_Element_PFEM)
 #include <CTestPFEM.h>
+#endif
 
 // soln algorithms
 #include <Linear.h>
@@ -188,7 +192,10 @@ extern "C" int         OPS_ResetInputNoBuilder(ClientData clientData, Tcl_Interp
 #include <DisplacementControl.h>
 #include <EQPath.h>
 
+#if defined(OPSDEF_Element_PFEM)
 #include <PFEMIntegrator.h>
+#endif
+
 #include <Integrator.h>//Abbas
 
 //  recorders
@@ -254,7 +261,10 @@ extern void OPS_ResponseSpectrumAnalysis(void);
 #include <StaticAnalysis.h>
 #include <DirectIntegrationAnalysis.h>
 #include <VariableTimeStepDirectIntegrationAnalysis.h>
+
+#if defined(OPSDEF_Element_PFEM)
 #include <PFEMAnalysis.h>
+#endif
 
 // system of eqn and solvers
 #include <BandSPDLinSOE.h>
@@ -287,6 +297,8 @@ extern void OPS_ResponseSpectrumAnalysis(void);
 // #include <BandSPDLinThreadSolver.h>
 
 #include <SparseGenColLinSOE.h>
+
+#if defined(OPSDEF_Element_PFEM)
 #include <PFEMSolver.h>
 #include <PFEMSolver_Umfpack.h>
 #include <PFEMLinSOE.h>
@@ -295,6 +307,7 @@ extern void OPS_ResponseSpectrumAnalysis(void);
 #ifdef _MUMPS
 #include <PFEMSolver_Mumps.h>
 #include <PFEMCompressibleSolver_Mumps.h>
+#endif
 #endif
 
 #ifdef _THREADS
@@ -338,8 +351,12 @@ extern void OPS_ResponseSpectrumAnalysis(void);
 #include <SparseGenRowLinSOE.h>
 #include <SymSparseLinSOE.h>
 #include <SymSparseLinSolver.h>
+
+#if defined(OPSDEF_Numerics_UMFPACK)
 #include <UmfpackGenLinSOE.h>
 #include <UmfpackGenLinSolver.h>
+#endif // _OPS_Numerics_UMFPACK
+
 #include <EigenSOE.h>
 #include <EigenSolver.h>
 #include <ArpackSOE.h>
@@ -528,7 +545,9 @@ DirectIntegrationAnalysis *theTransientAnalysis = 0;
 VariableTimeStepDirectIntegrationAnalysis *theVariableTimeStepTransientAnalysis = 0;
 int numEigen = 0;
 
+#if defined(OPSDEF_Element_PFEM)
 static PFEMAnalysis* thePFEMAnalysis = 0;
+#endif
 
 // AddingSensitivity:BEGIN /////////////////////////////////////////////
 #ifdef _RELIABILITY
@@ -1133,7 +1152,7 @@ int OpenSeesAppInit(Tcl_Interp *interp) {
 
     // create an error handler
 
-#ifdef _NOGRAPHICS
+#if defined(_NOGRAPHICS)
 
 #else
     theTclVideoPlayer = 0;
@@ -1493,7 +1512,9 @@ wipeAnalysis(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **arg
   theTransientAnalysis =0;    
   theVariableTimeStepTransientAnalysis =0;   
   //  theSensitivityAlgorithm=0; 
+#if defined(OPSDEF_Element_PFEM)
   thePFEMAnalysis = 0;
+#endif
   theTest = 0;
 
 // AddingSensitivity:BEGIN /////////////////////////////////////////////////
@@ -1903,10 +1924,10 @@ analyzeModel(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **arg
       return TCL_ERROR;	      
 
     result = theStaticAnalysis->analyze(numIncr);
-
+#if defined(OPSDEF_Element_PFEM)
   } else if(thePFEMAnalysis != 0) {
       result = thePFEMAnalysis->analyze();
-
+#endif
   } else if (theTransientAnalysis != 0) {
     if (argc < 3) {
       opserr << "WARNING transient analysis: analysis numIncr? deltaT?\n";
@@ -2484,6 +2505,8 @@ specifyAnalysis(ClientData clientData, Tcl_Interp *interp, int argc,
 	}
 #endif
 // AddingSensitivity:END /////////////////////////////////
+
+#if defined(OPSDEF_Element_PFEM)
     } else if(strcmp(argv[1], "PFEM") == 0) {
 
         if(argc < 5) {
@@ -2544,6 +2567,7 @@ specifyAnalysis(ClientData clientData, Tcl_Interp *interp, int argc,
                                            theTest,dtmax,dtmin,gravity,ratio);
 
         theTransientAnalysis = thePFEMAnalysis;
+#endif
 
     } else if (strcmp(argv[1],"Transient") == 0) {
 	// make sure all the components have been built,
@@ -3042,6 +3066,7 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
   }
 #endif
 
+#if defined(OPSDEF_Element_PFEM)
   else if(strcmp(argv[1], "PFEM") == 0) {
       if(argc <= 2) {
           PFEMSolver* theSolver = new PFEMSolver();
@@ -3060,7 +3085,7 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
 	  }
 	  PFEMSolver_Mumps* theSolver = new PFEMSolver_Mumps(relax,0,0,0);
           theSOE = new PFEMLinSOE(*theSolver);
-#endif
+#endif // _PARALLEL_INTERPRETERS
       } else if (strcmp(argv[2],"-quasi-mumps")==0) {
 #ifdef _PARALLEL_INTERPRETERS
 	  int relax = 20;
@@ -3072,9 +3097,10 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
 	  }
 	  PFEMCompressibleSolver_Mumps* theSolver = new PFEMCompressibleSolver_Mumps(relax,0,0);
           theSOE = new PFEMCompressibleLinSOE(*theSolver);
-#endif
+#endif // _PARALLEL_INTERPRETERS
       }
   }
+#endif // _OPS_Element_PFEM
 
 #ifdef _CUSP
   else if ((_stricmp(argv[1],"CuSP")==0)) {
@@ -3133,7 +3159,7 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
     theSOE = new SparseGenRowLinSOE(* theSolver);
     
   }
-#endif
+#endif // _CUSP
 
 #if defined(_CULAS4) || defined(_CULAS5)
   // CULA SPARSE
@@ -3331,7 +3357,7 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
     SymSparseLinSolver *theSolver = new SymSparseLinSolver();
     theSOE = new SymSparseLinSOE(*theSolver, lSparse);      
   }    
-  
+#if defined(OPSDEF_Numerics_UMFPACK) 
   else if ((strcmp(argv[1],"UmfPack") == 0) || (strcmp(argv[1],"Umfpack") == 0)) {
     
     // now must determine the type of solver to create from rest of args
@@ -3356,7 +3382,8 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
     UmfpackGenLinSolver *theSolver = new UmfpackGenLinSolver();
     // theSOE = new UmfpackGenLinSOE(*theSolver, factLVALUE, factorOnce, printTime);      
     theSOE = new UmfpackGenLinSOE(*theSolver);      
-  }	
+  }
+#endif // OPS_Numerics_UMFPACK
   
 #ifdef _ITPACK
 //  else if (strcmp(argv[1],"Itpack") == 0) {
@@ -3370,7 +3397,8 @@ specifySOE(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
 //    ItpackLinSolver *theSolver = new ItpackLinSolver(method);
 //    theSOE = new ItpackLinSOE(*theSolver);      
 //  }
-#endif	 
+#endif	// _ITPACK
+
   else if (strcmp(argv[1],"FullGeneral") == 0) {
     // now must determine the type of solver to create from rest of args
     FullGenLinLapackSolver *theSolver = new FullGenLinLapackSolver();
@@ -4219,7 +4247,7 @@ specifyCTest(ClientData clientData, Tcl_Interp *interp, int argc,
       if (Tcl_GetInt(interp, argv[7], &maxIncr) != TCL_OK)	
 	return TCL_ERROR;
     }
-
+#if defined(OPSDEF_Element_PFEM)
   } else if (strcmp(argv[1],"PFEM") == 0) {
       if(argc > 8) {
           if(Tcl_GetDouble(interp, argv[2], &tol) != TCL_OK)	
@@ -4249,6 +4277,7 @@ specifyCTest(ClientData clientData, Tcl_Interp *interp, int argc,
           if(Tcl_GetInt(interp, argv[11], &normType) != TCL_OK)	
               return TCL_ERROR;
       }
+#endif // _OPS_Element_PFEM
 
   } else if (strcmp(argv[1],"FixedNumIter") == 0) {
 
@@ -4346,9 +4375,11 @@ specifyCTest(ClientData clientData, Tcl_Interp *interp, int argc,
     else if (strcmp(argv[1],"RelativeEnergyIncr") == 0) 
       theNewTest = new CTestRelativeEnergyIncr(tol,numIter,printIt,normType);             
     else if (strcmp(argv[1],"RelativeTotalNormDispIncr") == 0) 
-      theNewTest = new CTestRelativeTotalNormDispIncr(tol,numIter,printIt,normType);             
+      theNewTest = new CTestRelativeTotalNormDispIncr(tol,numIter,printIt,normType);
+#if defined(OPSDEF_Element_PFEM)
     else if (strcmp(argv[1],"PFEM") == 0) 
         theNewTest = new CTestPFEM(tol,tolp,tol2,tolp2,tolrel,tolprel,numIter,maxIncr,printIt,normType);
+#endif // _OPS_Element_PFEM
     else {
       opserr << "WARNING No ConvergenceTest type (NormUnbalance, NormDispIncr, EnergyIncr, \n";
       opserr << "RelativeNormUnbalance, RelativeNormDispIncr, RelativeEnergyIncr, \n";
@@ -4768,7 +4799,7 @@ specifyIntegrator(ClientData clientData, Tcl_Interp *interp, int argc,
     if (theTransientAnalysis != 0)
       theTransientAnalysis->setIntegrator(*theTransientIntegrator);
   }
-  
+#if defined(OPSDEF_Element_PFEM) 
   else if (strcmp(argv[1],"PFEM") == 0) {
     theTransientIntegrator = new PFEMIntegrator();
 
@@ -4776,7 +4807,8 @@ specifyIntegrator(ClientData clientData, Tcl_Interp *interp, int argc,
     if (theTransientAnalysis != 0)
       theTransientAnalysis->setIntegrator(*theTransientIntegrator);
   } 
-  
+#endif // _OPS_Element_PFEM
+
   else if (strcmp(argv[1],"NewmarkExplicit") == 0) {
     theTransientIntegrator = (TransientIntegrator *)OPS_NewmarkExplicit();
     

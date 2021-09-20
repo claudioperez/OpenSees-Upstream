@@ -1,6 +1,7 @@
-target_sources(analysis
+target_sources(OPS_Analysis
     PRIVATE
       EquiSolnAlgo.cpp 
+      ExpressNewton.cpp
       Linear.cpp 
       NewtonRaphson.cpp
       ModifiedNewton.cpp 
@@ -18,6 +19,7 @@ target_sources(analysis
       BisectionLineSearch.cpp
     PUBLIC
       EquiSolnAlgo.h 
+      ExpressNewton.h
       Linear.h 
       NewtonRaphson.h
       ModifiedNewton.h 
@@ -35,6 +37,6 @@ target_sources(analysis
       BisectionLineSearch.h
 )
 
-target_include_directories(analysis PUBLIC $(CMAKE_CURRENT_LIST_DIR))
+target_include_directories(OPS_Analysis PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 add_subdirectory(accelerator)

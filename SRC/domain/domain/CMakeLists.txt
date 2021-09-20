@@ -1,20 +1,23 @@
 
-target_sources(domain
+target_sources(OPS_Domain
     PRIVATE
-	Domain.cpp
+    Domain.cpp
+    DomainModalProperties.cpp
     PUBLIC
-	Domain.h
-	ElementIter.h
-	LoadCaseIter.h
-	MP_ConstraintIter.h
-	NodeIter.h
-	ParameterIter.h
-	Pressure_ConstraintIter.h
-	SP_ConstraintIter.h
-	SubdomainIter.h
+    Domain.h
+    DomainModalProperties.h
+    ElementIter.h
+    LoadCaseIter.h
+    MP_ConstraintIter.h
+    NodeIter.h
+    ParameterIter.h
+    Pressure_ConstraintIter.h
+    SP_ConstraintIter.h
+    SubdomainIter.h
 )
 
-target_include_directories(domain PUBLIC $(CMAKE_CURRENT_LIST_DIR))
+
+target_include_directories(OPS_Domain PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 add_subdirectory(single)
 add_subdirectory(partitioned)

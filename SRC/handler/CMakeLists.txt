@@ -1,8 +1,8 @@
-add_library(handler "")
+#add_library(handler OBJECT)
 
-target_sources(handler
+target_sources(OPS_Handler
     PRIVATE
-	OPS_Stream.cpp
+    OPS_Stream.cpp
         StandardStream.cpp
         FileStream.cpp
         XmlFileStream.cpp
@@ -14,7 +14,7 @@ target_sources(handler
         TCP_Stream.cpp
         ChannelStream.cpp
     PUBLIC
-	OPS_Stream.h
+    OPS_Stream.h
         StandardStream.h
         FileStream.h
         XmlFileStream.h
@@ -27,4 +27,4 @@ target_sources(handler
         ChannelStream.h
 )
 
-target_include_directories(handler PUBLIC $(CMAKE_CURRENT_LIST_DIR))
+target_include_directories(OPS_Handler PUBLIC ${CMAKE_CURRENT_LIST_DIR})

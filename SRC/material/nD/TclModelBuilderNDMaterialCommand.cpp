@@ -141,12 +141,12 @@ extern  void *OPS_FSAMMaterial(void); // K Kolozvari
 extern void *OPS_Damage2p(void);
 #endif
 
-
+#if defined(OPSDEF_Material_FEAP)
 NDMaterial *
 TclModelBuilder_addFeapMaterial(ClientData clientData, Tcl_Interp *interp,
 				int argc, TCL_Char **argv,
 				TclModelBuilder *theTclBuilder);
-
+#endif // _OPS_Material_FEAP
 
 extern int OPS_ResetInput(ClientData clientData, 
 			  Tcl_Interp *interp,  
@@ -528,6 +528,7 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
 	return TCL_ERROR;
     }
 
+#ifdef OPSDEF_MATERIAL_STRESSDENSITY
     else if ((strcmp(argv[1],"stressDensity") == 0) || (strcmp(argv[1],"StressDensity") == 0)) {
       
       void *theMat = OPS_StressDensityMaterial();
@@ -536,6 +537,7 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
       else
 	return TCL_ERROR;
     }
+#endif
 
     else if ((strcmp(argv[1],"ElasticIsotropic3D") == 0)) {
 
@@ -2102,6 +2104,8 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
 	}
 
 	//end of adding thermo-mechanical nd materials-L.Jiang[SIF]
+
+#if defined(OPSDEF_Material_FEAP)
     else {
       theMaterial = TclModelBuilder_addFeapMaterial(clientData,
 						    interp,
@@ -2109,6 +2113,7 @@ TclModelBuilderNDMaterialCommand (ClientData clientData, Tcl_Interp *interp, int
 						    argv,
 						    theTclBuilder);
     }
+#endif // _OPS_Material_FEAP
 
     if (theMaterial == 0) {
       //
