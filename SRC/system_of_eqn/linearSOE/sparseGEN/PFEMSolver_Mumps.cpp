@@ -52,8 +52,7 @@
 #include <amgcl/adapter/zero_copy.hpp>
 #endif
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_PFEMSolver_Mumps)
+void* OPS_PFEMSolver_Mumps()
 {
     int numdata = 1;
     int relax = 20;

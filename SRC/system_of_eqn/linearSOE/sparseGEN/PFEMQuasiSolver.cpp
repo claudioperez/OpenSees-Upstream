@@ -30,10 +30,8 @@
 #include <PFEMQuasiLinSOE.h>
 #include <iostream>
 #include <cmath>
-#include <api/elementAPI.h>
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_PFEMQuasiSolver)
+void* OPS_PFEMQuasiSolver()
 {
     PFEMQuasiSolver* theSolver = new PFEMQuasiSolver();
     return new PFEMQuasiLinSOE(*theSolver);

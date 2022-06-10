@@ -34,8 +34,7 @@
 #include <Timer.h>
 #include <elementAPI.h>
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_PFEMSolver_Laplace)
+void* OPS_PFEMSolver_Laplace()
 {
     bool once = false;
     if (OPS_GetNumRemainingInputArgs() > 0) {

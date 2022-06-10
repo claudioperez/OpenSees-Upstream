@@ -33,10 +33,8 @@
 #include <PFEMLinSOE.h>
 #include <iostream>
 #include <cmath>
-#include <api/elementAPI.h>
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_PFEMSolver)
+void* OPS_PFEMSolver()
 {
     PFEMSolver* theSolver = new PFEMSolver();
     return new PFEMLinSOE(*theSolver);

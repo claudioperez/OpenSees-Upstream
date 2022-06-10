@@ -34,10 +34,8 @@
 #include <BandSPDLinSOE.h>
 //#include <f2c.h>
 #include <math.h>
-#include <api/runtimeAPI.h>
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_BandSPDLinLapack)
+void* OPS_BandSPDLinLapack()
 {
     BandSPDLinSolver *theSolver = new BandSPDLinLapackSolver();
     BandSPDLinSOE *theSOE = new BandSPDLinSOE(*theSolver);

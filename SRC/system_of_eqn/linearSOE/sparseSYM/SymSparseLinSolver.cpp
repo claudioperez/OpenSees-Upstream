@@ -25,8 +25,7 @@ extern "C" {
 #include "FeStructs.h"
 }
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_SymSparseLinSolver)
+void* OPS_SymSparseLinSolver()
 {
     // now determine ordering scheme
     //   1 -- MMD

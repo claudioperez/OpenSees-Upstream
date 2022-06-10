@@ -36,10 +36,8 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
 #include <Timer.h>
-#include <api/runtimeAPI.h>
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_SProfileSPDLinSolver)
+void* OPS_SProfileSPDLinSolver()
 {
     SProfileSPDLinSolver *theSolver = new SProfileSPDLinSolver(); 	
     return new SProfileSPDLinSOE(*theSolver); 

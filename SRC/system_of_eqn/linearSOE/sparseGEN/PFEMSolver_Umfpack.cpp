@@ -55,8 +55,7 @@
 #endif
 
 
-void *
-OPS_ADD_RUNTIME_VPV(OPS_PFEMSolver_Umfpack)
+void* OPS_PFEMSolver_Umfpack()
 {
     int numdata = 1;
     int print = 0;
