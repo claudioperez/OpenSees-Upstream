@@ -31,6 +31,8 @@
 #include <ElasticBilin.h>
 #include <Vector.h>
 #include <Channel.h>
+#include <Information.h>
+#include <Parameter.h>
 #include <math.h>
 #include <float.h>
 
@@ -44,7 +46,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_ElasticBilin)
   int argc = OPS_GetNumRemainingInputArgs();
 
   if (argc != 4 && argc != 7) {
-    opserr << "WARNING incorrect num args want: uniaxialMaterial ElasticBilin tag E1P? E2P? eps2P? <E1N? E2N? eps2N?>" << endln;
+    opserr << "WARNING incorrect num args want: uniaxialMaterial ElasticBilin tag? E1P? E2P? eps2P? <E1N? E2N? eps2N?>" << endln;
     return 0;
   }
 
@@ -58,9 +60,9 @@ void * OPS_ADD_RUNTIME_VPV(OPS_ElasticBilin)
   }
   
   argc--;
-  numData = argc;;
+  numData = argc;
   if (OPS_GetDoubleInput(&numData, dData) != 0) {
-    opserr << "WARNING invalid double data: uniaxialMaterial ElasticBilin tag E2P eps2P <E2N? eps2N?>" << endln;
+    opserr << "WARNING invalid double data: uniaxialMaterial ElasticBilin tag? E1P? E2P? eps2P? <E1N? E2N? eps2N?>" << endln;
     return 0;	
   }
 
@@ -82,7 +84,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_ElasticBilin)
 ElasticBilin::ElasticBilin()
 :UniaxialMaterial(0 ,MAT_TAG_ElasticBilin),
  E1P(0.0), E1N(0.0), E2P(0.0), E2N(0.0), eps2P(0.0), eps2N(0.0),
- trialStrain(0.0), trialStress(0.0), trialTangent(E1P)
+ trialStrain(0.0)
 {
  
 }
@@ -91,7 +93,7 @@ ElasticBilin::ElasticBilin()
 ElasticBilin::ElasticBilin(int tag, double e, double e2, double eps2)
 :UniaxialMaterial(tag, MAT_TAG_ElasticBilin),
  E1P(e), E1N(e), E2P(e2), E2N(e2), eps2P(eps2), eps2N(-eps2),
- trialStrain(0.0), trialStress(0.0), trialTangent(E1P)
+ trialStrain(0.0)
 {
   if (eps2 < 0.0) {
     eps2P = -eps2;
@@ -102,7 +104,7 @@ ElasticBilin::ElasticBilin(int tag, double e, double e2, double eps2)
 ElasticBilin::ElasticBilin(int tag, double ep, double e2p, double eps2p, double en, double e2n, double eps2n)
 :UniaxialMaterial(tag, MAT_TAG_ElasticBilin),
  E1P(ep), E1N(en), E2P(e2p), E2N(e2n), eps2P(eps2p), eps2N(eps2n),
- trialStrain(0.0), trialStress(0.0), trialTangent(E1P)
+ trialStrain(0.0)
 {
   if (eps2p < 0.0) {
     eps2P = -eps2p;
@@ -120,24 +122,6 @@ int
 ElasticBilin::setTrialStrain(double strain, double strainRate)
 {
     trialStrain = strain;
-    
-    if (trialStrain >= 0.0) {
-      if (trialStrain < eps2P) {
-	trialTangent = E1P;
-	trialStress = E1P*trialStrain;
-      } else { 
-	trialTangent = E2P;
-	trialStress = E1P*eps2P + (trialStrain-eps2P)*E2P;
-      }  
-    } else {
-      if (trialStrain > eps2N) {
-	trialTangent = E1N;
-	trialStress = E1N*trialStrain;
-      } else {
-	trialTangent = E2N;
-	trialStress = E1N*eps2N + (trialStrain-eps2N)*E2N;
-      }
-    }
 
     return 0;
 }
@@ -151,6 +135,22 @@ ElasticBilin::getStrain(void)
 double 
 ElasticBilin::getStress(void)
 {
+  double trialStress;
+  
+  if (trialStrain >= 0.0) {
+    if (trialStrain < eps2P) {
+      trialStress = E1P*trialStrain;
+    } else { 
+      trialStress = E1P*eps2P + (trialStrain-eps2P)*E2P;
+    }  
+  } else {
+    if (trialStrain > eps2N) {
+      trialStress = E1N*trialStrain;
+    } else {
+      trialStress = E1N*eps2N + (trialStrain-eps2N)*E2N;
+    }
+  }
+  
   return trialStress;
 }
 
@@ -158,6 +158,22 @@ ElasticBilin::getStress(void)
 double 
 ElasticBilin::getTangent(void)
 {
+  double trialTangent;
+  
+  if (trialStrain >= 0.0) {
+    if (trialStrain < eps2P) {
+      trialTangent = E1P;
+    } else { 
+      trialTangent = E2P;
+    }  
+  } else {
+    if (trialStrain > eps2N) {
+      trialTangent = E1N;
+    } else {
+      trialTangent = E2N;
+    }
+  }
+  
   return trialTangent;
 }
 
@@ -171,7 +187,6 @@ ElasticBilin::commitState(void)
 int 
 ElasticBilin::revertToLastCommit(void)
 {
-  this->setTrialStrain(commitStrain);
   return 0;
 }
 
@@ -180,9 +195,6 @@ int
 ElasticBilin::revertToStart(void)
 {
   trialStrain = 0;
-  trialStress = 0;
-  trialTangent = 0;
-  commitStrain = 0;
 
   return 0;
 }
@@ -193,6 +205,8 @@ ElasticBilin::getCopy(void)
 {
   ElasticBilin *theCopy =
     new ElasticBilin(this->getTag(), E1P, E2P, eps2P, E1N, E2N, eps2N);
+
+  theCopy->trialStrain = trialStrain;
   
   return theCopy;
 }
@@ -228,7 +242,7 @@ ElasticBilin::recvSelf(int cTag, Channel &theChannel,
   if (res < 0) 
     opserr << "ElasticBilin::recvSelf() - failed to recv data\n";
   else {
-    this->setTag(data(0));
+    this->setTag((int)data(0));
     E1P     = data(1);
     E1N     = data(2);
     E2P     = data(3);
@@ -246,7 +260,91 @@ ElasticBilin::Print(OPS_Stream &s, int flag)
     s << "ElasticBilin tag: " << this->getTag() << endln;
     s << "Input Parameters: E1P: " << E1P << " E2P: " << E2P << " eps2P: " << eps2P;
     s << "  E1N: " << E1N << " E2N: " << E2N << " eps2N: " << eps2N << endln;
-    s << "Current State: strain: "<< trialStrain << " stress: " << trialStress << " tangent: " << trialTangent << endln;
+    s << "Current State: strain: "<< trialStrain << endln;
 }
 
+int
+ElasticBilin::setParameter(const char **argv, int argc, Parameter &param)
+{
+  if (strcmp(argv[0],"E1p") == 0) {
+    param.setValue(E1P);
+    return param.addObject(1, this);
+  }
+  if (strcmp(argv[0],"E2p") == 0) {
+    param.setValue(E2P);
+    return param.addObject(2, this);
+  }
+  if (strcmp(argv[0],"eps2p") == 0) {
+    param.setValue(eps2P);
+    return param.addObject(3, this);
+  }
+  if (strcmp(argv[0],"E1n") == 0) {
+    param.setValue(E1N);
+    return param.addObject(4, this);
+  }
+  if (strcmp(argv[0],"E2n") == 0) {
+    param.setValue(E2N);
+    return param.addObject(5, this);
+  }
+  if (strcmp(argv[0],"eps2n") == 0) {
+    param.setValue(eps2N);
+    return param.addObject(6, this);
+  }
+  if (strcmp(argv[0],"E1") == 0) {
+    param.setValue(E1P);
+    return param.addObject(7, this);
+  }
+  if (strcmp(argv[0],"E2") == 0) {
+    param.setValue(E2P);
+    return param.addObject(8, this);
+  }
+  if (strcmp(argv[0],"eps2") == 0) {
+    param.setValue(eps2P);
+    return param.addObject(9, this);
+  }
+  
+  return -1;
+}
 
+int
+ElasticBilin::updateParameter(int parameterID, Information &info)
+{
+  switch (parameterID) {
+  case -1:
+    return -1;
+  case 1:
+    E1P = info.theDouble;
+    break;
+  case 2:
+    E2P = info.theDouble;
+    break;
+  case 3:
+    eps2P = info.theDouble;
+    break;
+  case 4:
+    E1N = info.theDouble;
+    break;
+  case 5:
+    E2N = info.theDouble;
+    break;
+  case 6:
+    eps2N = info.theDouble;
+    break;
+  case 7:
+    E1P = info.theDouble;
+    E1N = E1P;
+    break;
+  case 8:
+    E2P = info.theDouble;
+    E2N = E2P;
+    break;
+  case 9:
+    eps2P = info.theDouble;
+    eps2N = eps2P;
+    break;
+  default:
+    return -1;
+  }
+
+  return 0;
+}

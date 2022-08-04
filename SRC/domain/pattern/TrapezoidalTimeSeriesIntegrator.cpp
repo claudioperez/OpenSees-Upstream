@@ -124,6 +124,7 @@ TrapezoidalTimeSeriesIntegrator::integrate(TimeSeries *theSeries, double delta)
 
   // Set the method return value
   PathSeries *returnSeries = new PathSeries (0, *theIntegratedValues, delta, true);
+  delete theIntegratedValues;
 
   if (returnSeries == 0) {
     opserr << "TrapezoidalTimeSeriesIntegrator::integrate() Ran out of memory creating PathSeries\n";

@@ -56,6 +56,7 @@
 
 
 // uniaxial material model header files
+#include "ElasticBilin.h"
 #include "BoucWenMaterial.h"		//SAJalali
 #include "SPSW02.h"			//SAJalali
 #include "ElasticMaterial.h"
@@ -85,6 +86,7 @@
 #include "ViscousMaterial.h"
 #include "ViscousDamper.h"
 #include "PathIndependentMaterial.h"
+#include "BackboneMaterial.h"
 #include "SeriesMaterial.h"
 #include "CableMaterial.h"
 #include "ENTMaterial.h"
@@ -97,7 +99,12 @@
 #include "Bond_SP01.h"
 #include "SimpleFractureMaterial.h"
 #include "ConfinedConcrete01.h"
+
 #include <HystereticPoly.h>					// Salvatore Sessa 14-Jan-2021
+#include <HystereticSmooth.h>					// Salvatore Sessa Apr-19-2022
+#include <HystereticAsym.h>					// Salvatore Sessa Apr-21-2022
+
+
 #include "DowelType.h"
 
 //PY springs: RWBoulanger and BJeremic
@@ -211,6 +218,8 @@
 #include "frictionBearing/frictionModel/VelPressureDep.h"
 #include "frictionBearing/frictionModel/VelDepMultiLinear.h"
 #include "frictionBearing/frictionModel/VelNormalFrcDep.h"
+
+#include "ArctangentBackbone.h"
 
 // element header files
 #include "Element.h"
@@ -338,6 +347,13 @@
 #include "LowOrderBeamIntegration.h"
 #include "MidDistanceBeamIntegration.h"
 #include "CompositeSimpsonBeamIntegration.h"
+
+#include "RCCircularSectionIntegration.h"
+#include "RCSectionIntegration.h"
+#include "RCTBeamSectionIntegration.h"
+#include "RCTunnelSectionIntegration.h"
+#include "TubeSectionIntegration.h"
+#include "WideFlangeSectionIntegration.h"
 
 // node header files
 #include "Node.h"
@@ -1148,11 +1164,59 @@ FEM_ObjectBrokerAllClasses::getNewBeamIntegration(int classTag)
   }
 }
 
+SectionIntegration *
+FEM_ObjectBrokerAllClasses::getNewSectionIntegration(int classTag)
+{
+  switch(classTag) {
+  case SECTION_INTEGRATION_TAG_WideFlange:        
+    return new WideFlangeSectionIntegration();
+
+  case SECTION_INTEGRATION_TAG_RC:        
+    return new RCSectionIntegration();
+
+  case SECTION_INTEGRATION_TAG_RCT:        
+    return new RCTBeamSectionIntegration();        
+
+  case SECTION_INTEGRATION_TAG_RCCIRCULAR:        
+    return new RCCircularSectionIntegration();
+
+  case SECTION_INTEGRATION_TAG_RCTUNNEL:        
+    return new RCTunnelSectionIntegration();
+
+  case SECTION_INTEGRATION_TAG_Tube:        
+    return new TubeSectionIntegration();    
+    
+  default:
+    opserr << "FEM_ObjectBrokerAllClasses::getSectionIntegration - ";
+    opserr << " - no SectionIntegration type exists for class tag ";
+    opserr << classTag << endln;
+    return 0;
+  }
+}
+
+
+HystereticBackbone *
+FEM_ObjectBrokerAllClasses::getNewHystereticBackbone(int classTag)
+{
+  switch (classTag) {
+  case BACKBONE_TAG_Arctangent:
+    return new ArctangentBackbone();
+    
+  default:
+    opserr << "FEM_ObjectBrokerAllClasses::getHystereticBackbone - ";
+    opserr << " - no HystereticBackbone type exists for class tag ";
+    opserr << classTag << endln;
+    return 0;
+  }
+}
 
 UniaxialMaterial *
 FEM_ObjectBrokerAllClasses::getNewUniaxialMaterial(int classTag)
 {
     switch(classTag) {
+    case MAT_TAG_ElasticBilin:
+      return new ElasticBilin();
+      
 	case MAT_TAG_SPSW02:
 		return new SPSW02(); // SAJalali
 	case MAT_TAG_BoucWen:
@@ -1274,6 +1338,9 @@ FEM_ObjectBrokerAllClasses::getNewUniaxialMaterial(int classTag)
 	case MAT_TAG_PathIndependent:
 		return new PathIndependentMaterial();
 
+	case MAT_TAG_Backbone:
+		return new BackboneMaterial();		
+
 	case MAT_TAG_SeriesMaterial:
 		return new SeriesMaterial();
 
@@ -1354,6 +1421,12 @@ FEM_ObjectBrokerAllClasses::getNewUniaxialMaterial(int classTag)
 		    
 	case MAT_TAG_HystereticPoly:			// Salvatore Sessa
 	    return new HystereticPoly();
+		    
+	case MAT_TAG_HystereticSmooth:			// Salvatore Sessa
+			return new HystereticSmooth();
+
+	case MAT_TAG_HystereticAsym:			// Salvatore Sessa
+		return new HystereticAsym();	    
 
 	case MAT_TAG_DowelType:
 		return new DowelType();
@@ -2451,7 +2524,7 @@ FEM_ObjectBrokerAllClasses::getSubdomainPtr(int classTag)
     return 0;
 }
 
-
+/*
 int 
 FEM_ObjectBrokerAllClasses::addUniaxialMaterial(int classTag, 
 				      const char *lib, 
@@ -2504,7 +2577,7 @@ FEM_ObjectBrokerAllClasses::addUniaxialMaterial(int classTag,
   return 0;
 
 }
-
+*/
 
 Parameter *
 FEM_ObjectBrokerAllClasses::getParameter(int classTag)

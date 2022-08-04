@@ -15,7 +15,6 @@
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>  
 
-#define ND_TAG_LinearCap  12345654342
 #include <T2Vector.h>
 #include <MaterialResponse.h>
 #include <elementAPI.h>
@@ -442,7 +441,7 @@ const Vector & LinearCap::getStress(void) {
 	//if (theMode!=4) 
 	//opserr<<" this mode = "<<theMode<<endln;
 
-//	theMode = mode;  //  Ϊ�˱���mode����Ա������Ϊ��getTangent()�����á�
+//	theMode = mode;  //  为了保存mode到成员函数，为了getTangent()调试用。
 
 	double deltGammar1 =0.0;
 	double deltGammar2 =0.0;
@@ -544,7 +543,7 @@ const Vector & LinearCap::getStress(void) {
 		       elasticTangent(i,j) = bulkModulus-2.0/3.0*shearModulus;     
 
         for(int  i=0; i<6; i++)
-		       elasticTangent(i,i) += 2.0*shearModulus;       //��������Ծ���
+		       elasticTangent(i,i) += 2.0*shearModulus;       //定义出弹性矩阵
 	    theTangent = elasticTangent;
 
 	}

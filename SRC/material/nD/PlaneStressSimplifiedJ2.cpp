@@ -41,7 +41,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_PlaneStressSimplifiedJ2) {
   double K, G, sig0, H_kin, H_iso;
 
   int numArgs = OPS_GetNumRemainingInputArgs();
-  if (numArgs != 6) {
+  if (numArgs < 6) {
     opserr << "ndMaterial PlaneStressSimplifiedJ2 incorrect num args: want tag G K sig0 H_kin H_iso\n";
     return 0;
   }
@@ -67,18 +67,18 @@ void * OPS_ADD_RUNTIME_VPV(OPS_PlaneStressSimplifiedJ2) {
   H_kin = dData[3];
   H_iso = dData[4];
 
-  NDMaterial *theMaterial2 =  new SimplifiedJ2 (tag, 
-						3,
-						G,   
-						K,
-						sig0,
-						H_kin,
-						H_iso);
+  SimplifiedJ2 the3DMaterial(tag, 
+			     3,
+			     G,   
+			     K,
+			     sig0,
+			     H_kin,
+			     H_iso);
   
   
   NDMaterial *theMaterial = new PlaneStressSimplifiedJ2 (tag, 
 							 2,
-							 *theMaterial2);
+							 the3DMaterial);
   return theMaterial;
 }
 
@@ -87,7 +87,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_PlaneStressSimplifiedJ2) {
 PlaneStressSimplifiedJ2::PlaneStressSimplifiedJ2 (int pTag, 
 						   int nd, 
 						   NDMaterial &passed3DMaterial)
-  : NDMaterial(pTag,ND_TAG_PlaneStress), stress(3),
+  : NDMaterial(pTag,ND_TAG_PlaneStress), the3DMaterial(0), stress(3),
     strain(3), Cstress(3), Cstrain(3),theTangent(3,3)	
     
 {
@@ -106,9 +106,10 @@ PlaneStressSimplifiedJ2::PlaneStressSimplifiedJ2 (int pTag,
 
 
 
-PlaneStressSimplifiedJ2::~PlaneStressSimplifiedJ2() {
-	
-	return; 
+PlaneStressSimplifiedJ2::~PlaneStressSimplifiedJ2()
+{
+  if (the3DMaterial != 0)
+    delete the3DMaterial;
 };
 
      

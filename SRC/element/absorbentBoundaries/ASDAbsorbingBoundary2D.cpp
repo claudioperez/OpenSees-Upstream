@@ -1341,7 +1341,7 @@ void ASDAbsorbingBoundary2D::addRff(Vector& R)
 
 void ASDAbsorbingBoundary2D::addKffToSoil(Matrix& K)
 {
-    // Add the stiffness matrix of the forces transfered from the
+    // Add the stiffness matrix of the forces transferred from the
     // free-field column to the soil domain.
     // Only on vertical boundaries
 
@@ -1371,7 +1371,7 @@ void ASDAbsorbingBoundary2D::addKffToSoil(Matrix& K)
 
 void ASDAbsorbingBoundary2D::addRffToSoil(Vector& R)
 {
-    // Add the forces transfered from the
+    // Add the forces transferred from the
     // free-field column to the soil domain.
     // Only on vertical boundaries
 
@@ -1582,7 +1582,7 @@ void ASDAbsorbingBoundary2D::addBaseActions(Vector& R)
     if (!(m_boundary & BND_BOTTOM))
         return;
 
-    // re-use the getLKcoeff utilty
+    // re-use the getLKcoeff utility
     double ap, as;
     getLKcoeff(ap, as);
     // swap back...

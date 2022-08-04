@@ -251,7 +251,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_MultipleNormalSpring)
   
 
 
-    // input cofirmation
+    // input confirmation
     // necessary arguments
     if (recvMat != 1)  {
 	char buf[100];

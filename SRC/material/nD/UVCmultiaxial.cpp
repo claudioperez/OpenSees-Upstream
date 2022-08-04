@@ -64,7 +64,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_UVCmultiaxial) {
     return 0;
   }
 
-  // Read in the updated model paramters
+  // Read in the updated model parameters
   nInputsToRead = N_UPDATED_PROPERTIES;
   if (OPS_GetDoubleInput(&nInputsToRead, updProps) != 0) {
     opserr << inputInstructions.c_str() << endln;

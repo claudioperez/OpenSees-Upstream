@@ -153,6 +153,15 @@ MultiplierMaterial::getTangent(void)
 }
 
 double 
+MultiplierMaterial::getInitialTangent(void)
+{
+  if (theMaterial)
+    return multiplier*theMaterial->getInitialTangent();
+  else
+    return 0.0;
+}
+
+double 
 MultiplierMaterial::getDampTangent(void)
 {
   if (theMaterial)

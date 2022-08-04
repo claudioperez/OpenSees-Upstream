@@ -138,6 +138,8 @@ using namespace std; //Added by AMK for debugging
 				//Return new material:
 				return theMaterial;
 			}
+
+			return 0;
 	}
 
 //-----------------------------------------------------------------------
@@ -367,12 +369,12 @@ TDConcrete::setStress(double strain, double &stiff)
     	} else { // either Tens Load, Tens Unload, or Tens reload
     		double et0 = ft/Ec;
     		if (strain >= ecmax) { //Tens Load or reload if strain is larger than before
-    		//Need to check whether cracking has occured or not
+    		//Need to check whether cracking has occurred or not
     		//If cracked, then reloading occurs along Et
     		//If not cracked, then loading occurs according to Tens_Envlp
     			ecmax = strain; // reset ecmax
     			this->Tens_Envlp(strain, stress, stiff);
-    			if (strain >= et0) {//cracking has occured, set cracking flag
+    			if (strain >= et0) {//cracking has occurred, set cracking flag
     				crack_flag = 1;
     			}
     		} else { //Tens Unload or Tens Reload

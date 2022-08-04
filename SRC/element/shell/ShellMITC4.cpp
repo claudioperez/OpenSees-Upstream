@@ -971,7 +971,7 @@ ShellMITC4::addLoad(ElementalLoad *theLoad, double loadFactor)
   const Vector &data = theLoad->getData(type, loadFactor);
 
   if (type == LOAD_TAG_SelfWeight) {
-      // added compatability with selfWeight class implemented for all continuum elements, C.McGann, U.W.
+      // added compatibility with selfWeight class implemented for all continuum elements, C.McGann, U.W.
       applyLoad = 1;
       appliedB[0] += loadFactor*data(0);
       appliedB[1] += loadFactor*data(1);

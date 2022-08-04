@@ -148,10 +148,7 @@ InitStrainMaterial::getDampTangent(void)
 double 
 InitStrainMaterial::getStrain(void)
 {
-  if (theMaterial)
-    return theMaterial->getStrain();
-  else
-    return 0.0;
+  return localStrain;
 }
 
 double 
@@ -289,6 +286,15 @@ InitStrainMaterial::recvSelf(int cTag, Channel &theChannel,
 void 
 InitStrainMaterial::Print(OPS_Stream &s, int flag)
 {
+    if (flag == OPS_PRINT_PRINTMODEL_MATERIAL) {
+        s << "InitStrainMaterial tag: " << this->getTag() << endln;
+        if (theMaterial)
+            s << "\tMaterial: " << theMaterial->getTag() << endln;
+        else
+            s << "\tMaterial is NULL" << endln;
+        s << "\tInitial strain: " << epsInit << endln;
+    }
+
 	if (flag == OPS_PRINT_PRINTMODEL_JSON) {
 		s << "\t\t\t{";
 		s << "\"name\": \"" << this->getTag() << "\", ";
@@ -298,13 +304,6 @@ InitStrainMaterial::Print(OPS_Stream &s, int flag)
 		else
 		  s << "\"Material\": " << "NULL" << ", ";
 		s << "\"initialStrain\": " << epsInit <<  "}";
-	} else {
-		s << "InitStrainMaterial tag: " << this->getTag() << endln;
-		if (theMaterial)
-		  s << "\tMaterial: " << theMaterial->getTag() << endln;
-		else
-		  s << "\tMaterial is NULL" << endln;
-		s << "\tinitital strain: " << epsInit << endln;
 	}
 }
 

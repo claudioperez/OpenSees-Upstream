@@ -35,7 +35,7 @@ OPS_ADD_RUNTIME_VPV(OPS_SimplifiedJ2)
   double K, G, sig0, H_kin, H_iso;
 
   int numArgs = OPS_GetNumRemainingInputArgs();
-  if (numArgs != 6) {
+  if (numArgs < 6) {
     opserr << "ndMaterial SimplifiedJ2 incorrect num args: want tag G K sig0 H_kin H_iso\n";
     return 0;
   }
