@@ -87,7 +87,7 @@ Vector ForceBeamColumnCBDI3d::vsSubdivide[maxNumSections];
 Matrix ForceBeamColumnCBDI3d::fsSubdivide[maxNumSections];
 Vector ForceBeamColumnCBDI3d::SsrSubdivide[maxNumSections];
 
-void* OPS_ForceBeamColumnCBDI3d()
+void * OPS_ADD_RUNTIME_VPV(OPS_ForceBeamColumnCBDI3d)
 {
     if(OPS_GetNumRemainingInputArgs() < 5) {
 	opserr<<"insufficient arguments:eleTag,iNode,jNode,transfTag,integrationTag\n";
@@ -176,7 +176,7 @@ void* OPS_ForceBeamColumnCBDI3d()
     return theEle;
 }
 
-void* OPS_ForceBeamColumnCSBDI3d()
+void * OPS_ADD_RUNTIME_VPV(OPS_ForceBeamColumnCSBDI3d)
 {
     if(OPS_GetNumRemainingInputArgs() < 5) {
 	opserr<<"insufficient arguments:eleTag,iNode,jNode,transfTag,integrationTag\n";
@@ -3423,6 +3423,18 @@ ForceBeamColumnCBDI3d::setResponse(const char **argv, int argc, OPS_Stream &outp
 
     theResponse =  new ElementResponse(this, 7, Vector(6));
 
+  // basic stiffness -
+  } else if (strcmp(argv[0],"basicStiffness") == 0) {
+
+      output.tag("ResponseType","N");
+      output.tag("ResponseType","Mz_1");
+      output.tag("ResponseType","Mz_2");
+      output.tag("ResponseType","My_1");
+      output.tag("ResponseType","My_2");
+      output.tag("ResponseType","T");                  
+      
+      theResponse =  new ElementResponse(this, 19, Matrix(6,6));    
+
   // chord rotation -
   } else if (strcmp(argv[0],"chordRotation") == 0 || strcmp(argv[0],"chordDeformation") == 0 
 	     || strcmp(argv[0],"basicDeformation") == 0) {
@@ -3619,11 +3631,14 @@ ForceBeamColumnCBDI3d::getResponse(int responseID, Information &eleInfo)
     return eleInfo.setVector(theVector);
   }
 
-  // Chord rotation
   else if (responseID == 7) {
     return eleInfo.setVector(Se);
   }
-      
+
+  else if (responseID == 19) {
+    return eleInfo.setMatrix(kv);
+  }
+  
   // Chord rotation
   else if (responseID == 3) {
     vp = crdTransf->getBasicTrialDisp();

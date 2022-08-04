@@ -55,7 +55,7 @@ Matrix DispBeamColumn2d::K(6,6);
 Vector DispBeamColumn2d::P(6);
 double DispBeamColumn2d::workArea[100];
 
-void* OPS_DispBeamColumn2d()
+void * OPS_ADD_RUNTIME_VPV(OPS_DispBeamColumn2d)
 {
     if(OPS_GetNumRemainingInputArgs() < 5) {
 	opserr<<"insufficient arguments:eleTag,iNode,jNode,transfTag,integrationTag <-mass mass> <-cmass>\n";
@@ -125,7 +125,7 @@ void* OPS_DispBeamColumn2d()
     return theEle;
 }
 
-void* OPS_DispBeamColumn2d(const ID &info)
+void *OPS_DECL_RUNTIME_VPID(OPS_DispBeamColumn2d, const ID &info)
 {
     // data
     int iData[5];

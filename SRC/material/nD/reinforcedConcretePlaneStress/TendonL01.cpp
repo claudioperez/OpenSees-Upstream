@@ -21,8 +21,7 @@
 #define OPS_Export 
 #include <MaterialResponse.h>
 
-OPS_Export void *
-OPS_TendonL01Material(void)
+OPS_Export void * OPS_ADD_RUNTIME_VPV(OPS_TendonL01Material)
 {
   // Pointer to a uniaxial material that will be returned
   UniaxialMaterial *theMaterial = 0;
@@ -1224,7 +1223,7 @@ int TendonL01::recvSelf (int commitTag, Channel& theChannel,
                                 FEM_ObjectBroker& theBroker)
 {
    int res = 0;
-   static Vector data(.65);
+   static Vector data(151);
    res = theChannel.recvVector(this->getDbTag(), commitTag, data);
   
    if (res < 0) {

@@ -90,7 +90,7 @@ using namespace std; //Added by AMK for debugging
 
 //	OPS_Export void * //ntosic: eliminated AMK code
 	void * //ntosic: new code over AMK
-	OPS_TDConcreteMC10() {
+	OPS_ADD_RUNTIME_VPV(OPS_TDConcreteMC10) {
 		// Print description of material model:
 		if (numTDConcreteMC10 == 0) {
 			opserr << "Time-Dependent Concrete Material Model - Written by Nikola Tosic, 2019 \n";
@@ -137,6 +137,8 @@ using namespace std; //Added by AMK for debugging
 				//Return new material:
 				return theMaterial;
 			}
+
+			return 0;
 	}
 
 //-----------------------------------------------------------------------

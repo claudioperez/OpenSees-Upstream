@@ -91,7 +91,7 @@ using namespace std; //Added by AMK for debugging
 
 //	OPS_Export void *
 	void *
-	OPS_TDConcreteEXP() {
+	OPS_ADD_RUNTIME_VPV(OPS_TDConcreteEXP) {
 		// Print description of material model:
 		if (numTDConcrete == 0) {
 			opserr << "Time-Dependent Concrete Material Model - Written by Adam Knaack, University of Notre Dame, 2012 \n";
@@ -137,6 +137,8 @@ using namespace std; //Added by AMK for debugging
 				//Return new material:
 				return theMaterial;
 			}
+
+			return 0;
 	}
 
 //-----------------------------------------------------------------------

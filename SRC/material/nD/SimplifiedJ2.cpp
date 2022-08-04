@@ -24,7 +24,9 @@ Vector SimplifiedJ2::tmpVector(6);
 
 #include <elementAPI.h>
 
-void *OPS_SimplifiedJ2 (void) {
+void *
+OPS_ADD_RUNTIME_VPV(OPS_SimplifiedJ2)
+{
 
   //opserr<<"OPS_SimplifiedJ2 is called!"<<endln;
 
@@ -33,7 +35,7 @@ void *OPS_SimplifiedJ2 (void) {
   double K, G, sig0, H_kin, H_iso;
 
   int numArgs = OPS_GetNumRemainingInputArgs();
-  if (numArgs != 6) {
+  if (numArgs < 6) {
     opserr << "ndMaterial SimplifiedJ2 incorrect num args: want tag G K sig0 H_kin H_iso\n";
     return 0;
   }

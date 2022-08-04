@@ -47,7 +47,8 @@
 Matrix PDeltaCrdTransf2d::Tlg(6,6);
 Matrix PDeltaCrdTransf2d::kg(6,6);
 
-void* OPS_PDeltaCrdTransf2d()
+void *
+OPS_ADD_RUNTIME_VPV(OPS_PDeltaCrdTransf2d)
 {
     if(OPS_GetNumRemainingInputArgs() < 1) {
 	opserr<<"insufficient arguments for PDeltaCrdTransf2d\n";
@@ -1310,6 +1311,23 @@ PDeltaCrdTransf2d::getLocalAxes(Vector &xAxis, Vector &yAxis, Vector &zAxis)
   zAxis(0) = 0.0;
   zAxis(1) = 0.0;
   zAxis(2) = 1.0;
+
+  return 0;
+}
+
+int
+PDeltaCrdTransf2d::getRigidOffsets(Vector &offsets)
+{
+  if (nodeIOffset != 0) {
+    offsets(0) = nodeIOffset[0];
+    offsets(1) = nodeIOffset[1];
+    offsets(2) = 0.0;
+  }
+  if (nodeJOffset != 0) {
+    offsets(3) = nodeJOffset[0];
+    offsets(4) = nodeJOffset[1];
+    offsets(5) = 0.0;
+  }
 
   return 0;
 }

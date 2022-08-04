@@ -57,7 +57,8 @@ Matrix CorotCrdTransf3d::Lr2(12,3);
 Matrix CorotCrdTransf3d::Lr3(12,3);
 Matrix CorotCrdTransf3d::A(3,3);
 
-void* OPS_CorotCrdTransf3d()
+void *
+OPS_ADD_RUNTIME_VPV(OPS_CorotCrdTransf3d)
 {
     if(OPS_GetNumRemainingInputArgs() < 4) {
 	opserr<<"insufficient arguments for CorotCrdTransf3d\n";
@@ -1491,8 +1492,9 @@ CorotCrdTransf3d::getLocalAxes(Vector &XAxis, Vector &YAxis, Vector &ZAxis)
     
     if (L == 0.0) 
     {
-        opserr << "\nCorotCrdTransf3d::computeElemtLengthAndOrien: 0 length\n";
-        return -2;  
+      opserr << "\nCorotCrdTransf3d::getLocalAxes transfTag = " << this->getTag();
+      opserr << "\nelement has zero length" << endln;
+      return -2;  
     }
     
     // calculate the element local x axis components (direction cossines)
@@ -1512,9 +1514,9 @@ CorotCrdTransf3d::getLocalAxes(Vector &XAxis, Vector &YAxis, Vector &ZAxis)
     
     if (ynorm == 0)
     {
-        opserr << "\nCorotCrdTransf3d::getElementLengthAndOrientation";
-        opserr << "\nvector v that defines plane xz is parallel to x axis\n";
-        return -3;
+      opserr << "\nCorotCrdTransf3d::getLocalAxes transfTag = " << this->getTag();
+      opserr << "\nvector v that defines plane xz is parallel to x axis" << endln;
+      return -3;
     }
     
     yAxis /= ynorm;
@@ -1536,6 +1538,18 @@ CorotCrdTransf3d::getLocalAxes(Vector &XAxis, Vector &YAxis, Vector &ZAxis)
     return 0;
 }
 
+int
+CorotCrdTransf3d::getRigidOffsets(Vector &offsets)
+{
+  offsets(0) = nodeIOffset(0);
+  offsets(1) = nodeIOffset(1);
+  offsets(2) = nodeIOffset(2);
+  offsets(3) = nodeJOffset(0);
+  offsets(4) = nodeJOffset(1);
+  offsets(5) = nodeJOffset(2);
+
+  return 0;
+}
 
 double 
 CorotCrdTransf3d::getInitialLength(void)

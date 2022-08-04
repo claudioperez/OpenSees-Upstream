@@ -75,6 +75,7 @@
 using namespace std; //Added by AMK for debugging
 #include <MaterialResponse.h>
 #include <Vector.h>
+#include <api/runtimeAPI.h>
 
 
 //Added by AMK to use dylib:
@@ -91,7 +92,7 @@ using namespace std; //Added by AMK for debugging
 
 //	OPS_Export void *
 	void *
-	OPS_TDConcrete() {
+	OPS_ADD_RUNTIME_VPV(OPS_TDConcrete) {
 		// Print description of material model:
 		if (numTDConcrete == 0) {
 			opserr << "Time-Dependent Concrete Material Model - Written by Adam Knaack, University of Notre Dame, 2012 \n";
@@ -137,6 +138,8 @@ using namespace std; //Added by AMK for debugging
 				//Return new material:
 				return theMaterial;
 			}
+
+			return 0;
 	}
 
 //-----------------------------------------------------------------------
@@ -334,7 +337,7 @@ TDConcrete::setTrialStrain(double trialStrain, double strainRate)
             	eps_sh = epsP_sh;
             	eps_m = eps_total-eps_cr-eps_sh;
     	        sig = setStress(eps_m, e);
-    	}
+    	} 
 		//
 		//opserr<<"\n   eps_cr = "<<eps_cr;
 		//opserr<<"\n   eps_sh = "<<eps_sh;
@@ -824,5 +827,3 @@ TDConcrete::getResponse(int responseID, Information &matInfo)
 			return -1;
 	}
 }
-
-

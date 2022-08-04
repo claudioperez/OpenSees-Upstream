@@ -21,8 +21,7 @@
 #include <elementAPI.h>
 #define OPS_Export 
 
-OPS_Export void *
-OPS_SteelZ01Material(void)
+OPS_Export void * OPS_ADD_RUNTIME_VPV(OPS_SteelZ01Material)
 {
   // Pointer to a uniaxial material that will be returned
   UniaxialMaterial *theMaterial = 0;
@@ -1111,7 +1110,7 @@ UniaxialMaterial* SteelZ01::getCopy ()
 int SteelZ01::sendSelf (int commitTag, Channel& theChannel)
 {
    int res = 0;
-   static Vector data(149);
+   static Vector data(150);
    data(0) = this->getTag();
 
    // Material properties
@@ -1179,7 +1178,7 @@ int SteelZ01::recvSelf (int commitTag, Channel& theChannel,
                                 FEM_ObjectBroker& theBroker)
 {
    int res = 0;
-   static Vector data(149);
+   static Vector data(150);
    res = theChannel.recvVector(this->getDbTag(), commitTag, data);
   
    if (res < 0) {

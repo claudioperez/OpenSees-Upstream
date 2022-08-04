@@ -90,7 +90,7 @@ Matrix ElasticForceBeamColumnWarping2d::theMatrix(8,8);
 Vector ElasticForceBeamColumnWarping2d::theVector(10);
 double ElasticForceBeamColumnWarping2d::workArea[200];
 
-void* OPS_ElasticForceBeamColumnWarping2d()
+void * OPS_ADD_RUNTIME_VPV(OPS_ElasticForceBeamColumnWarping2d)
 {
     if(OPS_GetNumRemainingInputArgs() < 5) {
 	opserr<<"insufficient arguments:eleTag,iNode,jNode,transfTag,integrationTag\n";

@@ -422,6 +422,7 @@ RECORDER_LIBS = $(FE)/recorder/Recorder.o \
 	$(FE)/recorder/DamageRecorder.o \
 	$(FE)/recorder/RemoveRecorder.o \
 	$(FE)/recorder/PVDRecorder.o \
+	$(FE)/recorder/MPCORecorder.o \
 	$(FE)/recorder/GmshRecorder.o \
 	$(FE)/recorder/ElementRecorderRMS.o \
 	$(FE)/recorder/NodeRecorderRMS.o \
@@ -497,6 +498,8 @@ ELE_LIBS   =  $(FE)/element/Element.o \
 	$(FE)/element/HUelements/DBESI0.o \
 	$(FE)/element/HUelements/DBESI1.o \
 	$(FE)/element/HUelements/YamamotoBiaxialHDR.o \
+	$(FE)/element/IGA/IGAKLShell.o \
+	$(FE)/element/IGA/IGAKLShell_BendingStrip.o \
 	$(FE)/element/XMUelements/AC3D8HexWithSensitivity.o \
 	$(FE)/element/XMUelements/ASI3D8QuadWithSensitivity.o \
 	$(FE)/element/XMUelements/AV3D4QuadWithSensitivity.o \
@@ -881,7 +884,6 @@ MATERIAL_LIBS   =  $(FE)/material/Material.o \
 	$(FE)/material/uniaxial/Trilinwp2.o \
 	$(FE)/material/uniaxial/SteelFractureDI.o \
 	$(FE)/material/uniaxial/DowelType.o \
-	$(FE)/material/uniaxial/DuctileFracture.o \
 	$(FE)/material/nD/NDMaterial.o \
 	$(FE)/material/nD/PlaneStressLayeredMaterial.o \
 	$(FE)/material/nD/PlaneStressRebarMaterial.o \
@@ -889,6 +891,9 @@ MATERIAL_LIBS   =  $(FE)/material/Material.o \
 	$(FE)/material/nD/UVCplanestress.o \
 	$(FE)/material/nD/UVCmultiaxial.o \
 	$(FE)/material/nD/J2Plasticity.o \
+	$(FE)/material/nD/ElasticPlaneStress.o \
+	$(FE)/material/nD/ElasticOrthotropicPlaneStress.o \
+	$(FE)/material/nD/VonPapaDamage.o \
 	$(FE)/material/nD/J2PlaneStress.o \
 	$(FE)/material/nD/J2PlaneStrain.o \
 	$(FE)/material/nD/J2AxiSymm.o \
@@ -1289,6 +1294,10 @@ DOMAIN_LIBS =  $(FE)/domain/component/DomainComponent.o \
 	$(FE)/domain/subdomain/ShadowSubdomain.o \
 	$(FE)/domain/subdomain/ActorSubdomain.o \
 	$(FE)/domain/subdomain/SubdomainNodIter.o \
+	$(FE)/domain/IGA/IGASurfacePatch.o \
+	$(FE)/domain/IGA/IGAFollowerLoad.o \
+	$(FE)/domain/IGA/NurbsDers.o \
+	$(FE)/domain/IGA/gaussQuadrature.o \
 	$(FE)/analysis/analysis/DomainUser.o
 
 ANALYSIS_LIBS = $(FE)/analysis/analysis/Analysis.o \

@@ -39,7 +39,7 @@ Earthquake Engineering & Structural Dynamics, 2013, 42(5): 705-723*/
 #include <elementAPI.h>
 #include <Parameter.h>
 
-void* OPS_LayeredShellFiberSection()
+void * OPS_ADD_RUNTIME_VPV(OPS_LayeredShellFiberSection)
 {
     if (OPS_GetNumRemainingInputArgs() < 4) {
 	opserr << "WARNING insufficient arguments" << endln;
@@ -125,7 +125,7 @@ void* OPS_LayeredShellFiberSection()
 	
 	if (h < 0) {
 	  opserr << "WARNING invalid h" << endln;
-	  opserr << "PlateFiber section: " << tag << endln;	    	    
+	  opserr << "LayeredFiber section: " << tag << endln;	    	    
 	  return 0;
 	}
 	

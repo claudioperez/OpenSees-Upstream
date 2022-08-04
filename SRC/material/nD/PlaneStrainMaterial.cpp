@@ -23,8 +23,6 @@
 // $Source: /usr/local/cvs/OpenSees/SRC/material/nD/PlaneStrainMaterial.cpp,v $
 
 //
-// Antonios Vytiniotis
-//
 // Generic Plane Strain Material
 //
 
@@ -32,10 +30,10 @@
 #include <PlaneStrainMaterial.h>
 #include <Channel.h>
 #include <FEM_ObjectBroker.h>
-#include <MaterialResponse.h>   //Antonios Vytiniotis used for the recorder
+#include <MaterialResponse.h>
 #include <elementAPI.h>
 
-void* OPS_PlaneStrain()
+void * OPS_ADD_RUNTIME_VPV(OPS_PlaneStrain)
 {
     int numdata = OPS_GetNumRemainingInputArgs();
     if (numdata < 2) {

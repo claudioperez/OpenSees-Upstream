@@ -41,7 +41,8 @@
 #include <LinearSOE.h>
 #include <elementAPI.h>
 
-void* OPS_CTestEnergyIncr()
+void *
+OPS_ADD_RUNTIME_VPV(OPS_CTestEnergyIncr)
 {
     if(OPS_GetNumRemainingInputArgs() < 2) {
 	opserr<<"insufficient number of arguments\n";
@@ -157,7 +158,7 @@ int CTestEnergyIncr::test(void)
     // print the data if required
     if (printFlag == 1) {
         opserr << "CTestEnergyIncr::test() - iteration: " << currentIter;
-        opserr << " current EnergyIncr: " << product << " (max: " << tol << ")\n";
+        opserr << " current EnergyIncr: " << product << " (max: " << tol << " norm x: " << x.pNorm(nType) << " norm b: " << b.pNorm(nType) << ")\n";
     }
     if (printFlag == 4) {
         opserr << "CTestEnergyIncr::test() - iteration: " << currentIter;
@@ -179,7 +180,7 @@ int CTestEnergyIncr::test(void)
                 opserr << endln;
             else if (printFlag == 2 || printFlag == 6) {
                 opserr << "CTestEnergyIncr::test() - iteration: " << currentIter;
-                opserr << " last EnergyIncr: " << product << " (max: " << tol << ")\n";
+                opserr << " last EnergyIncr: " << product << " (max: " << tol << " norm x: " << x.pNorm(nType) << " norm b: " << b.pNorm(nType) << ")\n";
             }
         }
         

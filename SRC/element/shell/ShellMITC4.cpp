@@ -57,8 +57,7 @@
 
 static int numShellMITC4 = 0;
 
-void *
-OPS_ShellMITC4(void)
+void * OPS_ADD_RUNTIME_VPV(OPS_ShellMITC4)
 {
   if (numShellMITC4 == 0) {
 //    opserr << "Using ShellMITC4 - Developed by: Leopoldo Tesser, Diego A. Talledo, V�ronique Le Corvec\n";

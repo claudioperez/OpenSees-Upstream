@@ -2646,6 +2646,28 @@ static PyObject *Py_ops_runImportanceSamplingAnalysis(PyObject *self, PyObject *
     return wrapper->getResults();
 }
 
+static PyObject *Py_ops_IGA(PyObject *self, PyObject *args) {
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_IGA() < 0) {
+        opserr << (void *)0;
+        return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
+static PyObject *Py_ops_NDTest(PyObject *self, PyObject *args) {
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_NDTest() < 0) {
+        opserr << (void *)0;
+        return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
 /////////////////////////////////////////////////
 ////////////// Add Python commands //////////////
 /////////////////////////////////////////////////
@@ -2714,6 +2736,7 @@ PythonWrapper::addOpenSeesCommands()
     addCommand("printB", &Py_ops_printB);
     addCommand("printGID", &Py_ops_printGID);
     addCommand("testNorm", &Py_ops_getCTestNorms);
+    addCommand("testNorms", &Py_ops_getCTestNorms);
     addCommand("testIter", &Py_ops_getCTestIter);
     addCommand("recorder", &Py_ops_recorder);
     addCommand("database", &Py_ops_database);
@@ -2865,6 +2888,8 @@ PythonWrapper::addOpenSeesCommands()
     addCommand("runFORMAnalysis", &Py_ops_runFORMAnalysis);
     addCommand("getLSFTags", &Py_ops_getLSFTags);
     addCommand("runImportanceSamplingAnalysis", &Py_ops_runImportanceSamplingAnalysis);
+    addCommand("IGA", &Py_ops_IGA);
+    addCommand("NDTest", &Py_ops_NDTest);
 
     PyMethodDef method = {NULL,NULL,0,NULL};
     methodsOpenSees.push_back(method);

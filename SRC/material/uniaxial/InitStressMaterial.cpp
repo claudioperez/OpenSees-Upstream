@@ -40,8 +40,7 @@
 #include <elementAPI.h>
 #define OPS_Export 
 
-OPS_Export void *
-OPS_InitStressMaterial(void)
+OPS_Export void * OPS_ADD_RUNTIME_VPV(OPS_InitStressMaterial)
 {
   // Pointer to a uniaxial material that will be returned
   UniaxialMaterial *theMaterial = 0;
@@ -51,7 +50,7 @@ OPS_InitStressMaterial(void)
   double dData[1];
   int numData = 2;
   if (OPS_GetIntInput(&numData, iData) != 0) {
-    opserr << "WARNING invalid uniaxialMaterial InitStressMaterial $tag $otherTag" << endln;
+    opserr << "WARNING invalid uniaxialMaterial InitStressMaterial $tag $otherTag $sig0" << endln;
     return 0;
   }
 
@@ -253,11 +252,11 @@ InitStressMaterial::recvSelf(int cTag, Channel &theChannel,
     opserr << "InitStressMaterial::recvSelf() - failed to get the ID\n";
     return -1;
   }
-  this->setTag(int(dataID(0)));
+  this->setTag(dataID(0));
 
   // as no way to change material, don't have to check classTag of the material 
   if (theMaterial == 0) {
-    int matClassTag = int(dataID(1));
+    int matClassTag = dataID(1);
     theMaterial = theBroker.getNewUniaxialMaterial(matClassTag);
     if (theMaterial == 0) {
       opserr << "InitStressMaterial::recvSelf() - failed to create Material with classTag " 

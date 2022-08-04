@@ -42,7 +42,7 @@ Matrix  PlateFiberMaterial::tangent(5,5);
 // ND: 11 22 33 12 23 31
 // PF: 11 22 12 23 31 33
 
-void* OPS_PlateFiberMaterial()
+void * OPS_ADD_RUNTIME_VPV(OPS_PlateFiberMaterial)
 {
     int numdata = OPS_GetNumRemainingInputArgs();
     if (numdata < 2) {
@@ -69,7 +69,7 @@ void* OPS_PlateFiberMaterial()
     NDMaterial* mat = new PlateFiberMaterial( tag[0], *threeDMaterial );
 
     if (mat == 0) {
-	opserr << "WARNING: failed to create PlaneStrain material\n";
+	opserr << "WARNING: failed to create PlateFiber material\n";
 	return 0;
     }
 
