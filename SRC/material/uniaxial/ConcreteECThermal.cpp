@@ -150,7 +150,7 @@ ConcreteECThermal::setTrialStrain(double trialStrain, double FiberTemperature, d
  // double 	ec0 = fc * 2. / epsc0;//?
    double 	ec0 = fc * 1.5 / epsc0; //JZ. 27/07/10 ??
   
-  // retrieve concrete hitory variables
+  // retrieve concrete history variables
   
   ecmin = ecminP;
   dept = deptP;
@@ -643,7 +643,7 @@ ConcreteECThermal::getVariable(const char *varName, Information &theInfo)
 
 
 
-//this function is no use, just for the definiation of pure virtual function.
+//this function is no use, just for the definition of pure virtual function.
 int
 ConcreteECThermal::setTrialStrain(double strain, double strainRate)
 {

@@ -511,7 +511,7 @@ ElasticForceBeamColumnWarping2d::update()
 		int order      = sections[i]->getOrder();
 		const ID &code = sections[i]->getType();
 
-			    // compute coeficient w
+			    // compute coefficient w
 	const Matrix &ks = sections[i]->getSectionTangent(); 
 	double EI(0), GA(0), GB(0), GC(0), EJ(0);
 	for (int k = 0; k < order; k++) {
@@ -831,7 +831,7 @@ ElasticForceBeamColumnWarping2d::getInitialFlexibility(Matrix &fe)
     int order      = sections[i]->getOrder();
     const ID &code = sections[i]->getType();
 
-				    // compute coeficient w
+				    // compute coefficient w
 	const Matrix &ks = sections[i]->getSectionTangent(); 
 	double EI(0), GA(0), GB(0), GC(0), EJ(0);
 	for (int k = 0; k < order; k++) {
@@ -1062,7 +1062,7 @@ ElasticForceBeamColumnWarping2d::Print(OPS_Stream &s, int flag)
     double V  = (M1+M2)/L;
 	double R1(0), R2(0);
 
-	// compute coeficient w
+	// compute coefficient w
 	int order      = sections[0]->getOrder();
 	const ID &code = sections[0]->getType();
 	const Matrix &ks0 = sections[0]->getSectionTangent(); 
@@ -1178,7 +1178,7 @@ ElasticForceBeamColumnWarping2d::Print(OPS_Stream &s, int flag)
     double L  = crdTransf->getInitialLength();
     double V  = (M1+M2)/L;
 	double R1(0), R2(0);
-		// compute coeficient w
+		// compute coefficient w
 	int order      = sections[0]->getOrder();
 	const ID &code = sections[0]->getType();
 	const Matrix &ks0 = sections[0]->getSectionTangent(); 
@@ -1437,7 +1437,7 @@ ElasticForceBeamColumnWarping2d::getResponse(int responseID, Information &eleInf
 	double V = (Se(1)+Se(3))/crdTransf->getInitialLength();
 	double R1(0), R2(0);
 
-			// compute coeficient w
+			// compute coefficient w
 	double L = crdTransf->getInitialLength();
 	int order      = sections[0]->getOrder();
 	const ID &code = sections[0]->getType();

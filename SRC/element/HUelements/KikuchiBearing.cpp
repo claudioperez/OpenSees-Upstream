@@ -384,7 +384,7 @@ void * OPS_ADD_RUNTIME_VPV(OPS_KikuchiBearing)
     } //end input
   
 
-    // input cofirmation
+    // input confirmation
     // necessary arguments
     if (recvShape != 1)  {
     	char buf[100];

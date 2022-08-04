@@ -106,7 +106,7 @@ OPS_Export void * OPS_ADD_RUNTIME_VPV(OPS_PeerMotion)
 
 
   if (OPS_GetDouble(&numData, &factor) != 0) {
-    opserr << "WARNING invalid facor in PeerMotion Series with tag?" << tag << endln;
+    opserr << "WARNING invalid factor in PeerMotion Series with tag?" << tag << endln;
     return 0;
   }
   

@@ -418,6 +418,7 @@ RECORDER_LIBS = $(FE)/recorder/Recorder.o \
 	$(FE)/recorder/response/ElementResponse.o \
 	$(FE)/recorder/response/MaterialResponse.o \
 	$(FE)/recorder/response/FiberResponse.o \
+	$(FE)/recorder/response/CrdTransfResponse.o \
 	$(FE)/recorder/DamageRecorder.o \
 	$(FE)/recorder/RemoveRecorder.o \
 	$(FE)/recorder/PVDRecorder.o \
@@ -460,7 +461,7 @@ GRAPH_LIBS = $(FE)/graph/graph/DOF_Graph.o \
 	$(FE)/graph/numberer/MyRCM.o \
 	$(FE)/graph/numberer/GraphNumberer.o \
 	$(FE)/graph/numberer/SimpleNumberer.o \
-	$(FE)/graph/partitioner/Metis.o
+	$(FE)/graph/partitioner/MetisWrapper.o
 
 ELE_LIBS   =  $(FE)/element/Element.o \
 	$(FE)/element/WrapperElement.o \
@@ -802,6 +803,7 @@ MATERIAL_LIBS   =  $(FE)/material/Material.o \
 	$(FE)/material/uniaxial/DoddRestr.o \
 	$(FE)/material/uniaxial/STEELDR.o \
 	$(FE)/material/uniaxial/PathIndependentMaterial.o \
+	$(FE)/material/uniaxial/MultiplierMaterial.o \
 	$(FE)/material/uniaxial/BackboneMaterial.o \
 	$(FE)/material/uniaxial/MinMaxMaterial.o \
 	$(FE)/material/uniaxial/TensionOnlyMaterial.o \
@@ -818,6 +820,7 @@ MATERIAL_LIBS   =  $(FE)/material/Material.o \
 	$(FE)/material/uniaxial/ENTMaterial.o \
 	$(FE)/material/uniaxial/BoucWenMaterial.o \
 	$(FE)/material/uniaxial/BoucWenOriginal.o \
+	$(FE)/material/uniaxial/BoucWenInfill.o \
 	$(FE)/material/uniaxial/Pinching4Material.o \
 	$(FE)/material/uniaxial/ShearPanelMaterial.o \
 	$(FE)/material/uniaxial/BarSlipMaterial.o \
@@ -836,14 +839,22 @@ MATERIAL_LIBS   =  $(FE)/material/Material.o \
 	$(FE)/material/uniaxial/TDConcreteMC10NL.o \
 	$(FE)/material/uniaxial/DegradingPinchedBW.o \
 	$(FE)/material/uniaxial/HystereticPoly.o \
+	$(FE)/material/uniaxial/HystereticSmooth.o \
+	$(FE)/material/uniaxial/HystereticAsym.o \
 	$(FE)/material/uniaxial/SLModel.o \
 	$(FE)/material/uniaxial/MaterialState.o \
 	$(FE)/material/uniaxial/backbone/HystereticBackbone.o \
 	$(FE)/material/uniaxial/backbone/ArctangentBackbone.o \
 	$(FE)/material/uniaxial/backbone/TrilinearBackbone.o \
+	$(FE)/material/uniaxial/backbone/MaterialBackbone.o \
 	$(FE)/material/uniaxial/backbone/MultilinearBackbone.o \
 	$(FE)/material/uniaxial/backbone/ReeseSoftClayBackbone.o \
 	$(FE)/material/uniaxial/backbone/ReeseStiffClayBelowWS.o \
+	$(FE)/material/uniaxial/backbone/ReeseStiffClayAboveWS.o \
+	$(FE)/material/uniaxial/backbone/VuggyLimestone.o \
+	$(FE)/material/uniaxial/backbone/CementedSoil.o \
+	$(FE)/material/uniaxial/backbone/WeakRock.o \
+	$(FE)/material/uniaxial/backbone/LiquefiedSand.o \
 	$(FE)/material/uniaxial/backbone/ReeseSandBackbone.o \
 	$(FE)/material/uniaxial/backbone/ManderBackbone.o \
 	$(FE)/material/uniaxial/backbone/RaynorBackbone.o \
