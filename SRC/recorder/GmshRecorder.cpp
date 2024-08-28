@@ -1433,12 +1433,14 @@ GmshRecorder::setGMSHType()
     gmshtypes[ELE_TAG_CatenaryCable] = GMSH_LINE;
     gmshtypes[ELE_TAG_FourNodeTetrahedron] = GMSH_TETRA;
     gmshtypes[ELE_TAG_TriSurfaceLoad] = GMSH_TRIANGLE;
-    gmshtypes[ELE_TAG_ShellANDeS] = GMSH_TRIANGLE;
     gmshtypes[ELE_TAG_ShellDKGT] = GMSH_TRIANGLE;
     gmshtypes[ELE_TAG_ShellNLDKGT] = GMSH_TRIANGLE;
     gmshtypes[ELE_TAG_InertiaTruss] = GMSH_LINE;
     gmshtypes[ELE_TAG_ASDAbsorbingBoundary2D] = GMSH_QUAD;
     gmshtypes[ELE_TAG_ASDAbsorbingBoundary3D] = GMSH_HEXAHEDRON;
+    gmshtypes[ELE_TAG_FSIFluidElement2D] = GMSH_QUAD;
+    gmshtypes[ELE_TAG_FSIInterfaceElement2D] = GMSH_LINE;
+    gmshtypes[ELE_TAG_FSIFluidBoundaryElement2D] = GMSH_LINE;
 }
 
 int GmshRecorder::flush() {

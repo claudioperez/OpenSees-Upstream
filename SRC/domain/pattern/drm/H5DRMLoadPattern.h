@@ -86,68 +86,41 @@
 
 #ifdef _H5DRM
 
-#include <LoadPattern.h>
-#include <Matrix.h>
-#include <Vector.h>
-#include <ID.h>
-#include <Domain.h>
-#include <NodeIter.h>
-#include <Node.h>
-#include <ElementIter.h>
-#include <Element.h>
-#include <Channel.h>
-#include <ErrorHandler.h>
-#include <hdf5.h>
 #include <map>
 #include <vector>
-#include <algorithm>  // For std::min and std::max functions
+#include <algorithm> 
 #include <string>
 
-#define H5DRM_NUM_OF_PRECOMPUTED_TIMESTEPS 50
+#include <hdf5.h>
+
+#include <ID.h>
+#include <Vector.h>
+#include <Matrix.h>
+#include <Channel.h>
+#include <ErrorHandler.h>
+
+#include <Domain.h>
+#include <Node.h>
+#include <NodeIter.h>
+#include <Element.h>
+#include <ElementIter.h>
+
+#include <LoadPattern.h>
+
+#define H5DRM_PREALLOC_TSTEPS 10
 #define H5DRM_MAX_RETURN_OPEN_OBJS 100
 #define H5DRM_MAX_FILENAME 200
 #define H5DRM_MAX_STRINGSIZE 80
-#define H5DRMerror std::cerr  << "H5DRM(" << myrank << ") - ERROR: "
-#define H5DRMwarning std::cout  <<  "H5DRM(" << myrank << ") - Warning: "
-#define H5DRMout std::cout  << "H5DRM(" << myrank << ") : "
-
-class Vector;
-class Matrix;
-
-// class Plane
-// {
-// public:
-//     Plane(const hid_t& id_h5drm_file, int plane_number, double crd_scale = 1);
-//     ~Plane();
-
-//     bool locate_point(const Vector& x, double& xi1, double& xi2, double& distance) const ;
-    
-//     bool get_ij_coordinates_to_point(double xi1, double xi2, int& i, int& j) const;
-
-//     int getNumber() const;
-    
-//     int getStationNumber(int i, int j) const;
-
-//     void print(FILE * fptr) const;
-    
-// private:
-//     int number;
-//     bool internal;
-//     int *stations;
-//     Vector v0;
-//     Vector v1;
-//     Vector v2;
-//     Vector xi1;
-//     Vector xi2;
-// };
+#define H5DRMerror std::cerr  << "H5DRM(" << MPI_local_rank << ") - ERROR: "
+#define H5DRMwarning std::cout  <<  "H5DRM(" << MPI_local_rank << ") - Warning: "
+#define H5DRMout std::cout  << "H5DRM(" << MPI_local_rank << ") : "
 
 
-
-class H5DRM : public LoadPattern
+class H5DRMLoadPattern : public LoadPattern
 {
 public:
-    H5DRM();
-    H5DRM(int tag, std::string HDF5filename_, double cFactor_ = 1.0, 
+    H5DRMLoadPattern();
+    H5DRMLoadPattern(int tag, std::string dataset_fname_, double cFactor_ = 1.0, 
           double crd_scale_ = 1, 
           double distance_tolerance_ = 1e-3, 
           bool do_coordinate_transformation = true,
@@ -155,8 +128,8 @@ public:
         double T10 = 0.0, double T11 = 1.0, double T12 = 0.0,
         double T20 = 0.0, double T21 = 0.0, double T22 = 1.0,
         double x00 = 0.0, double x01 = 0.0, double x02 = 0.0);
-    ~H5DRM();
-    void clean_all_data(); // Called by destructor and if domain changes
+    ~H5DRMLoadPattern();
+    void cleanup(); 
 
     void setDomain(Domain *theDomain);
     void applyLoad(double time);
@@ -167,76 +140,64 @@ public:
     LoadPattern *getCopy(void);
     virtual std::string getName() const
     {
-        return "H5DRM: " + HDF5filename;
+        return "H5DRM: " + dataset_fname;
     }
 
 protected:
 
-    bool  ComputeDRMLoads(double t);
+    bool  CalculateBoundaryForces(double t);
     bool  ComputeDRMMotions(double next_integration_time);
     bool  drm_differentiate_displacements(double next_integration_time);
     bool  drm_integrate_velocity(double next_integration_time);
     bool  drm_direct_read(double next_integration_time);
     Vector *getNodalLoad(int node, double time);
 
-    void intitialize();
+    void do_intitialization();
 
     void node_matching_BruteForce(double d_tol, const ID& internal, const Matrix& xyz, const Vector& drmbox_x0, double& d_err, int & n_nodes_found);
-    void node_matching_UsePlaneInfo(double d_tol, const ID& internal, const Matrix& xyz, const Vector& drmbox_x0, double& d_err, int & n_nodes_found);
-    void node_matching_OctTree(double d_tol, const ID& internal, const Matrix& xyz, const Vector& drmbox_x0, double& d_err, int & n_nodes_found);
 
 private:
 
-    std::string HDF5filename;   // Name of the HDF5 dataset containing the DRM motions  
+    std::string dataset_fname;   // Name of the HDF5 dataset containing the DRM motions  
                 
-    ID Elements;                // integer list containing the DRM elements
-    ID Nodes;                   // integer list containing the nodes belonging to the DRM elements
-    ID IsBoundary;              // integer list containing a flag indicating whether that node is a boundary node
+    ID DRM_Elements;                
+    ID DRM_Nodes;                  
+    ID DRM_Boundary_Flag;              
 
-    Vector DRMForces;           // vector containing the DRM equivalent-loads
-    Vector DRMDisplacements;    // vector containing the displacements at DRM boundary nodes
-    Vector DRMDisplacements0;   // vector containing the initial displacements at DRM boundary nodes
-    Vector DRMAccelerations;    // vector containing the accelerations at DRM boundary nodes
+    Vector DRM_F;    // vector containing the DRM equivalent-loads
+    Vector DRM_D;    // vector containing the displacements at DRM boundary nodes
+    Vector DRM_D0;   // vector containing the initial displacements at DRM boundary nodes
+    Vector DRM_A;    // vector containing the accelerations at DRM boundary nodes
     
     double last_integration_time;
     double t1, t2, tstart, tend, dt;    // specifies the time increment used in load path vector
     double cFactor;                     // additional factor on the returned load factor
     double crd_scale;                   // Scaling for the point coordinates of the DRM dataset
     double distance_tolerance;          // Distance tolerance for node-matching algorithm
-    int step, step1, step2;
+
     double drmbox_xmax, drmbox_xmin, drmbox_ymax, drmbox_ymin, drmbox_zmax, drmbox_zmin;
 
-    int number_of_DRM_elements;
-    int number_of_DRM_nodes;
-    int number_of_DRM_nodes_b;
-    int number_of_DRM_nodes_e;
-    int number_of_timesteps;
-    int thetimeSteps;
 
-    int maxnodetag;
-
-    bool is_initialized;
-
-    int number_of_local_elements;
+    int N_timesteps;
+    bool flag_initialized;
+    int N_local_elements;
 
     std::map<int, int> nodetag2station_id;
     std::map<int, int> nodetag2local_pos;
     ID station_id2data_pos;
 
     //HDF5 handles
-    hid_t id_drm_file;
-    hid_t id_velocity;
-    hid_t id_velocity_dataspace;
-    hid_t id_displacement;
-    hid_t id_displacement_dataspace;
-    hid_t id_acceleration;
-    hid_t id_acceleration_dataspace;
-    hid_t id_one_node_memspace;
-    hid_t id_xfer_plist;
+    hid_t ih5_fname;
+    hid_t ih5_vel;
+    hid_t ih5_vel_ds;
+    hid_t ih5_dis;
+    hid_t ih5_dis_ds;
+    hid_t ih5_acc;
+    hid_t ih5_acc_ds;
+    hid_t ih5_one_node_ms;
+    hid_t ih5_xfer_plist;
 
-    int myrank;         // MPI Process-id (rank) in the case of parallel processing
-
-    // std::vector<Plane*> planes;
+    int MPI_local_rank;         // MPI Process-id (rank) in the case of parallel processing
 
     bool do_coordinate_transformation;
 
@@ -245,6 +206,6 @@ private:
     Vector x0;
 };
 
-#endif // _H5DRM
+#endif // _H5DRMLoadPattern
 
 #endif

@@ -85,6 +85,7 @@ void* OPS_DoubleMembranePlateFiberSection();
 void* OPS_ElasticWarpingShearSection2d();
 void* OPS_ElasticTubeSection3d();
 void* OPS_ParallelSection();
+void* OPS_ASDCoupledHinge3D();
 void* OPS_SectionAggregator();
 void* OPS_ElasticPlateSection();
 void* OPS_LayeredShellFiberSection();
@@ -277,6 +278,7 @@ namespace {
 	functionMap.insert(std::make_pair("RCTBeamSection2d", &OPS_RCTBeamSection2d));
 	functionMap.insert(std::make_pair("RCTBeamSectionUniMat2d", &OPS_RCTBeamSectionUniMat2d));
 	functionMap.insert(std::make_pair("Parallel", &OPS_ParallelSection));
+	functionMap.insert(std::make_pair("ASDCoupledHinge3D", &OPS_ASDCoupledHinge3D));
 	functionMap.insert(std::make_pair("Aggregator", &OPS_SectionAggregator));
 	functionMap.insert(std::make_pair("AddDeformation", &OPS_SectionAggregator));
 	functionMap.insert(std::make_pair("ElasticPlateSection", &OPS_ElasticPlateSection));
@@ -428,9 +430,11 @@ int OPS_Fiber()
 
     }
 
+    if (theFiber != 0)
+       delete theFiber;
+	
     if (res < 0) {
 	opserr << "WARNING failed to add fiber to section\n";
-	delete theFiber;
 	return -1;
     }
 
@@ -524,7 +528,8 @@ int OPS_Patch()
 		delete thePatch;
 		return -1;
 	    }
-	    theFiber = new UniaxialFiber3d(j,*material,area,cPos);
+	    double dval = cells[j]->getdValue();
+	    theFiber = new UniaxialFiber3d(j,*material,area,cPos,dval);
 	    theActiveFiberSectionWarping3d->addFiber(*theFiber);	
 
 	} else if (theActiveFiberSectionAsym3d != 0) {

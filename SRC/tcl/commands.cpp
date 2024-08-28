@@ -60,6 +60,11 @@ extern void OPS_clearAllStiffnessDegradation(void);
 extern void OPS_clearAllStrengthDegradation(void);
 extern void OPS_clearAllUnloadingRule(void);
 
+int OPS_sectionLocation();
+int OPS_sectionWeight();
+int OPS_sectionTag();
+int OPS_sectionDisplacement();
+
 // the following is a little kludgy but it works!
 #ifdef _USING_STL_STREAMS
 
@@ -178,6 +183,8 @@ extern "C" int         OPS_ResetInputNoBuilder(ClientData clientData, Tcl_Interp
 #include <LagrangeConstraintHandler.h>
 #include <TransformationConstraintHandler.h>
 
+extern void* OPS_AutoConstraintHandler(void);
+
 // numberers
 #include <PlainNumberer.h>
 #include <DOF_Numberer.h>
@@ -251,6 +258,8 @@ extern void *OPS_WilsonTheta(void);
 extern int OPS_DomainModalProperties(void);
 extern int OPS_ResponseSpectrumAnalysis(void);
 extern int OPS_sdfResponse(void);
+
+extern void OPS_SetReliabilityDomain(ReliabilityDomain *);
 
 #include <Newmark.h>
 #include <StagedNewmark.h>
@@ -1068,6 +1077,10 @@ int OpenSeesAppInit(Tcl_Interp *interp) {
     Tcl_CreateCommand(interp, "sectionLocation", &sectionLocation, 
 		      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);  
     Tcl_CreateCommand(interp, "sectionWeight", &sectionWeight, 
+		      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand(interp, "sectionTag", &sectionTag, 
+		      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+    Tcl_CreateCommand(interp, "sectionDisplacement", &sectionDisplacement, 
 		      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);  
     Tcl_CreateCommand(interp, "basicDeformation", &basicDeformation, 
 		      (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);  
@@ -1274,6 +1287,11 @@ reliability(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv
   if (theReliabilityBuilder == 0) {
 
     theReliabilityBuilder = new TclReliabilityBuilder(theDomain,interp);
+    if (theReliabilityBuilder == 0) {
+      opserr << "Failed to create reliability domain" << endln;
+      return TCL_ERROR;
+    }
+    OPS_SetReliabilityDomain(theReliabilityBuilder->getReliabilityDomain());
     return TCL_OK;
   }
   else
@@ -1286,6 +1304,7 @@ wipeReliability(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **
 {
   if (theReliabilityBuilder != 0) {
     delete theReliabilityBuilder;
+    OPS_SetReliabilityDomain(0);
     theReliabilityBuilder = 0;
   }
   return TCL_OK;
@@ -3769,6 +3788,13 @@ specifyConstraintHandler(ClientData clientData, Tcl_Interp *interp, int argc,
   else if (strcmp(argv[1],"Transformation") == 0) {
     theHandler = new TransformationConstraintHandler();
   }    
+
+  else if (strcmp(argv[1],"Auto") == 0) {
+      OPS_ResetInputNoBuilder(clientData, interp, 2, argc, argv, &theDomain);
+      theHandler = (ConstraintHandler*)OPS_AutoConstraintHandler();
+      if (theHandler == 0)
+          return TCL_ERROR;
+  }
 
   else {
     opserr << "WARNING No ConstraintHandler type exists (Plain, Penalty,\n";
@@ -8187,59 +8213,10 @@ sectionDeformation(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char
 int 
 sectionLocation(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
 {
-  // make sure at least one other argument to contain type of system
-  if (argc < 3) {
-    opserr << "WARNING want - sectionLocation eleTag? secNum? \n";
-    return TCL_ERROR;
-  }    
+  OPS_ResetInputNoBuilder(clientData, interp, 1, argc, argv, &theDomain);
   
-  //opserr << "sectionDeformation: ";
-  //for (int i = 0; i < argc; i++) 
-  //  opserr << argv[i] << ' ' ;
-  //opserr << endln;
-
-  int tag, secNum;
-
-  if (Tcl_GetInt(interp, argv[1], &tag) != TCL_OK) {
-    opserr << "WARNING sectionLocation eleTag? secNum? - could not read eleTag? \n";
-    return TCL_ERROR;	        
-  }    
-  if (Tcl_GetInt(interp, argv[2], &secNum) != TCL_OK) {
-    opserr << "WARNING sectionLocation eleTag? secNum? - could not read secNum? \n";
-    return TCL_ERROR;	        
-  }    
-
-  Element *theElement = theDomain.getElement(tag);
-  if (theElement == 0) {
-    opserr << "WARNING sectionLocation element with tag " << tag << " not found in domain \n";
-    return TCL_ERROR; 
-  }
-
-  int argcc = 1;
-  char a[80] = "integrationPoints";
-  const char *argvv[1];
-  argvv[0] = a;
-
-  DummyStream dummy;
-
-  Response *theResponse = theElement->setResponse(argvv, argcc, dummy);
-  if (theResponse == 0) {
-    char buffer [] = "0.0";
-    Tcl_SetResult(interp, buffer, TCL_VOLATILE);
-    return TCL_OK;
-  }
-
-  theResponse->getResponse();
-  Information &info = theResponse->getInformation();
-
-  const Vector &theVec = *(info.theVector);
-
-  char buffer[40];
-  sprintf(buffer,"%12.8g",theVec(secNum-1));
-
-  Tcl_SetResult(interp, buffer, TCL_VOLATILE);
-
-  delete theResponse;
+  if (OPS_sectionLocation() < 0)
+    return TCL_ERROR;
 
   return TCL_OK;
 }
@@ -8247,59 +8224,32 @@ sectionLocation(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **
 int 
 sectionWeight(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
 {
-  // make sure at least one other argument to contain type of system
-  if (argc < 3) {
-    opserr << "WARNING want - sectionWeight eleTag? secNum? \n";
-    return TCL_ERROR;
-  }    
+  OPS_ResetInputNoBuilder(clientData, interp, 1, argc, argv, &theDomain);
   
-  //opserr << "sectionDeformation: ";
-  //for (int i = 0; i < argc; i++) 
-  //  opserr << argv[i] << ' ' ;
-  //opserr << endln;
+  if (OPS_sectionWeight() < 0)
+    return TCL_ERROR;
 
-  int tag, secNum;
+  return TCL_OK;
+}
 
-  if (Tcl_GetInt(interp, argv[1], &tag) != TCL_OK) {
-    opserr << "WARNING sectionWeight eleTag? secNum? - could not read eleTag? \n";
-    return TCL_ERROR;	        
-  }    
-  if (Tcl_GetInt(interp, argv[2], &secNum) != TCL_OK) {
-    opserr << "WARNING sectionWeight eleTag? secNum? - could not read secNum? \n";
-    return TCL_ERROR;	        
-  }    
+int 
+sectionTag(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
+{
+  OPS_ResetInputNoBuilder(clientData, interp, 1, argc, argv, &theDomain);
+  
+  if (OPS_sectionTag() < 0)
+    return TCL_ERROR;
 
-  Element *theElement = theDomain.getElement(tag);
-  if (theElement == 0) {
-    opserr << "WARNING sectionWeight element with tag " << tag << " not found in domain \n";
-    return TCL_ERROR; 
-  }
+  return TCL_OK;
+}
 
-  int argcc = 1;
-  char a[80] = "integrationWeights";
-  const char *argvv[1];
-  argvv[0] = a;
-
-  DummyStream dummy;
-
-  Response *theResponse = theElement->setResponse(argvv, argcc, dummy);
-  if (theResponse == 0) {
-    char buffer[] = "0.0";
-    Tcl_SetResult(interp, buffer, TCL_VOLATILE);
-    return TCL_OK;
-  }
-
-  theResponse->getResponse();
-  Information &info = theResponse->getInformation();
-
-  const Vector &theVec = *(info.theVector);
-
-  char buffer[40];
-  sprintf(buffer,"%12.8g",theVec(secNum-1));
-
-  Tcl_SetResult(interp, buffer, TCL_VOLATILE);
-
-  delete theResponse;
+int 
+sectionDisplacement(ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char **argv)
+{
+  OPS_ResetInputNoBuilder(clientData, interp, 1, argc, argv, &theDomain);
+  
+  if (OPS_sectionDisplacement() < 0)
+    return TCL_ERROR;
 
   return TCL_OK;
 }

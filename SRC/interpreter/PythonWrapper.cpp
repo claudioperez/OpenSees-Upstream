@@ -1372,6 +1372,18 @@ static PyObject *Py_ops_eleType(PyObject *self, PyObject *args)
     return wrapper->getResults();
 }
 
+static PyObject *Py_ops_classType(PyObject *self, PyObject *args)
+{
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_classType() < 0) {
+	opserr<<(void*)0;
+	return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
 static PyObject *Py_ops_nodeDOFs(PyObject *self, PyObject *args)
 {
     wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
@@ -2381,6 +2393,42 @@ static PyObject *Py_ops_randomVariable(PyObject *self, PyObject *args)
     return wrapper->getResults();
 }
 
+static PyObject *Py_ops_filter(PyObject *self, PyObject *args)
+{
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_filter() < 0) {
+	opserr<<(void*)0;
+	return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
+static PyObject *Py_ops_spectrum(PyObject *self, PyObject *args)
+{
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_spectrum() < 0) {
+	opserr<<(void*)0;
+	return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
+static PyObject *Py_ops_modulatingFunction(PyObject *self, PyObject *args)
+{
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_modulatingFunction() < 0) {
+	opserr<<(void*)0;
+	return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
 static PyObject *Py_ops_getRVTags(PyObject *self, PyObject *args)
 {
     wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
@@ -2820,10 +2868,33 @@ static PyObject *Py_ops_findDesignPoint(PyObject *self,
   return wrapper->getResults();
 }
 
+static PyObject *Py_ops_findCurvatures(PyObject *self,
+				       PyObject *args) {
+  wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+  if (OPS_findCurvatures() < 0) {
+    opserr << (void *)0;
+    return NULL;
+  }
+
+  return wrapper->getResults();
+}
+
 static PyObject *Py_ops_runFORMAnalysis(PyObject *self, PyObject *args) {
     wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
 
     if (OPS_runFORMAnalysis() < 0) {
+        opserr << (void *)0;
+        return NULL;
+    }
+
+    return wrapper->getResults();
+}
+
+static PyObject *Py_ops_runSORMAnalysis(PyObject *self, PyObject *args) {
+    wrapper->resetCommandLine(PyTuple_Size(args), 1, args);
+
+    if (OPS_runSORMAnalysis() < 0) {
         opserr << (void *)0;
         return NULL;
     }
@@ -2975,6 +3046,7 @@ PythonWrapper::addOpenSeesCommands()
     addCommand("getNDF", &Py_ops_getNDFF);
     addCommand("eleNodes", &Py_ops_eleNodes);
     addCommand("eleType", &Py_ops_eleType);    
+    addCommand("classType", &Py_ops_classType);    
     addCommand("nodeDOFs", &Py_ops_nodeDOFs);
     addCommand("nodeMass", &Py_ops_nodeMass);
     addCommand("nodePressure", &Py_ops_nodePressure);
@@ -3060,6 +3132,9 @@ PythonWrapper::addOpenSeesCommands()
     addCommand("getNodeLoadTags", &Py_ops_getNodeLoadTags);
     addCommand("getNodeLoadData", &Py_ops_getNodeLoadData);
     addCommand("randomVariable", &Py_ops_randomVariable);
+    addCommand("filter", &Py_ops_filter);
+    addCommand("modulatingFunction", &Py_ops_modulatingFunction);
+    addCommand("spectrum", &Py_ops_spectrum);
     addCommand("getRVTags", &Py_ops_getRVTags);
     addCommand("getRVParamTag", &Py_ops_getRVParamTag);
     addCommand("getRVValue", &Py_ops_getRVValue);
@@ -3099,7 +3174,9 @@ PythonWrapper::addOpenSeesCommands()
     addCommand("domainCommitTag", &Py_ops_domainCommitTag);
     addCommand("runFOSMAnalysis", &Py_ops_runFOSMAnalysis);
     addCommand("findDesignPoint", &Py_ops_findDesignPoint);
+    addCommand("findCurvatures", &Py_ops_findCurvatures);
     addCommand("runFORMAnalysis", &Py_ops_runFORMAnalysis);
+    addCommand("runSORMAnalysis", &Py_ops_runSORMAnalysis);    
     addCommand("getLSFTags", &Py_ops_getLSFTags);
     addCommand("runImportanceSamplingAnalysis", &Py_ops_runImportanceSamplingAnalysis);
     addCommand("IGA", &Py_ops_IGA);
