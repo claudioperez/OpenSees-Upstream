@@ -36,7 +36,6 @@
   #define strcmp strcasecmp
   
   // Parsing
-  #include <tcl.h>
   #include <Logging.h>
   #include <Parsing.h>
   #include <ArgumentTracker.h>
@@ -44,9 +43,9 @@
   // Model
   #include <Node.h>
   #include <Domain.h>
-  #include <BasicModelBuilder.h>
-  
-  // Sections
+  #include <ModelRegistry.h>
+
+// Sections
   #include <FrameSection.h>
   #include <ElasticSection2d.h>
   #include <ElasticSection3d.h>
@@ -71,6 +70,7 @@
   #include <DispBeamColumn2d.h>
   #include <DispBeamColumn2dThermal.h>
   #include <DispBeamColumn3d.h>
+  #include <DispBeamColumnAsym3d.h>
   #include <DispBeamColumn3dThermal.h>
   #include <DispBeamColumnNL2d.h>
   
@@ -147,7 +147,7 @@ CheckTransformation(Domain& domain, int iNode, int jNode, CrdTransf& transform)
 
 template <int ndm, typename Transform, typename Section>
 static Element*
-CreateFrame(BasicModelBuilder& builder, 
+CreateFrame(ModelRegistry& builder, 
             const char* name,
             int tag,
             std::vector<int>& nodev,
@@ -155,6 +155,7 @@ CreateFrame(BasicModelBuilder& builder,
             const std::vector<int>& section_tags,
             BeamIntegration& beamIntegr,
             double mass, int max_iter, double tol,
+            const std::array<double,2>& shear_center,
             Options& options) 
 {
 
@@ -183,7 +184,10 @@ CreateFrame(BasicModelBuilder& builder,
   // Finalize the coordinate transform
   CrdTransf* theTransf = builder.getTypedObject<CrdTransf>(transfTag);
   if (theTransf == nullptr) {
-    opserr << OpenSees::PromptValueError << "transformation not found with tag " << transfTag << "\n";
+    opserr << OpenSees::PromptValueError 
+           << "transformation not found with tag " 
+           << transfTag 
+           << OpenSees::SignalMessageEnd;
     return nullptr;
   }
 
@@ -333,7 +337,8 @@ CreateFrame(BasicModelBuilder& builder,
                   static_loop<2,30>([&](auto nip) constexpr {
                     if (nip.value == sections.size())
                       theElement = new ForceFrame3d<nip.value, 4+nwm.value*2, nwm.value>(tag, 
-                                                    nodes, sections,
+                                                    nodes,
+                                                    sections,
                                                     beamIntegr, *tb,
                                                     mass, options.mass_flag, use_mass,
                                                     max_iter, tol
@@ -342,7 +347,8 @@ CreateFrame(BasicModelBuilder& builder,
                 }
                 else
                   theElement = new ForceFrame3d<20, 6+nwm.value*2, nwm.value>(tag, 
-                                                nodes, sections,
+                                                nodes,
+                                                sections,
                                                 beamIntegr, *tb,
                                                 mass, options.mass_flag, use_mass,
                                                 max_iter, tol
@@ -360,6 +366,7 @@ CreateFrame(BasicModelBuilder& builder,
                  << OpenSees::SignalMessageEnd;
           return nullptr;
         }
+
         int ndf = builder.getNDF();
         if (sections.size() < nodev.size()-1)
           for (unsigned i = 0; i < nodev.size()-1; ++i)
@@ -406,6 +413,11 @@ CreateFrame(BasicModelBuilder& builder,
       theElement = new ForceBeamColumnCBDI3d(tag, iNode, jNode, nIP, secptrs,
                                              beamIntegr, *theTransf, 
                                              mass, false, max_iter, tol);
+    else if (strcmp(name, "dispBeamColumnAsym") == 0)
+      theElement = new DispBeamColumnAsym3d(tag, iNode, jNode, nIP, secptrs,
+                                            beamIntegr, *theTransf, 
+                                            shear_center[0], shear_center[1],
+                                            mass, options.mass_flag);
     else
       theElement = new ForceBeamColumn3d(tag, iNode, jNode, nIP, secptrs,
                                          beamIntegr, *theTransf, mass, max_iter, tol);
@@ -413,6 +425,18 @@ CreateFrame(BasicModelBuilder& builder,
   return theElement;
 }
 
+
+#if 0
+Element*
+CreateInelasticFrame(std::string, std::vector<int>& nodes,
+                                  std::vector<FrameSection>&, 
+                                  BeamIntegration&, 
+                              //  FrameQuadrature&,
+                                  FrameTransform&,
+                                  Options&);
+Element*
+CreatePrismaticFrame(std::string);
+#endif
 
 // 0       1    2 3  4
 // element beam 1 $i $j 0 1 2
@@ -515,7 +539,7 @@ TclBasicBuilder_addForceBeamColumn(ClientData clientData, Tcl_Interp *interp,
                                    int argc, TCL_Char **const argv)
 {
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = (BasicModelBuilder*)clientData;
+  ModelRegistry *builder = (ModelRegistry*)clientData;
   Domain *domain = builder->getDomain();
   assert(domain != nullptr);
 
@@ -611,6 +635,7 @@ TclBasicBuilder_addForceBeamColumn(ClientData clientData, Tcl_Interp *interp,
   BeamIntegration   *beamIntegr   = nullptr;
   BeamIntegrationRule  *theRule   = nullptr;
   int itg_tag;
+  std::array<double,2> shear_center = {0.0, 0.0};
 
   // If we get a BeamIntegration from a BeamIntegrationRule
   // then we dont own it and can't delete it
@@ -775,6 +800,25 @@ TclBasicBuilder_addForceBeamColumn(ClientData clientData, Tcl_Interp *interp,
         argi++;
       }
 
+      else if (strcmp(argv[argi], "-shearCenter") == 0) {
+        if (argc < argi + 3) {
+          opserr << OpenSees::PromptValueError << "not enough arguments, expected -shearCenter $y $z\n";
+          status = TCL_ERROR;
+          goto clean_up;
+        }
+
+        if (Tcl_GetDouble(interp, argv[argi + 1], &shear_center[0]) != TCL_OK) {
+          opserr << OpenSees::PromptValueError << "invalid shear_center y\n";
+          status = TCL_ERROR;
+          goto clean_up;
+        }
+        if (Tcl_GetDouble(interp, argv[argi + 2], &shear_center[1]) != TCL_OK) {
+          opserr << OpenSees::PromptValueError << "invalid shear_center z\n";
+          status = TCL_ERROR;
+          goto clean_up;
+        }
+        argi += 3;
+      }
 
     //else if (strcmp(argv[argi], "-sections") == 0) {
     // split possible lists present in argv
@@ -835,7 +879,6 @@ TclBasicBuilder_addForceBeamColumn(ClientData clientData, Tcl_Interp *interp,
       status = TCL_ERROR;
       goto clean_up;
     }
-
   }
 
   // Version e) ?
@@ -975,9 +1018,11 @@ TclBasicBuilder_addForceBeamColumn(ClientData clientData, Tcl_Interp *interp,
   {
     Element *theElement = ndm == 2 
                         ? CreateFrame<2, CrdTransf, FrameSection>(*builder, argv[1], tag, multi_nodes, transfTag, 
-                                                              section_tags, *beamIntegr, mass, max_iter, tol, options)
+                                                              section_tags, *beamIntegr, mass, max_iter, tol, 
+                                                              shear_center, options)
                         : CreateFrame<3, CrdTransf, FrameSection>(*builder, argv[1], tag, multi_nodes, transfTag, 
-                                                                        section_tags, *beamIntegr, mass, max_iter, tol, options);
+                                                                        section_tags, *beamIntegr, mass, max_iter, tol, 
+                                                                        shear_center, options);
 
                                                                         
     if (theElement == nullptr) {
@@ -1022,7 +1067,7 @@ int
 TclBasicBuilder_addBeamWithHinges(ClientData clientData, Tcl_Interp *interp,
                                   int argc, TCL_Char ** const argv)
 {
-  BasicModelBuilder *builder = (BasicModelBuilder*)clientData;
+  ModelRegistry *builder = (ModelRegistry*)clientData;
 
   int NDM = builder->getNDM();
   int NDF = builder->getNDF();

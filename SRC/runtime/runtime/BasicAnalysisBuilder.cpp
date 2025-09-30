@@ -15,10 +15,10 @@
 //
 // Written: Claudio Perez
 //
-#include <assert.h>
+#include <cassert>
 #include <stdio.h>
 #include <unordered_map>
-#include "BasicModelBuilder.h"
+#include "ModelRegistry.h"
 #include "BasicAnalysisBuilder.h"
 #include <Domain.h>
 #include <Logging.h>
@@ -35,7 +35,7 @@
 #include <LoadPattern.h>
 #include <float.h>
 
-// For eigen()
+// For eigen
 #include <FE_EleIter.h>
 #include <FE_Element.h>
 #include <DOF_Group.h>
@@ -49,6 +49,8 @@
 #include <FullGenEigenSolver.h>
 #include <FullGenEigenSOE.h>
 #include <ArpackSOE.h>
+#include <SymmGeneralizedEigenSOE.h>
+#include <SymmGeneralizedEigenSolver.h>
 #include <ProfileSPDLinSOE.h>
 #include <NewtonRaphson.h>
 #include <RCM.h>
@@ -69,7 +71,7 @@ static std::unordered_map<int, std::string> AnalyzeFailedMessage {
    {SolutionAlgorithm::BadStepUpdate,   "Failed to update the model\n"}
 };
 
-BasicAnalysisBuilder::BasicAnalysisBuilder(BasicModelBuilder& context)
+BasicAnalysisBuilder::BasicAnalysisBuilder(ModelRegistry& context)
 :
   context(context),
   theDomain(context.getDomain()),
@@ -88,6 +90,7 @@ BasicAnalysisBuilder::BasicAnalysisBuilder(BasicModelBuilder& context)
 
 }
 
+
 BasicAnalysisBuilder::~BasicAnalysisBuilder()
 {
   this->wipe();
@@ -98,17 +101,18 @@ BasicAnalysisBuilder::~BasicAnalysisBuilder()
   }
 }
 
+
 void
 BasicAnalysisBuilder::wipe()
 {
 
   if (theAlgorithm != nullptr) {
-      delete theAlgorithm;
-      theAlgorithm = nullptr;
+    delete theAlgorithm;
+    theAlgorithm = nullptr;
   }
   if (theStaticIntegrator != nullptr) {
-      delete theStaticIntegrator;
-      theStaticIntegrator = nullptr;
+    delete theStaticIntegrator;
+    theStaticIntegrator = nullptr;
   }
   if ((theTransientIntegrator != nullptr) && freeTI) {
     delete theTransientIntegrator;
@@ -123,16 +127,16 @@ BasicAnalysisBuilder::wipe()
     theNumberer = nullptr;
   }
   if (theHandler != nullptr) {
-      delete theHandler;
-      theHandler = nullptr;
+    delete theHandler;
+    theHandler = nullptr;
   }
   if (theTest != nullptr) {
-      delete theTest;
-      theTest = nullptr;
+    delete theTest;
+    theTest = nullptr;
   }
   if (theEigenSOE != nullptr) {
-      delete theEigenSOE;
-      theEigenSOE = nullptr;
+    delete theEigenSOE;
+    theEigenSOE = nullptr;
   }
   if (theAnalysisModel != nullptr) {
     delete theAnalysisModel;
@@ -144,14 +148,9 @@ BasicAnalysisBuilder::wipe()
 void
 BasicAnalysisBuilder::setLinks(CurrentAnalysis flag)
 {
-  // if (theSOE && theAnalysisModel)
-  //   theSOE->setLinks(*theAnalysisModel);
 
   if (theDomain && theHandler && theAnalysisModel)
     theAnalysisModel->setLinks(*theDomain, *theHandler);
-
-  if (theAnalysisModel && theNumberer)
-    theNumberer->setLinks(*theAnalysisModel);
 
   if (theTest && theAlgorithm)
     theAlgorithm->setConvergenceTest(theTest);
@@ -162,8 +161,8 @@ BasicAnalysisBuilder::setLinks(CurrentAnalysis flag)
       break;
 
     case TRANSIENT_ANALYSIS:
-      if (theDomain && theAnalysisModel && theTransientIntegrator && theHandler)
-        theHandler->setLinks(*theDomain, *theAnalysisModel);
+      if (theAnalysisModel && theTransientIntegrator && theHandler)
+        theHandler->setLinks(*theAnalysisModel);
 
       if (theTransientIntegrator && theSOE && theTest && theAlgorithm)
         theAlgorithm->setLinks(*theTransientIntegrator, *theSOE, theTest);
@@ -175,20 +174,17 @@ BasicAnalysisBuilder::setLinks(CurrentAnalysis flag)
       //   theTransientIntegrator->domainChanged();
         // this->domainChanged();
 
-      // domainStamp  = 0;
       break;
 
     case STATIC_ANALYSIS:
-      if (theDomain && theAnalysisModel && theStaticIntegrator && theHandler)
-        theHandler->setLinks(*theDomain, *theAnalysisModel);
+      if (theAnalysisModel && theStaticIntegrator && theHandler)
+        theHandler->setLinks(*theAnalysisModel);
 
       if (theAnalysisModel && theSOE && theTest && theStaticIntegrator)
         theStaticIntegrator->setLinks(*theAnalysisModel, *theSOE, theTest);
 
       if (theStaticIntegrator && theSOE && theTest && theAlgorithm)
         theAlgorithm->setLinks(*theStaticIntegrator, *theSOE, theTest);
-
-      // domainStamp  = 0;
       break;
   }
 }
@@ -232,6 +228,38 @@ BasicAnalysisBuilder::initialize()
   return 0;
 }
 
+
+int 
+BasicAnalysisBuilder::number()
+{
+  theAnalysisModel->clearAll();
+
+  if (theHandler != nullptr) {
+
+    // Create FE_Element and DOF_Group objects
+    // and add to the AnalysisModel.
+    if (theHandler->handle() < 0) {
+      opserr << "ConstraintHandler::handle failed\n";
+      return -1;
+    }
+
+    // cause equation numbers to be assigned to all the DOFs in the
+    // AnalysisModel.
+    theNumberer->setLinks(*theAnalysisModel);
+    if (theNumberer->numberDOF() < 0) {
+      opserr << "DOF_Numberer::numberDOF failed\n";
+      return -2;
+    }
+
+    if (theHandler->doneNumberingDOF() < 0) {
+      opserr << "ConstraintHandler::doneNumberingDOF failed\n";
+      return -2;
+    }
+  }
+
+  return 0;
+}
+
 int
 BasicAnalysisBuilder::domainChanged()
 {
@@ -239,36 +267,12 @@ BasicAnalysisBuilder::domainChanged()
   int stamp = domain->hasDomainChanged();
   domainStamp = stamp;
 
-  opsdbg << G3_DEBUG_PROMPT << "Domain changed\n";
+  opsdbg << G3_DEBUG_PROMPT 
+         << "Domain changed\n";
 
+  this->number();
 
-  theAnalysisModel->clearAll();
-  if (theHandler != nullptr) {
-    theHandler->clearAll();
-
-    // Create FE_Element and DOF_Group objects
-    // and add to the AnalysisModel.
-    if (theHandler->handle() < 0) {
-      opserr << "BasicAnalysisBuilder::domainChange() - ConstraintHandler::handle() failed\n";
-      return -1;
-    }
-
-    // Invoke number() on the numberer which causes
-    // equation numbers to be assigned to all the DOFs in the
-    // AnalysisModel.
-    if (theNumberer != nullptr && theNumberer->numberDOF() < 0) {
-      opserr << "BasicAnalysisBuilder::domainChange() - DOF_Numberer::numberDOF() failed\n";
-      return -2;
-    }
-
-    if (theHandler->doneNumberingDOF() < 0) {
-      opserr << "BasicAnalysisBuilder::domainChange() - ConstraintHandler::doneNumberingDOF() failed\n";
-      return -2;
-    }
-  }
-
-  // Invoke setSize() on the LinearSOE which
-  // causes that object to determine its size
+  // Set sizes in the LinearSOE and EigenSOE
   Graph &theGraph = theAnalysisModel->getDOFGraph();
 
   if (theSOE != nullptr) {
@@ -284,7 +288,6 @@ BasicAnalysisBuilder::domainChanged()
       return -3;
     }
   }
-
   theAnalysisModel->clearDOFGraph();
 
   // finally invoke domainChanged on the Integrator and Algorithm
@@ -315,6 +318,7 @@ BasicAnalysisBuilder::domainChanged()
 
   return 0;
 }
+
 
 int
 BasicAnalysisBuilder::analyze(int num_steps, double size_steps, int flag)
@@ -379,7 +383,7 @@ BasicAnalysisBuilder::analyzeStatic(int numSteps, int flag)
       result = theStaticIntegrator->newStep();
       if (result < 0) {
         opserr << "The Integrator failed at step: " << i
-              << " with domain at load factor " << theDomain->getCurrentTime() << "\n";
+               << " with domain at load factor " << theDomain->getCurrentTime() << "\n";
         theDomain->revertToLastCommit();
         theStaticIntegrator->revertToLastStep();
         return -2;
@@ -391,7 +395,7 @@ BasicAnalysisBuilder::analyzeStatic(int numSteps, int flag)
       if (result < 0) {
         // Print error message if we have one
         if (AnalyzeFailedMessage.find(result) != AnalyzeFailedMessage.end()) {
-            opserr << OpenSees::PromptAnalysisFailure << AnalyzeFailedMessage[result];
+          opserr << OpenSees::PromptAnalysisFailure << AnalyzeFailedMessage[result];
         }
         theDomain->revertToLastCommit();
         theStaticIntegrator->revertToLastStep();
@@ -455,7 +459,7 @@ BasicAnalysisBuilder::analyzeSubLevel(int level, double dT)
   if (numSubSteps == 0)
     return -1;
 
-  double stepDT = dT/(numSubSteps*1.);
+  double stepDT = dT/double(numSubSteps);
 
   for (int i=0; i<numSubSteps; i++) {
     result = this->analyzeStep(stepDT);
@@ -473,7 +477,6 @@ BasicAnalysisBuilder::analyzeSubLevel(int level, double dT)
 }
 
 
-// analyze a transient step
 int
 BasicAnalysisBuilder::analyzeStep(double dT)
 {
@@ -506,7 +509,8 @@ BasicAnalysisBuilder::analyzeStep(double dT)
   result = theAlgorithm->solveCurrentStep();
   if (result < 0) {
     if (AnalyzeFailedMessage.find(result) != AnalyzeFailedMessage.end()) {
-        opserr << OpenSees::PromptAnalysisFailure << AnalyzeFailedMessage[result];
+      opserr << OpenSees::PromptAnalysisFailure
+             << AnalyzeFailedMessage[result];
     }
     theDomain->revertToLastCommit();
     theTransientIntegrator->revertToLastStep();
@@ -549,7 +553,7 @@ determineDt(double dT,
     
   // get the number of trial steps in the last solveCurrentStep()
   double numLastIter = 1.0;
-  if (theTest != 0)
+  if (theTest != nullptr)
     numLastIter = theTest->getNumTests();
   
   
@@ -600,7 +604,7 @@ BasicAnalysisBuilder::analyzeVariable(int numSteps, double dT, double dtMin, dou
 
     //
     // do newStep(), solveCurrentStep() and commit() as in regular
-    // DirectINtegrationAnalysis - difference is we do not return
+    // DirectIntegrationAnalysis - difference is we do not return
     // if a failure - we stop the analysis & resize time step if failure
     //
 
@@ -635,8 +639,8 @@ BasicAnalysisBuilder::analyzeVariable(int numSteps, double dT, double dtMin, dou
 
       // if last dT was <= min specified the analysis FAILS - return FAILURE
       if (currentDt <= dtMin) {
-        opserr << "VariableTimeStepDirectIntegrationAnalysis::analyze() - ";
-        opserr << " failed at time " << theDomain->getCurrentTime() << endln;
+        opserr << "failed at time " << theDomain->getCurrentTime() 
+               << OpenSees::SignalMessageEnd;
         return result;
       }
 
@@ -666,13 +670,10 @@ BasicAnalysisBuilder::set(ConstraintHandler* obj)
 void
 BasicAnalysisBuilder::set(DOF_Numberer* obj)
 {
-  // free the old numberer
   if (theNumberer != nullptr)
     delete theNumberer;
 
-  // set the links needed by the Algorithm
   theNumberer = obj;
-  theNumberer->setLinks(*theAnalysisModel);
 
   domainStamp = 0;
   return;
@@ -716,7 +717,8 @@ BasicAnalysisBuilder::set(LinearSOE* obj, bool free)
 
 
 LinearSOE*
-BasicAnalysisBuilder::getLinearSOE() {
+BasicAnalysisBuilder::getLinearSOE()
+{
   return theSOE;
 }
 
@@ -758,16 +760,15 @@ BasicAnalysisBuilder::set(TransientIntegrator& obj, bool free)
     domainStamp = 0;
 }
 
+
 void
 BasicAnalysisBuilder::set(ConvergenceTest* obj)
 {
-
   if (theTest != nullptr)
     delete theTest;
 
   theTest = obj;
   this->setLinks(this->CurrentAnalysisFlag);
-
 }
 
 void
@@ -841,7 +842,6 @@ BasicAnalysisBuilder::setStaticAnalysis()
   this->setLinks(STATIC_ANALYSIS);
 
   this->CurrentAnalysisFlag = STATIC_ANALYSIS;
-
   return 0;
 }
 
@@ -852,16 +852,6 @@ BasicAnalysisBuilder::setTransientAnalysis()
   this->CurrentAnalysisFlag = TRANSIENT_ANALYSIS;
   this->fillDefaults(TRANSIENT_ANALYSIS);
   this->setLinks(TRANSIENT_ANALYSIS);
-
-  return 1;
-}
-
-int
-BasicAnalysisBuilder::newTransientAnalysis()
-{
-  assert(theDomain != nullptr);
-
-  this->fillDefaults(TRANSIENT_ANALYSIS);
 
   return 1;
 }
@@ -878,29 +868,33 @@ BasicAnalysisBuilder::newEigenAnalysis(int typeSolver, double shift)
   if (this->CurrentAnalysisFlag == EMPTY_ANALYSIS)
     this->CurrentAnalysisFlag = TRANSIENT_ANALYSIS;
 
-  this->fillDefaults(this->CurrentAnalysisFlag);
-  this->setLinks(this->CurrentAnalysisFlag);
 
   // create a new eigen system and solver
   if (theEigenSOE != nullptr) {
-    if (theEigenSOE->getClassTag() != typeSolver) {
+    // if (theEigenSOE->getClassTag() != typeSolver) {
       delete theEigenSOE;
       theEigenSOE = nullptr;
-    }
+    // }
   }
+  this->fillDefaults(this->CurrentAnalysisFlag);
+  this->setLinks(this->CurrentAnalysisFlag);
 
   if (theEigenSOE == nullptr) {
     domainStamp = 0;
     if (typeSolver == EigenSOE_TAGS_SymBandEigenSOE) {
       SymBandEigenSolver *theEigenSolver = new SymBandEigenSolver();
       theEigenSOE = new SymBandEigenSOE(*theEigenSolver, *theAnalysisModel);
-
-    } else if (typeSolver == EigenSOE_TAGS_FullGenEigenSOE) {
-        FullGenEigenSolver *theEigenSolver = new FullGenEigenSolver();
-        theEigenSOE = new FullGenEigenSOE(*theEigenSolver, *theAnalysisModel);
-
-    } else {
-        theEigenSOE = new ArpackSOE(shift);
+    }
+    else if (typeSolver == EigenSOE_TAGS_FullGenEigenSOE) {
+      FullGenEigenSolver *theEigenSolver = new FullGenEigenSolver();
+      theEigenSOE = new FullGenEigenSOE(*theEigenSolver, *theAnalysisModel);
+    }
+    else if (typeSolver == EigenSOE_TAGS_SymmGeneralizedEigenSOE) {
+      SymmGeneralizedEigenSolver *theEigenSolver = new SymmGeneralizedEigenSolver();
+      theEigenSOE = new SymmGeneralizedEigenSOE(*theEigenSolver, *theAnalysisModel);
+    }
+    else {
+      theEigenSOE = new ArpackSOE(*theAnalysisModel, shift);
     }
 
     //
@@ -908,12 +902,13 @@ BasicAnalysisBuilder::newEigenAnalysis(int typeSolver, double shift)
     //
     theEigenSOE->setLinks(*theAnalysisModel);
     theEigenSOE->setLinearSOE(*theSOE);
-  } // theEigenSOE == 0
+  }
 }
 
 
 int
-BasicAnalysisBuilder::eigen(int numMode, bool generalized, bool findSmallest)
+BasicAnalysisBuilder::eigen(int numMode, 
+                            bool generalized, bool findSmallest)
 {
   // TODO: merge with newEigenAnalysis
 
@@ -933,20 +928,7 @@ BasicAnalysisBuilder::eigen(int numMode, bool generalized, bool findSmallest)
                          //  which isnt updated here
 //    result = this->domainChanged();
 
-    theAnalysisModel->clearAll();
-    theHandler->clearAll();
-
-    // Now invoke handle() on the constraint handler which
-    // causes the creation of FE_Element and DOF_Group objects
-    // and their addition to the AnalysisModel.
-    result = theHandler->handle();
-
-    // Now invoke number() on the numberer which causes
-    // equation numbers to be assigned to all the DOFs in the
-    // AnalysisModel.
-    result = theNumberer->numberDOF();
-
-    result = theHandler->doneNumberingDOF();
+    this->number();
 
     Graph &theGraph = theAnalysisModel->getDOFGraph();
 
@@ -961,7 +943,9 @@ BasicAnalysisBuilder::eigen(int numMode, bool generalized, bool findSmallest)
       return -1;
     }
   }
-
+#if 0
+  theEigenSOE->formSystem(*theAnalysisModel, generalized);
+#else
   //
   // zero A and M
   //
@@ -976,7 +960,7 @@ BasicAnalysisBuilder::eigen(int numMode, bool generalized, bool findSmallest)
   while ((elePtr = theEles()) != nullptr) {
     elePtr->zeroTangent();
     elePtr->addKtToTang(1.0);
-    if (theEigenSOE->addA(elePtr->getTangent(0), elePtr->getID()) < 0) {
+    if (theEigenSOE->addA(elePtr->getTangent(nullptr), elePtr->getID()) < 0) {
       opserr << G3_WARN_PROMPT << "eigen -";
       opserr << " failed in addA for ID " << elePtr->getID();
       result = -2;
@@ -1009,12 +993,12 @@ BasicAnalysisBuilder::eigen(int numMode, bool generalized, bool findSmallest)
       }
     }
   }
+#endif
 
   //
   // Solve for the eigen values & vectors
   //
   if (theEigenSOE->solve(numMode, generalized, findSmallest) < 0) {
-    opserr << G3_WARN_PROMPT << "EigenSOE failed in solve()\n";
     return -4;
   }
 
@@ -1030,8 +1014,13 @@ BasicAnalysisBuilder::eigen(int numMode, bool generalized, bool findSmallest)
   theAnalysisModel->setEigenvalues(theEigenvalues);
   this->numEigen = numMode;
 
+
+  //
+  delete theEigenSOE;
+  theEigenSOE = nullptr;
   return 0;
 }
+
 
 Domain*
 BasicAnalysisBuilder::getDomain()

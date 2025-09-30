@@ -8,7 +8,8 @@
 // Written: cmp
 //
 
-#include <stdlib.h>
+#include <Parsing.h>
+#include <Logging.h>
 #include <string.h>
 #include <assert.h>
 
@@ -19,7 +20,7 @@
 #include <Logging.h>
 #include <Response.h>
 #include <FrameSection.h>
-#include <BasicModelBuilder.h>
+#include <ModelRegistry.h>
 
 static Tcl_CmdProc SectionTest_setStrainSection;
 static Tcl_CmdProc SectionTest_getStressSection;
@@ -40,7 +41,7 @@ TclCommand_useCrossSection(ClientData clientData, Tcl_Interp *interp, int argc, 
   assert(clientData != nullptr);
   // TODO: Parse tag properly
   SectionForceDeformation *theSection = 
-    ((BasicModelBuilder*)clientData)->getTypedObject<FrameSection>(std::atoi(argv[2]));
+    ((ModelRegistry*)clientData)->getTypedObject<FrameSection>(std::atoi(argv[2]));
 
   if (theSection == nullptr) {
     opserr << OpenSees::PromptValueError << "no section found with tag '" << argv[2] << "'\n";

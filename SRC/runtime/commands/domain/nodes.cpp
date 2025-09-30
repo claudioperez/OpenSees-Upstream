@@ -24,7 +24,6 @@
 #include <vector>
 #include <algorithm>
 // Framework
-#include <tcl.h>
 #include <Logging.h>
 #include <Parsing.h>
 #include <ID.h>
@@ -205,8 +204,7 @@ nodeResponseTemplate(ClientData clientData, Tcl_Interp *interp, Tcl_Size argc, T
 
   if (response == nullptr) {
     opserr << OpenSees::PromptValueError
-           << "Node " << tag << " does not have a response of type "
-           << argv[1]
+           << "Failed to find node with tag " << tag
            << OpenSees::SignalMessageEnd;
     return TCL_ERROR;
   }
@@ -215,7 +213,7 @@ nodeResponseTemplate(ClientData clientData, Tcl_Interp *interp, Tcl_Size argc, T
 
   if (dof >= 0) {
     if (dof >= size) {
-      opserr << OpenSees::PromptValueError 
+      opserr << OpenSees::PromptValueError
              << "dofTag too large"
              << OpenSees::SignalMessageEnd;
       return TCL_ERROR;

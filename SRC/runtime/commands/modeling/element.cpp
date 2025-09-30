@@ -15,7 +15,8 @@
 //
 // Written: cmp
 //
-#include <tcl.h>
+#include <Parsing.h>
+#include <Logging.h>
 #include "element.hpp"
 #include <assert.h>
 #include <stdlib.h>
@@ -29,7 +30,7 @@
 #define strcmp strcasecmp
 
 #include <runtimeAPI.h>
-#include <BasicModelBuilder.h>
+#include <ModelRegistry.h>
 
 #include <Logging.h>
 #include <packages.h>
@@ -61,6 +62,11 @@ extern "C" int OPS_ResetInputNoBuilder(ClientData clientData, Tcl_Interp *interp
 //
 // THE PROTOTYPES OF THE FUNCTIONS INVOKED BY THE INTERPRETER
 //
+
+#if 0 // cmp - commented out to eliminate use of TclBasicBuilder
+extern int Tcl_addWrapperElement(eleObj *, ClientData clientData, Tcl_Interp *interp, int argc, TCL_Char ** const argv, Domain *, TclBuilder *);
+// Added by Quan Gu and Yongdou Liu, et al. on 2018/10/31 (Xiamen University)
+#endif
 static Tcl_CmdProc TclBasicBuilder_addWheelRail;
 
 
@@ -118,7 +124,7 @@ TclCommand_addElement(ClientData clientData, Tcl_Interp *interp, int argc, TCL_C
   TclBasicBuilder *theTclBuilder = (TclBasicBuilder*)G3_getSafeBuilder(rt);
 
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
   Domain *theTclDomain = builder->getDomain();
 
   OPS_ResetInputNoBuilder(clientData, interp, 2, argc, argv, theTclDomain);
@@ -158,6 +164,22 @@ TclCommand_addElement(ClientData clientData, Tcl_Interp *interp, int argc, TCL_C
     else
       theEle = OPS_PML3D(rt, argc, argv);
   }
+#if 0
+  else if (strcmp(argv[1], "gradientInelasticBeamColumn") == 0) {
+
+      Element *theEle = 0;
+      if (ndm == 2)
+        theEle = OPS_GradientInelasticBeamColumn2d(rt, argc, argv);
+      else
+        theEle = OPS_GradientInelasticBeamColumn3d(rt, argc, argv);
+
+      if (theEle != 0)
+        theElement = theEle;
+      else {
+        return TCL_ERROR;
+      }
+  }
+#endif
 
 #if defined(_HAVE_LHNMYS) || defined(OPSDEF_ELEMENT_LHNMYS)
   else if (strcmp(argv[1], "beamColumn2DwLHNMYS") == 0) {
@@ -274,7 +296,7 @@ TclCommand_addElement(ClientData clientData, Tcl_Interp *interp, int argc, TCL_C
       return TCL_OK;
   }
 
-#if defined(OPSDEF_ELEMENT_FEAP)
+#if 0 && defined(OPSDEF_ELEMENT_FEAP)
   if (strcmp(argv[1], "fTruss") == 0) {
     int eleArgStart = 1;
     int result = TclBasicBuilder_addFeapTruss(
@@ -306,6 +328,7 @@ TclCommand_addElement(ClientData clientData, Tcl_Interp *interp, int argc, TCL_C
            strcasecmp(argv[1], "ForceBeamColumn") == 0 ||
            strcasecmp(argv[1], "DispBeamColumn") == 0 ||
            strcasecmp(argv[1], "DispBeamColumn") == 0 ||
+           strcasecmp(argv[1], "DispBeamColumnAsym") == 0 ||
            strcasecmp(argv[1], "TimoshenkoBeamColumn") == 0 ||
            strcasecmp(argv[1], "ForceBeamColumnCBDI") == 0 ||
            strcasecmp(argv[1], "ForceBeamColumnCSBDI") == 0 ||
@@ -440,6 +463,28 @@ TclCommand_addElement(ClientData clientData, Tcl_Interp *interp, int argc, TCL_C
         eleCommands = eleCommands->next;
     }
 
+#if 0
+    //
+    // maybe element in a routine, check existing ones or try loading new ones
+    //
+
+    char *eleType = new char[strlen(argv[1]) + 1];
+    strcpy(eleType, argv[1]);
+    eleObj *eleObject = OPS_GetElementType(eleType, (int)strlen(eleType));
+
+    delete[] eleType;
+
+    if (eleObject != 0) {
+
+      int result = Tcl_addWrapperElement(eleObject, clientData, interp, argc, argv,
+                                         theTclDomain, theTclBuilder);
+
+      if (result != 0)
+        delete eleObject;
+      else
+        return result;
+    }
+#endif
     //
     // try loading new dynamic library containing a C++ class
     //
@@ -498,7 +543,7 @@ TclBasicBuilder_addMultipleShearSpring(ClientData clientData, Tcl_Interp *interp
                                        Domain *theTclDomain, 
                                        [[maybe_unused]] TclBasicBuilder* unused)
 {
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
   if (builder == 0 || clientData == 0) {
     opserr << OpenSees::PromptValueError << "builder has been destroyed - multipleShearSpring\n";
@@ -747,7 +792,7 @@ TclBasicBuilder_addMultipleNormalSpring(ClientData clientData, Tcl_Interp *inter
 {
 
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
   // 3-dim, 6-dof
   int ndm = builder->getNDM();
@@ -1021,7 +1066,7 @@ TclBasicBuilder_addKikuchiBearing(ClientData clientData, Tcl_Interp *interp,
                                   int argc, TCL_Char ** const argv)
 {
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
   // 3-dim, 6dof
   int ndm = builder->getNDM();
@@ -1510,7 +1555,7 @@ TclBasicBuilder_addYamamotoBiaxialHDR(ClientData clientData, Tcl_Interp *interp,
                                       [[maybe_unused]] TclBasicBuilder *unused)
 {
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
   Domain *theTclDomain = builder->getDomain();
   
 
@@ -1713,7 +1758,7 @@ TclBasicBuilder_addWheelRail(ClientData clientData, Tcl_Interp *interp, int argc
 {
   constexpr static int eleArgStart = 1;
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
   int ndm = builder->getNDM();
   int ndf = builder->getNDF();

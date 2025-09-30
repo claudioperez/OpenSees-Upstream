@@ -1,21 +1,15 @@
 //===----------------------------------------------------------------------===//
 //
 //                                   xara
-//                              https://xara.so
 //
 //===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025, OpenSees/Xara Developers
-// All rights reserved.  No warranty, explicit or implicit, is provided.
-//
-// This source code is licensed under the BSD 2-Clause License.
-// See LICENSE file or https://opensource.org/licenses/BSD-2-Clause
-//
+//                              https://xara.so
 //===----------------------------------------------------------------------===//
 //
 #include <map>
 #include <vector>
 #include <assert.h>
+#include <Parsing.h>
 #include <elementAPI.h>
 #include <stdlib.h>
 #include <packages.h>
@@ -23,7 +17,7 @@
 #include <Domain.h>
 #include <Node.h>
 #include <Logging.h>
-#include <BasicModelBuilder.h>
+#include <ModelRegistry.h>
 
 #include <UniaxialMaterial.h>
 #include <NDMaterial.h>
@@ -58,7 +52,7 @@ extern "C" int
 OPS_Error(const char *errorMessage, int length)
 {
   opserr << errorMessage;
-  opserr << endln;
+  opserr << OpenSees::SignalMessageEnd;
 
   return 0;
 }
@@ -153,7 +147,7 @@ int
 OPS_GetStringCopy(char **arrayData)
 {
   if (currentArg >= maxArg) {
-    opserr << "OPS_GetStringInput -- error reading " << currentArg << endln;
+    opserr << "OPS_GetStringInput -- error reading " << currentArg << OpenSees::SignalMessageEnd;
     return -1;
   }
   char *newData = new char[strlen(currentArgv[currentArg]) + 1];
@@ -198,8 +192,9 @@ int OPS_GetDoubleListInput(int* size, Vector* data)
 extern "C"
 int OPS_EvalDoubleStringExpression(const char* theExpression, double& current_val) {
     if (Tcl_ExprDouble(theInterp, theExpression, &current_val) != TCL_OK) {
-        opserr << "OPS_EvalDoubleStringExpression::evaluateExpression -- expression \"" << theExpression;
-        opserr << "\" caused error:" << endln << Tcl_GetStringResult(theInterp) << endln;
+        opserr << "expression \"" << theExpression;
+        opserr << "\" caused error: " << Tcl_GetStringResult(theInterp) 
+               << OpenSees::SignalMessageEnd;
         return -1;
     }
     return 0;
@@ -280,7 +275,7 @@ extern "C" int OPS_SetDoubleDictListOutput(
 
 extern bool builtModel;
 extern FE_Datastore *theDatabase;
-static BasicModelBuilder *theModelBuilder = nullptr;
+static ModelRegistry *theModelBuilder = nullptr;
 
 G3_Runtime *
 G3_getRuntime(Tcl_Interp *interp)
@@ -294,21 +289,21 @@ G3_getRuntime(Tcl_Interp *interp)
 Tcl_Interp *
 G3_getInterpreter(G3_Runtime* rt) {return rt->m_interp;}
 
-BasicModelBuilder *
+ModelRegistry *
 G3_getModelBuilder(G3_Runtime *rt) {return rt->m_builder;}
 
 int
-G3_setModelBuilder(G3_Runtime *rt, BasicModelBuilder* builder)
+G3_setModelBuilder(G3_Runtime *rt, ModelRegistry* builder)
 {
   theModelBuilder = builder;
   rt->m_builder = builder;
   return 0;
 }
 
-BasicModelBuilder *
+ModelRegistry *
 G3_getSafeBuilder(G3_Runtime *rt)
 {
-  return (BasicModelBuilder*)G3_getModelBuilder(rt);
+  return (ModelRegistry*)G3_getModelBuilder(rt);
 }
 
 int
@@ -328,7 +323,7 @@ G3_getDomain(G3_Runtime *rt)
 int G3_addTimeSeries(G3_Runtime *rt, TimeSeries *series)
 {
   assert(series != nullptr);
-  BasicModelBuilder *builder = G3_getSafeBuilder(rt);
+  ModelRegistry *builder = G3_getSafeBuilder(rt);
   return builder->addTaggedObject<TimeSeries>(*series);
 }
 
@@ -336,13 +331,16 @@ int G3_addTimeSeries(G3_Runtime *rt, TimeSeries *series)
 TimeSeries *G3_getTimeSeries(G3_Runtime *rt, int tag)
 {
   TimeSeries *series;
-  BasicModelBuilder *builder = G3_getSafeBuilder(rt);
+  ModelRegistry *builder = G3_getSafeBuilder(rt);
   if (builder) {
      series = builder->getTypedObject<TimeSeries>(tag);
+     // TODO
+#if 1
      if (series)
        return series->getCopy();
      else
       return nullptr;
+#endif
   } else {
     return nullptr;
   }
@@ -354,7 +352,7 @@ TimeSeries *G3_getTimeSeries(G3_Runtime *rt, int tag)
 CrdTransf *
 G3_getCrdTransf(G3_Runtime *rt, G3_Tag tag)
 {
-  BasicModelBuilder* builder = G3_getSafeBuilder(rt);
+  ModelRegistry* builder = G3_getSafeBuilder(rt);
   if (!builder) {
     return nullptr;
   }
@@ -364,7 +362,7 @@ G3_getCrdTransf(G3_Runtime *rt, G3_Tag tag)
 SectionForceDeformation*
 G3_getSectionForceDeformation(G3_Runtime* rt, int tag)
 {
-  BasicModelBuilder* builder = G3_getSafeBuilder(rt);
+  ModelRegistry* builder = G3_getSafeBuilder(rt);
   assert(builder);
   SectionForceDeformation* theSection = nullptr;
 
@@ -381,14 +379,14 @@ G3_getSectionForceDeformation(G3_Runtime* rt, int tag)
 UniaxialMaterial *
 G3_getUniaxialMaterialInstance(G3_Runtime *rt, int tag)
 {
-  BasicModelBuilder* builder = G3_getSafeBuilder(rt);
+  ModelRegistry* builder = G3_getSafeBuilder(rt);
   assert(builder != nullptr);
   return builder->getTypedObject<UniaxialMaterial>(tag);
 }
 
 int 
 G3_addUniaxialMaterial(G3_Runtime *rt, UniaxialMaterial *mat) {
-  BasicModelBuilder* builder = G3_getSafeBuilder(rt);
+  ModelRegistry* builder = G3_getSafeBuilder(rt);
   assert(builder != nullptr);
   assert(mat != nullptr);
 
@@ -398,7 +396,7 @@ G3_addUniaxialMaterial(G3_Runtime *rt, UniaxialMaterial *mat) {
 NDMaterial *
 G3_GetNDMaterial(G3_Runtime* rt, int matTag)
 {
-  BasicModelBuilder* builder = G3_getSafeBuilder(rt);
+  ModelRegistry* builder = G3_getSafeBuilder(rt);
   assert(builder != nullptr);
   return builder->getTypedObject<NDMaterial>(matTag);
 }
@@ -412,7 +410,7 @@ OPS_GetNDF()
 int
 G3_getNDM(G3_Runtime *rt)
 {
-  BasicModelBuilder *builder = G3_getSafeBuilder(rt);
+  ModelRegistry *builder = G3_getSafeBuilder(rt);
   assert(builder != nullptr);
   return builder->getNDM();
 }

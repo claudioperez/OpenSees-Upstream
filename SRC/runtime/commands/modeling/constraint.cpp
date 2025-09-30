@@ -13,7 +13,6 @@
 //
 //===----------------------------------------------------------------------===//
 //
-#include <tcl.h>
 #include <assert.h>
 #include <Matrix.h>
 #include <ID.h>
@@ -21,7 +20,7 @@
 #include <Domain.h>
 #include <Parsing.h>
 #include <Logging.h>
-#include <BasicModelBuilder.h>
+#include <ModelRegistry.h>
 
 #include <runtimeAPI.h>
 
@@ -40,12 +39,13 @@ int
 TclCommand_addHomogeneousBC(ClientData clientData, Tcl_Interp *interp, Tcl_Size argc,
                             TCL_Char ** const argv)
 {
+  // fix tag <fixities>
   assert(clientData != nullptr);
-  Domain *theTclDomain = ((BasicModelBuilder*)clientData)->getDomain();
 
+  Domain *theTclDomain = ((ModelRegistry*)clientData)->getDomain();
 
   if (argc < 3) {
-    opserr << OpenSees::PromptValueError << "bad command - want: fix tag <fixities>\n";
+    opserr << OpenSees::PromptValueError << "Missing required arguments\n";
     return TCL_ERROR;
   }
 
@@ -177,7 +177,7 @@ TclCommand_addHomogeneousBC_X(ClientData clientData, Tcl_Interp *interp,
 
 
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
   // TODO: Why not add SP to Domain directly?
   builder->addSP_Constraint(0, xLoc, fixity, tol);
 
@@ -189,7 +189,7 @@ TclCommand_addHomogeneousBC_Y(ClientData clientData, Tcl_Interp *interp,
                                    Tcl_Size argc, TCL_Char ** const argv)
 {
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
   int ndf = argc - 2;
   if (strcmp(argv[argc-2],"-tol") == 0)
@@ -240,7 +240,7 @@ TclCommand_addHomogeneousBC_Z(ClientData clientData, Tcl_Interp *interp,
 {
 
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
   int ndf = argc - 2;
   if (strcmp(argv[argc-2],"-tol") == 0)
@@ -294,7 +294,7 @@ TclCommand_addSP(ClientData clientData, Tcl_Interp *interp, Tcl_Size argc,
                       TCL_Char ** const argv)
 {
   assert(clientData != nullptr);
-  BasicModelBuilder* builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry* builder = static_cast<ModelRegistry*>(clientData);
   Domain *theTclDomain = builder->getDomain();
 
   if (argc > 1 && (strcmp(argv[1], "remove") == 0)) {
@@ -435,7 +435,7 @@ int
 TclCommand_addEqualDOF_MP(ClientData clientData, Tcl_Interp *interp,
                                 Tcl_Size argc, TCL_Char ** const argv)
 {
-    BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+    ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
     Domain     *theTclDomain   = builder->getDomain();
 
 
@@ -501,6 +501,98 @@ TclCommand_addEqualDOF_MP(ClientData clientData, Tcl_Interp *interp,
     return TCL_OK;
 }
 
+#if 0
+int
+TclCommand_addEqualDOF_MP_Mixed(ClientData clientData, Tcl_Interp *interp,
+                                Tcl_Size argc, TCL_Char ** const argv)
+{
+        // Ensure the destructor has not been called
+        ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
+
+        if (theTclBuilder == 0 || clientData == 0) {
+          opserr << OpenSees::PromptValueError << "builder has been destroyed - equalDOF \n";
+          return TCL_ERROR;
+        }
+
+        // Check number of arguments
+        if (argc < 4) {
+          opserr << OpenSees::PromptValueError << "bad command - want: equalDOFmixed RnodeID? CnodeID? numDOF? RDOF1? CDOF1? ... ...";
+          return TCL_ERROR;
+        }
+
+        // Read in the node IDs and the DOF
+        int RnodeID, CnodeID, dofIDR, dofIDC, numDOF;
+
+        if (Tcl_GetInt(interp, argv[1], &RnodeID) != TCL_OK) {
+          opserr << OpenSees::PromptValueError << "invalid RnodeID: " << argv[1]
+               << " equalDOF RnodeID? CnodeID? numDOF? RDOF1? CDOF1? ...";
+          return TCL_ERROR;
+        }
+        if (Tcl_GetInt(interp, argv[2], &CnodeID) != TCL_OK) {
+          opserr << OpenSees::PromptValueError << "invalid CnodeID: " << argv[2]
+               << " equalDOF RnodeID? CnodeID? numDOF? RDOF1? CDOF1? ...";
+          return TCL_ERROR;
+        }
+
+        if (Tcl_GetInt(interp, argv[3], &numDOF) != TCL_OK) {
+          opserr << OpenSees::PromptValueError << "invalid numDOF: " << argv[2]
+               << " equalDOF RnodeID? CnodeID? numDOF? RDOF1? CDOF1? ...";
+          return TCL_ERROR;
+        }
+
+        // The number of DOF to be coupled
+        //        int numDOF = argc - 3;
+
+        // The constraint matrix ... U_c = C_cr * U_r
+        Matrix Ccr (numDOF, numDOF);
+        Ccr.Zero();
+
+        // The vector containing the retained and constrained DOFs
+        ID rDOF (numDOF);
+        ID cDOF (numDOF);
+
+        int i, j, k;
+        // Read the degrees of freedom which are to be coupled
+        for (i = 4, j = 5, k = 0; k < numDOF; i+=2, j+=2, k++) {
+          if (Tcl_GetInt(interp, argv[i], &dofIDR) != TCL_OK) {
+            opserr << OpenSees::PromptValueError << "invalid dofID: " << argv[3]
+                 << " equalDOF RnodeID? CnodeID? DOF1? DOF2? ...";
+            return TCL_ERROR;
+          }
+          if (Tcl_GetInt(interp, argv[j], &dofIDC) != TCL_OK) {
+            opserr << OpenSees::PromptValueError << "invalid dofID: " << argv[3]
+                 << " equalDOF RnodeID? CnodeID? DOF1? DOF2? ...";
+            return TCL_ERROR;
+          }
+
+          dofIDR -= 1; // Decrement for 0-based indexing
+          dofIDC -= 1;
+          if (dofIDC < 0 || dofIDR < 0) {
+            opserr << OpenSees::PromptValueError << "invalid dofID: " << argv[i]
+                   << " must be >= 1";
+            return TCL_ERROR;
+          }
+          rDOF(k) = dofIDR;
+          cDOF(k) = dofIDC;
+          Ccr(k,k) = 1.0;
+        }
+
+        // Create the multi-point constraint
+        MP_Constraint *theMP = new MP_Constraint (RnodeID, CnodeID, Ccr, cDOF, rDOF); 
+
+        // Add the multi-point constraint to the domain
+        if (theTclDomain->addMP_Constraint (theMP) == false) {
+          opserr << OpenSees::PromptValueError << "could not add equalDOF MP_Constraint to domain ";
+          delete theMP;
+          return TCL_ERROR;
+        }
+
+        Tcl_SetObjResult(interp, Tcl_NewIntObj(theMP->getTag()));
+        return TCL_OK;
+}
+#endif
+
+
 int
 TclCommand_addImposedMotionSP(ClientData clientData, Tcl_Interp *interp,
                               Tcl_Size argc, TCL_Char ** const argv)
@@ -509,8 +601,8 @@ TclCommand_addImposedMotionSP(ClientData clientData, Tcl_Interp *interp,
   G3_Runtime* rt = G3_getRuntime(interp);
   Domain *domain = G3_getDomain(rt);
 
-  // BasicModelBuilder *theTclBuilder = G3_getSafeBuilder(G3_getRuntime(interp));
-  // BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  // ModelRegistry *theTclBuilder = G3_getSafeBuilder(G3_getRuntime(interp));
+  // ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
 
 
   // check number of arguments

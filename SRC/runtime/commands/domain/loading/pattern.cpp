@@ -29,12 +29,8 @@
 // Written: fmk
 // Created: 07/99
 //
-// Modified: fmk 11/00 - removed TimeSeries stuff from file, now an external
-// procedure
-//
-#include <tcl.h>
 #include <assert.h>
-#include <BasicModelBuilder.h>
+#include <ModelRegistry.h>
 
 #include <runtimeAPI.h>
 #include <Logging.h>
@@ -69,12 +65,15 @@
 Tcl_CmdProc TclCommand_addSP;
 Tcl_CmdProc TclCommand_addNodalLoad;
 
-extern TimeSeriesIntegrator *TclDispatch_newSeriesIntegrator(ClientData clientData,
-                                                        Tcl_Interp *interp,
-                                                        TCL_Char * const arg);
+extern TimeSeriesIntegrator *
+TclDispatch_newSeriesIntegrator(ClientData clientData,
+                                Tcl_Interp *interp,
+                                TCL_Char * const arg);
 
-extern TimeSeries *TclSeriesCommand(ClientData clientData, Tcl_Interp *interp,
-                                    TCL_Char * const arg);
+extern TimeSeries *
+TclSeriesCommand(ClientData clientData,
+                 Tcl_Interp *interp,
+                  TCL_Char * const arg);
 
 //
 // This command creates a scope where the following commands
@@ -82,11 +81,13 @@ extern TimeSeries *TclSeriesCommand(ClientData clientData, Tcl_Interp *interp,
 // - load
 // - sp
 int
-TclCommand_addPattern(ClientData clientData, Tcl_Interp *interp, int argc,
+TclCommand_addPattern(ClientData clientData,
+                      Tcl_Interp *interp,
+                      Tcl_Size argc,
                       TCL_Char ** const argv)
 {
   assert(clientData != nullptr);
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
   Domain* domain = builder->getDomain();
   LoadPattern *thePattern = nullptr;
 
@@ -110,8 +111,8 @@ TclCommand_addPattern(ClientData clientData, Tcl_Interp *interp, int argc,
 
   if (strcmp(argv[1], "Plain") == 0) {
     if (argc < 4) {
-        opserr << OpenSees::PromptValueError << "Invalid command for Plain pattern.\n";
-        return TCL_ERROR;
+      opserr << OpenSees::PromptValueError << "Invalid command for Plain pattern.\n";
+      return TCL_ERROR;
     }
 
     double fact = 1.0;
@@ -262,7 +263,7 @@ TclCommand_addPattern(ClientData clientData, Tcl_Interp *interp, int argc,
     }
 
     if (dispSeries == nullptr && velSeries == nullptr && accelSeries == nullptr) {
-      opserr << OpenSees::PromptValueError << "invalid series, expected:\n    pattern UniformExcitation";
+      opserr << OpenSees::PromptValueError << "invalid series, expected:\n    pattern UniformExcitation ";
       opserr << "-disp {dispSeries} -vel {velSeries} -accel {accelSeries} ";
       opserr << "-int {Series Integrator}" << "\n";
       return TCL_ERROR;
@@ -373,7 +374,7 @@ TclCommand_addPattern(ClientData clientData, Tcl_Interp *interp, int argc,
 
 
 #ifdef OPSDEF_DRM
-  //////// //////// ///////// ////////// /////  // DRMLoadPattern add BEGIN
+  //////// // DRMLoadPattern add BEGIN
   else if (strcmp(argv[1], "DRMLoadPattern") == 0) {
     TCL_Char *InputDataFileName = nullptr;
 
@@ -795,7 +796,7 @@ TclCommand_addNodalLoad(ClientData clientData, Tcl_Interp *interp, int argc, TCL
   assert(clientData != nullptr);
   
   // TODO
-  BasicModelBuilder *builder = static_cast<BasicModelBuilder*>(clientData);
+  ModelRegistry *builder = static_cast<ModelRegistry*>(clientData);
   LoadPattern *theTclLoadPattern = builder->getEnclosingPattern();
   int nodeLoadTag = builder->getNodalLoadTag();
 
@@ -808,7 +809,7 @@ TclCommand_addNodalLoad(ClientData clientData, Tcl_Interp *interp, int argc, TCL
 
   if (true) {
     if (argc < (2 + ndf)) {
-      opserr << OpenSees::PromptValueError << "bad command - want: load nodeId " << ndf << " forces\n";
+      opserr << OpenSees::PromptValueError << "expected " << ndf << " forces\n";
       return TCL_ERROR;
     }
 
@@ -870,7 +871,9 @@ TclCommand_addNodalLoad(ClientData clientData, Tcl_Interp *interp, int argc, TCL
 
   // add the load to the domain
   if (builder->getDomain()->addNodalLoad(theLoad, loadPatternTag) == false) {
-    opserr << OpenSees::PromptValueError << "BasicModelBuilder - could not add load to domain\n";
+    opserr << OpenSees::PromptValueError
+           << "could not add load to domain"
+           << OpenSees::SignalMessageEnd;
     delete theLoad;
     return TCL_ERROR;
   }

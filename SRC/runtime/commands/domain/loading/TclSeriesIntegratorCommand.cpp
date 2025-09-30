@@ -13,10 +13,14 @@
 //
 //===----------------------------------------------------------------------===//
 //
+// Description: This file contains the function invoked when the user invokes
+// the groundMotion command in the interpreter.
+//
 // Written: fmk
 // Created: 11/00
 //
-#include <tcl.h>
+#include <Parsing.h>
+#include <Logging.h>
 #include <string.h>
 
 #include <TrapezoidalTimeSeriesIntegrator.h>
