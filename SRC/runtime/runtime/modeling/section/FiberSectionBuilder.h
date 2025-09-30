@@ -1,23 +1,32 @@
 //===----------------------------------------------------------------------===//
 //
 //                                   xara
+//                              https://xara.so
 //
 //===----------------------------------------------------------------------===//
-//                              https://xara.so
+//
+// Copyright (c) 2025, OpenSees/Xara Developers
+// All rights reserved.  No warranty, explicit or implicit, is provided.
+//
+// This source code is licensed under the BSD 2-Clause License.
+// See LICENSE file or https://opensource.org/licenses/BSD-2-Clause
+//
 //===----------------------------------------------------------------------===//
+//
 // Written: cmp
 //
 #ifndef FiberSectionBuilder_h 
 #define FiberSectionBuilder_h
-#include <Patch.h>
-#include <ReinfLayer.h>
-#include <cell/Cell.h>
+#include <FiberPatch.h>
+#include <FiberLayer.h>
+#include <cell/FiberCell.h>
 #include <TaggedObject.h>
 #include <Parameter.h>
 #include <string>
 
 #include <FiberSection2dInt.h>
 
+namespace OpenSees {
 // Inherit tagged object so that the model builder can delete
 class SectionBuilder: public TaggedObject {
 public:
@@ -29,8 +38,8 @@ public:
   virtual int addHFiber(int tag, int mat, double area, const Vector& cPos)=0;
   virtual int setWarping(int tag, int field, double w[3]) =0;
 
-  int addPatch(const Patch& patch) {
-    Cell**  cells  = patch.getCells();
+  int addPatch(const FiberPatch& patch) {
+    FiberCell**  cells  = patch.getCells();
     const int nc   = patch.getNumCells();
     const int mat  = patch.getMaterialID();
     Vector cPos(2);
@@ -45,10 +54,10 @@ public:
     return 0;
   }
 
-  int addLayer(const ReinfLayer& layer) {
+  int addLayer(const FiberLayer& layer) {
 
     int numReinfBars   = layer.getNumReinfBars();
-    std::vector<Cell> bars = layer.getReinfBars();
+    std::vector<FiberCell> bars = layer.getReinfBars();
     int mat            = layer.getMaterialID();
     Vector cPos(2);
     for(int j=0; j<numReinfBars; j++) {
@@ -67,7 +76,7 @@ public:
 template <int ndm, class MatT, class SecT>
 class FiberSectionBuilder : public SectionBuilder {
 public:
-  FiberSectionBuilder(BasicModelBuilder& builder_, SecT& section_)
+  FiberSectionBuilder(ModelRegistry& builder_, SecT& section_)
     : SectionBuilder(section_.getTag()), builder(builder_), section(section_) {}
 
   virtual int addHFiber(int tag, int mat, double area, const Vector& cPos);
@@ -100,30 +109,32 @@ public:
   {
     if (area <= 0.0) {
       opserr << OpenSees::PromptValueError
-             << "fiber area <= 0.0 for fiber " << tag << "\n";
+             << "fiber area <= 0.0 for fiber " << tag 
+             << "\n";
       return -1;
     }
 
     MatT * theMaterial = builder.getTypedObject<MatT>(mat);
     if (theMaterial == nullptr) {
       opserr << OpenSees::PromptValueError
-             << "no material with tag " << mat << " for fiber " << tag << "\n";
+             << "no material with tag " << mat << " for fiber " << tag 
+             << "\n";
       return -1;
     }
 
     int id = -1;
     if constexpr (ndm==2) {
-        id = section.addFiber(*theMaterial, area, cPos(0));
+      id = section.addFiber(*theMaterial, area, cPos(0));
     } 
     else {
-        id = section.addFiber(*theMaterial, area, cPos(0), cPos(1));
+      id = section.addFiber(*theMaterial, area, cPos(0), cPos(1));
     }
     return id;
   }
 
 private:
-  BasicModelBuilder& builder;
-  SecT&              section;
+  ModelRegistry& builder;
+  SecT&          section;
 };
 
 template <> int
@@ -132,7 +143,8 @@ FiberSectionBuilder<2, UniaxialMaterial, FiberSection2dInt>::addHFiber(int tag, 
   UniaxialMaterial * theMaterial = builder.getTypedObject<UniaxialMaterial>(mat);
   if (theMaterial == nullptr) {
     opserr << OpenSees::PromptValueError 
-           << "no material with tag " << mat << " for fiber " << tag << "\n";
+           << "no material with tag " << mat << " for fiber " << tag
+           << "\n";
     return -1;
   }
 
@@ -142,9 +154,10 @@ FiberSectionBuilder<2, UniaxialMaterial, FiberSection2dInt>::addHFiber(int tag, 
 
 template <int ndm, class MatT, class SecT> int
 FiberSectionBuilder<ndm, MatT, SecT>::addHFiber(int tag, int mat, double area, const Vector& cPos) {
-  opserr << OpenSees::PromptValueError << "section does not support H fibers\n";
+  opserr << OpenSees::PromptValueError
+         << "section does not support H fibers\n";
   return -1;
 }
-
+} // namespace OpenSees
 #endif
 
